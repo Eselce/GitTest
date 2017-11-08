@@ -4,20 +4,19 @@ existing/legacy APIs.  Say for example your user script includes
 
     // @grant GM_getValue
 
-And you'd like to be compatible with both Greasemonkey 3 and Greasemonkey 4
+And you'd like to be compatible with both Greasemonkey 4 and Greasemonkey 4
 (and for that matter all versions of Violentmonkey, Tampermonkey, and any other
 user script engine).  Add:
 
     // @grant GM.getValue
-    // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+    // @require https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js
 
 And switch to the new (GM-dot) APIs, which return promises.  If your script
 is running in an engine that does not provide the new asynchronous APIs, this
 helper will add them, based on the old APIs.
 
-If you use `await` at the top level, you'll need to wrap your script in an
-`async` function to be compatible with any user script engine besides
-Greasemonkey 4.
+If you use `await` at the top level, you'll need to wrap your script in an `async`
+function to be compatible with any user script engine besides Greasemonkey 4.
 
     (async () => {
     let x = await GM.getValue('x');
@@ -69,11 +68,13 @@ if (typeof GM_registerMenuCommand == 'undefined') {
 GM.registerMenuCommand = GM_registerMenuCommand;
 
 
+GM.info = GM_info;
+
+
 Object.entries({
   'GM_deleteValue': 'deleteValue',
   'GM_getResourceURL': 'getResourceUrl',
   'GM_getValue': 'getValue',
-  'GM_info': 'info',
   'GM_listValues': 'listValues',
   'GM_notification': 'notification',
   'GM_openInTab': 'openInTab',
@@ -83,7 +84,7 @@ Object.entries({
 }).forEach(([oldKey, newKey]) => {
   let old = this[oldKey];
   if (old) GM[newKey] = function() {
-    new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       try {
         resolve(old.apply(this, arguments));
       } catch (e) {
