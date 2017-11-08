@@ -42,7 +42,11 @@ if (typeof GM_addStyle == 'undefined') {
     return null;
   }
 }
-GM.addStyle = GM_addStyle;
+
+
+if (typeof GM.addStyle == 'undefined') {
+  GM.addStyle = GM_addStyle;
+}
 
 
 if (typeof GM_registerMenuCommand == 'undefined') {
@@ -65,10 +69,16 @@ if (typeof GM_registerMenuCommand == 'undefined') {
     menu.appendChild(menuItem);
   }
 }
-GM.registerMenuCommand = GM_registerMenuCommand;
 
 
-GM.info = GM_info;
+if (typeof GM.registerMenuCommand == 'undefined') {
+  GM.registerMenuCommand = GM_registerMenuCommand;
+}
+
+
+if (typeof GM.info == 'undefined') {
+  GM.info = GM_info;
+}
 
 
 Object.entries({
@@ -83,13 +93,15 @@ Object.entries({
   'GM_xmlhttpRequest': 'xmlHttpRequest',
 }).forEach(([oldKey, newKey]) => {
   let old = this[oldKey];
-  if (old) GM[newKey] = function() {
-    return new Promise((resolve, reject) => {
-      try {
-        resolve(old.apply(this, arguments));
-      } catch (e) {
-        reject(e);
-      }
-    });
+  if (old && (typeof GM[newKey] == 'undefined')) {
+    GM[newKey] = function() {
+      return new Promise((resolve, reject) => {
+        try {
+          resolve(old.apply(this, arguments));
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
   }
 });
