@@ -10,6 +10,8 @@
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
+console.log("Init xhr-test.js");
+
 var xhrTest = (function() {
     // ECMAScript 6: Erlaubt 'const', 'let', ...
     /* jshint esnext: true */
