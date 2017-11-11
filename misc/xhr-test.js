@@ -56,7 +56,6 @@ var xhrTest = (function() {
         console.log(__CALLBACK);
 
         return (__CALLBACK ? __CALLBACK(result) : null);
-        
     }
 
     function onloadByStatus(result) {
@@ -78,7 +77,7 @@ var xhrTest = (function() {
                         if (result.statusText === 'OK') {
                             resolve(__RET);
                         } else {
-                            reject(__RET);
+                            reject(result.statusText);
                         }
                     };
 
@@ -144,7 +143,7 @@ var xhrTest = (function() {
             return doc;
         });
 
-    return { 
+    return {
             browse,
             getRequest,
             putRequest,

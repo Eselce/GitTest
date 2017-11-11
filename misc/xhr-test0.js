@@ -1,5 +1,5 @@
 // ==UserScript==
-// _name         xhr-test0.js
+// _name         xhr-test.js
 // _namespace    http://os.ongapo.com/
 // _version      0.10
 // _copyright    2017+
@@ -10,7 +10,9 @@
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
-const xhrTest = (function() {
+console.log("Init xhr-test.js");
+
+var xhrTest = (function() {
     // ECMAScript 6: Erlaubt 'const', 'let', ...
     /* jshint esnext: true */
     /* jshint moz: true */
@@ -54,7 +56,6 @@ const xhrTest = (function() {
         console.log(__CALLBACK);
 
         return (__CALLBACK ? __CALLBACK(result) : null);
-        
     }
 
     function onloadByStatus(result) {
@@ -76,7 +77,7 @@ const xhrTest = (function() {
                         if (result.statusText === 'OK') {
                             resolve(__RET);
                         } else {
-                            reject(__RET);
+                            reject(result.statusText);
                         }
                     };
 
@@ -144,7 +145,7 @@ const xhrTest = (function() {
             return doc;
         });
 
-    return { 
+    return {
             browse,
             getRequest,
             putRequest,
