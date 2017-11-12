@@ -19,7 +19,7 @@ const __XHR = (() => {
 
     const __GM3REQUEST = GM_xmlhttpRequest;                     // GM 3.x and earlier
     const __GM4REQUEST = (GM ? GM.xmlHttpRequest : undefined);  // GM 4.0+
-    const __CHECKFUN   = (fun => ((typeof fun === 'function') ? fun : undefined)));
+    const __CHECKFUN   = (fun => ((typeof fun === 'function') ? fun : undefined));
 
     const __XMLREQUEST = (__CHECKFUN(__GM4REQUEST) || __CHECKFUN(__GM4REQUEST));
 
