@@ -19,7 +19,7 @@
     __XHR.browse(__URL).then(doc => {
             console.error("Received:", doc);
         }, error => {
-            console.error("Error:", eror);
+            console.error("Error:", error);
         });
 })();
 
