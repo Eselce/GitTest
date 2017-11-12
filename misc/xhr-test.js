@@ -83,9 +83,15 @@ const __XHR = (() => {
                         }
                     });
 
-                console.log('Fetching', d.url, '...');
+                if (__XMLREQUEST) {
+                    console.log('Fetching', d.url, '...');
 
-                resolve(__XMLREQUEST(__D));
+                    resolve(__XMLREQUEST(__D));
+                } else {
+                    console.error('Tried to fetch', d.url, '...');
+
+                    reject();
+                }
             });
     }
 
