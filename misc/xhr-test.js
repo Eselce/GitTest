@@ -4,29 +4,29 @@
 // _version      0.10
 // _copyright    2017+
 // _author       Sven Loges (SLC)
-// _description  GitHub_GitTest/misc (Eselce 10.11.2017 20:22:15) Test lib for XHR call
+// _description  Test lib for XHR calls
 // @grant        GM.xmlHttpRequest
 // @require      https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
-console.log("Init xhr-test.js");
-
-var xhrTest = (function() {
-    // ECMAScript 6: Erlaubt 'const', 'let', ...
+const __XHR = (() => {
+    // ECMAScript 6:
     /* jshint esnext: true */
     /* jshint moz: true */
 
+    console.log("Init xhr-test.js");
+
     const __XMLREQUEST = ((GM && (typeof GM.xmlHttpRequest === 'function'))
-                            ? GM.xmlHttpRequest
-                            : GM_xmlhttpRequest);
+                            ? GM.xmlHttpRequest     // GM 4.0+
+                            : GM_xmlhttpRequest);   // GM 3.x and earlier
 
     const __DETAILS = {
         'GET'     : {
-                        'method'          : 'GET'
+                        'method' : 'GET'
                     },
         'PUT'     : {
-                        'method'          : 'PUT'
+                        'method' : 'PUT'
                     },
         };
 
@@ -71,7 +71,7 @@ var xhrTest = (function() {
 
                 Object.assign(__D, d);
 
-                __D.onload = function(result) {
+                __D.onload = (result => {
                         const __RET = __ONLOAD(result);
 
                         if (result.statusText === 'OK') {
@@ -79,15 +79,11 @@ var xhrTest = (function() {
                         } else {
                             reject(result.statusText);
                         }
-                    };
+                    });
 
                 console.log('Fetching', d.url, '...');
 
-                const __RET = __XMLREQUEST(__D);
-
-                if (__RET  !== undefined) {
-                    return resolve(__RET);
-                }
+                resolve(__XMLREQUEST(__D));
             });
     }
 
@@ -127,7 +123,7 @@ var xhrTest = (function() {
             let doc;
 
             try {
-                let match = result.responseHeaders.match(/Content-Type:\s+((\w+)\/(\w+))/);
+                let match = result.responseHeaders.match(/^Content-Type:\s+((\S+)\/(\S+))$/m);
                 contentType = (match ? match[1] : 'application/xml');
                 console.log(contentType);
 
