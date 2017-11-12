@@ -20,7 +20,13 @@
     const __URL = "https://wiki.greasespot.net/Greasemonkey_Manual";
 
     __XHR.browse(__URL).then(doc => {
-            console.error("Received:", doc);
+            console.log("Received:", doc);
+
+            if (doc.response) {
+                // Tampermonkey may return response object...
+                console.log("Document:", doc.responseXML);
+                console.log("Response:", doc.response);
+            }
         }, error => {
             console.error("Error:", error);
         });
