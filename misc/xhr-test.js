@@ -5,9 +5,9 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  Test lib for XHR calls
-// @grant        GM.xmlHttpRequest
-// @require      https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js
-// @grant        GM_xmlhttpRequest
+// _grant        GM.xmlHttpRequest
+// _require      https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js
+// _grant        GM_xmlhttpRequest
 // ==/UserScript==
 
 const __XHR = (() => {
