@@ -6,6 +6,9 @@
 // @author       Sven Loges (SLC)
 // @description  XMR-Test-Script for Greasemonkey 4.0
 // @include      /^https?://wiki\.greasespot\.net/Main_Page(#\S+)?(\?\S+(&\S+)*)?$/
+// @grant        GM.xmlHttpRequest
+// @require      https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js
+// @grant        GM_xmlhttpRequest
 // @require      https://eselce.github.io/GitTest/misc/xhr-test.js
 // ==/UserScript==
 
