@@ -17,9 +17,10 @@ const __XHR = (() => {
 
     console.log("Init xhr-test.js");
 
-    const __XMLREQUEST = ((GM && (typeof GM.xmlHttpRequest === 'function'))
-                            ? GM.xmlHttpRequest     // GM 4.0+
-                            : GM_xmlhttpRequest);   // GM 3.x and earlier
+    const __GM3REQUEST = GM_xmlhttpRequest;                     // GM 3.x and earlier
+    const __GM4REQUEST = (GM ? GM.xmlHttpRequest : undefined);  // GM 4.0+
+    const __XMLREQUEST = ((typeof __GM4REQUEST === 'function') ? __GM4REQUEST :
+                            ((typeof __GM3REQUEST === 'function') ? __GM3REQUEST : undefined));
 
     const __DETAILS = {
         'GET'     : {
