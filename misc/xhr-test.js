@@ -86,11 +86,15 @@ const __XHR = (() => {
                 if (__XMLREQUEST) {
                     console.log('Fetching', d.url, '...');
 
-                    resolve(__XMLREQUEST(__D));
+                    const __RET = __XMLREQUEST(__D);
+
+                    if (__RET !== undefined) {
+                        resolve(__RET);
+                    }
                 } else {
                     console.error('Tried to fetch', d.url, '...');
 
-                    reject();
+                    reject("XHR handler is missing");
                 }
             });
     }
