@@ -41,7 +41,7 @@ if (typeof GM_addStyle == 'undefined') {
       return style;
     }
     return null;
-  }
+  };
 }
 
 
@@ -66,7 +66,7 @@ if (typeof GM_registerMenuCommand == 'undefined') {
     menuItem.textContent = caption;
     menuItem.addEventListener('click', commandFunc, true);
     menu.appendChild(menuItem);
-  }
+  };
 }
 
 
@@ -98,6 +98,6 @@ Object.entries({
           reject(e);
         }
       });
-    }
+    };
   }
 });
