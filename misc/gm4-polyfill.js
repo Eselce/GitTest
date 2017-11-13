@@ -30,7 +30,7 @@ if (typeof GM == 'undefined') {
 
 
 if (typeof GM_addStyle == 'undefined') {
-  function GM_addStyle(aCss) {
+  this.GM_addStyle = (aCss) => {
     'use strict';
     let head = document.getElementsByTagName('head')[0];
     if (head) {
@@ -46,7 +46,7 @@ if (typeof GM_addStyle == 'undefined') {
 
 
 if (typeof GM_registerMenuCommand == 'undefined') {
-  function GM_registerMenuCommand(caption, commandFunc, accessKey) {
+  this.GM_registerMenuCommand = (caption, commandFunc, accessKey) => {
     if (!document.body) {
       console.error('GM_registerMenuCommand got no body.');
       return;
