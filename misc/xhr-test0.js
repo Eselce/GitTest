@@ -142,12 +142,11 @@ const __XHR = (() => {
                 console.log(contentType);
 
                 doc = parser.parseFromString(result.responseText, contentType);
+
+                console.log("Parsed:", doc);
             }
             catch(ex) {
                 console.error("Parse error:", ex);
-            }
-            finally {
-                console.log(doc.title, doc);
             }
 
             return doc;
