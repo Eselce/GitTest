@@ -5,9 +5,9 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  Test lib for XHR calls
-// @grant        GM.xmlHttpRequest
-// @require      https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js
-// @grant        GM_xmlhttpRequest
+// _grant        GM.xmlHttpRequest
+// _require      https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js
+// _grant        GM_xmlhttpRequest
 // ==/UserScript==
 
 const __XHR = (() => {
@@ -17,9 +17,11 @@ const __XHR = (() => {
 
     console.log("Init xhr-test.js");
 
-    const __XMLREQUEST = ((GM && (typeof GM.xmlHttpRequest === 'function'))
-                            ? GM.xmlHttpRequest     // GM 4.0+
-                            : GM_xmlhttpRequest);   // GM 3.x and earlier
+    const __GM3REQUEST = (('undefined' !== typeof GM_xmlhttpRequest) ? GM_xmlhttpRequest : undefined);  // GM 3.x and earlier
+    const __GM4REQUEST = (('undefined' !== typeof GM)                ? GM.xmlHttpRequest : undefined);  // GM 4.0+
+    const __CHECKFUN   = (fun => (('function' === typeof fun) ? fun : undefined));
+
+    const __XMLREQUEST = (__CHECKFUN(__GM4REQUEST) || __CHECKFUN(__GM4REQUEST));
 
     const __DETAILS = {
         'GET'     : {
@@ -81,9 +83,19 @@ const __XHR = (() => {
                         }
                     });
 
-                console.log('Fetching', d.url, '...');
+                if (__XMLREQUEST) {
+                    console.log('Fetching', d.url, '...');
 
-                resolve(__XMLREQUEST(__D));
+                    const __RET = __XMLREQUEST(__D);
+
+                    if (__RET !== undefined) {
+                        resolve(__RET);
+                    }
+                } else {
+                    console.error('Tried to fetch', d.url, '...');
+
+                    reject("XHR handler is missing");
+                }
             });
     }
 
@@ -130,12 +142,11 @@ const __XHR = (() => {
                 console.log(contentType);
 
                 doc = parser.parseFromString(result.responseText, contentType);
+
+                console.log("Parsed:", doc);
             }
             catch(ex) {
                 console.error("Parse error:", ex);
-            }
-            finally {
-                console.log(doc.title, doc);
             }
 
             return doc;

@@ -7,7 +7,8 @@
 // @description  XMR-Test-Script for Greasemonkey 4.0
 // @include      /^https?://wiki\.greasespot\.net/Main_Page(#\S+)?(\?\S+(&\S+)*)?$/
 // @grant        GM.xmlHttpRequest
-// @require      https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js
+// _require      https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js (buggy!)
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant        GM_xmlhttpRequest
 // @require      https://eselce.github.io/GitTest/misc/xhr-test.js
 // ==/UserScript==
@@ -22,7 +23,7 @@
     __XHR.browse(__URL).then(doc => {
             console.log("Received:", doc);
 
-            if (doc.response) {
+            if (doc && doc.response) {
                 // Tampermonkey may return response object...
                 console.log("Document:", doc.responseXML);
                 console.log("Response:", doc.response);
