@@ -52,7 +52,7 @@
             'Vier' : 16,
             'Fuenf' : 25
         }).forEach(([oldKey, newKey]) => {
-            prom.then(res => registerVerbose(oldKey, () => {
+            prom = prom.then(res => registerVerbose(oldKey, () => {
                 console.error(oldKey + " hoch 2 ist " + newKey);
             }, oldKey.substr(0, 1)));
         });
@@ -64,7 +64,7 @@
             'Vier' : 16,
             'Fuenf' : 25
         }).forEach(([oldKey, newKey]) => {
-            prom.then(res => registerVerbose('Alt-' + oldKey, () => {
+            prom = prom.then(res => registerVerbose('Alt-' + oldKey, () => {
                 console.error(oldKey + " hoch 2 ist " + newKey);
             }, oldKey.substr(1, 1)));
         });
