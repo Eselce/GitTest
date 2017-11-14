@@ -31,13 +31,15 @@
     async function registerMenuCommand(text, fun, key) {
         console.error('registerMenuCommand("' + text + '", ' + fun + ", '" + key + "')");
 
-        return await GM.registerMenuCommand(text, fun, key);
+        //return await GM.registerMenuCommand(text, fun, key);
+        return await GM.registerMenuCommand(text, fun, key).then(res => console.log('OK', text, res)).catch(error => console.error("registerMenuCommand Error:", error));
     }
 
     async function registerVerbose(text, fun, key) {
         console.error('registerVerbose("' + text + '", ' + fun + ", '" + key + "')");
 
-        return await GM.registerMenuCommand(text, fun, key);
+        //return await GM.registerMenuCommand(text, fun, key);
+        return await GM.registerMenuCommand(text, fun, key).then(res => console.log('OK', text, res)).catch(error => console.error("registerVerbose Error:", error));
     }
 
     // ==================== Hauptprogramm ====================
@@ -54,7 +56,7 @@
         }).forEach(([oldKey, newKey]) => {
             prom = prom.then(res => registerVerbose(oldKey, () => {
                 console.error(oldKey + " hoch 2 ist " + newKey);
-            }, oldKey.substr(0, 1)));
+            }, oldKey.substr(0, 1))).then(res => console.log('OK', oldKey, newKey, res)).catch(error => console.error(oldKey, "Error:", error));
         });
 
         Object.entries({
@@ -66,10 +68,10 @@
         }).forEach(([oldKey, newKey]) => {
             prom = prom.then(res => registerVerbose('Alt-' + oldKey, () => {
                 console.error(oldKey + " hoch 2 ist " + newKey);
-            }, oldKey.substr(1, 1)));
+            }, oldKey.substr(1, 1))).then(res => console.log('OK', oldKey, newKey, res)).catch(error => console.error('Alt-' + oldKey, "Error:", error));
         });
 
-        prom.then(res => console.log('DONE'));
+        prom.then(res => console.log('OK', text, res, 'DONE')).catch(error => console.error("DONE Error:", error));
     }
 
     procMain();
