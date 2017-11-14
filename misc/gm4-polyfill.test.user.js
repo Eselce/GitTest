@@ -71,7 +71,7 @@
             }, oldKey.substr(1, 1))).then(res => console.log('OK', oldKey, newKey, res)).catch(error => console.error('Alt-' + oldKey, "Error:", error));
         });
 
-        prom.then(res => console.log('OK', text, res, 'DONE')).catch(error => console.error("DONE Error:", error));
+        prom.then(res => console.log('OK', res, 'DONE')).catch(error => console.error("DONE Error:", error));
     }
 
     procMain();
