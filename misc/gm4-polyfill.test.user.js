@@ -69,7 +69,7 @@
             }, oldKey.substr(1, 1)));
         });
 
-        prom.then(res => console.log('DONE');
+        prom.then(res => console.log('DONE'));
     }
 
     procMain();
