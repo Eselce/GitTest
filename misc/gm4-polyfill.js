@@ -25,7 +25,7 @@ Greasemonkey 4.
 */
 
 if (typeof GM == 'undefined') {
-  GM = {'log': console.log};
+  GM = {};
 }
 
 
@@ -51,10 +51,8 @@ if (typeof GM_registerMenuCommand == 'undefined') {
       console.error('GM_registerMenuCommand got no body.');
       return;
     }
-    let menu = null;
-    if (document.body.getAttribute('contextmenu')) {
-        menu = document.querySelector('menu#'+document.body.getAttribute('contextmenu'));
-    }
+    let contextMenu = document.body.getAttribute('contextmenu');
+    let menu = (contextMenu ? document.querySelector('menu#' + contextMenu) : null);
     if (!menu) {
       menu = document.createElement('menu')
       menu.setAttribute('id', 'gm-registered-menu');
@@ -70,9 +68,14 @@ if (typeof GM_registerMenuCommand == 'undefined') {
 }
 
 
-if (typeof GM.info == 'undefined') {
-  GM.info = GM_info;
-}
+Object.entries({
+  'log': console.log,
+  'info': GM_info,
+}).forEach(([newKey, old]) => {
+  if (old && (typeof GM[newKey] == 'undefined')) {
+    GM[newKey] = old;
+  }
+});
 
 
 Object.entries({
@@ -90,7 +93,7 @@ Object.entries({
 }).forEach(([oldKey, newKey]) => {
   let old = this[oldKey];
   if (old && (typeof GM[newKey] == 'undefined')) {
-    GM[newKey] = function() {
+    GM[newKey] = () => {
       return new Promise((resolve, reject) => {
         try {
           resolve(old.apply(this, arguments));
