@@ -125,16 +125,16 @@ Object.entries({
         try {
           console.log("Apply", oldKey, Object.keys(this), Object.values(arguments));
           res = old.apply(this, arguments);
-          console.log(newKey, Object.values(p));
-          return resolve(p);
-        } catch (e) { console.error(newKey + ": ", Object.values(p), "rejected");
+          console.log(newKey, res);
+          return resolve(res);
+        } catch (e) { console.error(newKey + ": ", e, "rejected");
           reject(e);
         }
       };
       console.error("Exe", executor);
       try {
         let p = new Promise(executor);
-        console.error("New Promise", Object.values(p), oldKey, newKey);
+        console.error("New Promise", p, oldKey, newKey);
         return p;
       } catch (e) { console.error(newKey + ": Error in creating Promise, ", e); }
       //return Promise.reject(newKey);
