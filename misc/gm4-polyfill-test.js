@@ -130,3 +130,44 @@ Object.entries({
     };
   }
 });
+
+
+Object.entries({
+  'GM_addStyle': 'addStyle',
+  'GM_deleteValue': 'deleteValue',
+  'GM_getResourceURL': 'getResourceUrl',
+  'GM_getValue': 'getValue',
+  'GM_listValues': 'listValues',
+  'GM_notification': 'notification',
+  'GM_openInTab': 'openInTab',
+  'GM_registerMenuCommand': 'registerMenuCommand',
+  'GM_registerVerbose': 'GM_registerVerbose',
+  'GM_setClipboard': 'setClipboard',
+  'GM_setValue': 'setValue',
+  'GM_xmlhttpRequest': 'xmlHttpRequest',
+}).forEach(([oldKey, newKey]) => {
+  let old = this[oldKey];
+  if (old && (typeof GM[newKey] == 'undefined')) {
+    GM[newKey] = () => {
+      console.error("Call", newKey);
+      let executor = (resolve, reject) => {
+        try {
+          console.log("Apply", oldKey, this, arguments);
+          res = old.apply(this, arguments);
+          console.log(newKey, p);
+          return resolve(p);
+        } catch (e) { console.error(newKey + ": ", p, "rejected");
+          reject(e);
+        }
+      };
+      console.error("Exe", executor);
+      try {
+        let p = new Promise(executor);
+        console.error("New Promise", p, oldKey, newKey);
+        return p;
+      } catch (e) { console.error(newKey + ": Error in creating Promise, ", e); }
+      //return Promise.reject(newKey);
+      //return Promise.resolve('OK ' + newKey);
+    };
+  }
+});
