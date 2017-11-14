@@ -119,51 +119,22 @@ Object.entries({
 }).forEach(([oldKey, newKey]) => {
   let old = this[oldKey];
   if (old && (typeof GM[newKey] == 'undefined')) {
-    GM[newKey] = () => {
-      return new Promise((resolve, reject) => {
-        try {
-          resolve(old.apply(this, arguments));
-        } catch (e) {
-          reject(e);
-        }
-      });
-    };
-  }
-});
-
-
-Object.entries({
-  'GM_addStyle': 'addStyle',
-  'GM_deleteValue': 'deleteValue',
-  'GM_getResourceURL': 'getResourceUrl',
-  'GM_getValue': 'getValue',
-  'GM_listValues': 'listValues',
-  'GM_notification': 'notification',
-  'GM_openInTab': 'openInTab',
-  'GM_registerMenuCommand': 'registerMenuCommand',
-  'GM_registerVerbose': 'GM_registerVerbose',
-  'GM_setClipboard': 'setClipboard',
-  'GM_setValue': 'setValue',
-  'GM_xmlhttpRequest': 'xmlHttpRequest',
-}).forEach(([oldKey, newKey]) => {
-  let old = this[oldKey];
-  if (old && (typeof GM[newKey] == 'undefined')) {
-    GM[newKey] = () => {
-      console.error("Call", newKey);
+    GM[newKey] = function() {
+      console.error("Call", newKey, Object.values(arguments));
       let executor = (resolve, reject) => {
         try {
-          console.log("Apply", oldKey, this, arguments);
+          console.log("Apply", oldKey, Object.keys(this), Object.values(arguments));
           res = old.apply(this, arguments);
-          console.log(newKey, p);
+          console.log(newKey, Object.values(p));
           return resolve(p);
-        } catch (e) { console.error(newKey + ": ", p, "rejected");
+        } catch (e) { console.error(newKey + ": ", Object.values(p), "rejected");
           reject(e);
         }
       };
       console.error("Exe", executor);
       try {
         let p = new Promise(executor);
-        console.error("New Promise", p, oldKey, newKey);
+        console.error("New Promise", Object.values(p), oldKey, newKey);
         return p;
       } catch (e) { console.error(newKey + ": Error in creating Promise, ", e); }
       //return Promise.reject(newKey);
