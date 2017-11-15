@@ -5,7 +5,7 @@
 // @copyright    2017+
 // @author       Sven Loges (SLC)
 // @description  RMC-Test-Script for gm4-polyfill and Greasemonkey 4.0
-// @include      /^https?://wiki\.greasespot\.net/Greasemonkey_Manual(#\S+)?(\?\S+(&\S+)*)?$/
+// @include      /^https?://wiki\.greasespot\.net/Greasemonkey_Manual(\?\S+(&\S+)*)?(#\S+)?$/
 // @grant        GM.registerMenuCommand
 // @require      https://eselce.github.io/GitTest/misc/gm4-polyfill-test.js
 // @grant        GM_registerMenuCommand
