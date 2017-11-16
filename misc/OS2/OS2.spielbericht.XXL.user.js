@@ -9,7 +9,7 @@
 // @grant        GM.getResourceUrl
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant        GM_getResourceURL
-// @resource PAS https://eselce.github.io/GitTest/img/pas.png
+// @resource PAS https://eselce.github.io/GitTest/img/pass.png
 // @resource SCH https://eselce.github.io/GitTest/img/sch.png
 // @resource TOR https://eselce.github.io/GitTest/img/tor.png
 // @resource ZWK https://eselce.github.io/GitTest/img/zwk.png
