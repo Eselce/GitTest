@@ -14,7 +14,6 @@
 // @resource SCH ../img/sch.png
 // @resource TOR ../img/tor.png
 // @resource ZWK ../img/zwk.png
-// @grant        none
 // ==/UserScript==
 
 // ECMAScript 6:
