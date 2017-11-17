@@ -15,6 +15,10 @@
 // @resource ZWK https://eselce.github.io/GitTest/img/zwk.png
 // ==/UserScript==
 
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
 // **************************************************************************************
 // Hilfsfunktionen
 // **************************************************************************************
@@ -178,7 +182,7 @@ function textbausteine(){
             const __CELL = spielbericht.rows[j].cells[2 + l];
 
             if (ereignis[j][1] === 0) { // Ballverlust
-                __CELL.textContent = ereignis[j][0];  // Ereignis in Spielbericht eintragen
+                //__CELL.textContent = ereignis[j][0];  // Ereignis in Spielbericht eintragen
                 //spielbericht.rows[j].cells[2+l].textContent = ereignis[j][0]; //Ereignis in Spielbericht eintragen
                 switch (ereignis[j][0]) {
                     case 'SCH':
@@ -563,8 +567,8 @@ function stringToNumber(string) {
 // altText: Text, wenn Icon nicht geladen werden konnte
 // height: Hoehe des Icons in Pixel
 // width: Breite des Icons in Pixel
-// return Die Teamdaten oder undefined bei Fehler
-function addIcon(node, iconName, altText, height, width) {
+// return Die IMG-Resource, die asynchron gefuellt wird
+function addIcon(node, iconName, altText = `${iconName}`, height = 32, width = 32) {
     const __IMG = document.createElement('img');
 
     GM.getResourceUrl(iconName).then(src => {
@@ -579,6 +583,8 @@ function addIcon(node, iconName, altText, height, width) {
 
             node.innerHTML = node.innerHTML + altText;
         });
+
+    return __IMG;
 }
 
 // *** EOF ***
