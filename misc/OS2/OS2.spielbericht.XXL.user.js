@@ -13,7 +13,6 @@
 // @resource SCH https://eselce.github.io/GitTest/img/sch.png
 // @resource TOR https://eselce.github.io/GitTest/img/tor.png
 // @resource ZWK https://eselce.github.io/GitTest/img/zwk.png
-// @grant        none
 // ==/UserScript==
 
 // **************************************************************************************
