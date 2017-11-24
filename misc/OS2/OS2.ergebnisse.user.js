@@ -20,10 +20,10 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
-// @require      https://eselce.github.io/GitTest/misc/OS2/lib/class.js
-// @require      https://eselce.github.io/GitTest/misc/OS2/lib/class.delim.js
-// @require      https://eselce.github.io/GitTest/misc/OS2/lib/class.path.js
-// @require      https://eselce.github.io/GitTest/misc/OS2/lib/class.uri.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
