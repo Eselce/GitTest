@@ -5,7 +5,12 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Zugriff auf die Script-Optionen
-// _require      https://eselce.github.io/OS2.scripts/lib/util.option.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
 // ==/UserScript==
 
@@ -13,7 +18,74 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
-// ==================== Abschnitt fuer Zugriff auf die Optionen ====================
+// ==================== Abschnitt fuer Initialisierung einer Option ====================
+
+// Initialisiert die gesetzten Option
+// config: Konfiguration der Option
+// setValue: Zu uebernehmender Default-Wert (z.B. der jetzt gesetzte)
+// return Initialwert der gesetzten Option
+function initOptValue(config, setValue = undefined) {
+    let value = getValue(setValue, config.Default);  // Standard
+
+    if (config.SharedData !== undefined) {
+        value = config.SharedData;
+    }
+
+    switch (config.Type) {
+    case __OPTTYPES.MC : if ((value === undefined) && (config.Choice !== undefined)) {
+                             value = config.Choice[0];
+                         }
+                         break;
+    case __OPTTYPES.SW : break;
+    case __OPTTYPES.TF : break;
+    case __OPTTYPES.SD : config.Serial = true;
+                         break;
+    case __OPTTYPES.SI : break;
+    default :            break;
+    }
+
+    if (config.Serial || config.Hidden) {
+        config.HiddenMenu = true;
+    }
+
+    return value;
+}
+
+// ==================== Ende Abschnitt fuer Initialisierung einer Option ====================
+
+// ==================== Abschnitt fuer Shared Optionsdaten ====================
+
+// Gibt fuer einen 'Shared'-Eintrag eine ObjRef zurueck
+// shared: Object mit den Angaben 'namespace', 'module' und ggfs. 'item'
+// item: Key der Option
+// return ObjRef, die das Ziel definiert
+function getSharedRef(shared, item = undefined) {
+    if (shared === undefined) {
+        return undefined;
+    }
+
+    const __OBJREF = new ObjRef(__DBDATA);  // Gemeinsame Daten
+    const __PROPS = [ 'namespace', 'module', 'item' ];
+    const __DEFAULTS = [ __DBMOD.namespace, __DBMOD.name, item ];
+
+    for (let stage in __PROPS) {
+        const __DEFAULT = __DEFAULTS[stage];
+        const __PROP = __PROPS[stage];
+        const __NAME = shared[__PROP];
+
+        if (__NAME === '$') {
+            break;
+        }
+
+        __OBJREF.chDir(getValue(__NAME, __DEFAULT));
+    }
+
+    return __OBJREF;
+}
+
+// ==================== Ende Abschnitt fuer Shared Optionsdaten ====================
+
+// ==================== Abschnitt fuer Zugriff auf Options-Parameter ====================
 
 // Gibt eine Option sicher zurueck
 // opt: Config und Value der Option, ggfs. undefined
@@ -101,32 +173,23 @@ function setOptValue(opt, value) {
     }
 }
 
-// Gibt den Wert einer Option zurueck
+// Gibt den Wert einer Option zurueck, falls vorhanden
 // opt: Config und Value der Option
-// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
-// load: Laedt die Option per loadOption(), falls noetig
-// force: Laedt auch Optionen mit 'AutoReset'-Attribut
-// return Gesetzter Wert
-function getOptValue(opt, defValue = undefined, load = true, asyncLoad = false, force = false) {
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist (nur, falls geladen und nicht gesetzt!)
+// return Gesetzter Wert (falls geladen)
+function getOptValue(opt, defValue = undefined) {
     let value;
 
-    if (opt !== undefined) {
-        if (load && ! opt.Loaded) {
-            if (! opt.Promise) {
-                loadOption(opt, force);
-            }
-            if (! asyncLoad) {
-                __LOG[0]("Warnung: getOptValue(" + getOptName(opt) + ") fordert zum Nachladen auf, daher nur Default-Wert!");
-            }
-        } else {
-            value = opt.Value;
-        }
+    if (opt && opt.Loaded) {
+        value = getValue(opt.Value, defValue);
     }
 
-    return valueOf(getValue(value, defValue));
+    return valueOf(value);
 }
 
-// ==================== Ende Abschnitt fuer Zugriff auf die Optionen ====================
+// ==================== Ende Abschnitt fuer Zugriff auf Options-Parameter ====================
+
+// ==================== Abschnitt fuer Zugriff auf die Optionen ====================
 
 // Setzt eine Option auf einen vorgegebenen Wert
 // Fuer kontrollierte Auswahl des Values siehe setNextOpt()

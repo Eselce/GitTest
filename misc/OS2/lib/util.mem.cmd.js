@@ -5,6 +5,11 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer gespeicherte Kommandos (StoredCmds)
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.cmd.js
 // ==/UserScript==

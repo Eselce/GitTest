@@ -5,7 +5,11 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Zugriff auf die Script-Optionen
-// _require      https://eselce.github.io/OS2.scripts/lib/util.option.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // ==/UserScript==
 
@@ -60,7 +64,7 @@ function loadOption(opt, force = false) {
         const __CONFIG = getOptConfig(opt);
         const __ISSHARED = getValue(__CONFIG.Shared, false, true);
         const __NAME = getOptName(opt);
-        const __DEFAULT = getOptValue(opt, undefined, false, false, false);
+        const __DEFAULT = getOptValue(opt, undefined);
         let value;
 
         if (opt.Loaded && ! __ISSHARED) {
@@ -257,6 +261,37 @@ async function resetOptions(optSet, reload = true) {
 
     // ... und ggfs. Seite neu laden (mit "Werkseinstellungen")...
     refreshPage(reload);
+}
+
+// ==================== Zugriff auf Option mit eventuellem Nachladen ====================
+
+// Gibt den Wert einer Option zurueck. Laedt die Option per loadOption(), falls noetig.
+// opt: Config und Value der Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
+// asyncLoad: Daten werden asynchron geladen, Rueckgabewert ist ein Promise-Objekt
+// force: Laedt auch Optionen mit 'AutoReset'-Attribut
+// return Gesetzter Wert bzw. ein Promise darauf bei asyncLoad
+function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false) {
+
+    if (asyncLoad) {
+        if (! opt) {
+            return Promise.reject("loadOptValue: Option ist undefined");
+        } else {
+            let promise = (opt.Loaded ? Promise.resolve(opt.Value) : opt.Promise);
+
+            if (! promise) {
+                promise = loadOption(opt, force);
+            }
+
+            return promise.then(value => valueOf(getValue(value, defValue)));
+        }
+    } else {
+        if (! (opt && opt.Loaded)) {
+            __LOG[0](`Warnung: loadOptValue(${getOptName(opt)}) erlaubt kein Nachladen!`);
+        }
+
+        return getOptValue(opt, defValue);
+    }
 }
 
 // ==================== Ende Abschnitt Operationen auf Optionen ====================

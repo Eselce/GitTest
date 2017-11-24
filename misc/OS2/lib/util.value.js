@@ -1,11 +1,11 @@
 // ==UserScript==
-// _name         util.debug
+// _name         util.value
 // _namespace    http://os.ongapo.com/
 // _version      0.10
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Logging, Debugging, Error-Handling, usw.
-// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // ==/UserScript==
 
 // ECMAScript 6:

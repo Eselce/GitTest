@@ -5,8 +5,8 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Node-Tooltips auf der Seite
-// _require      https://eselce.github.io/OS2.scripts/lib/util.option.js
-// _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.label.js
 // ==/UserScript==
 

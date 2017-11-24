@@ -5,7 +5,20 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Aufbau und Start der Script-Optionen
-// _require      https://eselce.github.io/OS2.scripts/lib/util.option.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.class.path.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.db.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.menu.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.run.js
 // ==/UserScript==
 
@@ -14,37 +27,6 @@
 /* jshint moz: true */
 
 // ==================== Abschnitt fuer Aufbau und Start der Optionen ====================
-
-// Initialisiert die gesetzten Option
-// config: Konfiguration der Option
-// setValue: Zu uebernehmender Default-Wert (z.B. der jetzt gesetzte)
-// return Initialwert der gesetzten Option
-function initOptValue(config, setValue = undefined) {
-    let value = getValue(setValue, config.Default);  // Standard
-
-    if (config.SharedData !== undefined) {
-        value = config.SharedData;
-    }
-
-    switch (config.Type) {
-    case __OPTTYPES.MC : if ((value === undefined) && (config.Choice !== undefined)) {
-                             value = config.Choice[0];
-                         }
-                         break;
-    case __OPTTYPES.SW : break;
-    case __OPTTYPES.TF : break;
-    case __OPTTYPES.SD : config.Serial = true;
-                         break;
-    case __OPTTYPES.SI : break;
-    default :            break;
-    }
-
-    if (config.Serial || config.Hidden) {
-        config.HiddenMenu = true;
-    }
-
-    return value;
-}
 
 // Initialisiert die Menue-Funktion einer Option
 // optAction: Typ der Funktion
@@ -80,34 +62,6 @@ function initOptAction(optAction, item = undefined, optSet = undefined, optConfi
     }
 
     return fun;
-}
-
-// Gibt fuer einen 'Shared'-Eintrag eine ObjRef zurueck
-// shared: Object mit den Angaben 'namespace', 'module' und ggfs. 'item'
-// item: Key der Option
-// return ObjRef, die das Ziel definiert
-function getSharedRef(shared, item = undefined) {
-    if (shared === undefined) {
-        return undefined;
-    }
-
-    const __OBJREF = new ObjRef(__DBDATA);  // Gemeinsame Daten
-    const __PROPS = [ 'namespace', 'module', 'item' ];
-    const __DEFAULTS = [ __DBMOD.namespace, __DBMOD.name, item ];
-
-    for (let stage in __PROPS) {
-        const __DEFAULT = __DEFAULTS[stage];
-        const __PROP = __PROPS[stage];
-        const __NAME = shared[__PROP];
-
-        if (__NAME === '$') {
-            break;
-        }
-
-        __OBJREF.chDir(getValue(__NAME, __DEFAULT));
-    }
-
-    return __OBJREF;
 }
 
 // Gibt diese Config oder, falls 'Shared', ein Referenz-Objekt mit gemeinsamen Daten zurueck

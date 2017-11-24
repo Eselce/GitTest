@@ -5,6 +5,7 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Logging, Debugging, Error-Handling, usw.
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
 // ==/UserScript==
 
