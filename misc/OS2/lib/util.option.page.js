@@ -5,7 +5,11 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Script-Optionen auf der Seite
-// _require      https://eselce.github.io/OS2.scripts/lib/util.option.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.node.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.js
 // ==/UserScript==
 

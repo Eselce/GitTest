@@ -5,8 +5,13 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Node-Elementen in HTML auf der Seite
-// _require      https://eselce.github.io/OS2.scripts/lib/util.option.js
-// _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.label.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.action.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.node.js
 // ==/UserScript==
 

@@ -5,6 +5,10 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer localStorage und sessionStorage
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.js
 // ==/UserScript==
 
@@ -139,7 +143,7 @@ function getMemUsage(value = undefined, out = undefined, depth = -1, name = '$')
 // return Promise auf gesuchten Speicher oder Null-Speicher ('inaktiv')
 async function restoreMemoryByOpt(opt) {
     // Memory Storage fuer vorherige Speicherung...
-    const __STORAGE = await getOptValue(opt, __MEMNORMAL, true, true, true);
+    const __STORAGE = await loadOptValue(opt, __MEMNORMAL, true, true);
 
     return __OPTMEM[__STORAGE];
 }

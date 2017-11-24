@@ -5,6 +5,12 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit OS2-spezifische Funktionen und Utilities zu Teams
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.run.js
+// _require      https://eselce.github.io/OS2.scripts/lib/OS2.list.js
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.team.js
 // ==/UserScript==
 

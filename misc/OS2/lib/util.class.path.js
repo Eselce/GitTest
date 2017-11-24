@@ -5,6 +5,7 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Class-Objekten zu Pfad, Verzeichnis und Objektreferenz
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.delim.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.path.js
