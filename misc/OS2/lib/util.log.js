@@ -40,7 +40,7 @@ const __LOG = {
                                 }
               };
 
-// __LOG.init(window, __LOGLEVEL);
+__LOG.init(window, 3);  // Zunaechst mal Loglevel 3, erneutes __LOG.init(window, __LOGLEVEL) im Hauptprogramm...
 
 // ==================== Abschnitt fuer safeStringify() ====================
 
