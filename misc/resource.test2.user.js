@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name         require.test
+// @name         resource.test
 // @namespace    http://wiki.greasespot.net/
 // @version      0.10
 // @copyright    2017+
 // @author       Sven Loges (SLC)
-// @description  "@require not there" test script for Greasemonkey 4.x
+// @description  "@resource not there" test script for Greasemonkey 4.x
 // @include      /^https?://wiki\.greasespot\.net/Main_Page(\?\S+(&\S+)*)?(#\S+)?$/
 // @resource IMG https://www.example.com/not-there.png
 // ==/UserScript==
