@@ -302,7 +302,6 @@ const __OPTCONFIG = {
                                    1821, 1110, 1818, 1209,  545,  610,  836,  346,  779,   38,  376, 1197,  878, 1663, 1576,  137,  352, 1238, 1360, 1352,
                                     595,  373, 1820,  820,  763,  902, 1842, 1224,  307, 1787, 1186,  436, 1659, 1203,  172,  419,  859, 1275,  322, 1292,
                                    1843,   21, 1076,  455, 1825,  563, 1527, 1554, 1177,   16,  977, 1204, 1168, 1872,  693, 1086 ],
-                             */
                                 [ undefined, // ZAT 15
                                     778, 1568, 1912, 1935, 1574,  728,  881, 1175, 1802, 1476, 1810,   51,  133,  705,  559,  817, 1447,  980, 1652,  569,
                                     181,  798,  920,  602, 1420, 1797,  145,  954, 1066,  300, 1069,  660, 1430, 1030, 1755,   68,  404,  382, 1018,  510,
@@ -312,9 +311,8 @@ const __OPTCONFIG = {
                                    1493,  333, 1794,  107,  313, 1164,  483, 1528,  505, 1071, 1795,  182,  152,  629, 1395,  674,  963,  132,   86,  741,
                                     394, 1451,  734,   75,  275,   82,  188,  252,  160,  689,  242,  467, 1532, 1596,  667, 1910, 1190,  170, 1822, 1821,
                                    1110, 1818, 1209,  545,  610,  836,  346,  779,   38,  376, 1197,  878, 1663, 1576,  137,  352, 1238, 1360, 1352,  595,
-                                    373, 1820,  820,  763,  902, 1842,/*307*/1787, 1186,  436, 1659, 1203,  172,  419,  859, 1275,  322, 1292, 1843,   21,
+                                    373, 1820,  820,  763,  902, 1842,/#307#/1787, 1186,  436, 1659, 1203,  172,  419,  859, 1275,  322, 1292, 1843,   21,
                                    1076,  455, 1825,  563, 1527, 1554, 1177,   16,  977, 1204, 1168, 1872,  693, 1086,  441,  345,  129, 1838,  389 ],
-                             /*
                                 [ undefined, // ZAT 16
                                     778, 1568, 1912, 1935, 1802,  728,  881, 1175, 1574, 1476, 1810,   51, 1652,  705,  559,  817, 1447,  980,  133,  181,
                                     569, 1430,   68,  602, 1420, 1797,  145,  954, 1066,  930,  382,  660,  798,  510, 1755,  920,  495, 1069,  761, 1030,
@@ -325,8 +323,41 @@ const __OPTCONFIG = {
                                     394, 1451,  734,   75, 1528,   82,  188,  132,  160,  689,  242,  467, 1818, 1596,  667, 1910, 1190,  170, 1663, 1821,
                                    1110, 1532, 1209,  545,  610,  836,  346,  763,   38,  376, 1197, 1842, 1822, 1576,  137,  352,  419, 1360, 1352,  595,
                                     563, 1820,  820,  779, 1659,  878, 1275, 1186, 1204,  902, 1203,  172, 1238,  859, 1787,  322, 1292, 1843,   21, 1076,
-                                    455, 1825,  373, 1527, 1168, 1177,   16,  977,  436, 1554, 1872,  693, 1086,  441,  345,  129, 1838,  389,  987 ],
+                                    455, 1825,  373, 1527, 1168, 1177, /#16#/ 977,  436, 1554, 1872,  693, 1086,  441,  345,  129, 1838,  389,  987 ],
+                                [ undefined, // ZAT 17
+                                    778, 1912, 1568, 1935, 1802,  728,  881,  559, 1574, 1476,  705,   51, 1652, 1810, 1175,  817, 1447,  980,  133,  181,
+                                    569, 1430,   68, 1066, 1420, 1797,  145,  660,  602,  930,  382,  954,  798,  510, 1755,  920,  495, 1069,  761, 1030,
+                                   1018,  157,  121,   67,  300,   39,  161,  890,  477,  404, 1923,  314, 1461,  520,   13, 1771,  618,  148,  169,  327,
+                                   1323, 1226,  331, 1261, 1858,  190,  582, 1813, 1841,  273, 1789,  837,  564, 1222, 1572, 1152, 1237, 1662, 1096,  597,
+                                    340,/#715#/ 198,  736, 1526, 1848, 1758,  372,  224, 1377,  330,  616,   25,  766,  691,  471, 1647, 1212,  726, 1933,
+                                   1493,  333, 1794,  107, 1164,  313,  689,  275,   86, 1596, 1795,  182,  152,  629, 1395,  674,  963,  252,  505,  741,
+                                    394,  836,  734,   75, 1528, 1190,  188,  132,  160,  483,  242,  467, 1818, 1071,  667, 1910,   82, 1352, 1663, 1821,
+                                   1110, 1532, 1209,  545,  610, 1451,  346,  763,   38,  376, 1197, 1842, 1822, 1576,  137, 1527,  419, 1360,  170,  595,
+                                    563, 1820,  820,  779, 1659,  878, 1275, 1186, 1204,  902, 1203,  172, 1238,  859, 1787,  322, 1292, 1843, 1076,   21,
+                                    455,  977,  373,  352, 1168, 1177, 1825,  436, 1554, 1872,  693, 1086,  441,  345,  129, 1838,  389,  987, 1552 ],
+                                [ undefined, // ZAT 18
+                                    778, 1912, 1568, 1935, 1802,  728,  881, 1810,   51, 1476,  705, 1574, 1652,  559, 1175,  817, 1447,  980,  181,  133,
+                                   1430,  569,   68, 1066, 1420, 1797,  602,  660,  145,  930,  382,  954,  798,  510, 1755,  920,  495, 1923,  761, 1030,
+                                    157, 1018,  121,  161,  300, 1461,   67,  890,  477,  327, 1069,  314,   39,  520,   13, 1771,  618,  148,  169,  404,
+                                   1323, 1152,  331, 1261, 1858,  190,  582, 1813, 1841,  273, 1789,  837,  564, 1222, 1572, 1226, 1237, 1662, 1096,  597,
+                                   1848,  198,  736, 1526,  340, 1758,  726,  333, 1377,  330,  616,  313,  766,  691,  471, 1647, 1212,  372,  629, 1493,
+                                    224, 1794,  107, 1164,   25,  689,  275,   86, 1596, 1795,  182,  152, 1933, 1395,  483,  963,  252,  505,  741,  394,
+                                    836, 1818, 1663, 1528, 1190,  188,  132,  160,  674,  242,  467,  734, 1071,  667, 1910,   82, 1352,   75, 1821,  170,
+                                   1532, 1209,  545,  610, 1451,  346,  763,   38,  376, 1197, 1842, 1822,  352,  137, 1527,  419, 1360, 1110, 1204,  563,
+                                   1825,  820,  779, 1659,  878, 1275, 1186,  595,  902, 1203,  172, 1238,  859, 1787,  322, 1292, 1843, 1076,   21,  455,
+                                   977,/#373#//#1576#/1168,1177, 1820,  436, 1554, 1872,  693, 1086,  441,  345,  129, 1838,  389,  987, 1552 ],
                              */
+                                [ undefined, // ZAT 19
+                                    778, 1912, 1568, 1935,  728, 1802,  881, 1810,   51, 1476,  705, 1574, 1652,  559, 1175,  817, 1447,  980,  181,  133,
+                                   1430,  569,   68, 1066, 1420,  930,  602,  660,  145, 1797,  382,  954,  798,  510, 1755,  920,  761, 1923,  495, 1030,
+                                    157, 1018,  121,  161,  300, 1461,   67, 1771,  477,  327, 1069,  314,   39,  520,   13,  890,  618,  148,  169,  404,
+                                    273, 1152,  331, 1261, 1858,  190,  582, 1526, 1222, 1323, 1789,  837,  564, 1841, 1572, 1226, 1237, 1662, 1096,  597,
+                                   1848,  198,  736, 1813,  340, 1758,/*726*/ 333, 1377,  330,  616,  313,  689,  691,  963, 1493, 1212,  372,  629, 1647,
+                                    224, 1794,  107, 1164,   25,  766,  275,  160, 1596, 1528,  182,/*152*/1933,  394,  483,/*471*/ 252,  505, 1190, 1395,
+                                    188, 1818, 1663, 1795,  741,  836,  132,   86,  674,  242,  467,  734, 1821,  667, 1910,   82, 1352,   75, 1071,  170,
+                                   1527, 1209,  545,  610, 1451,  346,  763,   38,  376, 1197, 1842,  563,  352, 137,/*1532*/1076, 1360, 1110, 1204, 1822,
+                                   1825,  820,  779, 1659,  878, 1275, 1186,  595,  902, 1203,  172,  693,  859, 1787,  322, 1292, 1843,  419,   21,  455,
+                                    977, 1168, 1177, 1820,  436, 1554, 1872, 1238, 1086,  441,  345,  129, 1838,  389,  987, 1552,  654 ],
                    'Submit'    : undefined,
                    'Cols'      : 36,
                    'Rows'      : 20,
@@ -507,108 +538,6 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 
 // ==================== Abschnitt fuer sonstige Parameter ====================
 
-const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uuml;ro von TEAM</b><br>LIGA LAND<a href=..."
-        'Zeile'  : 0,
-        'Spalte' : 1,
-        'start'  : " von ",
-        'middle' : "</b><br>",
-        'liga'   : ". Liga",
-        'land'   : ' ',
-        'end'    : "<a href="
-    };
-
-const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LAND</a></b>"
-        'Zeile'  : 0,
-        'Spalte' : 0,
-        'start'  : "<b>",
-        'middle' : " - ",
-        'liga'   : ". Liga",
-        'land'   : 'target="_blank">',
-        'end'    : "</a></b>"
-    };
-
-// Ermittelt, wie das eigene Team heisst und aus welchem Land bzw. Liga es kommt (zur Unterscheidung von Erst- und Zweitteam)
-// cell: Tabellenzelle mit den Parametern zum Team "startTEAMmiddleLIGA...landLANDend", LIGA = "#liga[ (A|B|C|D)]"
-// teamSeach: Muster fuer die Suche, die Eintraege fuer 'start', 'middle', 'liga', 'land' und 'end' enthaelt
-// return Im Beispiel { 'Team' : "TEAM", 'Liga' : "LIGA", 'Land' : "LAND", 'LdNr' : LAND-NUMMER, 'LgNr' : LIGA-NUMMER },
-//        z.B. { 'Team' : "Choromonets Odessa", 'Liga' : "1. Liga", 'Land' : "Ukraine", 'LdNr' : 20, 'LgNr' : 1 }
-function getTeamParamsFromTable(table, teamSearch = undefined) {
-    const __TEAMSEARCH   = getValue(teamSearch, __TEAMSEARCHHAUPT);
-    const __TEAMCELLROW  = getValue(__TEAMSEARCH.Zeile, 0);
-    const __TEAMCELLCOL  = getValue(__TEAMSEARCH.Spalte, 0);
-    const __TEAMCELLSTR  = (table === undefined) ? "" : table.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
-    const __SEARCHSTART  = __TEAMSEARCH.start;
-    const __SEARCHMIDDLE = __TEAMSEARCH.middle;
-    const __SEARCHLIGA   = __TEAMSEARCH.liga;
-    const __SEARCHLAND   = __TEAMSEARCH.land;
-    const __SEARCHEND    = __TEAMSEARCH.end;
-    const __INDEXSTART   = __TEAMCELLSTR.indexOf(__SEARCHSTART);
-    const __INDEXEND     = __TEAMCELLSTR.indexOf(__SEARCHEND);
-
-    let teamParams = __TEAMCELLSTR.substring(__INDEXSTART + __SEARCHSTART.length, __INDEXEND);
-    const __INDEXLIGA = teamParams.indexOf(__SEARCHLIGA);
-    const __INDEXMIDDLE = teamParams.indexOf(__SEARCHMIDDLE);
-
-    let land = ((~ __INDEXLIGA) ? teamParams.substring(__INDEXLIGA + __SEARCHLIGA.length) : undefined);
-    const __TEAMNAME = ((~ __INDEXMIDDLE) ? teamParams.substring(0, __INDEXMIDDLE) : undefined);
-    let liga = (((~ __INDEXLIGA) && (~ __INDEXMIDDLE)) ? teamParams.substring(__INDEXMIDDLE + __SEARCHMIDDLE.length) : undefined);
-
-    if (land !== undefined) {
-        if (land.charAt(2) === ' ') {    // Land z.B. hinter "2. Liga A " statt "1. Liga "
-            land = land.substr(2);
-        }
-        if (liga !== undefined) {
-            liga = liga.substring(0, liga.length - land.length);
-        }
-        const __INDEXLAND = land.indexOf(__SEARCHLAND);
-        if (~ __INDEXLAND) {
-            land = land.substr(__INDEXLAND + __SEARCHLAND.length);
-        }
-    }
-
-    const __TEAM = new Team(__TEAMNAME, land, liga);
-
-    return __TEAM;
-}
-
-// Verarbeitet die URL der Seite und ermittelt die Nummer der gewuenschten Unterseite
-// url: Adresse der Seite
-// leafs: Liste von Filenamen mit der Default-Seitennummer (falls Query-Parameter nicht gefunden)
-// item: Query-Parameter, der die Nummer der Unterseite angibt
-// return Parameter aus der URL der Seite als Nummer
-function getPageIdFromURL(url, leafs, item = 'page') {
-    const __URI = new URI(url);
-    const __LEAF = __URI.getLeaf();
-
-    for (let leaf in leafs) {
-        if (__LEAF === leaf) {
-            const __DEFAULT = leafs[leaf];
-
-            return getValue(__URI.getQueryPar(item), __DEFAULT);
-        }
-    }
-
-    return -1;
-}
-
-// Gibt die laufende Nummer des ZATs im Text einer Zelle zurueck
-// cell: Tabellenzelle mit der ZAT-Nummer im Text
-// return ZAT-Nummer im Text
-function getZATNrFromCell(cell) {
-    const __TEXT = ((cell === undefined) ? [] : cell.textContent.split(' '));
-    let ZATNr = 0;
-
-    for (let i = 1; (ZATNr === 0) && (i < __TEXT.length); i++) {
-        if (__TEXT[i - 1] === "ZAT") {
-            if (__TEXT[i] !== "ist") {
-                ZATNr = parseInt(__TEXT[i], 10);
-            }
-        }
-    }
-
-    return ZATNr;
-}
-
 // Ermittelt die Platzierungen der Rangliste aus der HTML-Tabelle und speichert diese
 // table: Tabelle mit der Rangliste
 // optSet: Platz fuer die gesetzten Optionen
@@ -649,7 +578,7 @@ function calcRanksFromTable(table, optSet) {
 function calcChallengesFromHTML(page, optSet) {
     const __OLISTS = page.getElementsByTagName('ol');
 
-    if (__OLISTS && (__OLISTS.length == 3)) {
+    if (__OLISTS && (__OLISTS.length === 3)) {
         const __CHALLENGES = __OLISTS[0];
         const __CHALLBOXES = __CHALLENGES.getElementsByTagName('span');
         const __CHALLIDS = [];
@@ -782,7 +711,7 @@ function markTeam(table, optSet, teamName, gegnerName) {
 
             //if (__CHALLIDS.some(x => (x === __RANKID))) {
             for (let challId of __CHALLIDS) {
-                if (challId == __RANKID) {
+                if (challId == __RANKID) {  // schwacher Vergleich
                     formatRankBox(team, undefined, 'grey');
                 }
             }

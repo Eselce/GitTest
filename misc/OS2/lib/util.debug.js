@@ -38,9 +38,9 @@ function showAlert(label, message, data = undefined) {
 // return Liefert die showAlert()-Parameter zurueck
 function showException(label, ex) {
     if (ex && ex.message) {  // Exception
-        showAlert(label, ex.message, ex);
+        return showAlert(label, ex.message, ex);
     } else {  // sonstiger Fehler
-        showAlert(label, ex);
+        return showAlert(label, ex);
     }
 }
 
@@ -52,11 +52,7 @@ function defaultCatch(error) {
     try {
         const __LABEL = `[${error.lineNumber}] ${__DBMOD.Name}`;
 
-        if (error && error.message) {  // Exception
-            return showException(__LABEL, error.message, error);
-        } else {
-            return showException(__LABEL, error);
-        }
+        return showException(__LABEL, error);
     } catch (ex) {
         return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex.message, ex);
     }

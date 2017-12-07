@@ -22,13 +22,13 @@ const __OPTMEM = {
     'normal' : {
                    'Name'      : "Browser",
                    'Value'     : localStorage,
-                   'Display'   : "localStorage",
+                   'Display'   : 'localStorage',
                    'Prefix'    : 'run'
                },
     'begrenzt' : {
                    'Name'      : "Session",
                    'Value'     : sessionStorage,
-                   'Display'   : "sessionStorage",
+                   'Display'   : 'sessionStorage',
                    'Prefix'    : 'run'
                },
     'inaktiv' : {

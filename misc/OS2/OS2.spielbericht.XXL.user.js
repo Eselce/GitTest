@@ -4,7 +4,7 @@
 // @version      0.70beta1+WE
 // @copyright    2013+
 // @author       Andreas Eckes (Strindheim BK) / Michael Bertram / Sven Loges (SLC)
-// @description  OS 2.0 - Ergänzt Summen- und Durchschnittswerte bei den Spielerstatistiken im Spielbericht / Zaehlt Textbausteine / Quoten mit Nachkomma / Leere Zeilen nicht genullt / Fenstergroesse
+// @description  OS 2.0 - Ergaenzt Summen- und Durchschnittswerte bei den Spielerstatistiken im Spielbericht / Zaehlt Textbausteine / Quoten mit Nachkomma / Leere Zeilen nicht genullt / Fenstergroesse
 // @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/rep/saison/\d+/\d+/\d+-\d+.html$/
 // @grant        GM.getResourceUrl
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
@@ -122,7 +122,7 @@ function textbausteine(){
                     spielerakt[j][0+i] = spielernamen[i].textContent;
                 }
             }
-            if (spielerakt[j][0] == "Freistoss") {
+            if (spielerakt[j][0] === "Freistoss") {
                 spielerakt[j][0] = spielerakt[j][1];
                 spielerakt[j][1] = "a";
             }
@@ -130,7 +130,7 @@ function textbausteine(){
             //spielbericht.rows[j].cells[4].textContent = ergebnis;          //.........................................................Aktion neben Bericht einfuegen
             ereignis[j][0] = ergebnis;
 
-            if (ereignis[j][0] == "ZWK_ov") {
+            if (ereignis[j][0] === "ZWK_ov") {
                 //spielbericht.rows[j].cells[5].textContent = "0";          //.........................................................Erfolg neben Bericht einfuegen
                 ereignis[j][1] = 0;
             }
@@ -170,7 +170,7 @@ function textbausteine(){
             }
 
             for (k = 1; k < tabberstat.rows.length; k++) {  // Spieler
-                if (tabberstat.rows[k].cells[0].textContent == spielerakt[j][0]) {
+                if (tabberstat.rows[k].cells[0].textContent === spielerakt[j][0]) {
                     l = 0; //Heimteam
                     break;
                 }
@@ -199,7 +199,7 @@ function textbausteine(){
                         break;
                 }
             }
-            else if (ereignis[j][0] == 'SCH') { // Tor weil Erfolg = 1 (else)
+            else if (ereignis[j][0] === 'SCH') { // Tor weil Erfolg = 1 (else)
                 //__CELL.textContent = "TOR";  // Ereignis in Spielbericht eintragen
                 addIcon(__CELL, 'TOR', "<TOR>", 25, 25); // TOR
                 ////spielbericht.rows[j].cells[2+l].textContent = "TOR"; //Ereignis in Spielbericht eintragen
@@ -226,18 +226,18 @@ function berstatistik () {
         switch (ereignis[i][0]) {
             case "Pass":
                 for (j = 1; j < tabberstat.rows.length; j++) {  // Spieler
-                    if (tabberstat.rows[j].cells[0].textContent == spielerakt[i][0]) {
+                    if (tabberstat.rows[j].cells[0].textContent === spielerakt[i][0]) {
                         tabberstat.rows[j].cells[5].textContent ++;
                         tabberstat.rows[j].cells[6].textContent = tabberstat.rows[j].cells[6].textContent * 1 + ereignis[i][1];
                     }
-                    if (tabberstat.rows[j].cells[16].textContent == spielerakt[i][0]) {
+                    if (tabberstat.rows[j].cells[16].textContent === spielerakt[i][0]) {
                         tabberstat.rows[j].cells[13].textContent ++;
                         tabberstat.rows[j].cells[14].textContent = tabberstat.rows[j].cells[14].textContent * 1 + ereignis[i][1];
                     }
-                    if (tabberstat.rows[j].cells[0].textContent == spielerakt[i][1]) {
+                    if (tabberstat.rows[j].cells[0].textContent === spielerakt[i][1]) {
                         tabberstat.rows[j].cells[7].textContent ++;
                     }
-                    if (tabberstat.rows[j].cells[16].textContent == spielerakt[i][1]) {
+                    if (tabberstat.rows[j].cells[16].textContent === spielerakt[i][1]) {
                         tabberstat.rows[j].cells[15].textContent ++;
                     }
                 }
@@ -245,16 +245,16 @@ function berstatistik () {
 
             case "ZWK_ov":
                 for (j = 1; j < tabberstat.rows.length; j++) {  // Spieler
-                    if (tabberstat.rows[j].cells[0].textContent == spielerakt[i][0]) {
+                    if (tabberstat.rows[j].cells[0].textContent === spielerakt[i][0]) {
                         tabberstat.rows[j].cells[2].textContent ++;
                     }
-                    if (tabberstat.rows[j].cells[16].textContent == spielerakt[i][0]) {
+                    if (tabberstat.rows[j].cells[16].textContent === spielerakt[i][0]) {
                         tabberstat.rows[j].cells[10].textContent ++;
                     }
-                    if (tabberstat.rows[j].cells[0].textContent == spielerakt[i][1]) {
+                    if (tabberstat.rows[j].cells[0].textContent === spielerakt[i][1]) {
                         tabberstat.rows[j].cells[4].textContent ++;
                     }
-                    if (tabberstat.rows[j].cells[16].textContent == spielerakt[i][1]) {
+                    if (tabberstat.rows[j].cells[16].textContent === spielerakt[i][1]) {
                         tabberstat.rows[j].cells[12].textContent ++;
                     }
                 }
@@ -459,7 +459,7 @@ function inflateRow(row, length) {
 function getNonEmptyCellCount(table, col, offsets) {
     var returnValue = 0;
     for (var i = offsets[0]; i < table.rows.length - offsets[1]; i++) {
-        if (table.rows[i].cells[col].textContent != "") { returnValue += 1; }
+        if (table.rows[i].cells[col].textContent !== "") { returnValue += 1; }
     }
     return returnValue;
 }
@@ -505,12 +505,12 @@ function getColAvg(table, col, offsets) {
     var cellContent = "";
     for (var i = offsets[0]; i < table.rows.length - offsets[1]; i++) {
         cellContent = table.rows[i].cells[col].textContent;
-        if (cellContent != "") {
+        if (cellContent !== "") {
             returnValue += stringToNumber(cellContent);
             countValues += 1;
         }
     }
-    if (countValues != 0) { return returnValue / countValues; }
+    if (countValues !== 0) { return returnValue / countValues; }
     else { return ""; }
 }
 
@@ -537,7 +537,7 @@ function stringToNumber(string) {
     // Buchstaben und Whitespaces entfernen
     string = string.replace(/[\sa-zA-Z]/g, "");
     // Auf % pruefen und % entfernen
-    if (string.lastIndexOf("%") != -1) {
+    if (string.lastIndexOf("%") !== -1) {
         percent = true;
         string = string.replace(/%/g, "");
     }

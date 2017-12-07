@@ -243,4 +243,127 @@ function reverseMapping(obj, convFun) {
 
 // ==================== Ende Abschnitt fuer interne IDs auf den Seiten ====================
 
+// Schaut nach, ob der uebergebene Index zu einem trainierbaren Skill gehoert
+// Die Indizes gehen von 0 (SCH) bis 16 (EIN)
+function isTrainableSkill(idx) {
+    const __TRAINABLESKILLS = getIdxTrainableSkills();
+    const __IDX = parseInt(idx, 10);
+    let result = false;
+
+    for (let idxTrainable of __TRAINABLESKILLS) {
+        if (__IDX === idxTrainable) {
+            result = true;
+            break;
+        }
+    }
+
+    return result;
+}
+
+// Konvertiert einen Aufwertungstext fuer einen Skillnamen in den fuer einen Torwart
+// name: Allgemeiner Skillname (abgeleitet von den Feldspielern)
+// return Der konvertierte String (z.B. "FAN" statt "KOB") oder unveraendert
+function getGoalieSkill(name) {
+    const __GOALIESKILLS = {
+                               'SCH' : 'ABS',
+                               'BAK' : 'STS',
+                               'KOB' : 'FAN',
+                               'ZWK' : 'STB',
+                               'DEC' : 'SPL',
+                               'GES' : 'REF'
+                           };
+
+    return getValue(__GOALIESKILLS[name], name);
+}
+
+// Konvertiert die allgemeinen Skills in die eines Torwarts
+// value: Ein Text, der die Skillnamen enthaelt
+// return Der konvertierte String mit Aenderungen (z.B. "FAN" statt "KOB") oder unveraendert
+function convertGoalieSkill(value) {
+    if (value !== undefined) {
+        value = value.replace(/\w+/g, getGoalieSkill);
+    }
+
+    return value;
+}
+
+// Gibt alle Skill-Namen zurueck
+function getAllSkillNames(isGoalie = false) {
+    if (isGoalie) {
+        return [ 'ABS', 'STS', 'FAN', 'STB', 'SPL', 'REF', 'FUQ', 'ERF', 'AGG', 'PAS', 'AUS', 'UEB', 'WID', 'SEL', 'DIS', 'ZUV', 'EIN' ];
+    } else {
+        return [ 'SCH', 'BAK', 'KOB', 'ZWK', 'DEC', 'GES', 'FUQ', 'ERF', 'AGG', 'PAS', 'AUS', 'UEB', 'WID', 'SEL', 'DIS', 'ZUV', 'EIN' ];
+    }
+}
+
+// Gibt den Skill-Namen zu einem Index zurueck
+function getSkillName(idx, isGoalie = false) {
+    const __ALLNAMES = getAllSkillNames(isGoalie);
+
+    return __ALLNAMES[idx];
+}
+
+// Gibt den Skill-Namen zu einem Index-Array zurueck
+function getSkillNameArray(idxArr, isGoalie = false) {
+    return (idxArr ? idxArr.map(function(item) {
+                                    return getSkillName(item, isGoalie);
+                                }) : idxArr);
+}
+
+// Gibt die Indizes aller Skills zurueck
+function getIdxAllSkills() {
+    return [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ];
+}
+
+// Gibt die Indizes der trainierbaren Skills zurueck
+function getIdxTrainableSkills() {
+    return [ 0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 15 ];
+}
+
+// Gibt die Indizes der Fixskills zurueck
+function getIdxFixSkills() {
+    return [ 6, 7, 12, 13, 14, 16 ];
+}
+
+// Gibt die Indizes der Primaerskills zurueck
+function getIdxPriSkills(pos) {
+    switch (pos) {
+        case 'TOR' : return [ 2, 3, 4, 5 ];
+        case 'ABW' : return [ 2, 3, 4, 15 ];
+        case 'DMI' : return [ 1, 4, 9, 11 ];
+        case 'MIT' : return [ 1, 3, 9, 11 ];
+        case 'OMI' : return [ 1, 5, 9, 11 ];
+        case 'STU' : return [ 0, 2, 3, 5 ];
+        default :    return [];
+    }
+}
+
+// Gibt die Indizes der (trainierbaren) Sekundaerskills zurueck
+function getIdxSecSkills(pos) {
+    switch (pos) {
+        case 'TOR' : return [ 0, 1, 8, 9, 10, 11, 15 ];
+        case 'ABW' : return [ 0, 1, 5, 8, 9, 10, 11 ];
+        case 'DMI' : return [ 0, 2, 3, 5, 8, 10, 15 ];
+        case 'MIT' : return [ 0, 2, 4, 5, 8, 10, 15 ];
+        case 'OMI' : return [ 0, 2, 3, 4, 8, 10, 15 ];
+        case 'STU' : return [ 1, 4, 8, 9, 10, 11, 15 ];
+        default :    return [];
+    }
+}
+
+// Gibt die zur Position gehoerige Farbe zurueck
+function getColor(pos) {
+    switch (pos) {
+        case 'TOR' : return "#FFFF00";
+        case 'ABW' : return "#00FF00";
+        case 'DMI' : return "#3366FF";
+        case 'MIT' : return "#66FFFF";
+        case 'OMI' : return "#FF66FF";
+        case 'STU' : return "#FF0000";
+        case 'LEI' : return "#FFFFFF";
+        case "" :    return "#111166";  // osBlau
+        default :    return "";
+    }
+}
+
 // *** EOF ***
