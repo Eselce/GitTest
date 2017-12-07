@@ -120,7 +120,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
             addProps(myTeam, __TEAM, myTeam.__TEAMITEMS);
             __LOG[2]("Gespeichert: " + safeStringify(myTeam));
         } else {
-            __LOG[6]("Team nicht ermittelt: " + safeStringify(__TEAM));
+            __LOG[4]("Team nicht ermittelt: " + safeStringify(__TEAM));
         }
     }
 

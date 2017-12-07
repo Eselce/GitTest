@@ -13,6 +13,11 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
+// ==================== Polyfill fuer showAlert() ====================
+
+if ((typedef showAlert) === 'undefined') {
+    this.showAlert = console.error;
+}
 // ==================== Abschnitt fuer Klasse Class ====================
 
 function Class(className, baseClass, initFun) {

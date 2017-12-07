@@ -108,6 +108,55 @@ function getNumberString(numberString) {
     }
 }
 
+// Liefert den ganzzeiligen Anteil einer Zahl zurueck, indem alles hinter einem Punkt abgeschnitten wird
+// value: Eine uebergebene Dezimalzahl
+// return Der ganzzeilige Anteil dieser Zahl
+function floorValue(value, dot = '.') {
+    if ((value === 0) || (value && isFinite(value))) {
+        const __VALUE = value.toString();
+        const __INDEXDOT = (__VALUE ? __VALUE.indexOf(dot) : -1);
+
+        return Number((~ __INDEXDOT) ? __VALUE.substring(0, __INDEXDOT) : __VALUE);
+    } else {
+        return value;
+    }
+}
+
+// Liefert einen rechtsbuendigen Text zurueck, der links aufgefuellt wird
+// value: Ein uebergebener Wert
+// size: Zielbreite (clipping fuer < 0: Abschneiden, falls zu lang)
+// char: Zeichen zum Auffuellen
+// return Ein String, der mindestens |size| lang ist (oder genau, falls size < 0, also clipping)
+function padLeft(value, size = 4, char = ' ') {
+    const __SIZE = Math.abs(size);
+    const __CLIP = (size < 0);
+    const __VALUE = (value ? value.toString() : "");
+    let i = __VALUE.length;
+    let str = "";
+
+    while (i < __SIZE) {
+        str += char;
+        i += char.length;
+    }
+    str = ((i > __SIZE) ? str.slice(0, __SIZE - __VALUE.length - 1) : str) + __VALUE;
+
+    return (__CLIP ? str.slice(size) : str);
+}
+
+// Liefert eine rechtsbuendigen Zahl zurueck, der links (mit Nullen) aufgefuellt wird
+// value: Eine uebergebene Zahl
+// size: Zielbreite (Default: 2)
+// char: Zeichen zum Auffuellen (Default: '0')
+// forceClip: Abschneiden erzwingen, falls zu lang?
+// return Eine Zahl als String, der mindestens 'size' lang ist (oder genau, falls size < 0, also clipping)
+function padNumber(value, size = 2, char = '0') {
+    if ((value === 0) || (value && isFinite(value))) {
+        return padLeft(value, size, char);
+    } else {
+        return value;
+    }
+}
+
 // Dreht den uebergebenen String um
 // string: Eine Zeichenkette
 // return Dieselbe Zeichenkette rueckwaerts
@@ -119,6 +168,13 @@ function reverseString(string) {
     }
 
     return result;
+}
+
+// Identitaetsfunktion. Konvertiert nichts, sondern liefert einfach den Wert zurueck
+// value: Der uebergebene Wert
+// return Derselbe Wert
+function sameValue(value) {
+    return value;
 }
 
 // Hilfsfunktion fuer Array.sort(): Vergleich zweier Zahlen
@@ -133,7 +189,9 @@ function compareNumber(valueA, valueB) {
 // data: Objekt oder Wert
 // return Bei Objekten valueOf() oder das Objekt selber, bei Werten der Wert
 function valueOf(data) {
-    return (((typeof data) === 'object') ? data.valueOf() : data);
+    const __USEMEMBER = (data && ((typeof data.valueOf) === 'function'));
+
+    return (__USEMEMBER ? data.valueOf() : data);
 }
 
 // ==================== Ende Abschnitt fuer diverse Utilities fuer Werte ====================
