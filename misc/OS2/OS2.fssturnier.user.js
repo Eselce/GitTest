@@ -2340,6 +2340,9 @@ function procOSFSSTurnier() {
                 markTeam(__TABLE, __OPTSET, __MYTEAM.Team, __GEGNERNAME);
             });
     }
+
+    // Promise fuer alle Faelle ohne Rueckgabewert...
+    return Promise.resolve();
 }
 
 (() => {
