@@ -6,7 +6,7 @@
 // @author       Sven Loges (SLC)
 // @description  Script zum offizellen FSS-Turnier fuer Online Soccer 2.0
 // @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\S+)*)?(#\S+)?$/
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/fssturnier\.php(\?fordern=\d+(&\S+)*)?(#\S+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/fssturnier\.php(\?(fordern|cancelforderung)=\d+(&\S+)*)?(#\S+)?$/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue
