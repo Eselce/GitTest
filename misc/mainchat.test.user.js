@@ -4610,7 +4610,7 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 //==================== Abschnitt fuer Chat-Operationen ====================
 
 // Ersetzt URLs im Chat durch Links zu diesen Adressen.
-// Es wird https:, http: und www. erkannt.
+// Es wird 'https:', 'http:', 'www.' und 'youtu.be/' erkannt.
 // rows: Array von HTML-Zeilen
 function patchLinks(rows) {
     for (let row of rows) {
@@ -4627,12 +4627,12 @@ function patchLinks(rows) {
             let pos1;
 
             while (pos2 < text.length) {
-                pos1 = (text.indexOf('https:', pos2) + 1) || (text.indexOf('http:', pos2) + 1) || (text.indexOf('www.', pos2) + 1);
+                pos1 = (text.indexOf('https:', pos2) + 1) || (text.indexOf('http:', pos2) + 1) || (text.indexOf('www.', pos2) + 1) || (text.indexOf('youtu.be/', pos2) + 1);
                 if (pos1) {
                     pos2 = (text.indexOf(' ', pos1) + 1) || (text.length + 1);
 
                     const __TARGET = text.substring(pos1 - 1, pos2 - 1);
-                    const __URL = (__TARGET.startsWith('www.') ? 'https://' : "") + __TARGET;
+                    const __URL = (__TARGET.startsWith('http') ? "" : 'https://') + __TARGET;
                     const __SUBST = '<A HREF="' + __URL + '" TARGET="_new">' + __TARGET + '</A>';
 
                     __LOG[0](pos1, pos2, text.substr(pos1 - 2, 1), pos1 + __SUBST.length, __TARGET, __SUBST);
