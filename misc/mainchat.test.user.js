@@ -4609,6 +4609,9 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 
 //==================== Abschnitt fuer Chat-Operationen ====================
 
+// Ersetzt URLs im Chat durch Links zu diesen Adressen.
+// Es wird https:, http: und www. erkannt.
+// rows: Array von HTML-Zeilen
 function patchLinks(rows) {
     for (let row of rows) {
         const __LINE = getValue(row.innerHTML, "");
@@ -4657,11 +4660,14 @@ function patchLinks(rows) {
 
 // Verarbeitet Ansicht "mainchat.net"
 function procChat() {
-    if (parent && parent.chat && (parent.chat.document === undefined)) {
+    const __WPARENT = parent.wrappedJSObject;
+    const __WCHAT = __WPARENT && __WPARENT.chat;
+  
+    if (__WCHAT && (__WCHAT.document === undefined)) {
         __LOG[2]("Diese Seite ist ohne Chat nicht verf\u00FCgbar!");
     } else {
         return buildOptions(__OPTCONFIG, __OPTSET, {
-                                'menuAnchor' : getTable(1, 'table', parent.userliste.document),
+                                'menuAnchor' : getTable(1, 'table'),
                                 'hideForm'   : {
                                                    'sepStyle'      : true,
                                                    'sepColor'      : true,
@@ -4669,7 +4675,7 @@ function procChat() {
                                                },
                                 'formWidth'  : 1
                             }).then(function(optSet) {
-                const __DOC = parent.chat.document;
+                const __DOC = __WCHAT.document;
                 const __BODY = getTable(0, 'body', __DOC);
                 const __CHAT = __DOC.getElementsByTagName('font');
 
