@@ -4610,7 +4610,7 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 //==================== Abschnitt fuer Chat-Operationen ====================
 
 // Ersetzt URLs im Chat durch Links zu diesen Adressen.
-// Es wird 'https:', 'http:', 'www.' und 'youtu.be/' erkannt.
+// Es wird 'https:', 'http:', 'www.', 'youtu.be/', 'os.ongapo.com/' und 'online-soccer.eu/' erkannt.
 // rows: Array von HTML-Zeilen
 function patchLinks(rows) {
     for (let row of rows) {
@@ -4627,7 +4627,7 @@ function patchLinks(rows) {
             let pos1;
 
             while (pos2 < text.length) {
-                pos1 = (text.indexOf('https:', pos2) + 1) || (text.indexOf('http:', pos2) + 1) || (text.indexOf('www.', pos2) + 1) || (text.indexOf('youtu.be/', pos2) + 1);
+                pos1 = (text.indexOf('https:', pos2) + 1) || (text.indexOf('http:', pos2) + 1) || (text.indexOf('www.', pos2) + 1) || (text.indexOf('youtu.be/', pos2) + 1) || (text.indexOf('os.ongapo.com/', pos2) + 1) || (text.indexOf('online-soccer.eu/', pos2) + 1);
                 if (pos1) {
                     pos2 = (text.indexOf(' ', pos1) + 1) || (text.length + 1);
 
