@@ -78,6 +78,8 @@
 //     getFormAction(), getOptionElement(), initOptAction(): default : break; entfernt
 // util.mem: getMemUsage(): __SIZE war doppelt
 // util.option.api, util.option.menu: invalidateOpts(), loadOptions(), deleteOptions(), renameOptions(), buildMenu(): Umstellung auf map() bzw, reduce()
+// util.option.page: buildForm(): async
+// util.option.run: showOptions(): Form OK
 // util.class: Leerzeile vor // ==================== Abschnitt fuer Klasse Class ====================
 // BUGGY?
 // Überprüfen: const __BASEINIT = __BASEOBJ.init; / this.init = initFun; -> ggfs. __init! / was ist mit this.name?
@@ -3618,7 +3620,7 @@ function addForm(anchor, form = "", script = "") {
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // 'formWidth': Anzahl der Elemente pro Zeile
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
-function buildForm(anchor, optSet, optParams = { }) {
+async function buildForm(anchor, optSet, optParams = { }) {
     __LOG[3]("buildForm()");
 
     const __FORM = getForm(optSet, optParams);
@@ -3878,15 +3880,19 @@ async function startOptions(optConfig, optSet = undefined, classification = unde
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
 // return Liefert die gesetzten Optionen zurueck
 function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
+    let promise = Promise.resolve();
+
     // Anzeige im Benutzermenue...
     if (! optParams.hideMenu) {
-        buildMenu(optSet).then(() => __LOG[3]("Menu OK"));
+        promise = promise.then(() => buildMenu(optSet)).then(() => __LOG[3]("Menu OK"));
     }
 
     // Anzeige auf der Seite...
     if ((optParams.menuAnchor !== undefined) && (myOptMem !== __OPTMEMINAKTIVE)) {
-        buildForm(optParams.menuAnchor, optSet, optParams);
+        promise = promise.then(() => buildForm(optParams.menuAnchor, optSet, optParams)).then(() => __LOG[3]("Form OK"));
     }
+
+    promise.then(() => __LOG[3]("Options OK"), defaultCatch);
 
     return optSet;
 }
@@ -4627,25 +4633,27 @@ function patchLinks(rows) {
             let pos1;
 
             while (pos2 < text.length) {
-                pos1 = (text.indexOf('https:', pos2) + 1) || (text.indexOf('http:', pos2) + 1) || (text.indexOf('www.', pos2) + 1) || (text.indexOf('youtu.be/', pos2) + 1) || (text.indexOf('os.ongapo.com/', pos2) + 1) || (text.indexOf('online-soccer.eu/', pos2) + 1);
+                const __TEXT = text.substring(pos2).toLowerCase();
+                pos1 = (__TEXT.indexOf('https:') + 1) || (__TEXT.indexOf('http:') + 1) || (__TEXT.indexOf('www.') + 1) || (__TEXT.indexOf('youtu.be/') + 1) || (__TEXT.indexOf('os.ongapo.com') + 1) || (__TEXT.indexOf('online-soccer.eu') + 1);
                 if (pos1) {
-                    pos2 = (text.indexOf(' ', pos1) + 1) || (text.length + 1);
+                    pos1 += pos2 - 1;
+                    pos2 = ((text.indexOf(' ', pos1) + 1) || (text.length + 1)) - 1;
 
-                    const __TARGET = text.substring(pos1 - 1, pos2 - 1);
-                    const __URL = (__TARGET.startsWith('http') ? "" : 'https://') + __TARGET;
+                    const __TARGET = text.substring(pos1, pos2);
+                    const __URL = (__TARGET.toLowerCase().startsWith('http') ? "" : 'https://') + __TARGET;
                     const __SUBST = '<A HREF="' + __URL + '" TARGET="_new">' + __TARGET + '</A>';
 
-                    __LOG[0](pos1, pos2, text.substr(pos1 - 2, 1), pos1 + __SUBST.length, __TARGET, __SUBST);
+                    __LOG[0](pos1, pos2, text.substr(pos1 - 1, 1), pos1 + __SUBST.length, __TARGET, __SUBST);
 
-                    if ((pos1 < 2) || ((text.substr(pos1 - 2, 1) !== '"') && (text.substr(pos1 - 2, 1) !== '>'))) {
-                        text = text.substring(0, pos1 - 1) + __SUBST + text.substring(pos2 - 1);
+                    if ((pos1 < 1) || ((text.substr(pos1 - 1, 1) !== '"') && (text.substr(pos1 - 1, 1) !== '>'))) {
+                        text = text.substring(0, pos1) + __SUBST + text.substring(pos2);
 
                         pos2 = pos1 + __SUBST.length;
                     }
 
                     __LOG[1](text);
                 } else {
-                    pos2 = text.length;
+                    break;
                 }
             }
 
