@@ -4641,7 +4641,7 @@ function patchLinks(rows) {
 
                     const __TARGET = text.substring(pos1, pos2);
                     const __URL = (__TARGET.toLowerCase().startsWith('http') ? "" : 'https://') + __TARGET;
-                    const __SUBST = '<A HREF="' + __URL + '" TARGET="_new">' + __TARGET + '</A>';
+                    const __SUBST = '<A HREF="' + __URL + '" TARGET="_new"><SPAN style="color: yellow;">' + __TARGET + '</SPAN></A>';
 
                     __LOG[0](pos1, pos2, text.substr(pos1 - 1, 1), pos1 + __SUBST.length, __TARGET, __SUBST);
 
@@ -4670,7 +4670,7 @@ function patchLinks(rows) {
 function procChat() {
     const __WPARENT = parent.wrappedJSObject;
     const __WCHAT = __WPARENT && __WPARENT.chat;
-  
+
     if (__WCHAT && (__WCHAT.document === undefined)) {
         __LOG[2]("Diese Seite ist ohne Chat nicht verf\u00FCgbar!");
     } else {
@@ -4691,6 +4691,7 @@ function procChat() {
                 const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
 
                 __BODY.style.border = __BORDERSTRING;
+                //__BODY.style.backgroundColor = "darkgrey";
 
                 patchLinks(__CHAT);
             });
