@@ -111,9 +111,9 @@ function replaceArraySimple(key, value) {
 // return Fuer Arrays eine kompakte Darstellung, sonst derselbe Wert
 function replaceArray(key, value) {
     if (Array.isArray(value)) {
-        __RET = value.map(function(element) {
-                              return safeStringify(element, replaceArray, 0);
-                          });
+        const __RET = value.map(function(element) {
+                                    return safeStringify(element, replaceArray, 0);
+                                });
 
         return __RET;
     }
