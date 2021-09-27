@@ -147,7 +147,7 @@ const __OPTCONFIG = {
                    'Submit'    : undefined,
                    'Cols'      : 36,
                    'Rows'      : 20,
-                   'Replace'   : null,
+                   'Replace'   : replaceArrayFun(padStartFun(4)),
                    'Space'     : 0,
                    'Label'     : "Platz-IDs:"
                },
@@ -3207,7 +3207,7 @@ const __OPTCONFIG = {
                    'Submit'    : undefined,
                    'Cols'      : 36,
                    'Rows'      : 20,
-                   'Replace'   : null,
+                   'Replace'   : replaceArrayFun(padStartFun(4)),
                    'Space'     : 0,
                    'Label'     : "Alte Platz-IDs:"
                },
@@ -3381,6 +3381,28 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 }
 
 // ==================== Ende Abschnitt fuer Optionen ====================
+
+function padStartFun(targetLength = 4, padString = ' ') {
+    return (value => String(value).padStart(targetLength, padString));
+}
+
+function padEndFun(targetLength = 4, padString = ' ') {
+    return (value => String(value).padEnd(targetLength, padString));
+}
+
+function replaceArrayFun(formatFun, space = ' ') {
+    return function(key, value) {
+               const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
+
+               if (Array.isArray(__VALUE)) {
+                   const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
+
+                   return '[' + space + __RET.join(',' + space) + space + ']';
+               }
+
+               return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
+           };
+}
 
 // ==================== Abschnitt fuer sonstige Parameter ====================
 
