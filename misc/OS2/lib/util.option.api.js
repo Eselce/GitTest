@@ -70,9 +70,9 @@ function loadOption(opt, force = false) {
         if (opt.Loaded && ! __ISSHARED) {
             const __ERROR = "Error: Oprion '" + __NAME + "' bereits geladen!";
 
-            __LOG[0](__MESSAGE);
+            __LOG[0](__ERROR);
 
-            return Promise.reject(__MESSAGE);
+            return Promise.reject(__ERROR);
         }
 
         if (opt.ReadOnly || __ISSHARED) {

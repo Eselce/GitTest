@@ -99,8 +99,6 @@ function getSharedConfig(optConfig, item = undefined) {
 // preInit: Vorinitialisierung einzelner Optionen mit 'PreInit'-Attribut
 // return Gefuelltes Objekt mit den gesetzten Optionen
 function initOptions(optConfig, optSet = undefined, preInit = undefined) {
-    let value;
-
     if (optSet === undefined) {
         optSet = { };
     }
