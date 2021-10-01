@@ -24,7 +24,8 @@ function instanceOf(obj, base) {
             return true;
         }
         if ((typeof obj) === 'xml') {  // Sonderfall mit Selbstbezug
-            return (base.prototype === XML.prototype);
+            //return (base.prototype === XML.prototype);
+            return (base.prototype === XMLDocument.prototype);  // Notloesung!
         }
         obj = Object.getPrototypeOf(obj);
     }
