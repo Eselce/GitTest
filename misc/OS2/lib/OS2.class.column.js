@@ -37,7 +37,17 @@ function ColumnManager(optSet, colIdx, showCol) {
 
     this.colIdx = colIdx;
 
+    this.saison = getOptValue(optSet.saison);
+    this.gt = getOptValue(optSet.zeigeJahrgang);
+    this.gtUxx = getOptValue(optSet.zeigeUxx);
+
     this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
+    this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && getOptValue(optSet.zeigeWarnung));
+    this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && getOptValue(optSet.zeigeWarnungMonat));
+    this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && getOptValue(optSet.zeigeWarnungHome));
+    this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && getOptValue(optSet.zeigeWarnungDialog));
+    this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && getOptValue(optSet.zeigeWarnungAufstieg));
+    this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && getOptValue(optSet.zeigeWarnungLegende));
     this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && getOptValue(optSet.zeigeBalken));
     this.barAbs = getOptValue(optSet.absBalken);
     this.donor = getOptValue(optSet.foerderung);
@@ -219,9 +229,12 @@ Class.define(ColumnManager, Object, {
                                }
                            },  // Ende addTitles()
         'addValues'      : function(player, playerRow, color = "#FFFFFF") {
+                               // Warnlevel des Spielers anpassen...
+                               const __WARNDRAW = player.warnDraw || player.warnDrawAufstieg || __NOWARNDRAW;
+                               __WARNDRAW.setWarn(this.warn, this.warnMonth, this.warnAufstieg);
+
                                const __IDXPRI = getIdxPriSkills(player.getPos());
-                               const __COLALERT = getColor('STU');  // rot
-                               const __COLOR = ((player.zatLeft < 1) ? __COLALERT : player.isGoalie ? getColor('TOR') : color);
+                               const __COLOR = __WARNDRAW.getColor(player.isGoalie ? getColor('TOR') : color); // Angepasst an Ziehwarnung
                                const __POS1COLOR = getColor((player.getPosPercent() > 99.99) ? 'LEI' : player.getPos());
                                const __OSBLAU = getColor("");
 
@@ -261,8 +274,8 @@ Class.define(ColumnManager, Object, {
                                } else if (this.alter) {
                                    this.addAndFillCell(playerRow, player.getAge(), __COLOR, null, 2);
                                }
-                               if (player.zatLeft < 6) {  // Abrechnungszeitraum vor dem letztmoeglichen Ziehen...
-                                   formatCell(playerRow.cells[this.colIdx.Age], true, __COLALERT, null);
+                               if (__WARNDRAW.monthDraw()) {  // Abrechnungszeitraum vor dem letztmoeglichen Ziehen...
+                                   formatCell(playerRow.cells[this.colIdx.Age], true, __WARNDRAW.colAlert, null, 1.0);
                                }
                                if (this.fix) {
                                    this.addAndFillCell(playerRow, player.getFixSkills(), __COLOR, null, 0);
@@ -312,21 +325,23 @@ Class.define(ColumnManager, Object, {
                                    }
                                }
 
-                               // Werte mit Ende 18
-                               if (this.substSkills) {
-                                   convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skillsEnd, function(value, cell, unused, index) {
-                                                                                                                 if (~ __IDXPRI.indexOf(index)) {
-                                                                                                                     formatCell(cell, true, __OSBLAU, __POS1COLOR);
-                                                                                                                 }
-                                                                                                                 return value;
-                                                                                                             });
-                               } else if (this.colIdx.Einz) {
-                                   convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skills.length, function(value, cell, unused, index) {
+                               // Einzelwerte mit Ende 18
+                               if (this.colIdx.Einz) {
+                                   if (this.substSkills) {
+                                       convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skillsEnd, function(value, cell, unused, index) {
                                                                                                                      if (~ __IDXPRI.indexOf(index)) {
-                                                                                                                         formatCell(cell, true);
+                                                                                                                         formatCell(cell, true, __OSBLAU, __POS1COLOR, 1.0);
                                                                                                                      }
                                                                                                                      return value;
                                                                                                                  });
+                                   } else {
+                                       convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skills.length, function(value, cell, unused, index) {
+                                                                                                                         if (~ __IDXPRI.indexOf(index)) {
+                                                                                                                             formatCell(cell, true, __POS1COLOR, null, 1.0);
+                                                                                                                         }
+                                                                                                                         return value;
+                                                                                                                     });
+                                   }
                                }
                                if (this.trE) {
                                    this.addAndFillCell(playerRow, player.getTrainableSkills(player.__TIME.end), __COLOR, null, 1);
@@ -369,7 +384,18 @@ Class.define(ColumnManager, Object, {
                                        }
                                    }
                                }
-                           }  // Ende addValues(player, playerRow)
+                           },  // Ende addValues(player, playerRow)
+        'setGroupTitle'  : function(tableRow) {
+                               if (this.gtUxx) {
+                                   const __CELL = tableRow.cells[0];
+                                   const __SAI = __CELL.innerHTML.match(/Saison (\d+)/)[1];
+                                   const __JG = 13 + this.saison - __SAI;
+
+                                   __CELL.innerHTML = __CELL.innerHTML.replace('Jahrgang', 'U' + __JG + ' - $&');
+                               }
+
+                               tableRow.style.display = (this.gt ? '' : 'none');
+                           }  // Ende setGroupTitle(tableRow)
     });
 
 // ==================== Ende Abschnitt fuer Klasse ColumnManager ====================
