@@ -177,6 +177,13 @@ function sameValue(value) {
     return value;
 }
 
+// Existenzfunktion. Liefert zurueck, ob ein Wert belegt ist
+// value: Der uebergebene Wert
+// return Angabe ob Wert belegt ist
+function existValue(value) {
+    return !! value;
+}
+
 // Hilfsfunktion fuer Array.sort(): Vergleich zweier Zahlen
 // valueA: Erster Zahlenwert
 // valueB: Zweiter Zahlenwert
