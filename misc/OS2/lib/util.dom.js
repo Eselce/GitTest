@@ -202,8 +202,9 @@ function appendHTML(row, content, color) {
 // bold: Inhalt fett darstellen (true = ja, false = nein)
 // color: Falls angegeben, die Schriftfarbe
 // bgColor: Falls angegeben, die Hintergrundfarbe
+// opacity: Falls angegeben, die Opazitaet
 // return Die formatierte Zelle
-function formatCell(cell, bold = true, color = undefined, bgColor = undefined) {
+function formatCell(cell, bold = true, color = undefined, bgColor = undefined, opacity = undefined) {
     if (cell) {
         if (bold) {
             cell.style.fontWeight = 'bold';
@@ -213,6 +214,9 @@ function formatCell(cell, bold = true, color = undefined, bgColor = undefined) {
         }
         if (bgColor) {
             cell.style.backgroundColor = bgColor;
+        }
+        if (opacity) {
+            cell.style.opacity = opacity;
         }
     }
 
@@ -371,6 +375,16 @@ function getStringFromHTML(cells, colIdxStr) {
     return getValue(__TEXT.toString(), "");
 }
 
+// Liest ein erstes Element aus der Spalte einer Zeile der Tabelle aus
+// cells: Die Zellen einer Zeile
+// colIdxStr: Spaltenindex der gesuchten Werte
+// return Spalteneintrag als Element (null fuer "nicht gefunden")
+function getElementFromHTML(cells, colIdxStr) {
+    const __CELL = getValue(cells[colIdxStr], { });
+
+    return __CELL.firstElementChild;
+}
+
 // Liest einen String aus der Spalte einer Zeile der Tabelle aus, nachdem dieser konvertiert wurde
 // cells: Die Zellen einer Zeile
 // colIdxStr: Spaltenindex der gesuchten Werte
@@ -394,7 +408,7 @@ function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
 // convertFun: Funktion, die die Werte konvertiert
 // return Array mit Spalteneintraegen als String ("" fuer "nicht gefunden")
 function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sameValue) {
-    const __ARR = ((typeof arrOrSize === 'number') ? { } : arrOrLength);
+    const __ARR = ((typeof arrOrLength === 'number') ? { } : arrOrLength);
     const __LENGTH = getValue(__ARR.length, arrOrLength);
     const __RET = [];
 
