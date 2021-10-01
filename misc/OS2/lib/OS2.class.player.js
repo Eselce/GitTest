@@ -91,7 +91,7 @@ Class.define(PlayerRecord, Object, {
                                       result += "Optis und Marktwerte";
 
                                       for (let pos of this.positions) {
-                                          result += "\n\t" + this.getPos()[i] + '\t';
+                                          result += "\n\t" + this.getPos() + '\t';
                                           result += this.getOpti(pos, this.__TIME.end).toFixed(2) + '\t';
                                           result += getNumberString(this.getMarketValue(pos, this.__TIME.end).toString());
                                       }
