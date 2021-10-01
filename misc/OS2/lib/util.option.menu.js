@@ -36,9 +36,9 @@ function registerMenuOption(val, menuOn, funOn, keyOn, menuOff, funOff, keyOff) 
     __LOG[3]("OPTION " + __ON + menuOn + __ON + " / " + __OFF + menuOff + __OFF);
 
     if (val) {
-        return GM.registerMenuCommand(menuOff, funOff, keyOff).then(result => menuOn);
+        return Promise.resolve(GM.registerMenuCommand(menuOff, funOff, keyOff)).then(result => menuOn);
     } else {
-        return GM.registerMenuCommand(menuOn, funOn, keyOn).then(result => menuOff);
+        return Promise.resolve(GM.registerMenuCommand(menuOn, funOn, keyOn)).then(result => menuOff);
     }
 }
 
@@ -62,7 +62,7 @@ function registerNextMenuOption(val, arr, menu, fun, key) {
     }
     __LOG[3](options);
 
-    return GM.registerMenuCommand(__MENU, fun, key).then(result => __MENU);
+    return Promise.resolve(GM.registerMenuCommand(__MENU, fun, key)).then(result => __MENU);
 }
 
 // Zeigt den Eintrag im Menu einer Option, falls nicht hidden
@@ -84,7 +84,7 @@ function registerDataOption(val, menu, fun, key, hidden = false, serial = true) 
     if (hidden) {
         return Promise.resolve(__VALUE);
     } else {
-        return GM.registerMenuCommand(__MENU, fun, key).then(result => __MENU);
+        return Promise.resolve(GM.registerMenuCommand(__MENU, fun, key)).then(result => __MENU);
     }
 }
 
