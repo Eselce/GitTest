@@ -54,6 +54,10 @@ function PlayerRecord(land, age, isGoalie, saison, currZAT, donation) {
     // this.trainiert: Anzahl der erfolgreichen Trainingspunkte
     // indirekt this.zatAge und this.bestPos
 
+    // in this.createWarnDraw() definiert:
+    // this.warnDraw: Behandlung von Warnungen Ende 18
+    // this.warnDrawAufstieg: Behandlung von Warnungen bei Aufstieg
+
     // in this.getPos() definiert:
     // this.bestPos: erster (bester) Positionstext
 }
@@ -94,17 +98,38 @@ Class.define(PlayerRecord, Object, {
 
                                       return result;
                                   },  // Ende this.toString()
-        'initPlayer'            : function(data, index, skillData = false) {  // skillData: true = Skilldaten, false = Basiswerte (Geb., Talent, Aufwertungen)
+        'initPlayer'            : function(data, index, isSkillData = false) {  // isSkillData: true = Skilldaten, false = Basiswerte (Geb., Talent, Aufwertungen) oder keine
                                       if (data !== undefined) {
-                                          if (skillData) {
+                                          if (isSkillData) {
                                               this.setSkills(data[index]);
-                                          } else {
+                                          } else if (data.length >= 2){
                                               this.setGeb(data[0][index]);
                                               this.talent = data[1][index];
                                               this.aufwert = data[2][index];
+                                          } else {
+                                              // keine Daten
                                           }
                                       }
                                   },  // Ende this.initPlayer()
+        'createWarnDraw'        : function(ziehmich = null, klasse = 1) {  // ziehmich: input Element zum Ziehen; klasse: Spielklasse 1, 2, 3
+                                      // Objekte fuer die Verwaltung der Ziehwarnungen...
+                                      this.warnDraw = undefined;
+                                      this.warnDrawAufstieg = undefined;
+                                      if (ziehmich) {
+                                          const __LASTZAT = this.currZAT + this.getZatLeft();
+
+                                          if (__LASTZAT < 72) {  // U19
+                                              this.warnDraw = new WarnDrawPlayer(this, getColor('STU'));  // rot
+                                              __LOG[4](this.getAge().toFixed(2), "rot");
+                                          } else if (__LASTZAT < Math.max(2, klasse) * 72) {  // Rest bis inkl. U18 (Liga 1 und 2) bzw. U17 (Liga 3)
+                                              // do nothing
+                                          } else if (__LASTZAT < (klasse + 1) * 72) {  // U17/U16 je nach Liga 2/3
+                                              this.warnDrawAufstieg = new WarnDrawPlayer(this, getColor('OMI'));  // magenta
+                                              this.warnDrawAufstieg.setAufstieg();
+                                              __LOG[4](this.getAge().toFixed(2), "magenta");
+                                          }
+                                      }
+                                  },  // Ende this.createWarnDraw()
         'setSkills'             : function(skills) {
                                       // Berechnet die Opti-Werte, sortiert das Positionsfeld und berechnet die Einzelskills mit Ende 18
                                      this.skills = skills;
@@ -192,8 +217,12 @@ Class.define(PlayerRecord, Object, {
         'getZatAge'             : function(when = this.__TIME.now) {
                                       if (when === this.__TIME.end) {
                                           return (18 - 12) * 72 - 1;  // (max.) Trainings-ZATs bis Ende 18
-                                      } else {
+                                      } else if (this.zatAge !== undefined) {
                                           return this.zatAge;
+                                      } else {
+                                          __LOG[4]("Empty getZatAge()");
+
+                                          return NaN;
                                       }
                                   },
         'getZatDone'            : function(when = this.__TIME.now) {
@@ -205,6 +234,15 @@ Class.define(PlayerRecord, Object, {
                                       }
 
                                       return this.zatLeft;
+                                  },
+        'calcZiehIndex'         : function() {
+                                      //const __RESTZAT = this.getZatAge(this.__TIME.end) - this.getZatAge() + this.currZAT;
+                                      //const __INDEX = parseInt(__RESTZAT / 6 + 1) - 1;  // Lfd. Nummer des Abrechnungsmonats (0-basiert)
+
+                                      return (this.warnDraw && this.warnDraw.calcZiehIndex(this.currZAT));
+                                  },
+        'isZiehAufstieg'        : function() {
+                                      return (this.warnDrawAufstieg && this.warnDrawAufstieg.isZiehAufstieg());
                                   },
         'getAge'                : function(when = this.__TIME.now) {
                                       if (this.mwFormel === this.__MWFORMEL.alt) {
