@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.jugend
 // @namespace    http://os.ongapo.com/
-// @version      0.54+WE+
+// @version      0.73+lib
 // @copyright    2013+
 // @author       Sven Loges (SLC) / Andreas Eckes (Strindheim BK)
 // @description  Jugendteam-Script fuer Online Soccer 2.0
@@ -45,11 +45,16 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.warndraw.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.player.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.column.js
 // ==/UserScript==
 
 // ECMAScript 6:
 /* jshint esnext: true */
 /* jshint moz: true */
+
+/* eslint no-multi-spaces: "off" */
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 
@@ -68,6 +73,94 @@ const __OPTCONFIG = {
                    'AltHotkey' : 'k',
                    'FormLabel' : "Prognose Einzelwerte"
                },
+    'zeigeJahrgang' : {   // Auswahl, ob ueber jedem Jahrgang die Ueberschriften gezeigt werden sollen oder alles in einem Block (true = Jahrgaenge, false = ein Block)
+                   'Name'      : "showGroupTitle",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : true,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Jahrgangs\xFCberschriften",
+                   'Hotkey'    : 'J',
+                   'AltLabel'  : "Nur Trennlinie benutzen",
+                   'AltHotkey' : 'j',
+                   'FormLabel' : "Jahrg\xE4nge gruppieren"
+               },
+    'zeigeUxx' : {        // Auswahl, ob in der Ueberschrift ueber jedem Jahrgang zusaetzlich zur Saison noch der Jahrgang in der Form 'Uxx' angegeben wird
+                   'Name'      : "showUxx",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : true,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Jahrg\xE4nge anzeigen",
+                   'Hotkey'    : 'U',
+                   'AltLabel'  : "Nur Saisons anzeigen",
+                   'AltHotkey' : 'u',
+                   'FormLabel' : "Jahrg\xE4nge U13 bis U19"
+               },
+    'zeigeWarnung' : {    // Auswahl, ob eine Warnung erscheint, wenn Talente gezogen werden sollten
+                   'Name'      : "showWarning",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : true,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Ziehwarnung ein",
+                   'Hotkey'    : 'Z',
+                   'AltLabel'  : "Ziehwarnung aus",
+                   'AltHotkey' : 'Z',
+                   'FormLabel' : "Ziehwarnung"
+               },
+    'zeigeWarnungMonat' : {  // Auswahl, ob eine Warnung erscheint, wenn zum naechsten Abrechnungs-ZAT Talente gezogen werden sollten
+                   'Name'      : "showWarningMonth",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : true,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Ziehwarnung Monat ein",
+                   'Hotkey'    : 'Z',
+                   'AltLabel'  : "Ziehwarnung Monat aus",
+                   'AltHotkey' : 'Z',
+                   'FormLabel' : "Ziehwarnung Monat"
+               },
+    'zeigeWarnungHome' : {  // Auswahl, ob eine Meldung im Managerbuero erscheint, wenn Talente gezogen werden sollten
+                   'Name'      : "showWarningHome",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : true,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Ziehwarnung B\xFCro ein",
+                   'Hotkey'    : 'z',
+                   'AltLabel'  : "Ziehwarnung B\xFCro aus",
+                   'AltHotkey' : 'z',
+                   'FormLabel' : "Ziehwarnung B\xFCro"
+               },
+    'zeigeWarnungDialog' : {  // Auswahl, ob die Meldung im Managerbuero als Dialog erscheinen soll
+                   'Name'      : "showWarningDialog",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : false,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Ziehwarnung B\xFCro als Dialog",
+                   'Hotkey'    : 'z',
+                   'AltLabel'  : "Ziehwarnung B\xFCro als Textmeldung",
+                   'AltHotkey' : 'z',
+                   'FormLabel' : "Ziehwarnung B\xFCro Dialog"
+               },
+    'zeigeWarnungAufstieg' : {  // Auswahl, ob eine Warnung in der Uebersicht erscheint, wenn Talente nach Aufstieg nicht mehr gezogen werden koennen
+                   'Name'      : "showWarningAufstieg",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : true,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Ziehwarnung Aufstieg ein",
+                   'Hotkey'    : 'A',
+                   'AltLabel'  : "Ziehwarnung Aufstieg aus",
+                   'AltHotkey' : 'A',
+                   'FormLabel' : "Ziehwarnung Aufstieg"
+               },
+    'zeigeWarnungLegende' : {  // Auswahl, ob eine extra Meldung in Teamuebersicht erscheint, die dort als Legende dient
+                   'Name'      : "showWarningLegende",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : true,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Ziehwarnung Legende ein",
+                   'Hotkey'    : 'L',
+                   'AltLabel'  : "Ziehwarnung Legende aus",
+                   'AltHotkey' : 'L',
+                   'FormLabel' : "Ziehwarnung Legende"
+               },
     'zeigeBalken' : {     // Spaltenauswahl fuer den Qualitaetsbalken des Talents (true = anzeigen, false = nicht anzeigen)
                    'Name'      : "showRatioBar",
                    'Type'      : __OPTTYPES.SW,
@@ -79,7 +172,7 @@ const __OPTCONFIG = {
                    'AltHotkey' : 'B',
                    'FormLabel' : "Balken Qualit\xE4t"
                },
-    'absBalken' : {      // Spaltenauswahl fuer den Guetebalken des Talents absolut statt nach Foerderung (true = absolut, false = relativ nach Foerderung)
+    'absBalken' : {       // Spaltenauswahl fuer den Guetebalken des Talents absolut statt nach Foerderung (true = absolut, false = relativ nach Foerderung)
                    'Name'      : "absBar",
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : true,
@@ -440,8 +533,8 @@ const __OPTCONFIG = {
                    'ValType'   : 'Number',
                    'FreeValue' : true,
                    'SelValue'  : false,
-                   'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ],
-                   'Default'   : 12,
+                   'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ],
+                   'Default'   : 17,
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Saison: $",
                    'Hotkey'    : 'a',
@@ -586,6 +679,37 @@ const __OPTCONFIG = {
                    'Replace'   : null,
                    'Space'     : 0,
                    'Label'     : "Aufwertungen:"
+               },
+    'ziehAnz' : {         // Datenspeicher fuer Anzahl zu ziehender Jugendspieler bis zur naechsten Abrechnung
+                   'Name'      : "drawCounts",
+                   'Type'      : __OPTTYPES.SD,
+                   'Hidden'    : true,
+                   'Serial'    : true,
+                   'AutoReset' : false,
+                   'Permanent' : true,
+                   'Default'   : [],
+                   'Submit'    : undefined,
+                   'Cols'      : 25,
+                   'Rows'      : 1,
+                   'Replace'   : null,
+                   'Space'     : 0,
+                   'Label'     : "Zu ziehen:"
+               },
+    'ziehAnzAufstieg' : { // Datenspeicher fuer Anzahl zu ziehender Jugendspieler bis zur naechsten Abrechnung im Falle eines Aufstiegs
+                   'Name'      : "drawCountsAufstieg",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'Number',
+                   'Hidden'    : true,
+                   'AutoReset' : false,
+                   'Permanent' : true,
+                   'FreeValue' : true,
+                   'SelValue'  : false,
+                   'Choice'    : [ 0, 1, 2, 3, 4, 5 ],
+                   'Default'   : 0,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Zu ziehen bei Aufstieg: $",
+                   'Hotkey'    : 'z',
+                   'FormLabel' : "Zu ziehen bei Aufstieg:|$"
                },
     'zatAges' : {         // Datenspeicher fuer (gebrochene) Alter der Jugendspieler
                    'Name'      : "zatAges",
@@ -742,17 +866,19 @@ const __TEAMCLASS = new TeamClassification();
 
 // Optionen mit Daten, die ZAT- und Team-bezogen gemerkt werden...
 __TEAMCLASS.optSelect = {
-                            'datenZat'     : true,
-                            'oldDatenZat'  : true,
-                            'fingerprints' : true,
-                            'birthdays'    : true,
-                            'tClasses'     : true,
-                            'progresses'   : true,
-                            'zatAges'      : true,
-                            'trainiert'    : true,
-                            'positions'    : true,
-                            'skills'       : true,
-                            'foerderung'   : true
+                            'datenZat'        : true,
+                            'oldDatenZat'     : true,
+                            'fingerprints'    : true,
+                            'birthdays'       : true,
+                            'tClasses'        : true,
+                            'progresses'      : true,
+                            'ziehAnz'         : true,
+                            'ziehAnzAufstieg' : true,
+                            'zatAges'         : true,
+                            'trainiert'       : true,
+                            'positions'       : true,
+                            'skills'          : true,
+                            'foerderung'      : true
                         };
 
 // Behandelt die Optionen und laedt das Benutzermenu
@@ -795,14 +921,21 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 // Funktionen ***************************************************************************
 
 // Erschafft die Spieler-Objekte und fuellt sie mit Werten
-// reloadData: true = Teamuebersicht, false = Spielereinzelwerte
-function init(playerRows, optSet, colIdx, offsetUpper = 1, offsetLower = 0, reloadData = false) {
-    storePlayerDataFromHTML(playerRows, optSet, colIdx, offsetUpper, offsetLower, reloadData);
+// playerRows: Array von Zeilen mit Array cells (Spielertabelle)
+// optSet: Gesetzte Optionen (und Config)
+// colIdx: Liste von Spaltenindices der gesuchten Werte
+// offsetUpper: Ignorierte Zeilen oberhalb der Daten
+// offsetLower: Ignorierte Zeilen unterhalb der Daten
+// page: 1: Teamuebersicht, 2: Spielereinzelwerte, 3: Opt. Skill, 4: Optionen, Default: 0
+function init(playerRows, optSet, colIdx, offsetUpper = 1, offsetLower = 0, page = 0) {
+    storePlayerDataFromHTML(playerRows, optSet, colIdx, offsetUpper, offsetLower, page);
 
     const __SAISON = getOptValue(optSet.saison);
     const __AKTZAT = getOptValue(optSet.aktuellerZat);
     const __GEALTERT = ((__AKTZAT >= 72) ? (getIntFromHTML(playerRows[playerRows.length - offsetLower - 1].cells, colIdx.Age) < 13) : false);
     const __CURRZAT = (__GEALTERT ? 0 : __AKTZAT);
+    const __LGNR = __TEAMCLASS.team.LgNr;
+    const __KLASSE = (__LGNR > 1) ? (__LGNR > 3) ? 3 : 2 : 1;
     const __DONATION = getOptValue(optSet.foerderung);
     const __BIRTHDAYS = getOptValue(optSet.birthdays, []);
     const __TCLASSES = getOptValue(optSet.tClasses, []);
@@ -811,40 +944,48 @@ function init(playerRows, optSet, colIdx, offsetUpper = 1, offsetLower = 0, relo
     const __TRAINIERT = getOptValue(optSet.trainiert, []);
     const __POSITIONS = getOptValue(optSet.positions, []);
     const __SKILLS = getOptValue(optSet.skills, []);
+    const __ISSKILLPAGE = (page === 2);
     const __BASEDATA = [ __BIRTHDAYS, __TCLASSES, __PROGRESSES ];  // fuer initPlayer
-    const __DATA = (reloadData ? [ __BASEDATA, __SKILLS ] : [ __SKILLS, __BASEDATA ]);  // fuer initPlayer: [0] = von HTML-Seite, [1] = aus gespeicherten Daten
+    const __DATA = (__ISSKILLPAGE ? [ __SKILLS, __BASEDATA ] : [ __BASEDATA, __SKILLS ]);  // fuer initPlayer: [0] = von HTML-Seite, [1] = aus gespeicherten Daten
     const __IDMAP = getPlayerIdMap(optSet);
     const __CATIDS = __IDMAP.catIds;
     const __PLAYERS = [];
 
     __LOG[5](__IDMAP);
 
-    for (let i = offsetUpper, j = 0; i < playerRows.length - offsetLower; i++, j++) {
+    for (let i = offsetUpper, j = 0; i < playerRows.length - offsetLower; i++) {
         const __CELLS = playerRows[i].cells;
-        const __LAND = getStringFromHTML(__CELLS, colIdx.Land);
-        const __AGE = getIntFromHTML(__CELLS, colIdx.Age);
-        const __ISGOALIE = isGoalieFromHTML(__CELLS, colIdx.Age);
-        const __NEWPLAYER = new PlayerRecord(__LAND, __AGE, __ISGOALIE, __SAISON, __CURRZAT, __DONATION);
 
-        __NEWPLAYER.initPlayer(__DATA[0], j, ! reloadData);
+        if (__CELLS.length > 1) {
+            const __LAND = getStringFromHTML(__CELLS, colIdx.Land);
+            const __AGE = getIntFromHTML(__CELLS, colIdx.Age);
+            const __ISGOALIE = isGoalieFromHTML(__CELLS, colIdx.Age);
+            const __AKTION = getElementFromHTML(__CELLS, colIdx.Akt);
 
-        const __IDX = selectPlayerIndex(__NEWPLAYER, j, __CATIDS);
+            const __NEWPLAYER = new PlayerRecord(__LAND, __AGE, __ISGOALIE, __SAISON, __CURRZAT, __DONATION);
 
-        __NEWPLAYER.initPlayer(__DATA[1], __IDX, reloadData);
+            __NEWPLAYER.initPlayer(__DATA[0], j, __ISSKILLPAGE);
 
-        __NEWPLAYER.prognoseSkills();
+            const __IDX = selectPlayerIndex(__NEWPLAYER, j, __CATIDS);
 
-        if (reloadData) {
-            __NEWPLAYER.setZusatz(__ZATAGES[__IDX], __TRAINIERT[__IDX], __POSITIONS[__IDX]);
+            __NEWPLAYER.initPlayer(__DATA[1], __IDX, ! __ISSKILLPAGE);
+
+            __NEWPLAYER.prognoseSkills();
+
+            if (! __ISSKILLPAGE) {
+                __NEWPLAYER.setZusatz(__ZATAGES[__IDX], __TRAINIERT[__IDX], __POSITIONS[__IDX]);
+            }
+
+            __NEWPLAYER.createWarnDraw(__AKTION, __KLASSE);
+
+            __PLAYERS[j++] = __NEWPLAYER;
         }
-
-        __PLAYERS[j] = __NEWPLAYER;
     }
 
-    if (reloadData) {
-        setPlayerData(__PLAYERS, optSet);
-    } else {
+    if (__ISSKILLPAGE) {
         calcPlayerData(__PLAYERS, optSet);
+    } else {
+        setPlayerData(__PLAYERS, optSet);
     }
 
     storePlayerIds(__PLAYERS, optSet);
@@ -882,6 +1023,8 @@ function getPlayerIdMap(optSet) {
 }
 
 // Berechnet die Identifikations-IDs (Fingerprints) der Spieler neu und speichert diese
+// players: Array von PlayerRecord mit den Spielerdaten
+// optSet: Gesetzte Optionen (und Config)
 function storePlayerIds(players, optSet) {
     const __FINGERPRINTS = [];
 
@@ -897,6 +1040,10 @@ function storePlayerIds(players, optSet) {
 }
 
 // Sucht fuer den Spieler den Eintrag aus catIds heraus und gibt den (geloeschten) Index zurueck
+// player: PlayerRecord mit den Daten eines Spielers
+// index: Position des Spielers im neuen Array von Spielerdaten
+// catIds: PlayerIdMap zum Finden des Spielers ueber die Spielerdaten
+// return Original-Index der Daten dieses Spielers im Array von Spielerdaten
 function selectPlayerIndex(player, index, catIds) {
     const __MYCAT = player.getCat();
     const __CATS = catIds[__MYCAT];
@@ -911,8 +1058,12 @@ function selectPlayerIndex(player, index, catIds) {
     return idx;
 }
 
-// Speichtert die abgeleiteten Werte in den Spieler-Objekten
+// Speichert die abgeleiteten Werte in den Spieler-Objekten
+// players: Array von PlayerRecord mit den Spielerdaten
+// optSet: Gesetzte Optionen (und Config)
 function setPlayerData(players, optSet) {
+    const __ZIEHANZAHL = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+    let ziehAnzAufstieg = 0;
     const __ZATAGES = [];
     const __TRAINIERT = [];
     const __POSITIONS = [];
@@ -921,18 +1072,31 @@ function setPlayerData(players, optSet) {
         const __ZUSATZ = players[i].calcZusatz();
 
         if (__ZUSATZ.zatAge !== undefined) {  // braucht Geburtstag fuer gueltige Werte!
-            __ZATAGES[i]    = __ZUSATZ.zatAge;
+            const __INDEX = players[i].calcZiehIndex();  // Lfd. Nummer des Abrechnungsmonats (0-basiert)
+
+            if ((__INDEX >= 0) && (__INDEX < __ZIEHANZAHL.length)) {
+                __ZIEHANZAHL[__INDEX]++;
+            }
+
+            __ZATAGES[i] = __ZUSATZ.zatAge;
         }
-        __TRAINIERT[i]  = __ZUSATZ.trainiert;
-        __POSITIONS[i]  = __ZUSATZ.bestPos;
+        if (players[i].isZiehAufstieg()) {
+            ziehAnzAufstieg++;
+        }
+        __TRAINIERT[i] = __ZUSATZ.trainiert;
+        __POSITIONS[i] = __ZUSATZ.bestPos;
     }
 
+    setOpt(optSet.ziehAnz, __ZIEHANZAHL, false);
+    setOpt(optSet.ziehAnzAufstieg, ziehAnzAufstieg, false);
     setOpt(optSet.zatAges, __ZATAGES, false);
     setOpt(optSet.trainiert, __TRAINIERT, false);
     setOpt(optSet.positions, __POSITIONS, false);
 }
 
 // Berechnet die abgeleiteten Werte in den Spieler-Objekten neu und speichert diese
+// players: Array von PlayerRecord mit den Spielerdaten
+// optSet: Gesetzte Optionen (und Config)
 function calcPlayerData(players, optSet) {
     const __ZATAGES = [];
     const __TRAINIERT = [];
@@ -942,10 +1106,10 @@ function calcPlayerData(players, optSet) {
         const __ZUSATZ = players[i].calcZusatz();
 
         if (__ZUSATZ.zatAge !== undefined) {  // braucht Geburtstag fuer gueltige Werte!
-            __ZATAGES[i]    = __ZUSATZ.zatAge;
+            __ZATAGES[i] = __ZUSATZ.zatAge;
         }
-        __TRAINIERT[i]  = __ZUSATZ.trainiert;
-        __POSITIONS[i]  = __ZUSATZ.bestPos;
+        __TRAINIERT[i] = __ZUSATZ.trainiert;
+        __POSITIONS[i] = __ZUSATZ.bestPos;
     }
 
     setOpt(optSet.zatAges, __ZATAGES, false);
@@ -953,33 +1117,57 @@ function calcPlayerData(players, optSet) {
     setOpt(optSet.positions, __POSITIONS, false);
 }
 
-// Ermittelt die Werte in den Spieler-Objekten aus den Daten der Seite und speichert diese
-// reloadData: true = Teamuebersicht, false = Spielereinzelwerte
-function storePlayerDataFromHTML(playerRows, optSet, colIdx, offsetUpper = 1, offsetLower = 0, reloadData = false) {
-    if (reloadData) {
-        const __BIRTHDAYS = [];
-        const __TCLASSES = [];
-        const __PROGRESSES = [];
+// Ermittelt die fuer diese Seite relevanten Werte in den Spieler-Objekten aus den Daten der Seite und speichert diese
+// playerRows: Array von Zeilen mit Array cells (Spielertabelle)
+// optSet: Gesetzte Optionen (und Config)
+// colIdx: Liste von Spaltenindices der gesuchten Werte
+// offsetUpper: Ignorierte Zeilen oberhalb der Daten
+// offsetLower: Ignorierte Zeilen unterhalb der Daten
+// page: 1: Teamuebersicht, 2: Spielereinzelwerte, 3: Opt. Skill, 4: Optionen, Default: 0
+function storePlayerDataFromHTML(playerRows, optSet, colIdx, offsetUpper = 1, offsetLower = 0, page = 0) {
+    const __COLDEFS = [ { }, {
+                                'birthdays'  : { 'name' : 'birthdays', 'getFun' : getIntFromHTML, 'params' : [ colIdx.Geb ] },
+                                'tClasses'   : { 'name' : 'tClasses', 'getFun' : getTalentFromHTML, 'params' : [ colIdx.Tal ] },
+                                'progresses' : { 'name' : 'progresses', 'getFun' : getAufwertFromHTML, 'params' : [ colIdx.Auf, getOptValue(optSet.shortAufw, true) ] }
+                            }, {
+                                'skills'     : { 'name' : 'skills', 'getFun' : getSkillsFromHTML, 'params' : [ colIdx ]}
+                            } ][getValueIn(page, 1, 2, 0)];
 
-        for (let i = offsetUpper, j = 0; i < playerRows.length - offsetLower; i++, j++) {
-            const __CELLS = playerRows[i].cells;
+    return storePlayerDataColsFromHTML(playerRows, optSet, __COLDEFS, offsetUpper, offsetLower);
+}
 
-            __BIRTHDAYS[j] = getIntFromHTML(__CELLS, colIdx.Geb);
-            __TCLASSES[j] = getTalentFromHTML(__CELLS, colIdx.Tal);
-            __PROGRESSES[j] = getAufwertFromHTML(__CELLS, colIdx.Auf, getOptValue(optSet.shortAufw, true));
+// Ermittelt bestimmte Werte in den Spieler-Objekten aus den Daten der Seite und speichert diese
+// playerRows: Array von Zeilen mit Array cells (Spielertabelle)
+// optSet: Gesetzte Optionen (und Config)
+// colDefs: Informationen zu ausgewaehlten Datenspalten
+// offsetUpper: Ignorierte Zeilen oberhalb der Daten
+// offsetLower: Ignorierte Zeilen unterhalb der Daten
+function storePlayerDataColsFromHTML(playerRows, optSet, colDefs, offsetUpper = 1, offsetLower = 0) {
+    const __DATA = { };
+
+    for (let key in colDefs) {
+        __DATA[key] = [];
+    }
+
+    for (let i = offsetUpper, j = 0; i < playerRows.length - offsetLower; i++) {
+        const __CELLS = playerRows[i].cells;
+
+        if (__CELLS.length > 1) {
+            for (let key in colDefs) {
+                const __COLDEF = colDefs[key];
+
+                __DATA[key][j] = __COLDEF.getFun(__CELLS, ...__COLDEF.params);
+            }
+            j++;
         }
-        setOpt(optSet.birthdays, __BIRTHDAYS, false);
-        setOpt(optSet.tClasses, __TCLASSES, false);
-        setOpt(optSet.progresses, __PROGRESSES, false);
-    } else {
-        const __SKILLS = [];
+    }
 
-        for (let i = offsetUpper, j = 0; i < playerRows.length - offsetLower; i++, j++) {
-            const __CELLS = playerRows[i].cells;
+    for (let key in colDefs) {
+        const __COLDEF = colDefs[key];
 
-            __SKILLS[j] = getSkillsFromHTML(__CELLS, colIdx);
-        }
-        setOpt(optSet.skills, __SKILLS, false);
+        __LOG[7]('Schreibe ' + __COLDEF.name + ': ' + __DATA[key]);
+
+        setOpt(optSet[__COLDEF.name], __DATA[key], false);
     }
 }
 
@@ -989,8 +1177,8 @@ function separateGroups(rows, borderString, colIdxSort = 0, offsetUpper = 1, off
         offsetLeft = colIdxSort;  // ab Sortierspalte
     }
 
-    for (let i = offsetUpper, newVal, oldVal = formatFun(rows[i].cells[colIdxSort].textContent); i < rows.length - offsetLower - 1; i++, oldVal = newVal) {
-        newVal = formatFun(rows[i + 1].cells[colIdxSort].textContent);
+    for (let i = offsetUpper, newVal, oldVal = formatFun((rows[i].cells[colIdxSort] || { }).textContent); i < rows.length - offsetLower - 1; i++, oldVal = newVal) {
+        newVal = formatFun((rows[i + 1].cells[colIdxSort] || { }).textContent);
         if (newVal !== oldVal) {
             for (let j = offsetLeft; j < rows[i].cells.length - offsetRight; j++) {
                 rows[i].cells[j].style.borderBottom = borderString;
@@ -1067,6 +1255,74 @@ function getAufwertFromHTML(cells, colIdxAuf, shortForm = true) {
 
 // ==================== Ende Abschnitt genereller Code zur Anzeige der Jugend ====================
 
+// ==================== Abschnitt fuer sonstige Parameter des Spielplans ====================
+
+const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uuml;ro von TEAM</b><br>LIGA LAND<a href=..."
+        'Zeile'  : 0,
+        'Spalte' : 1,
+        'start'  : " von ",
+        'middle' : "</b><br>",
+        'liga'   : ". Liga",
+        'land'   : ' ',
+        'end'    : "<a href="
+    };
+
+const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LAND</a></b>"
+        'Zeile'  : 0,
+        'Spalte' : 0,
+        'start'  : "<b>",
+        'middle' : " - ",
+        'liga'   : ". Liga",
+        'land'   : 'target="_blank">',
+        'end'    : "</a></b>"
+    };
+
+// Ermittelt, wie das eigene Team heisst und aus welchem Land bzw. Liga es kommt (zur Unterscheidung von Erst- und Zweitteam)
+// cell: Tabellenzelle mit den Parametern zum Team "startTEAMmiddleLIGA...landLANDend", LIGA = "#liga[ (A|B|C|D)]"
+// teamSeach: Muster fuer die Suche, die Eintraege fuer 'start', 'middle', 'liga', 'land' und 'end' enthaelt
+// return Im Beispiel { 'Team' : "TEAM", 'Liga' : "LIGA", 'Land' : "LAND", 'LdNr' : LAND-NUMMER, 'LgNr' : LIGA-NUMMER },
+//        z.B. { 'Team' : "Choromonets Odessa", 'Liga' : "1. Liga", 'Land' : "Ukraine", 'LdNr' : 20, 'LgNr' : 1 }
+function getTeamParamsFromTable(table, teamSearch = undefined) {
+    const __TEAMSEARCH   = getValue(teamSearch, __TEAMSEARCHHAUPT);
+    const __TEAMCELLROW  = getValue(__TEAMSEARCH.Zeile, 0);
+    const __TEAMCELLCOL  = getValue(__TEAMSEARCH.Spalte, 0);
+    const __TEAMCELLSTR  = (table === undefined) ? "" : table.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
+    const __SEARCHSTART  = __TEAMSEARCH.start;
+    const __SEARCHMIDDLE = __TEAMSEARCH.middle;
+    const __SEARCHLIGA   = __TEAMSEARCH.liga;
+    const __SEARCHLAND   = __TEAMSEARCH.land;
+    const __SEARCHEND    = __TEAMSEARCH.end;
+    const __INDEXSTART   = __TEAMCELLSTR.indexOf(__SEARCHSTART);
+    const __INDEXEND     = __TEAMCELLSTR.indexOf(__SEARCHEND);
+
+    let teamParams = __TEAMCELLSTR.substring(__INDEXSTART + __SEARCHSTART.length, __INDEXEND);
+    const __INDEXLIGA = teamParams.indexOf(__SEARCHLIGA);
+    const __INDEXMIDDLE = teamParams.indexOf(__SEARCHMIDDLE);
+
+    let land = ((~ __INDEXLIGA) ? teamParams.substring(__INDEXLIGA + __SEARCHLIGA.length) : undefined);
+    const __TEAMNAME = ((~ __INDEXMIDDLE) ? teamParams.substring(0, __INDEXMIDDLE) : undefined);
+    let liga = (((~ __INDEXLIGA) && (~ __INDEXMIDDLE)) ? teamParams.substring(__INDEXMIDDLE + __SEARCHMIDDLE.length) : undefined);
+
+    if (land !== undefined) {
+        if (land.charAt(2) === ' ') {    // Land z.B. hinter "2. Liga A " statt "1. Liga "
+            land = land.substr(2);
+        }
+        if (liga !== undefined) {
+            liga = liga.substring(0, liga.length - land.length);
+        }
+        const __INDEXLAND = land.indexOf(__SEARCHLAND);
+        if (~ __INDEXLAND) {
+            land = land.substr(__INDEXLAND + __SEARCHLAND.length);
+        }
+    }
+
+    const __TEAM = new Team(__TEAMNAME, land, liga);
+
+    return __TEAM;
+}
+
+// ==================== Ende Abschnitt fuer sonstige Parameter des Spielplans ====================
+
 // ==================== Hauptprogramm ====================
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
@@ -1075,7 +1331,18 @@ function procHaupt() {
 
     return buildOptions(__OPTCONFIG, __OPTSET, {
                             'teamParams' : __TEAMPARAMS,
-                            'hideMenu'   : true
+//                            'menuAnchor' : getTable(0, 'div'),
+                            'hideMenu'   : true,
+                            'showForm'   : {
+                                               'zeigeWarnung'         : true,
+                                               'zeigeWarnungMonat'    : true,
+                                               'zeigeWarnungHome'     : true,
+                                               'zeigeWarnungDialog'   : true,
+                                               'zeigeWarnungAufstieg' : true,
+                                               'zeigeWarnungLegende'  : true,
+                                               'ziehAnz'              : true,
+                                               'showForm'             : true
+                                           }
                         }).then(async optSet => {
             const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
@@ -1094,18 +1361,27 @@ function procHaupt() {
                 if (__CURRZAT !== __DATAZAT) {
                     __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
 
-                    // ... und ZAT-bezogene Daten als veraltet markieren (ausser 'skills' und 'positions')
+                    // ... und ZAT-bezogene Daten als veraltet markieren (ausser 'skills', 'positions' und 'ziehAnz')
                     await __TEAMCLASS.deleteOptions({
                                                     'skills'      : true,
                                                     'positions'   : true,
                                                     'datenZat'    : true,
-                                                    'oldDatenZat' : true
+                                                    'oldDatenZat' : true,
+                                                    'ziehAnz'     : (__CURRZAT > __DATAZAT)  // nur loeschen, wenn < __DATAZAT
                                                 }).catch(defaultCatch);
 
                     // Neuen Daten-ZAT speichern...
                     setOpt(__OPTSET.datenZat, __CURRZAT, false);
                 }
             }
+
+            const __MSG = new WarnDrawMessage(optSet, __CURRZAT);
+            const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(optSet, __CURRZAT);
+            const __ANCHOR = getTable(0, 'tbody');
+
+            __MSG.showMessage(__ANCHOR, 'tr', true);
+            __MSG.showDialog(showAlert);
+            __MSGAUFSTIEG.showMessage(__ANCHOR, 'tr', true);
         });
 }
 
@@ -1116,8 +1392,15 @@ function procOptionen() {
                             'hideMenu'    : true,
                             'getDonation' : true,
                             'showForm'    : {
-                                                'foerderung'    : true,
-                                                'showForm'      : true
+                                                'foerderung'           : true,
+                                                'zeigeWarnung'         : true,
+                                                'zeigeWarnungMonat'    : true,
+                                                'zeigeWarnungHome'     : true,
+                                                'zeigeWarnungDialog'   : true,
+                                                'zeigeWarnungAufstieg' : true,
+                                                'zeigeWarnungLegende'  : true,
+                                                'ziehAnz'              : true,
+                                                'showForm'             : true
                                             }
         });
 }
@@ -1148,45 +1431,53 @@ function procTeamuebersicht() {
         return buildOptions(__OPTCONFIG, __OPTSET, {
                                 'menuAnchor' : getTable(0, 'div'),
                                 'showForm'   : {
-                                                   'kennzeichenEnde'    : true,
-                                                   'shortAufw'          : true,
-                                                   'sepStyle'           : true,
-                                                   'sepColor'           : true,
-                                                   'sepWidth'           : true,
-                                                   'saison'             : true,
-                                                   'aktuellerZat'       : true,
-                                                   'foerderung'         : true,
-                                                   'team'               : true,
-                                                   'zeigeBalken'        : true,
-                                                   'absBalken'          : true,
-                                                   'zeigeId'            : true,
-                                                   'ersetzeAlter'       : true,
-                                                   'zeigeAlter'         : true,
-                                                   'zeigeQuote'         : true,
-                                                   'zeigePosition'      : true,
-                                                   'zeigeZatDone'       : true,
-                                                   'zeigeZatLeft'       : true,
-                                                   'zeigeFixSkills'     : true,
-                                                   'zeigeTrainiert'     : true,
-                                                   'zeigeAnteilPri'     : true,
-                                                   'zeigeAnteilSec'     : true,
-                                                   'zeigePrios'         : true,
-                                                   'zeigeSkill'         : true,
-                                                   'anzahlOpti'         : true,
-                                                   'anzahlMW'           : true,
-                                                   'zeigeTrainiertEnde' : true,
-                                                   'zeigeAnteilPriEnde' : true,
-                                                   'zeigeAnteilSecEnde' : true,
-                                                   'zeigePriosEnde'     : true,
-                                                   'zeigeSkillEnde'     : true,
-                                                   'anzahlOptiEnde'     : true,
-                                                   'anzahlMWEnde'       : true,
-                                                   'zatAges'            : true,
-                                                   'trainiert'          : true,
-                                                   'positions'          : true,
-                                                   'skills'             : true,
-                                                   'reset'              : true,
-                                                   'showForm'           : true
+                                                   'kennzeichenEnde'      : true,
+                                                   'shortAufw'            : true,
+                                                   'sepStyle'             : true,
+                                                   'sepColor'             : true,
+                                                   'sepWidth'             : true,
+                                                   'saison'               : true,
+                                                   'aktuellerZat'         : true,
+                                                   'foerderung'           : true,
+                                                   'team'                 : true,
+                                                   'zeigeJahrgang'        : true,
+                                                   'zeigeUxx'             : true,
+                                                   'zeigeWarnung'         : true,
+                                                   'zeigeWarnungMonat'    : true,
+                                                   'zeigeWarnungHome'     : true,
+                                                   'zeigeWarnungDialog'   : true,
+                                                   'zeigeWarnungAufstieg' : true,
+                                                   'zeigeWarnungLegende'  : true,
+                                                   'zeigeBalken'          : true,
+                                                   'absBalken'            : true,
+                                                   'zeigeId'              : true,
+                                                   'ersetzeAlter'         : true,
+                                                   'zeigeAlter'           : true,
+                                                   'zeigeQuote'           : true,
+                                                   'zeigePosition'        : true,
+                                                   'zeigeZatDone'         : true,
+                                                   'zeigeZatLeft'         : true,
+                                                   'zeigeFixSkills'       : true,
+                                                   'zeigeTrainiert'       : true,
+                                                   'zeigeAnteilPri'       : true,
+                                                   'zeigeAnteilSec'       : true,
+                                                   'zeigePrios'           : true,
+                                                   'anzahlOpti'           : true,
+                                                   'anzahlMW'             : true,
+                                                   'zeigeTrainiertEnde'   : true,
+                                                   'zeigeAnteilPriEnde'   : true,
+                                                   'zeigeAnteilSecEnde'   : true,
+                                                   'zeigePriosEnde'       : true,
+                                                   'zeigeSkillEnde'       : true,
+                                                   'anzahlOptiEnde'       : true,
+                                                   'anzahlMWEnde'         : true,
+                                                   'ziehAnz'              : true,
+                                                   'zatAges'              : true,
+                                                   'trainiert'            : true,
+                                                   'positions'            : true,
+                                                   'skills'               : true,
+                                                   'reset'                : true,
+                                                   'showForm'             : true
                                                },
                                 'formWidth'  : 1
                             }).then(optSet => {
@@ -1194,7 +1485,7 @@ function procTeamuebersicht() {
                 const __HEADERS = __ROWS[0];
                 const __TITLECOLOR = getColor('LEI');  // "#FFFFFF"
 
-                const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, true);
+                const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 1);
                 const __COLMAN = new ColumnManager(__OPTSET, __COLUMNINDEX, {
                                                     'Default'            : true,
                                                     'ersetzeSkills'      : false,
@@ -1206,16 +1497,46 @@ function procTeamuebersicht() {
 
                 __COLMAN.addTitles(__HEADERS, __TITLECOLOR);
 
-                for (let i = 0; i < __PLAYERS.length; i++) {
-                    __COLMAN.addValues(__PLAYERS[i], __ROWS[i + __ROWOFFSETUPPER], __TITLECOLOR);
+                for (let i = __ROWOFFSETUPPER, j = 0; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
+                    if (__ROWS[i].cells.length > 1) {
+                        __COLMAN.addValues(__PLAYERS[j++], __ROWS[i], __TITLECOLOR);
+                    } else {
+                        __COLMAN.setGroupTitle(__ROWS[i]);
+                    }
                 }
 
-                // Format der Trennlinie zwischen den Monaten...
-                const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
+                // Format der Trennlinie zwischen den Jahrgaengen...
+                if (! __COLMAN.gt) {
+                    const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
 
-                separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Age, __ROWOFFSETUPPER, __ROWOFFSETLOWER, -1, 0, floorValue);
+                    separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
+                }
+
+                const __CURRZAT = getOptValue(__OPTSET.datenZat);
+                const __MSG = new WarnDrawMessage(__OPTSET, __CURRZAT);
+                const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(__OPTSET, __CURRZAT);
+                const __ANCHOR = getTable(0, 'div');
+                const __SEARCH = '<form method="POST">';
+
+                // Kompaktere Darstellung und ohne Links...
+                __MSG.out.top = false;
+                __MSG.out.label = false;
+                __MSG.out.link = false;
+                __MSG.out.bottom = false;
+                __MSGAUFSTIEG.out.label = false;
+                __MSGAUFSTIEG.out.link = false;
+                __MSGAUFSTIEG.out.bottom = false;
+
+                __MSG.setOptionLegende();
+                __MSGAUFSTIEG.setOptionLegende();
+
+                __MSG.showMessage(__ANCHOR, 'p', __SEARCH);
+                __MSGAUFSTIEG.showMessage(__ANCHOR, 'p', __SEARCH);
             });
     }
+
+    // Promise fuer alle Faelle ohne Rueckgabewert...
+    return Promise.resolve();
 }
 
 // Verarbeitet Ansicht "Spielereinzelwerte"
@@ -1227,32 +1548,33 @@ function procSpielereinzelwerte() {
             'Flg'   : 0,
             'Land'  : 1,
             'U'     : 2,
-            'Age'   : 3,
-            'Einz'  : 4,    // ab hier die Einzelskills
-            'SCH'   : 4,
-            'ABS'   : 4,    // TOR
-            'BAK'   : 5,
-            'STS'   : 5,    // TOR
-            'KOB'   : 6,
-            'FAN'   : 6,    // TOR
-            'ZWK'   : 7,
-            'STB'   : 7,    // TOR
-            'DEC'   : 8,
-            'SPL'   : 8,    // TOR
-            'GES'   : 9,
-            'REF'   : 9,    // TOR
-            'FUQ'   : 10,
-            'ERF'   : 11,
-            'AGG'   : 12,
-            'PAS'   : 13,
-            'AUS'   : 14,
-            'UEB'   : 15,
-            'WID'   : 16,
-            'SEL'   : 17,
-            'DIS'   : 18,
-            'ZUV'   : 19,
-            'EIN'   : 20,
-            'Zus'   : 21     // Zusaetze hinter den Einzelskills
+            'X'     : 3,
+            'Age'   : 4,
+            'Einz'  : 5,    // ab hier die Einzelskills
+            'SCH'   : 5,
+            'ABS'   : 5,    // TOR
+            'BAK'   : 6,
+            'STS'   : 6,    // TOR
+            'KOB'   : 7,
+            'FAN'   : 7,    // TOR
+            'ZWK'   : 8,
+            'STB'   : 8,    // TOR
+            'DEC'   : 9,
+            'SPL'   : 9,    // TOR
+            'GES'   : 10,
+            'REF'   : 10,   // TOR
+            'FUQ'   : 11,
+            'ERF'   : 12,
+            'AGG'   : 13,
+            'PAS'   : 14,
+            'AUS'   : 15,
+            'UEB'   : 16,
+            'WID'   : 17,
+            'SEL'   : 18,
+            'DIS'   : 19,
+            'ZUV'   : 20,
+            'EIN'   : 21,
+            'Zus'   : 22     // Zusaetze hinter den Einzelskills
         };
 
     if (getRows(1) === undefined) {
@@ -1261,11 +1583,18 @@ function procSpielereinzelwerte() {
         return buildOptions(__OPTCONFIG, __OPTSET, {
                                 'menuAnchor' : getTable(0, 'div'),
                                 'hideForm'   : {
-                                                   'zatAges'       : true,
-                                                   'trainiert'     : true,
-                                                   'positions'     : true,
-                                                   'skills'        : true,
-                                                   'shortAufw'     : true
+                                                   'zeigeWarnung'         : false,
+                                                   'zeigeWarnungMonat'    : false,
+                                                   'zeigeWarnungHome'     : false,
+                                                   'zeigeWarnungDialog'   : false,
+                                                   'zeigeWarnungAufstieg' : false,
+                                                   'zeigeWarnungLegende'  : false,
+                                                   'ziehAnz'              : true,
+                                                   'zatAges'              : true,
+                                                   'trainiert'            : true,
+                                                   'positions'            : true,
+                                                   'skills'               : true,
+                                                   'shortAufw'            : true
                                                },
                                 'formWidth'  : 1
                             }).then(optSet => {
@@ -1273,21 +1602,141 @@ function procSpielereinzelwerte() {
                 const __HEADERS = __ROWS[0];
                 const __TITLECOLOR = getColor('LEI');  // "#FFFFFF"
 
-                const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, false);
+                const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 2);
                 const __COLMAN = new ColumnManager(__OPTSET, __COLUMNINDEX, true);
 
                 __COLMAN.addTitles(__HEADERS, __TITLECOLOR);
 
-                for (let i = 0; i < __PLAYERS.length; i++) {
-                    __COLMAN.addValues(__PLAYERS[i], __ROWS[i + __ROWOFFSETUPPER], __TITLECOLOR);
+                for (let i = __ROWOFFSETUPPER, j = 0; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
+                    if (__ROWS[i].cells.length > 1) {
+                        __COLMAN.addValues(__PLAYERS[j++], __ROWS[i], __TITLECOLOR);
+                    } else {
+                        __COLMAN.setGroupTitle(__ROWS[i]);
+                    }
                 }
 
-                // Format der Trennlinie zwischen den Monaten...
-                const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
+                // Format der Trennlinie zwischen den Jahrgaengen...
+                if (! __COLMAN.gt) {
+                    const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
 
-                separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Age, __ROWOFFSETUPPER, __ROWOFFSETLOWER, -1, 0, floorValue);
+                    separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
+                }
             });
     }
+
+    // Promise fuer alle Faelle ohne Rueckgabewert...
+    return Promise.resolve();
+}
+
+// Verarbeitet Ansicht "Opt. Skill"
+function procOptSkill() {
+    const __ROWOFFSETUPPER = 1;     // Header-Zeile
+    const __ROWOFFSETLOWER = 0;
+
+    const __COLUMNINDEX = {
+            'Flg'   : 0,
+            'Land'  : 1,
+            'U'     : 2,
+            'Age'   : 3,
+            'Skill' : 4,
+            'TOR'   : 5,
+            'ABW'   : 6,
+            'DMI'   : 7,
+            'MIT'   : 8,
+            'OMI'   : 9,
+            'STU'   : 10,
+            'Zus'   : 11     // Zusaetze hinter den OptSkills
+        };
+
+    if (getRows(1) === undefined) {
+        __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+    } else {
+        return buildOptions(__OPTCONFIG, __OPTSET, {
+                                'menuAnchor' : getTable(0, 'div'),
+                                'showForm'   : {
+                                                   'kennzeichenEnde'      : true,
+                                                   'sepStyle'             : true,
+                                                   'sepColor'             : true,
+                                                   'sepWidth'             : true,
+                                                   'saison'               : true,
+                                                   'aktuellerZat'         : true,
+                                                   'foerderung'           : true,
+                                                   'team'                 : true,
+                                                   'zeigeJahrgang'        : true,
+                                                   'zeigeUxx'             : true,
+                                                   'zeigeWarnung'         : false,
+                                                   'zeigeWarnungMonat'    : false,
+                                                   'zeigeWarnungHome'     : false,
+                                                   'zeigeWarnungDialog'   : false,
+                                                   'zeigeWarnungAufstieg' : false,
+                                                   'zeigeWarnungLegende'  : false,
+                                                   'zeigeBalken'          : true,
+                                                   'absBalken'            : true,
+                                                   'zeigeId'              : true,
+                                                   'ersetzeAlter'         : true,
+                                                   'zeigeAlter'           : true,
+                                                   'zeigeQuote'           : true,
+                                                   'zeigePosition'        : true,
+                                                   'zeigeZatDone'         : true,
+                                                   'zeigeZatLeft'         : true,
+                                                   'zeigeFixSkills'       : true,
+                                                   'zeigeTrainiert'       : true,
+                                                   'zeigeAnteilPri'       : true,
+                                                   'zeigeAnteilSec'       : true,
+                                                   'zeigePrios'           : true,
+                                                   'zeigeAufw'            : true,
+                                                   'zeigeGeb'             : true,
+                                                   'zeigeTal'             : true,
+                                                   'anzahlOpti'           : true,
+                                                   'anzahlMW'             : true,
+                                                   'zeigeTrainiertEnde'   : true,
+                                                   'zeigeAnteilPriEnde'   : true,
+                                                   'zeigeAnteilSecEnde'   : true,
+                                                   'zeigePriosEnde'       : true,
+                                                   'zeigeSkillEnde'       : true,
+                                                   'anzahlOptiEnde'       : true,
+                                                   'anzahlMWEnde'         : true,
+                                                   'zatAges'              : true,
+                                                   'trainiert'            : true,
+                                                   'positions'            : true,
+                                                   'skills'               : true,
+                                                   'reset'                : true,
+                                                   'showForm'             : true
+                                               },
+                                'formWidth'  : 1
+                            }).then(optSet => {
+                const __ROWS = getRows(1);
+                const __HEADERS = __ROWS[0];
+                const __TITLECOLOR = getColor('LEI');  // "#FFFFFF"
+
+                const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 3);
+                const __COLMAN = new ColumnManager(__OPTSET, __COLUMNINDEX, {
+                                                    'Default'            : true,
+                                                    'ersetzeSkills'      : false,
+                                                    'zeigeSkill'         : false
+                                                });
+
+                __COLMAN.addTitles(__HEADERS, __TITLECOLOR);
+
+                for (let i = __ROWOFFSETUPPER, j = 0; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
+                    if (__ROWS[i].cells.length > 1) {
+                        __COLMAN.addValues(__PLAYERS[j++], __ROWS[i], __TITLECOLOR);
+                    } else {
+                        __COLMAN.setGroupTitle(__ROWS[i]);
+                    }
+                }
+
+                // Format der Trennlinie zwischen den Jahrgaengen...
+                if (! __COLMAN.gt) {
+                    const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
+
+                    separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
+                }
+            });
+    }
+
+    // Promise fuer alle Faelle ohne Rueckgabewert...
+    return Promise.resolve();
 }
 
 (() => {
@@ -1297,17 +1746,19 @@ function procSpielereinzelwerte() {
             // page=0: Managerbuero
             // page=1: Teamuebersicht
             // page=2: Spielereinzelwerte
-            // page=3: Optionen
+            // page=3: Opt. Skill
+            // page=4: Optionen
 
             // Verzweige in unterschiedliche Verarbeitungen je nach Wert von page:
             switch (getPageIdFromURL(window.location.href, {
                                                                'haupt.php' : 0,  // Ansicht "Haupt" (Managerbuero)
-                                                               'ju.php'    : 1   // Ansicht "Jugendteam"
+                                                               'ju.php'    : 1   // Ansicht "Jugendteam" (page = 1, 2, 3, 4)
                                                            }, 'page')) {
                 case 0  : await procHaupt().catch(defaultCatch); break;
                 case 1  : await procTeamuebersicht().catch(defaultCatch); break;
                 case 2  : await procSpielereinzelwerte().catch(defaultCatch); break;
-                case 3  : await procOptionen().catch(defaultCatch); break;
+                case 3  : await procOptSkill().catch(defaultCatch); break;
+                case 4  : await procOptionen().catch(defaultCatch); break;
                 default : break;
             }
 
