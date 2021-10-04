@@ -16,9 +16,7 @@
 // ==================== Abschnitt fuer Klasse UnitTest ====================
 
 // Basisklasse fuer die Ausfuehrung von Unit-Tests fuer ein JS-Modul
-// name: Name des JS-Moduls
-// desc: Beschreibung des Moduls
-// tests: Objekt mit den Testfunktionen
+// parameter: Erklaerung
 function UnitTest(name, desc, tests) {
     'use strict';
 
