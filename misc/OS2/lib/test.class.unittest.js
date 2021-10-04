@@ -29,8 +29,9 @@ Class.define(UnitTest, Object, {
                   'register'       : function(name, desc, tests, thisArg) {
                                          const __LIBNAME = (name || "");
                                          const __LIBDESC = (desc || ("UnitTest " + __LIBNAME));
+                                         const __LIBTESTS = (tests || { });
                                          const __THISLIB = (thisArg || this);
-                                         const __LIBTESTS = Object.entries(tests);
+                                         const __LIBTFUNS = Object.entries(__LIBTESTS);
                                          const __LIBENTRY = {
                                                              'name' : __LIBNAME,
                                                              'desc' : __LIBDESC,
@@ -39,10 +40,10 @@ Class.define(UnitTest, Object, {
 
                                          this.tDefs = [];
 
-                                         if (__LIBTESTS.length) {
-                                             for (let entry of __LIBTESTS) {
-                                                 const __NAME = entry.key;
-                                                 const __TFUN = entry.value;
+                                         if (__LIBTFUNS.length) {
+                                             for (let entry of __LIBTFUNS) {
+                                                 const __NAME = entry[0];
+                                                 const __TFUN = entry[1];
 
                                                  this.addTest(__NAME, __TFUN);
                                              }
@@ -54,10 +55,10 @@ Class.define(UnitTest, Object, {
                                      },
                   'addTest'        : function(name, tFun, desc = undefined) {
                                          const __NAME = name;
-                                         const __TFUNDOBJ = tFun.description;
+                                         const __TFUN = (tFun || { });  // TODO: Dummy
+                                         const __TFUNDOBJ = __TFUN.description;
                                          const __TFUNDESC = ((typeof __TFUNDOBJ === 'function') ? __TFUNDOBJ() : String(__TFUNDOBJ));
                                          const __DESC = (desc || __TFUNDESC || ("Test " + __NAME));
-                                         const __TFUN = (tFun || tFun);  // TODO: Dummy
                                          const __ENTRY = {
                                                              'name' : __NAME,
                                                              'desc' : __DESC,
@@ -123,8 +124,10 @@ const __BSPTESTS = new UnitTest('util.log.js', "Alles rund um das Logging", {
                                                          return (__RET === __EXP);
                                                      }
                                });
+const __BSPTESTSLEER = new UnitTest('empty.js', "Leere UnitTest-Klasse", { });
+const __BSPTESTSUNDEFINED = new UnitTest('undefined.js', "Fehlende Tests");
 
-__BSPTESTS.runAll();
+UnitTest.runAll();
 
 // ==================== Ende Abschnitt fuer Klasse UnitTest ====================
 
