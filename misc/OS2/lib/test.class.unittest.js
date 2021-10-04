@@ -221,6 +221,11 @@ Class.define(UnitTestResults, Object, {
                                             this.countError     += resultsToAdd.countError;
                                             this.countException += resultsToAdd.countException;
 
+                                            if (! this.results) {
+                                                this.results = { };
+                                            }
+                                            this.results[resultsToAdd.name] = resultsToAdd.results;
+
                                             return this;
                                         },
                 'sum'                 : function() {
