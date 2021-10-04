@@ -13,6 +13,8 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
+__LOG.init(window, 7);  // Testphase
+
 // ==================== Abschnitt fuer Klasse UnitTest ====================
 
 // Basisklasse fuer die Ausfuehrung von Unit-Tests fuer ein JS-Modul
@@ -164,7 +166,7 @@ function UnitTestResults(libName, libDesc, libTest) {
     this.countSuccess   = 0;  // Zaehler OK
     this.countFailed    = 0;  // Zaehler FAIL
     this.countError     = 0;  // Zaehler ERR (Fehler im Test, Spezial-Exception)
-    this.countexception = 0;  // Zaehler EX (andere Exceptions)
+    this.countException = 0;  // Zaehler EX (andere Exceptions)
 }
 
 Class.define(UnitTestResults, Object, {
