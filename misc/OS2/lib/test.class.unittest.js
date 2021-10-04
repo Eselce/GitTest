@@ -50,7 +50,11 @@ Class.define(UnitTest, Object, {
                                                  this.addTest(__NAME, __TFUN);
                                              }
                                          } else {
-                                             this.addTest('NO_TEST', function() { __LOG[1]("No tests available for", __LIBNAME); });
+                                             this.addTest('MISSING_TESTS', function() {
+                                                                                   const __MSG = "No tests available for " + __LIBNAME;
+                                                                                   __LOG[1](__MSG);
+                                                                                   throw __MSG;
+                                                                               });
                                          }
 
                                          __ALLLIBS[__LIBNAME] = __LIBENTRY;
