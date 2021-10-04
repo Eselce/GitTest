@@ -67,51 +67,175 @@ Class.define(UnitTest, Object, {
 
                                          this.tDefs.push(__ENTRY);
                                      },
-                  'run'            : function(name, desc, thisArg) {
+                  'run'            : function(name, desc, thisArg, resultObj) {
+                                         const __RESULTS = (resultObj || (new UnitTestResults(name, desc)));
                                          const __TDEFS = this.tDefs;
                                          const __THIS = (thisArg || this);
                                          const __RET = [];
 
                                          __LOG[2]("Running " + __TDEFS.length + " tests for module '" + name + "': " + desc);
 
-                                         for (let entry of __TDEFS) {
-                                             const __NAME = entry.name;
-                                             const __DESC = entry.desc;
-                                             const __TFUN = entry.tFun;
+                                         try {
+                                             for (let entry of __TDEFS) {
+                                                 const __NAME = entry.name;
+                                                 const __DESC = entry.desc;
+                                                 const __TFUN = entry.tFun;
 
-                                             __LOG[3]("Running test '" + name + "' -> '" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
+                                                 __RESULTS.running();  // Testzaehler erhoehen...
+                                                 __LOG[3]("Running test '" + name + "' -> '" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
 
-                                             const __RESULT = __TFUN.call(__THIS);
+                                                 try {
+                                                     const __RESULT = __TFUN.call(__THIS);
 
-                                             __LOG[4]("Test '" + name + "' -> '" + __NAME + "' returned:", __RESULT);
-
-                                             __RET.push(__RESULT);
+                                                     __RESULTS.checkResult(__RESULT);  // entscheiden, ob erfolgreich oder nicht...
+                                                     __RET.push(__RESULT);
+                                                 } catch (ex) {
+                                                     // Fehler im Einzeltest...
+                                                     __RESULTS.checkException(ex);
+                                                 } finally {
+                                                     __LOG[4]("Test '" + name + "' -> '" + __NAME + "' returned:", __RESULT);
+                                                 }
+                                             }
+                                         } catch (ex) {
+                                             // Fehler im Framework der Klasse...
+                                             //throw ex;  // weiterleiten an runAll() ???
+                                         } finally {
+                                             // detailierte Rueckgabewerte koennen ggfs. interessant sein...
+                                             __RESULTS.results = __RET;
                                          }
 
-                                         return __RET;
+                                         return __RESULTS;
                                      }
                 });
 
-UnitTest.runAll = function(thisArg) {
-    for (let testLib of Object.values(__ALLLIBS)) {
-        const __NAME = testLib.name;
-        const __DESC = testLib.desc;
-        const __TEST = testLib.test;
-        const __TFUN = __TEST['run'];  // TODO: __TEST.run, aber variabel gehalten!
-        const __THIS = (thisArg || __TEST);
+UnitTest.runAll = function(resultObj, thisArg) {
+    const __ALLRESULTS = (resultObj || (new UnitTestResults("GLOBAL", "Ergebnisse aller Testklassen")));
 
-        __LOG[1]("Starting tests for module '" + __NAME + "': " + __DESC);
-        __ALLRESULTS[__NAME] = __TFUN.call(__TEST, __NAME, __DESC, __THIS);
-        __LOG[1]("Finished tests for module '" + __NAME + "':", __ALLRESULTS[__NAME]);
+    for (let testLib of Object.values(__ALLLIBS)) {
+        try {
+            const __NAME = testLib.name;
+            const __DESC = testLib.desc;
+            const __TEST = testLib.test;
+            const __TFUN = __TEST['run'];  // TODO: __TEST.run, aber variabel gehalten!
+            const __THIS = (thisArg || __TEST);
+            const __RESULTS = new UnitTestResults(__NAME, __DESC, __TEST);
+
+            __LOG[1]("Starting tests for module '" + __NAME + "': " + __DESC);
+
+            try {
+                __LIBRESULTS[__NAME] = __TFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS);
+            } catch (ex) {
+                // Fehler im Framework der Testklasse...
+                __RESULTS.checkException(ex);
+            } finally {
+                __ALLRESULTS.merge(__RESULTS);  // aufaddieren...
+
+                __LOG[5]("Detailed results for module '" + __NAME + "':", __RESULTS, " / kumuliert:", __ALLRESULTS);
+                __LOG[1]("Finished tests for module '" + __NAME + "':", __RESULTS.sum());
+            }
+        } catch(ex) {
+            // Fehler im Framework der UnitTests und Module...
+            __ALLRESULTS.checkException(ex);
+        }
     }
 
-    __LOG[1]("Results for all tests:", __ALLRESULTS);
+    __LOG[4]("Detailed results for all tests:", __ALLRESULTS);
+    __LOG[1]("Results for all tests:", __ALLRESULTS.sum());
 
-    return __ALLRESULTS;  // TODO: vorlaeufig!
+    return __ALLRESULTS;
 }
 
-const __ALLLIBS = {};
-const __ALLRESULTS = {};
+// ==================== Ende Abschnitt fuer Klasse UnitTest ====================
+
+// ==================== Abschnitt fuer Klasse UnitTestResults ====================
+
+// Ergebnisklasse fuer die Ausfuehrung von Unit-Tests fuer ein JS-Modul
+// libName: Name des JS-Moduls
+// libDesc: Beschreibung des Moduls
+// libTest: UnitTest-Klasse des Moduls
+function UnitTestResults(libName, libDesc, libTest) {
+    'use strict';
+
+    this.name = libName;
+    this.desc = libDesc;
+    this.test = libTest;
+
+    this.countRunning   = 0;  // Zaehler Tests
+    this.countSuccess   = 0;  // Zaehler OK
+    this.countFailed    = 0;  // Zaehler FAIL
+    this.countError     = 0;  // Zaehler ERR (Fehler im Test, Spezial-Exception)
+    this.countexception = 0;  // Zaehler EX (andere Exceptions)
+}
+
+Class.define(UnitTestResults, Object, {
+                'running'             : function() {
+                                            return ++this.countRunning;
+                                        },
+                'success'             : function() {
+                                            return ++this.countSuccess;
+                                        },
+                'failed'              : function() {
+                                            return ++this.countFailed;
+                                        },
+                'error'               : function() {
+                                            return ++this.countError;
+                                        },
+                'exception'           : function() {
+                                            return ++this.countException;
+                                        },
+                'checkResult'         : function(result) {
+                                            if (result === undefined) {  // Hier geht es eher um Funktionen ohne return als um return undefined...
+                                                return this.success();
+                                            } else if (result instanceof Error) {
+                                                return this.error();
+                                            } else if (!! result) {
+                                                return this.success();
+                                            } else {
+                                                return this.failed();
+                                            }
+                                        },
+                'checkException'      : function(ex) {
+                                            if (ex === undefined) {  // throw undefined klingt falsch (Alternativen: Error oder Exception)...
+                                                return this.failed();
+                                            } else if (ex instanceof Error) {
+                                                return this.error();
+                                            } else {
+                                                return this.exception();
+                                            }
+                                        },
+                'merge'               : function(resultsToAdd) {
+                                            this.countRunning   += resultsToAdd.countRunning;
+                                            this.countSuccess   += resultsToAdd.countSuccess;
+                                            this.countFailed    += resultsToAdd.countFailed;
+                                            this.countError     += resultsToAdd.countError;
+                                            this.countException += resultsToAdd.countException;
+
+                                            return this;
+                                        },
+                'sum'                 : function() {
+                                            return {
+                                                    'name'      : this.name,
+                                                    'desc'      : this.desc,
+                                                    'test'      : this.test,
+                                                    'running'   : this.running,
+                                                    'success'   : this.countSuccess,
+                                                    'failed'    : this.countFailed,
+                                                    'error'     : this.countError,
+                                                    'exception' : this.countException
+                                                };
+                                        }
+            });
+
+// ==================== Ende Abschnitt fuer Klasse UnitTestResults ====================
+
+// ==================== Abschnitt fuer globale Variablen ====================
+
+const __ALLLIBS = { };
+const __LIBRESULTS = { };
+
+// ==================== Ende Abschnitt fuer globale Variablen ====================
+
+// ==================== Abschnitt fuer Testauswertung UnitTest ====================
 
 const __BSPTESTS = new UnitTest('util.log.js', "Alles rund um das Logging", {
                                'log0'              : function() {
@@ -131,6 +255,6 @@ const __BSPTESTSUNDEFINED = new UnitTest('undefined.js', "Fehlende Tests");
 
 UnitTest.runAll();
 
-// ==================== Ende Abschnitt fuer Klasse UnitTest ====================
+// ==================== Ende Abschnitt fuer Testauswertung UnitTest ====================
 
 // *** EOF ***
