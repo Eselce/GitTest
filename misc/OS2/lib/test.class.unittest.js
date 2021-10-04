@@ -57,7 +57,7 @@ Class.define(UnitTest, Object, {
                                          const __NAME = name;
                                          const __TFUN = (tFun || { });  // TODO: Dummy
                                          const __TFUNDOBJ = __TFUN.description;
-                                         const __TFUNDESC = ((typeof __TFUNDOBJ === 'function') ? __TFUNDOBJ() : String(__TFUNDOBJ));
+                                         const __TFUNDESC = (__TFUNDOBJ ? String((typeof __TFUNDOBJ === 'function') ? __TFUNDOBJ() : __TFUNDOBJ) : undefined);
                                          const __DESC = (desc || __TFUNDESC || ("Test " + __NAME));
                                          const __ENTRY = {
                                                              'name' : __NAME,
@@ -79,7 +79,7 @@ Class.define(UnitTest, Object, {
                                              const __DESC = entry.desc;
                                              const __TFUN = entry.tFun;
 
-                                             __LOG[3]("Running test '" + name + "'.'" + __NAME + "' (" + __DESC + ")...");
+                                             __LOG[3]("Running test '" + name + "' -> '" + __NAME + "'" + (__DESC ? " (" + __DESC + ')') + "...");
 
                                              const __RESULT = __TFUN.call(__THIS);
 
