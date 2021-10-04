@@ -96,10 +96,10 @@ UnitTest.runAll = function(thisArg) {
         const __DESC = testLib.desc;
         const __TEST = testLib.test;
         const __TFUN = __TEST['run'];  // TODO: __TEST.run, aber variabel gehalten!
-        const __THIS = (thisArg || this);
+        const __THIS = (thisArg || __TEST);
 
         __LOG[0]("Starting tests for module '" + __NAME + "': " + __DESC);
-        __ALLRESULTS[__NAME] = __TFUN.call(__THIS, __NAME, __DESC, __THIS);  // eventuell TODO: doppeltes __THIS
+        __ALLRESULTS[__NAME] = __TFUN.call(__TEST, __NAME, __DESC, __THIS);
         __LOG[1]("Finished tests for module '" + __NAME + "': " + __ALLRESULTS[__NAME]);
     }
 
