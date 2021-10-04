@@ -30,7 +30,7 @@ Class.define(UnitTest, Object, {
                                          const __LIBNAME = (name || "");
                                          const __LIBDESC = (desc || ("UnitTest " + __LIBNAME));
                                          const __THISLIB = (thisArg || this);
-                                         const __LIBTESTS = Objects.entries(tests);
+                                         const __LIBTESTS = Object.entries(tests);
                                          const __LIBENTRY = {
                                                              'name' : __LIBNAME,
                                                              'desc' : __LIBDESC,
