@@ -227,12 +227,13 @@ Class.define(UnitTestResults, Object, {
                                             return {
                                                     'name'      : this.name,
                                                     'desc'      : this.desc,
-                                                    'tests'     : this.test.tDefs,
                                                     'running'   : this.countRunning,
                                                     'success'   : this.countSuccess,
                                                     'failed'    : this.countFailed,
                                                     'error'     : this.countError,
-                                                    'exception' : this.countException
+                                                    'exception' : this.countException,
+                                                    'tests'     : this.test.tDefs,
+                                                    'results'   : this.results
                                                 };
                                         }
             });
