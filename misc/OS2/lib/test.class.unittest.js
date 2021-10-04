@@ -48,7 +48,7 @@ Class.define(UnitTest, Object, {
                                                  this.addTest(__NAME, __TFUN);
                                              }
                                          } else {
-                                             this.addTest('NO_TEST', function() { __LOG[0]("No tests available for", __LIBNAME); });
+                                             this.addTest('NO_TEST', function() { __LOG[1]("No tests available for", __LIBNAME); });
                                          }
 
                                          __ALLLIBS[__LIBNAME] = __LIBENTRY;
@@ -72,14 +72,14 @@ Class.define(UnitTest, Object, {
                                          const __THIS = (thisArg || this);
                                          const __RET = [];
 
-                                         __LOG[0]("Running " + __TDEFS.length + " tests for module '" + name + "': " + desc);
+                                         __LOG[2]("Running " + __TDEFS.length + " tests for module '" + name + "': " + desc);
 
                                          for (let entry of __TDEFS) {
                                              const __NAME = entry.name;
                                              const __DESC = entry.desc;
                                              const __TFUN = entry.tFun;
 
-                                             __LOG[1]("Running test '" + name + "'.'" + __NAME + "' (" + __DESC + ")...");
+                                             __LOG[3]("Running test '" + name + "'.'" + __NAME + "' (" + __DESC + ")...");
 
                                              const __RESULT = __TFUN.call(__THIS);
 
@@ -98,12 +98,12 @@ UnitTest.runAll = function(thisArg) {
         const __TFUN = __TEST['run'];  // TODO: __TEST.run, aber variabel gehalten!
         const __THIS = (thisArg || __TEST);
 
-        __LOG[0]("Starting tests for module '" + __NAME + "': " + __DESC);
+        __LOG[1]("Starting tests for module '" + __NAME + "': " + __DESC);
         __ALLRESULTS[__NAME] = __TFUN.call(__TEST, __NAME, __DESC, __THIS);
-        __LOG[1]("Finished tests for module '" + __NAME + "': " + __ALLRESULTS[__NAME]);
+        __LOG[2]("Finished tests for module '" + __NAME + "': " + __ALLRESULTS[__NAME]);
     }
 
-    __LOG[0]("Results for all tests:", __ALLRESULTS);
+    __LOG[1]("Results for all tests:", __ALLRESULTS);
 
     return __ALLRESULTS;  // TODO: vorlaeufig!
 }
@@ -113,7 +113,7 @@ const __ALLRESULTS = {};
 
 const __BSPTESTS = new UnitTest('util.log.js', "Alles rund um das Logging", {
                                'log0'              : function() {
-                                                         __LOG[0]("Testausgabe!");
+                                                         __LOG[3]("Testausgabe!");
 
                                                          return true;
                                                      },
