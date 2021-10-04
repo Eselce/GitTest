@@ -58,7 +58,7 @@ Class.define(UnitTest, Object, {
                                          const __TFUN = (tFun || { });  // TODO: Dummy
                                          const __TFUNDOBJ = __TFUN.description;
                                          const __TFUNDESC = (__TFUNDOBJ ? String((typeof __TFUNDOBJ === 'function') ? __TFUNDOBJ() : __TFUNDOBJ) : undefined);
-                                         const __DESC = (desc || __TFUNDESC || ("Test " + __NAME));
+                                         const __DESC = (desc || __TFUNDESC);
                                          const __ENTRY = {
                                                              'name' : __NAME,
                                                              'desc' : __DESC,
@@ -83,6 +83,8 @@ Class.define(UnitTest, Object, {
 
                                              const __RESULT = __TFUN.call(__THIS);
 
+                                             __LOG[4]("Test '" + name + "' -> '" + __NAME + "' returned:", __RESULT);
+
                                              __RET.push(__RESULT);
                                          }
 
@@ -100,7 +102,7 @@ UnitTest.runAll = function(thisArg) {
 
         __LOG[1]("Starting tests for module '" + __NAME + "': " + __DESC);
         __ALLRESULTS[__NAME] = __TFUN.call(__TEST, __NAME, __DESC, __THIS);
-        __LOG[2]("Finished tests for module '" + __NAME + "': " + __ALLRESULTS[__NAME]);
+        __LOG[1]("Finished tests for module '" + __NAME + "':", __ALLRESULTS[__NAME]);
     }
 
     __LOG[1]("Results for all tests:", __ALLRESULTS);
