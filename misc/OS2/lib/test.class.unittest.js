@@ -117,6 +117,11 @@ Class.define(UnitTest, Object, {
 UnitTest.runAll = function(resultObj, thisArg) {
     const __ALLRESULTS = (resultObj || (new UnitTestResults("GLOBAL", "Ergebnisse aller Testklassen")));
 
+    // Attribut 'test.tDefs' mit __ALLLIBS verknuepfen (befindet sich bei sum() unter 'tests')...
+    __ALLRESULTS.test = {
+                            'tDefs' : __ALLLIBS
+                        };
+
     for (let testLib of Object.values(__ALLLIBS)) {
         try {
             const __NAME = testLib.name;
