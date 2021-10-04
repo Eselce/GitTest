@@ -92,7 +92,7 @@ Class.define(UnitTest, Object, {
                                                      __RESULTS.checkResult(__RESULT);  // entscheiden, ob erfolgreich oder nicht...
                                                      __RET.push(__RESULT);
 
-                                                     __LOG[4]("Test '" + name + "' -> '" + __NAME + "' returned:", __RESULT);
+                                                     __LOG[4]("Test '" + name + "'->'" + __NAME + "' returned:", __RESULT);
                                                  } catch (ex) {
                                                      // Fehler im Einzeltest...
                                                      __RESULTS.checkException(ex);
