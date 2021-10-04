@@ -79,7 +79,7 @@ Class.define(UnitTest, Object, {
                                              const __DESC = entry.desc;
                                              const __TFUN = entry.tFun;
 
-                                             __LOG[3]("Running test '" + name + "' -> '" + __NAME + "'" + (__DESC ? " (" + __DESC + ')') + "...");
+                                             __LOG[3]("Running test '" + name + "' -> '" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
 
                                              const __RESULT = __TFUN.call(__THIS);
 
