@@ -72,7 +72,7 @@ Class.define(UnitTest, Object, {
                                          const __THIS = (thisArg || this);
                                          const __RET = [];
 
-                                         __LOG[0]("Running " + this.tDefs.length + " tests for module '" + name + "': " + desc);
+                                         __LOG[0]("Running " + __TDEFS.length + " tests for module '" + name + "': " + desc);
 
                                          for (let entry of __TDEFS) {
                                              const __NAME = entry.name;
