@@ -13,6 +13,8 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
+__LOG.init(window, 7);  // Testphase
+
 // ==================== Abschnitt fuer Klasse UnitTest ====================
 
 // Basisklasse fuer die Ausfuehrung von Unit-Tests fuer ein JS-Modul
@@ -48,7 +50,11 @@ Class.define(UnitTest, Object, {
                                                  this.addTest(__NAME, __TFUN);
                                              }
                                          } else {
-                                             this.addTest('NO_TEST', function() { __LOG[1]("No tests available for", __LIBNAME); });
+                                             this.addTest('MISSING_TESTS', function() {
+                                                                                   const __MSG = "No tests available for " + __LIBNAME;
+                                                                                   __LOG[1](__MSG);
+                                                                                   throw __MSG;
+                                                                               });
                                          }
 
                                          __ALLLIBS[__LIBNAME] = __LIBENTRY;
@@ -82,18 +88,18 @@ Class.define(UnitTest, Object, {
                                                  const __TFUN = entry.tFun;
 
                                                  __RESULTS.running();  // Testzaehler erhoehen...
-                                                 __LOG[3]("Running test '" + name + "' -> '" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
+                                                 __LOG[3]("Running test '" + name + "'->'" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
 
                                                  try {
                                                      const __RESULT = __TFUN.call(__THIS);
 
                                                      __RESULTS.checkResult(__RESULT);  // entscheiden, ob erfolgreich oder nicht...
                                                      __RET.push(__RESULT);
+
+                                                     __LOG[4]("Test '" + name + "'->'" + __NAME + "' returned:", __RESULT);
                                                  } catch (ex) {
                                                      // Fehler im Einzeltest...
                                                      __RESULTS.checkException(ex);
-                                                 } finally {
-                                                     __LOG[4]("Test '" + name + "' -> '" + __NAME + "' returned:", __RESULT);
                                                  }
                                              }
                                          } catch (ex) {
@@ -110,6 +116,11 @@ Class.define(UnitTest, Object, {
 
 UnitTest.runAll = function(resultObj, thisArg) {
     const __ALLRESULTS = (resultObj || (new UnitTestResults("GLOBAL", "Ergebnisse aller Testklassen")));
+
+    // Attribut 'test.tDefs' mit __ALLLIBS verknuepfen (befindet sich bei sum() unter 'tests')...
+    __ALLRESULTS.test = {
+                            'tDefs' : __ALLLIBS
+                        };
 
     for (let testLib of Object.values(__ALLLIBS)) {
         try {
@@ -130,8 +141,8 @@ UnitTest.runAll = function(resultObj, thisArg) {
             } finally {
                 __ALLRESULTS.merge(__RESULTS);  // aufaddieren...
 
-                __LOG[5]("Detailed results for module '" + __NAME + "':", __RESULTS, " / kumuliert:", __ALLRESULTS);
                 __LOG[1]("Finished tests for module '" + __NAME + "':", __RESULTS.sum());
+                __LOG[5]("Total results after module '" + __NAME + "':", __ALLRESULTS.sum());
             }
         } catch(ex) {
             // Fehler im Framework der UnitTests und Module...
@@ -139,7 +150,7 @@ UnitTest.runAll = function(resultObj, thisArg) {
         }
     }
 
-    __LOG[4]("Detailed results for all tests:", __ALLRESULTS);
+    __LOG[4]("Detailed results for all tests:", __LIBRESULTS);
     __LOG[1]("Results for all tests:", __ALLRESULTS.sum());
 
     return __ALLRESULTS;
@@ -158,7 +169,7 @@ function UnitTestResults(libName, libDesc, libTest) {
 
     this.name = libName;
     this.desc = libDesc;
-    this.test = libTest;
+    this.test = (libTest || { });
 
     this.countRunning   = 0;  // Zaehler Tests
     this.countSuccess   = 0;  // Zaehler OK
@@ -212,18 +223,24 @@ Class.define(UnitTestResults, Object, {
                                             this.countError     += resultsToAdd.countError;
                                             this.countException += resultsToAdd.countException;
 
+                                            if (! this.results) {
+                                                this.results = { };
+                                            }
+                                            this.results[resultsToAdd.name] = resultsToAdd.results;
+
                                             return this;
                                         },
                 'sum'                 : function() {
                                             return {
                                                     'name'      : this.name,
                                                     'desc'      : this.desc,
-                                                    'test'      : this.test,
-                                                    'running'   : this.running,
+                                                    'running'   : this.countRunning,
                                                     'success'   : this.countSuccess,
                                                     'failed'    : this.countFailed,
                                                     'error'     : this.countError,
-                                                    'exception' : this.countException
+                                                    'exception' : this.countException,
+                                                    'tests'     : this.test.tDefs,
+                                                    'results'   : this.results
                                                 };
                                         }
             });
