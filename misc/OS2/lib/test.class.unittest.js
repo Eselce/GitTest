@@ -267,6 +267,18 @@ const __BSPTESTS = new UnitTest('util.log.js', "Alles rund um das Logging", {
                                                          const __EXP = '42';
 
                                                          return ASSERT_EQUAL(__RET, __EXP, "Nicht die Antwort auf alles!");
+                                                     },
+                               'safeStringifyFail' : function() {
+                                                         const __RET = safeStringify(42);
+                                                         const __EXP = 42;
+
+                                                         return ASSERT_EQUAL(__RET, __EXP, "Absichtlich eingebauter Typfehler!");
+                                                     },
+                               'safeStringifyLike' : function() {
+                                                         const __RET = safeStringify(42);
+                                                         const __EXP = 42;
+
+                                                         return ASSERT_ALIKE(__RET, __EXP, "Trotz der Gemeinsamkeiten nicht erkannt!");
                                                      }
                                });
 const __BSPTESTSLEER = new UnitTest('empty.js', "Leere UnitTest-Klasse", { });
