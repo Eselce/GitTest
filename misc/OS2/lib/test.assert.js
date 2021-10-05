@@ -15,7 +15,7 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
-// ==================== Abschnitt fuer Klasse UnitTest ====================
+// ==================== Abschnitt fuer Klasse AssertionFailed ====================
 
 // Basisklasse fuer eine spezielle Exception fuer Assertions
 // msg: Text oder Text liefernde Funktion
@@ -35,7 +35,7 @@ function AssertionFailed(msg, thisArg, ...params) {
     }
 }
 
-Class.define(UnitTest, Object, {
+Class.define(AssertionFailed, Object, {
                   'getText'       : function() {
                                         return this.text;
                                     }
