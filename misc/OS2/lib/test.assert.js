@@ -22,7 +22,7 @@
 // thisArg: Referenz auf ein Bezugsobjekt
 // params: ggfs. Parameter fuer die msg-Funktion
 function AssertionFailed(msg, thisArg, ...params) {
-    'use strict';
+    //'use strict';
 
     if (msg === undefined) {
         this.text = msg;
