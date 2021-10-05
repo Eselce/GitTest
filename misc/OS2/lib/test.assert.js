@@ -53,7 +53,7 @@ Class.define(UnitTest, Object, {
 // throw Wirft dann AssertionFailed-Exception mit diesem Text
 // return true, da in diesem Fall keine Exception geworfen wurde!
 const ASSERT = function(test, msg, thisArg, ...params) {
-    'use strict';
+    //'use strict';
 
     if (! test) {
         const __FAIL = new AssertionFailed(msg, thisArg, ...params);
