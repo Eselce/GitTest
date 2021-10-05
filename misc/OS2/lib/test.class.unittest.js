@@ -254,10 +254,4 @@ const __LIBRESULTS = { };
 
 // ==================== Ende Abschnitt fuer globale Variablen ====================
 
-// ==================== Abschnitt fuer Testauswertung UnitTest ====================
-
-UnitTest.runAll();
-
-// ==================== Ende Abschnitt fuer Testauswertung UnitTest ====================
-
 // *** EOF ***
