@@ -111,7 +111,7 @@ const ASSERT_IN_DELTA = function(erg, exp, delta, msg, thisArg, ...params) {
     return ASSERT(Math.abs(erg - exp) <= delta, msg, thisArg, ...params);
 }
 
-const ASSERT_NOT_IN_DELTA = function(erg, erg, delta, msg, thisArg, ...params) {
+const ASSERT_NOT_IN_DELTA = function(erg, exp, delta, msg, thisArg, ...params) {
     return ASSERT(Math.abs(erg - exp) > delta, msg, thisArg, ...params);
 }
 
