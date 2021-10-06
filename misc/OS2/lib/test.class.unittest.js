@@ -115,7 +115,7 @@ Class.define(UnitTest, Object, {
                 });
 
 UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resultObj, thisArg) {
-    const __ALLRESULTS = (resultObj || (new UnitTestResults("GLOBAL", "Ergebnisse aller Testklassen")));
+    const __ALLRESULTS = (resultObj || (new UnitTestResults("TOTAL", "Ergebnisse aller Testklassen")));
 
     // Attribut 'test.tDefs' mit __ALLLIBS verknuepfen (befindet sich bei sum() unter 'tests')...
     __ALLRESULTS.test = {
@@ -146,7 +146,6 @@ UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resul
 
                 // Ergebnis eintragen...
                 resultFun.call(__THIS, __RESULTS, tableId, document);
-                resultFun.call(__THIS, __ALLRESULTS, tableId, document);  // TODO: wieder rausnehmen
             }
         } catch(ex) {
             // Fehler im Framework der UnitTests und Module...
@@ -158,7 +157,7 @@ UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resul
     __LOG[1]("Results for all tests:", __ALLRESULTS.sum());
 
     // Endergebnis eintragen...
-    resultFun.call(__THIS, __ALLRESULTS, tableId, document);
+    resultFun.call(thisArg, __ALLRESULTS, tableId, document);
 
     // Temporaerer Test
     __XHR.browse("https://eselce.github.io/GitTest/misc/OS2/lib/test.class.unittest.js");
