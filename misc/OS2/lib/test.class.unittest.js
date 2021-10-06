@@ -76,10 +76,10 @@ Class.define(UnitTest, Object, {
                                          this.tDefs.push(__ENTRY);
                                      },
                   'run'            : function(name, desc, thisArg, resultObj) {
-                                         const __RESULTS = (resultObj || (new UnitTestResults(name, desc)));
+                                         const __RESULTS = (resultObj || (new UnitTestResults(name, desc, this)));
                                          const __TDEFS = this.tDefs;
                                          const __THIS = (thisArg || this);
-                                         const __RET = [];
+                                         const __RETVALS = [];
 
                                          __LOG[2]("Running " + __TDEFS.length + " tests for module '" + name + "': " + desc);
 
@@ -89,27 +89,34 @@ Class.define(UnitTest, Object, {
                                                  const __DESC = entry.desc;
                                                  const __TFUN = entry.tFun;
 
-                                                 __RESULTS.running();  // Testzaehler erhoehen...
+                                                 __RESULT.running();  // Testzaehler erhoehen...
                                                  __LOG[3]("Running test '" + name + "'->'" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
 
                                                  try {
-                                                     const __RESULT = __TFUN.call(__THIS);
+                                                     const __RESULT = new UnitTestResults(__NAME, __DESC, __TFUN);
+                                                     const __RETVAL = __TFUN.call(__THIS);
 
-                                                     __RESULTS.checkResult(__RESULT);  // entscheiden, ob erfolgreich oder nicht...
-                                                     __RET.push(__RESULT);
+                                                     __RESULT.result = __RETVAL;
+                                                     __RESULT.checkResult(__RETVAL);  // entscheiden, ob erfolgreich oder nicht...
+                                                     __RETVALS.push(__RETVAL);
 
                                                      __LOG[4]("Test '" + name + "'->'" + __NAME + "' returned:", __RESULT);
                                                  } catch (ex) {
                                                      // Fehler im Einzeltest...
-                                                     __RESULTS.checkException(ex);
+                                                     __RESULT.checkException(ex);
                                                  }
+
+                                                 __RESULTS.merge(__RESULT);  // aufaddieren...
+
+                                                 // Einzelergebnis eintragen...
+                                                 resultFun.call(__THIS, __RESULT, tableId, document);
                                              }
                                          } catch (ex) {
                                              // Fehler im Framework der Klasse...
+                                             __RESULTS.checkException(ex);
                                              //throw ex;  // weiterleiten an runAll() ???
                                          } finally {
-                                             // detailierte Rueckgabewerte koennen ggfs. interessant sein...
-                                             __RESULTS.results = __RET;
+                                             __RESULTS.results = __RETVALS;  // detailierte Rueckgabewerte koennen ggfs. interessant sein...
                                          }
 
                                          return __RESULTS;
@@ -147,7 +154,9 @@ UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resul
                 __LOG[5]("Total results after module '" + __NAME + "':", __ALLRESULTS.sum());
 
                 // Ergebnis eintragen...
+                resultFun.call(__THIS, null, tableId, document);  // Leerzeile
                 resultFun.call(__THIS, __RESULTS, tableId, document);
+                resultFun.call(__THIS, null, tableId, document);  // Leerzeile
             }
         } catch(ex) {
             // Fehler im Framework der UnitTests und Module...
@@ -175,15 +184,16 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
         const __COLOR = undefined;
 
         if (__RESULTS.name) {
-            appendCell(__ROW, __RESULTS.name, __COLOR);
-            appendCell(__ROW, __RESULTS.desc, __COLOR);
             appendCell(__ROW, __UNITTEST.name, __COLOR);
             appendCell(__ROW, __UNITTEST.desc, __COLOR);
+            appendCell(__ROW, __RESULTS.name, __COLOR);
+            appendCell(__ROW, __RESULTS.desc, __COLOR);
             appendCell(__ROW, __RESULTS.countRunning, __COLOR);
             appendCell(__ROW, __RESULTS.countSuccess, __COLOR);
             appendCell(__ROW, __RESULTS.countFailed, __COLOR);
             appendCell(__ROW, __RESULTS.countError, __COLOR);
             appendCell(__ROW, __RESULTS.countException, __COLOR);
+            appendCell(__ROW, __RESULTS.results || __RESULTS.result, __COLOR);
         }
 
         __TABLE.appendChild(__ROW);
@@ -214,6 +224,7 @@ UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = docum
         appendCell(__ROW, "FAIL", __COLOR);
         appendCell(__ROW, "ERR", __COLOR);
         appendCell(__ROW, "EX", __COLOR);
+        appendCell(__ROW, "Ergebnis", __COLOR);
 
         table.appendChild(__ROW);
     }
