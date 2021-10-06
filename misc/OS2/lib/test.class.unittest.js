@@ -88,7 +88,7 @@ Class.define(UnitTest, Object, {
                                                  const __NAME = entry.name;
                                                  const __DESC = entry.desc;
                                                  const __TFUN = entry.tFun;
-                                                 const __RESULT = new UnitTestResults(__NAME, __DESC, __TFUN);
+                                                 const __RESULT = new UnitTestResults(__NAME, __DESC, __THIS);
 
                                                  __RESULT.running();  // Testzaehler erhoehen...
                                                  __LOG[3]("Running test '" + name + "'->'" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
@@ -96,7 +96,6 @@ Class.define(UnitTest, Object, {
                                                  try {
                                                      const __RETVAL = __TFUN.call(__THIS);
 
-                                                     __RESULT.result = __RETVAL;
                                                      __RESULT.checkResult(__RETVAL);  // entscheiden, ob erfolgreich oder nicht...
                                                      __RETVALS.push(__RETVAL);
 
@@ -218,7 +217,7 @@ UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = docum
         appendCell(__ROW, "Modul", __COLOR);
         appendCell(__ROW, "Beschreibung", __COLOR);
         appendCell(__ROW, "Test", __COLOR);
-        appendCell(__ROW, "Beschreibung", __COLOR);
+        appendCell(__ROW, "Details", __COLOR);
         appendCell(__ROW, "Anz", __COLOR);
         appendCell(__ROW, "OK", __COLOR);
         appendCell(__ROW, "FAIL", __COLOR);
@@ -271,6 +270,8 @@ Class.define(UnitTestResults, Object, {
                                             return ++this.countException;
                                         },
                 'checkResult'         : function(result) {
+                                            this.result = result;
+
                                             if (result === undefined) {  // Hier geht es eher um Funktionen ohne return als um return undefined...
                                                 return this.success();
                                             } else if (result instanceof Error) {
@@ -287,8 +288,12 @@ Class.define(UnitTestResults, Object, {
                                             } else if (ex instanceof Error) {
                                                 return this.error();
                                             } else if (ex instanceof AssertionFailed) {
+                                                this.result = ex.getText();
+
                                                 return this.failed();
                                             } else {
+                                                this.result = String(ex);
+
                                                 return this.exception();
                                             }
                                         },
