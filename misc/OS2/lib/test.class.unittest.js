@@ -40,6 +40,8 @@ Class.define(UnitTest, Object, {
                                                              'test' : __THISLIB
                                                          };
 
+                                         this.name = __LIBNAME;
+                                         this.desc = __LIBDESC;
                                          this.tDefs = [];
 
                                          if (__LIBTFUNS.length) {
@@ -157,10 +159,8 @@ UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resul
     __LOG[1]("Results for all tests:", __ALLRESULTS.sum());
 
     // Endergebnis eintragen...
+    resultFun.call(thisArg, null, tableId, document);  // Leerzeile
     resultFun.call(thisArg, __ALLRESULTS, tableId, document);
-
-    // Temporaerer Test
-    __XHR.browse("https://eselce.github.io/GitTest/misc/OS2/lib/test.class.unittest.js");
 
     return __ALLRESULTS;
 }
@@ -174,15 +174,17 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
         const __ROW = doc.createElement('tr');
         const __COLOR = undefined;
 
-        appendCell(__ROW, __RESULTS.name, __COLOR);
-        appendCell(__ROW, __RESULTS.desc, __COLOR);
-        appendCell(__ROW, __UNITTEST.name, __COLOR);
-        appendCell(__ROW, __UNITTEST.desc, __COLOR);
-        appendCell(__ROW, __RESULTS.countRunning, __COLOR);
-        appendCell(__ROW, __RESULTS.countSuccess, __COLOR);
-        appendCell(__ROW, __RESULTS.countFailed, __COLOR);
-        appendCell(__ROW, __RESULTS.countError, __COLOR);
-        appendCell(__ROW, __RESULTS.countException, __COLOR);
+        if (__RESULTS.name) {
+            appendCell(__ROW, __RESULTS.name, __COLOR);
+            appendCell(__ROW, __RESULTS.desc, __COLOR);
+            appendCell(__ROW, __UNITTEST.name, __COLOR);
+            appendCell(__ROW, __UNITTEST.desc, __COLOR);
+            appendCell(__ROW, __RESULTS.countRunning, __COLOR);
+            appendCell(__ROW, __RESULTS.countSuccess, __COLOR);
+            appendCell(__ROW, __RESULTS.countFailed, __COLOR);
+            appendCell(__ROW, __RESULTS.countError, __COLOR);
+            appendCell(__ROW, __RESULTS.countException, __COLOR);
+        }
 
         __TABLE.appendChild(__ROW);
     }
