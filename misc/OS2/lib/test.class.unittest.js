@@ -114,7 +114,7 @@ Class.define(UnitTest, Object, {
                                      }
                 });
 
-UnitTest.runAll = function(resultObj, thisArg) {
+UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resultObj, thisArg) {
     const __ALLRESULTS = (resultObj || (new UnitTestResults("GLOBAL", "Ergebnisse aller Testklassen")));
 
     // Attribut 'test.tDefs' mit __ALLLIBS verknuepfen (befindet sich bei sum() unter 'tests')...
@@ -143,6 +143,10 @@ UnitTest.runAll = function(resultObj, thisArg) {
 
                 __LOG[1]("Finished tests for module '" + __NAME + "':", __RESULTS.sum());
                 __LOG[5]("Total results after module '" + __NAME + "':", __ALLRESULTS.sum());
+
+                // Ergebnis eintragen...
+                resultFun.call(__THIS, __RESULTS, tableId, document);
+                resultFun.call(__THIS, __ALLRESULTS, tableId, document);  // TODO: wieder rausnehmen
             }
         } catch(ex) {
             // Fehler im Framework der UnitTests und Module...
@@ -153,7 +157,67 @@ UnitTest.runAll = function(resultObj, thisArg) {
     __LOG[4]("Detailed results for all tests:", __LIBRESULTS);
     __LOG[1]("Results for all tests:", __ALLRESULTS.sum());
 
+    // Endergebnis eintragen...
+    resultFun.call(__THIS, __ALLRESULTS, tableId, document);
+
+    // Temporaerer Test
+    __XHR.browse("https://eselce.github.io/GitTest/misc/OS2/lib/test.class.unittest.js");
+
     return __ALLRESULTS;
+}
+
+UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
+    const __TABLE = UnitTest.getOrCreateTestResultTable(tableId, doc);
+    const __RESULTS = (resultObj || { });
+    const __UNITTEST = (__RESULTS.test || { });
+
+    if (__TABLE) {
+        const __ROW = doc.createElement('tr');
+        const __COLOR = undefined;
+
+        appendCell(__ROW, __RESULTS.name, __COLOR);
+        appendCell(__ROW, __RESULTS.desc, __COLOR);
+        appendCell(__ROW, __UNITTEST.name, __COLOR);
+        appendCell(__ROW, __UNITTEST.desc, __COLOR);
+        appendCell(__ROW, __RESULTS.countRunning, __COLOR);
+        appendCell(__ROW, __RESULTS.countSuccess, __COLOR);
+        appendCell(__ROW, __RESULTS.countFailed, __COLOR);
+        appendCell(__ROW, __RESULTS.countError, __COLOR);
+        appendCell(__ROW, __RESULTS.countException, __COLOR);
+
+        __TABLE.appendChild(__ROW);
+    }
+
+    return __TABLE;
+}
+
+UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = document) {
+    let table = doc.getElementById(tableId);
+
+    if (! table) {  // Anlegen...
+        table = doc.createElement('table');
+        table.id = tableId;
+        doc.body.appendChild(table);
+    }
+
+    if (! table.rows.length) {
+        const __ROW = doc.createElement('tr');
+        const __COLOR = undefined;
+
+        appendCell(__ROW, "Modul", __COLOR);
+        appendCell(__ROW, "Beschreibung", __COLOR);
+        appendCell(__ROW, "Test", __COLOR);
+        appendCell(__ROW, "Beschreibung", __COLOR);
+        appendCell(__ROW, "Anz", __COLOR);
+        appendCell(__ROW, "OK", __COLOR);
+        appendCell(__ROW, "FAIL", __COLOR);
+        appendCell(__ROW, "ERR", __COLOR);
+        appendCell(__ROW, "EX", __COLOR);
+
+        table.appendChild(__ROW);
+    }
+
+    return table;
 }
 
 // ==================== Ende Abschnitt fuer Klasse UnitTest ====================
