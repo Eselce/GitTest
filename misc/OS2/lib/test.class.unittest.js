@@ -75,7 +75,7 @@ Class.define(UnitTest, Object, {
 
                                          this.tDefs.push(__ENTRY);
                                      },
-                  'run'            : function(name, desc, thisArg, resultObj) {
+                  'run'            : function(name, desc, thisArg, resultObj, resultFun, tableId) {
                                          const __RESULTS = (resultObj || (new UnitTestResults(name, desc, this)));
                                          const __TDEFS = this.tDefs;
                                          const __THIS = (thisArg || this);
@@ -88,12 +88,12 @@ Class.define(UnitTest, Object, {
                                                  const __NAME = entry.name;
                                                  const __DESC = entry.desc;
                                                  const __TFUN = entry.tFun;
+                                                 const __RESULT = new UnitTestResults(__NAME, __DESC, __TFUN);
 
                                                  __RESULT.running();  // Testzaehler erhoehen...
                                                  __LOG[3]("Running test '" + name + "'->'" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
 
                                                  try {
-                                                     const __RESULT = new UnitTestResults(__NAME, __DESC, __TFUN);
                                                      const __RETVAL = __TFUN.call(__THIS);
 
                                                      __RESULT.result = __RETVAL;
@@ -143,7 +143,7 @@ UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resul
             __LOG[1]("Starting tests for module '" + __NAME + "': " + __DESC);
 
             try {
-                __LIBRESULTS[__NAME] = __TFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS);
+                __LIBRESULTS[__NAME] = __TFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
             } catch (ex) {
                 // Fehler im Framework der Testklasse...
                 __RESULTS.checkException(ex);
@@ -193,7 +193,7 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
             appendCell(__ROW, __RESULTS.countFailed, __COLOR);
             appendCell(__ROW, __RESULTS.countError, __COLOR);
             appendCell(__ROW, __RESULTS.countException, __COLOR);
-            appendCell(__ROW, __RESULTS.results || __RESULTS.result, __COLOR);
+            appendCell(__ROW, __RESULTS.result, __COLOR);
         }
 
         __TABLE.appendChild(__ROW);
