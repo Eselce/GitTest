@@ -43,9 +43,24 @@ if (typeof GM_deleteValue == 'undefined') {
 const __MOCKSTORAGE = { };
 
 // Zuordnung im GM-Objekt...
-GM.getValue = GM_getValue;
-GM.setValue = GM_setValue;
-GM.deleteValue = GM_deleteValue;
+Object.entries({
+        'GM_deleteValue' : 'deleteValue',
+        'GM_getValue'    : 'getValue',
+        'GM_setValue'    : 'setValue'
+    }).forEach(([oldKey, newKey]) => {
+        let old = this[oldKey];
+        if (old && (typeof GM[newKey] == 'undefined')) {
+            GM[newKey] = function(...args) {
+                    return new Promise((resolve, reject) => {
+                            try {
+                                resolve(old.apply(this, args));
+                            } catch (e) {
+                                reject(e);
+                            }
+                        });
+                };
+        }
+    });
 
 __LOG[1](GM);
 
