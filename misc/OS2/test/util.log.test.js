@@ -2,10 +2,12 @@
 // _name         util.log.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
-// _copyright    2017+
+// _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Logging und safeStringify()
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.log.test.js
 // ==/UserScript==
 
@@ -43,7 +45,7 @@ const __BSPTESTS = new UnitTest('util.log.js', "Alles rund um das Logging", {
 const __BSPTESTSLEER = new UnitTest('empty.js', "Leere UnitTest-Klasse", { });
 const __BSPTESTSUNDEFINED = new UnitTest('undefined.js', "Fehlende Tests");
 
-// ==================== Abschnitt fuer Unit-Tests zu unit.log ====================
+// ==================== Abschnitt fuer Unit-Tests zu util.log ====================
 
 // ==================== Abschnitt fuer Logging ====================
 
