@@ -123,7 +123,7 @@ Class.define(UnitTest, Object, {
                 });
 
 UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resultObj, thisArg) {
-    const __LIBCOUNT = Object.keys(__LIBRESULTS).length;
+    const __LIBCOUNT = Object.keys(__ALLLIBS).length;
     const __ALLRESULTS = (resultObj || (new UnitTestResults("TOTAL", __LIBCOUNT + " Module")));
 
     // Attribut 'test.tDefs' mit __ALLLIBS verknuepfen (befindet sich bei sum() unter 'tests')...
