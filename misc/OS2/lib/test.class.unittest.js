@@ -123,7 +123,7 @@ Class.define(UnitTest, Object, {
                 });
 
 UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resultObj, thisArg) {
-    const __ALLRESULTS = (resultObj || (new UnitTestResults("TOTAL", "Ergebnisse aller Testklassen")));
+    const __ALLRESULTS = (resultObj || (new UnitTestResults("TOTAL", __LIBRESULTS.length + " Module")));
 
     // Attribut 'test.tDefs' mit __ALLLIBS verknuepfen (befindet sich bei sum() unter 'tests')...
     __ALLRESULTS.test = {
@@ -137,7 +137,7 @@ UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resul
             const __TEST = testLib.test;
             const __TFUN = __TEST['run'];  // TODO: __TEST.run, aber variabel gehalten!
             const __THIS = (thisArg || __TEST);
-            const __RESULTS = new UnitTestResults(__NAME, __DESC, __TEST);
+            const __RESULTS = new UnitTestResults("SUMME", __NAME, __TEST);
 
             __LOG[1]("Starting tests for module '" + __NAME + "': " + __DESC);
 
