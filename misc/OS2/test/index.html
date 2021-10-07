@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Online-Soccer 2.0 - Unit-Tests der Greasemonkey Benutzerscript-Bibliothek</title>
+        <link rel="stylesheet" type="text/css" href="css/os_styles.css" />
+        <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
+        <link rel="shortcut icon" type="image/ico" href="img/favicon.ico" />
+        <style>
+            .script {
+                border:2px solid grey;
+                border-collapse:collapse;
+            }
+            .script td {
+                border:2px solid grey;
+                border-collapse:collapse;
+            }
+        </style>
+        <script type="text/javascript">
+//<![CDATA[
+
+const GM_info = {  // Mock GM_info data
+        'script' : {
+                'name'        : "test/index.html",
+                'version'     : "0.10",
+                'namespace'   : "http://os.ongapo.com/",
+                'description' : "Online-Soccer 2.0 - Unit-Tests der Greasemonkey Benutzerscript-Bibliothek"
+            }
+    };
+
+//]]>
+        </script>
+        <script type="text/javascript" src="https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.warndraw.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.player.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.column.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.table.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/test.assert.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/lib/test.class.unittest.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/test/util.log.test.js"></script>
+        <script type="text/javascript" src="https://eselce.github.io/GitTest/misc/OS2/test/util.store.test.js"></script>
+    </head>
+    <body>
+        <div>
+            <script type="text/javascript">
+//<![CDATA[
+
+//==================== Hauptprogramm ====================
+
+(() => {
+    const __LIBPATH = "https://eselce.github.io/GitTest/misc/OS2/lib/";  // Testpfad
+    const __LIBEXT = '.js';
+    const __RET = true;
+
+    return __RET;
+})();
+
+//]]>
+            </script>
+            <noscript>Your browser does not support JavaScript!</noscript>
+
+            <h3>Unit-Tests zur Benutzerscript-Bibliothek f&uuml;r Online-Soccer 2.0 unter dem Greasemonkey AddOn</h3>
+
+            <a onClick="UnitTest.runAll();return false;" href="../lib/index.html">Unit-Tests starten</a>
+        </div>
+        <br />
+    </body>
+</html>
