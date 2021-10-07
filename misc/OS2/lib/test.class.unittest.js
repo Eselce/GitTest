@@ -265,11 +265,25 @@ Class.define(UnitTestResults, Object, {
                 'failed'              : function() {
                                             return ++this.countFailed;
                                         },
-                'error'               : function() {
+                'error'               : function(ex) {
+                                            const __EX = (ex || { });
+
+                                            this.result = __EX.message;
+
                                             return ++this.countError;
                                         },
-                'exception'           : function() {
-                                            return ++this.countException;
+                'exception'           : function(ex) {
+                                            const __EX = (ex || { });
+
+                                            if (__EX instanceof AssertionFailed) {
+                                                this.result = __EX.getText();
+
+                                                return this.failed();
+                                            } else {
+                                                this.result = String(__EX);
+
+                                                return ++this.countException;
+                                            }
                                         },
                 'checkResult'         : function(result) {
                                             this.result = result;
@@ -277,7 +291,7 @@ Class.define(UnitTestResults, Object, {
                                             if (result === undefined) {  // Hier geht es eher um Funktionen ohne return als um return undefined...
                                                 return this.success();
                                             } else if (result instanceof Error) {
-                                                return this.error();
+                                                return this.error(result);
                                             } else if (!! result) {
                                                 return this.success();
                                             } else {
@@ -288,15 +302,9 @@ Class.define(UnitTestResults, Object, {
                                             if (ex === undefined) {  // throw undefined klingt falsch (Alternativen: Error oder Exception)...
                                                 return this.failed();
                                             } else if (ex instanceof Error) {
-                                                return this.error();
-                                            } else if (ex instanceof AssertionFailed) {
-                                                this.result = ex.getText();
-
-                                                return this.failed();
+                                                return this.error(ex);
                                             } else {
-                                                this.result = String(ex);
-
-                                                return this.exception();
+                                                return this.exception(ex);
                                             }
                                         },
                 'merge'               : function(resultsToAdd) {
