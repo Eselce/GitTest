@@ -17,6 +17,8 @@
 
 // ==================== Abschnitt fuer Mock GM3-Funktionen ====================
 
+__LOG[0](GM);
+
 if (typeof GM_getValue == 'undefined') {
     this.GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
             if (__MOCKSTORAGE.hasOwnProperty(name)) {
