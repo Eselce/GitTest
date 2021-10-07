@@ -88,7 +88,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeObject'     : function() {
                                     const __NAME = "UnitTestO";
                                     const __VAL = { eins : 1, zwei : 2, fuenf : 5 };
-                                    const __EXP = '["eins":1,"zwei":2,"fuenf":5]';
+                                    const __EXP = '{"eins":1,"zwei":2,"fuenf":5}';
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
@@ -101,7 +101,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeUndefined'  : function() {
                                     const __NAME = "UnitTestU";
                                     const __VAL = undefined;
-                                    const __EXP = 'undefined';
+                                    const __EXP = undefined;
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
