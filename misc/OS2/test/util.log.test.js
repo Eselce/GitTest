@@ -15,6 +15,27 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
+// ==================== Abschnitt fuer Mock GM3-Funktionen ====================
+
+const GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
+        if (__MOCKSTORAGE.hasOwnProperty(name)) {
+            return __MOCKSTORAGE[name];
+        } else {
+            return defaultValue;
+        }
+    };
+
+const GM_setValue = function(name, value) {  // Mock GM_setValue function
+        __MOCKSTORAGE[name] = value;
+    };
+
+const GM_deleteValue = function(name) {  // Mock GM_deleteValue function
+        delete __MOCKSTORAGE[name];
+    };
+
+// Interner Speicher zur Simulation eines localStorage...
+const __MOCKSTORAGE = { };
+
 // ==================== Abschnitt fuer Beispiel-Tests ====================
 
 const __BSPTESTS = new UnitTest('util.log.js', "Alles rund um das Logging", {
