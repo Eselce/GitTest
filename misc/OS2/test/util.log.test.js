@@ -17,24 +17,32 @@
 
 // ==================== Abschnitt fuer Mock GM3-Funktionen ====================
 
-const GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
-        if (__MOCKSTORAGE.hasOwnProperty(name)) {
-            return __MOCKSTORAGE[name];
-        } else {
-            return defaultValue;
-        }
-    };
+if (typeof GM_getValue == 'undefined') {
+    this.GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
+            if (__MOCKSTORAGE.hasOwnProperty(name)) {
+                return __MOCKSTORAGE[name];
+            } else {
+                return defaultValue;
+            }
+        };
+}
 
-const GM_setValue = function(name, value) {  // Mock GM_setValue function
-        __MOCKSTORAGE[name] = value;
-    };
+if (typeof GM_setValue == 'undefined') {
+    this.GM_setValue = function(name, value) {  // Mock GM_setValue function
+            __MOCKSTORAGE[name] = value;
+        };
+}
 
-const GM_deleteValue = function(name) {  // Mock GM_deleteValue function
-        delete __MOCKSTORAGE[name];
-    };
+if (typeof GM_deleteValue == 'undefined') {
+    this.GM_deleteValue = function(name) {  // Mock GM_deleteValue function
+            delete __MOCKSTORAGE[name];
+        };
+}
 
 // Interner Speicher zur Simulation eines localStorage...
 const __MOCKSTORAGE = { };
+
+// ==================== Ende Abschnitt fuer Mock GM3-Funktionen ====================
 
 // ==================== Abschnitt fuer Beispiel-Tests ====================
 
@@ -65,6 +73,8 @@ const __BSPTESTS = new UnitTest('util.log.js', "Alles rund um das Logging", {
                                });
 const __BSPTESTSLEER = new UnitTest('empty.js', "Leere UnitTest-Klasse", { });
 const __BSPTESTSUNDEFINED = new UnitTest('undefined.js', "Fehlende Tests");
+
+// ==================== Ende Abschnitt fuer Beispiel-Tests ====================
 
 // ==================== Abschnitt fuer Unit-Tests zu util.log ====================
 
