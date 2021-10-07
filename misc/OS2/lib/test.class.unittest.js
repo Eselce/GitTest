@@ -7,6 +7,7 @@
 // _description  JS-lib mit Basisklasse fuer Unit-Tests fuer ein JS-Modul
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // ==/UserScript==
 
 // ECMAScript 6:
@@ -75,7 +76,7 @@ Class.define(UnitTest, Object, {
 
                                          this.tDefs.push(__ENTRY);
                                      },
-                  'run'            : function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                  'run'            : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
                                          const __RESULTS = (resultObj || (new UnitTestResults(name, desc, this)));
                                          const __TDEFS = this.tDefs;
                                          const __THIS = (thisArg || this);
@@ -94,12 +95,12 @@ Class.define(UnitTest, Object, {
                                                  __LOG[3]("Running test '" + name + "'->'" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
 
                                                  try {
-                                                     const __RETVAL = __TFUN.call(__THIS);
+                                                     const __RETVAL = await __TFUN.call(__THIS);
 
                                                      __RESULT.checkResult(__RETVAL);  // entscheiden, ob erfolgreich oder nicht...
                                                      __RETVALS.push(__RETVAL);
 
-                                                     __LOG[4]("Test '" + name + "'->'" + __NAME + "' returned:", __RESULT);
+                                                     __LOG[4]("Test '" + name + "'->'" + __NAME + "' returned:", __RETVAL);
                                                  } catch (ex) {
                                                      // Fehler im Einzeltest...
                                                      __RESULT.checkException(ex);
@@ -122,7 +123,7 @@ Class.define(UnitTest, Object, {
                                      }
                 });
 
-UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resultObj, thisArg) {
+UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId, resultObj, thisArg) {
     const __LIBCOUNT = Object.keys(__ALLLIBS).length;
     const __ALLRESULTS = (resultObj || (new UnitTestResults("TOTAL", __LIBCOUNT + " Module")));
 
@@ -143,7 +144,7 @@ UnitTest.runAll = function(resultFun = UnitTest.defaultResultFun, tableId, resul
             __LOG[1]("Starting tests for module '" + __NAME + "': " + __DESC);
 
             try {
-                __LIBRESULTS[__NAME] = __TFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
+                __LIBRESULTS[__NAME] = await __TFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
             } catch (ex) {
                 // Fehler im Framework der Testklasse...
                 __RESULTS.checkException(ex);
