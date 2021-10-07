@@ -17,8 +17,6 @@
 
 // ==================== Abschnitt fuer Mock GM3-Funktionen ====================
 
-__LOG[0](GM);
-
 if (typeof GM_getValue == 'undefined') {
     this.GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
             if (__MOCKSTORAGE.hasOwnProperty(name)) {
@@ -43,6 +41,13 @@ if (typeof GM_deleteValue == 'undefined') {
 
 // Interner Speicher zur Simulation eines localStorage...
 const __MOCKSTORAGE = { };
+
+// Zuordnung im GM-Objekt...
+GM.getValue = GM_getValue;
+GM.setValue = GM_setValue;
+GM.deleteValue = GM_deleteValue;
+
+__LOG[1](GM);
 
 // ==================== Ende Abschnitt fuer Mock GM3-Funktionen ====================
 
