@@ -23,7 +23,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeString'     : function() {
                                     const __NAME = "UnitTestS";
                                     const __VAL = "Teststring";
-                                    const __EXP = "Teststring";
+                                    const __EXP = '"Teststring"';
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
@@ -36,7 +36,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeInt'        : function() {
                                     const __NAME = "UnitTestI";
                                     const __VAL = 42;
-                                    const __EXP = "42";
+                                    const __EXP = '42';
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
@@ -49,7 +49,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeBool'       : function() {
                                     const __NAME = "UnitTestB";
                                     const __VAL = false;
-                                    const __EXP = "false";
+                                    const __EXP = 'false';
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
@@ -62,7 +62,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeFloat'      : function() {
                                     const __NAME = "UnitTestI";
                                     const __VAL = 47.11;
-                                    const __EXP = "47.11";
+                                    const __EXP = '47.11';
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
@@ -75,7 +75,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeArray'      : function() {
                                     const __NAME = "UnitTestA";
                                     const __VAL = [ 1, 2, 4, 8 ];
-                                    const __EXP = "[1,2,4,8]";
+                                    const __EXP = '[1,2,4,8]';
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
@@ -88,7 +88,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeObject'     : function() {
                                     const __NAME = "UnitTestO";
                                     const __VAL = { eins : 1, zwei : 2, fuenf : 5 };
-                                    const __EXP = "['eins':1,'zwei':2,'fuenf'5]";
+                                    const __EXP = '["eins":1,"zwei":2,"fuenf":5]';
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
@@ -101,7 +101,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeUndefined'  : function() {
                                     const __NAME = "UnitTestU";
                                     const __VAL = undefined;
-                                    const __EXP = "undefined";
+                                    const __EXP = 'undefined';
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
@@ -114,7 +114,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeNull'       : function() {
                                     const __NAME = "UnitTestN";
                                     const __VAL = null;
-                                    const __EXP = "null";
+                                    const __EXP = 'null';
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
@@ -127,7 +127,7 @@ const __UNITTESTSTORE1 = new UnitTest('util.store.js 1', "Sicherung und das Lade
         'serializeNull'       : function() {
                                     const __NAME = "UnitTestNaN";
                                     const __VAL = NaN;
-                                    const __EXP = "NaN";
+                                    const __EXP = 'null';  // TODO: richtig?
 
                                     return serialize(__NAME, __VAL).then(entry => {
                                             const __NAM = entry.name;
