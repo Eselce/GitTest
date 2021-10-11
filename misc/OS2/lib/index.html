@@ -256,10 +256,12 @@ function Requirements(path, ext, libs) {
             'util.debug',
             'util.store',
             'util.dom',
+            'util.script',
             'util.class',
             'util.class.delim',
             'util.class.path',
             'util.class.uri',
+            'util.object',
             'util.option.type',
             'util.option.data',
             'util.option.api',
@@ -291,13 +293,15 @@ function Requirements(path, ext, libs) {
             'util.mem.mod',
             'util.debug',
             'util.store',
-            'util.dom'
+            'util.dom',
+            'util.script'
         ];
     const __LIBSCLASS = [
             'util.class',
             'util.class.delim',
             'util.class.path',
-            'util.class.uri'
+            'util.class.uri',
+            'util.object'
         ];
     const __LIBSOPTION = [
             'util.option.type',
@@ -330,8 +334,8 @@ function Requirements(path, ext, libs) {
             'OS2.zat'
         ];
     const __LIBSTESTBASE = [
-            'test.class.unittest',
-            'test.assert'
+            'test.assert',
+            'test.class.unittest'
         ];
     const __LIBSTEST = [
             'util.log',
