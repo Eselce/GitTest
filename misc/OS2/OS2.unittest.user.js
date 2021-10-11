@@ -49,6 +49,8 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.player.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.column.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.table.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.script.js
 // _require      https://eselce.github.io/GitTest/misc/OS2/lib/test.mock.gm.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/test.assert.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/test.class.unittest.js
@@ -191,29 +193,6 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 // ==================== Ende Abschnitt fuer Optionen ====================
 
 // ==================== Hauptprogramm ====================
-
-function loadScript(url) {
-    return new Promise(function(resolve, reject) {
-            const __SCRIPT = document.createElement('script');
-
-            __SCRIPT.type = 'text/javascript';
-            __SCRIPT.src = url;
-            //__SCRIPT.async = true;
-            __SCRIPT.defer = true;
-            __SCRIPT.onerror = reject;
-            __SCRIPT.onload = resolve;
-
-            //document.currentScript.parentNode.insertBefore(__SCRIPT, document.currentScript);
-            document.head.appendChild(__SCRIPT);
-        });
-}
-
-function getScript(url, fun, ...params) {
-    return loadScript(url).then(fun(...params),
-                                () => {
-                                        __LOG[1]("Failed to load", url);
-                                    });
-}
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
 function procHaupt() {
