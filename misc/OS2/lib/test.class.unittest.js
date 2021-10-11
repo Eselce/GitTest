@@ -22,14 +22,15 @@ __LOG.init(window, 7);  // Testphase
 // name: Name des JS-Moduls
 // desc: Beschreibung des Moduls
 // tests: Objekt mit den Testfunktionen
-function UnitTest(name, desc, tests) {
+// load: Angabe, ob die Tests geladen werden sollen (false: Test nicht laden)
+function UnitTest(name, desc, tests, load) {
     'use strict';
 
-    this.register(name, desc, tests, this);
+    this.register(name, desc, tests, load, this);
 }
 
 Class.define(UnitTest, Object, {
-                  'register'       : function(name, desc, tests, thisArg) {
+                  'register'       : function(name, desc, tests, load, thisArg) {
                                          const __LIBNAME = (name || "");
                                          const __LIBDESC = (desc || ("UnitTest " + __LIBNAME));
                                          const __LIBTESTS = (tests || { });
@@ -45,19 +46,21 @@ Class.define(UnitTest, Object, {
                                          this.desc = __LIBDESC;
                                          this.tDefs = [];
 
-                                         if (__LIBTFUNS.length) {
-                                             for (let entry of __LIBTFUNS) {
-                                                 const __NAME = entry[0];
-                                                 const __TFUN = entry[1];
+                                         if (load !== false) {
+                                             if (__LIBTFUNS.length) {
+                                                 for (let entry of __LIBTFUNS) {
+                                                     const __NAME = entry[0];
+                                                     const __TFUN = entry[1];
 
-                                                 this.addTest(__NAME, __TFUN);
+                                                     this.addTest(__NAME, __TFUN);
+                                                 }
+                                             } else {
+                                                 this.addTest('MISSING_TESTS', function() {
+                                                                                       const __MSG = "No tests available for " + __LIBNAME;
+                                                                                       __LOG[1](__MSG);
+                                                                                       throw __MSG;
+                                                                                   });
                                              }
-                                         } else {
-                                             this.addTest('MISSING_TESTS', function() {
-                                                                                   const __MSG = "No tests available for " + __LIBNAME;
-                                                                                   __LOG[1](__MSG);
-                                                                                   throw __MSG;
-                                                                               });
                                          }
 
                                          __ALLLIBS[__LIBNAME] = __LIBENTRY;
@@ -104,6 +107,12 @@ Class.define(UnitTest, Object, {
                                                  } catch (ex) {
                                                      // Fehler im Einzeltest...
                                                      __RESULT.checkException(ex);
+
+                                                    if (ex instanceof AssertionFailed) {
+                                                        __LOG[3]("Test '" + name + "'->'" + __NAME + "' failed:", __RESULT.sum());
+                                                    } else {
+                                                        __LOG[1]("Exception", ex, "in test '" + name + "'->'" + __NAME + "':", __RESULT.sum());
+                                                    }
                                                  }
 
                                                  __RESULTS.merge(__RESULT);  // aufaddieren...
@@ -114,6 +123,9 @@ Class.define(UnitTest, Object, {
                                          } catch (ex) {
                                              // Fehler im Framework der Klasse...
                                              __RESULTS.checkException(ex);
+
+                                            __LOG[1]("Exception", ex, "in module '" + name + "':", __RESULTS.sum());
+
                                              //throw ex;  // weiterleiten an runAll() ???
                                          } finally {
                                              __RESULTS.results = __RETVALS;  // detailierte Rueckgabewerte koennen ggfs. interessant sein...
@@ -133,10 +145,12 @@ UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId,
                         };
 
     for (let testLib of Object.values(__ALLLIBS)) {
+        const __TESTLIB = (testLib || { });
+        const __NAME = __TESTLIB.name;
+        const __DESC = __TESTLIB.desc;
+        const __TEST = __TESTLIB.test;
+
         try {
-            const __NAME = testLib.name;
-            const __DESC = testLib.desc;
-            const __TEST = testLib.test;
             const __TFUN = __TEST['run'];  // TODO: __TEST.run, aber variabel gehalten!
             const __THIS = (thisArg || __TEST);
             const __RESULTS = new UnitTestResults("SUMME", __NAME, __TEST);
@@ -148,6 +162,8 @@ UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId,
             } catch (ex) {
                 // Fehler im Framework der Testklasse...
                 __RESULTS.checkException(ex);
+
+                __LOG[1]("Exception", ex, "in module '" + __NAME + "':", __RESULTS.sum());
             } finally {
                 __ALLRESULTS.merge(__RESULTS);  // aufaddieren...
 
@@ -162,15 +178,22 @@ UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId,
         } catch(ex) {
             // Fehler im Framework der UnitTests und Module...
             __ALLRESULTS.checkException(ex);
+
+            __LOG[1]("Exception", ex, "in module '" + __NAME + "':", __ALLRESULTS.sum());
         }
     }
 
-    __LOG[4]("Detailed results for all tests:", __LIBRESULTS);
-    __LOG[1]("Results for all tests:", __ALLRESULTS.sum());
+    try {
+        __LOG[4]("Detailed results for all tests:", __LIBRESULTS);
+        __LOG[1]("Results for all tests:", __ALLRESULTS.sum());
 
-    // Endergebnis eintragen...
-    resultFun.call(thisArg, null, tableId, document);  // Leerzeile
-    resultFun.call(thisArg, __ALLRESULTS, tableId, document);
+        // Endergebnis eintragen...
+        resultFun.call(thisArg, null, tableId, document);  // Leerzeile
+        resultFun.call(thisArg, __ALLRESULTS, tableId, document);
+    } catch(ex) {
+        // Fehler bei der Anzeige des Ergebnisses...
+        __ALLRESULTS.checkException(ex);
+    }
 
     return __ALLRESULTS;
 }
@@ -289,7 +312,7 @@ Class.define(UnitTestResults, Object, {
                                             this.result = result;
 
                                             if (result === undefined) {  // Hier geht es eher um Funktionen ohne return als um return undefined...
-                                                return this.success();
+                                                return this.failed();  // Es ist am saubersten, return true zu fordern!
                                             } else if (result instanceof Error) {
                                                 return this.error(result);
                                             } else if (!! result) {
