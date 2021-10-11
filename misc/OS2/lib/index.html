@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Online-Soccer 2.0 - Greasemonkey Benutzerscript-Bibliothek</title>
+        <link rel="stylesheet" type="text/css" href="css/os_styles.css" />
+        <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
+        <link rel="shortcut icon" type="image/ico" href="img/favicon.ico" />
+        <style>
+            .script {
+                border:2px solid grey;
+                border-collapse:collapse;
+            }
+            .script td {
+                border:2px solid grey;
+                border-collapse:collapse;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <script type="text/javascript">
+//<![CDATA[
+
+// ==================== Abschnitt fuer XHR Netzzugriff ====================
+
+const __XHR = (() => {
+    console.log("Initializing XHR handler");
+
+    const __XMLREQUEST = XMLHttpRequest;
+
+    const __DETAILS = {
+        'GET'     : {
+                        'method' : 'GET'
+                    },
+        'PUT'     : {
+                        'method' : 'PUT'
+                    },
+        };
+
+    const __HEADERS = {
+        'FORM'    : {
+                        'Content-Type'    : 'application/x-www-form-urlencoded'
+                    },
+        'ACC'     : {
+                        'Accept'          : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                        'Accept-Language' : "de,en-US;q=0.7,en;q=0.3",
+                        'Accept-Encoding' : "gzip, deflate, br"
+                    },
+        'FF58'    : {
+                        'User-Agent'      : 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0'
+                    }
+        };
+
+    const __CALLBACKS = { };
+
+    function registerCallback(status, fun) {
+        __CALLBACKS[status] = fun;
+    }
+
+    function runCallback(result) {
+        const __CALLBACK = __CALLBACKS[result.status];
+
+        console.log(result.status, __CALLBACK);
+
+        return (__CALLBACK ? __CALLBACK(result) : null);
+    }
+
+    function onloadByStatus(result) {
+        console.log(result.status, result.statusText);
+
+        return runCallback(result);
+    }
+
+    function xmlRequest(d) {
+        return new Promise(function(resolve, reject) {
+                const __ONLOAD = d.onload;
+                const __D = { };
+
+                Object.assign(__D, d);
+
+                __D.onload = (result => {
+                        const __RESULT = result.target;
+                        const __RET = __ONLOAD(__RESULT);
+
+                        if (__RESULT.statusText === 'OK') {
+                            resolve(__RET);
+                        } else {
+                            reject(__RESULT.statusText);
+                        }
+                    });
+
+                const __REQUEST = new __XMLREQUEST();
+
+                if (__REQUEST) {
+                    console.log('Fetching', d.url, '...');
+
+                    __REQUEST.addEventListener('load', __D.onload);
+                    __REQUEST.open(__D.method, __D.url, false);
+                    __REQUEST.send();
+
+                    const __RET = __REQUEST;
+
+                    if (__RET !== undefined) {
+                        resolve(__RET);
+                    }
+                } else {
+                    console.error('Tried to fetch', d.url, '...');
+
+                    reject("XHR handler is missing");
+                }
+            });
+    }
+
+    function getRequest(d) {
+        const __D = { };
+
+        Object.assign(__D, d, __DETAILS.GET);
+
+        const __RET = xmlRequest(__D);
+
+        return __RET;
+    }
+
+    function putRequest(d) {
+        const __H = { };
+        const __D = { };
+
+        Object.assign(__H, __HEADERS.FORM, __HEADERS.ACC, __HEADERS.FF58, d.headers);
+        Object.assign(__D, d, { 'headers' : __H }, __DETAILS.PUT);
+
+        const __RET = xmlRequest(__D);
+
+        return __RET;
+    }
+
+    function browse(url, headers = { }, onload = onloadByStatus) {
+        const __H = { };
+
+        Object.assign(__H, __HEADERS.ACC, __HEADERS.FF58, headers);
+
+        return getRequest({
+                'url'     : url,
+                'headers' : __H,
+                'onload'  : onload
+            });
+    }
+
+    registerCallback(200, function(result) {
+            let parser = new DOMParser();
+            let contentType;
+            let doc;
+
+            try {
+                if (result.responseHeaders) {
+                    let match = result.responseHeaders.match(/^Content-Type:\s+((\S+)\/(\S+))$/m);
+                    contentType = (match ? match[1] : 'application/xml');
+                    console.log(contentType);
+
+                    doc = parser.parseFromString(result.responseText, contentType);
+
+                    console.log("Parsed:", doc);
+                } else {
+                    console.log("Raw document", result.responseType);
+
+                    doc = result.response;
+
+                    //console.log("Parsed:", doc.slice(0, 256), '\n...\n', doc.slice(-256));
+                }
+            }
+            catch(ex) {
+                console.error("Parse error:", ex);
+            }
+
+            return doc;
+        });
+
+    return {
+            browse,
+            getRequest,
+            putRequest,
+            xmlRequest,
+            registerCallback,
+            __XMLREQUEST
+        };
+})();
+
+// ==================== Abschnitt fuer Klasse Requirements ====================
+
+// Klasse fuer das Laden einer Bibliothek aus verschiedenen Requirements
+function Requirements(path, ext, libs) {
+    'use strict';
+
+    this.open = function(libs) {
+                    const __PROMISES = [];
+                    const __LIBS = (libs || []);
+
+                    for (let i = 0; i < __LIBS.length; i++) {
+                        const __URL = (this.libPath + __LIBS[i] + this.libExt);
+                        const __REQUEST = __XHR.browse(__URL);
+
+                        __PROMISES.push(__REQUEST);
+                    }
+
+                    this.libs = __LIBS;
+                    this.docs = Promise.all(__PROMISES);
+
+                    return this;
+                };
+
+    this.appendPre = function(anchor, doc) {
+                         const __DOCUMENT = (doc || document);
+                         const __ANCHOR = (anchor || document.body);
+
+                         return this.docs.then(docs => {
+                                 for (let i = 0; i < docs.length; i++) {
+                                     const __DOC = docs[i];
+
+                                     //console.log("Received:", __DOC);
+
+                                     const __PRE = __DOCUMENT.createElement('pre');
+
+                                     __PRE.textContent = "/*** Modul " + this.libs[i] + this.libExt + " ***/\n\n"
+                                                         + __DOC.replaceAll('\r\n', '\n') + '\n'
+                                                         + "/*** Ende " + this.libs[i] + this.libExt + " ***/\n\n";
+
+                                     __ANCHOR.appendChild(__PRE);
+                                 }
+
+                                 return this;
+                             }, error => {
+                                 console.error("Error:", error);
+                             });
+                     };
+
+    this.libPath = (path || "https://eselce.github.io/OS2.scripts/lib/");
+    this.libExt = (ext || '.js');
+
+    this.open(libs);
+}
+
+//==================== Hauptprogramm ====================
+
+(() => {
+    const __LIBPATH  = "https://eselce.github.io/GitTest/misc/OS2/lib/";   // Alternativer Libpfad
+    const __TESTPATH = "https://eselce.github.io/GitTest/misc/OS2/test/";  // Alternativer Testpfad
+    const __LIBEXT = '.js';
+    const __TESTEXT = '.test.js';
+
+    const __LIBS = [
+            'util.log',
+            'util.value',
+            'util.proto',
+            'util.prop',
+            'util.mem.mod',
+            'util.debug',
+            'util.store',
+            'util.dom',
+            'util.class',
+            'util.class.delim',
+            'util.class.path',
+            'util.class.uri',
+            'util.option.type',
+            'util.option.data',
+            'util.option.api',
+            'util.mem',
+            'util.mem.db',
+            'util.mem.cmd',
+            'util.option.menu',
+            'util.option.page.label',
+            'util.option.page.action',
+            'util.option.page.node',
+            'util.option.page',
+            'util.option.run',
+            'OS2.list',
+            'OS2.team',
+            'OS2.page',
+            'OS2.class.warndraw',
+            'OS2.class.player',
+            'OS2.class.column',
+            'OS2.class.table',
+            'OS2.page.team',
+            'OS2.zat',
+//          'util.main'
+        ];
+    const __LIBSUTIL = [
+            'util.log',
+            'util.value',
+            'util.proto',
+            'util.prop',
+            'util.mem.mod',
+            'util.debug',
+            'util.store',
+            'util.dom'
+        ];
+    const __LIBSCLASS = [
+            'util.class',
+            'util.class.delim',
+            'util.class.path',
+            'util.class.uri'
+        ];
+    const __LIBSOPTION = [
+            'util.option.type',
+            'util.option.data',
+            'util.option.api',
+            'util.mem',
+            'util.mem.db',
+            'util.mem.cmd',
+            'util.option.menu',
+            'util.option.page.label',
+            'util.option.page.action',
+            'util.option.page.node',
+            'util.option.page',
+            'util.option.run'
+        ];
+    const __LIBSOS2BASE = [
+            'OS2.list',
+            'OS2.team',
+            'OS2.page'
+        ];
+    const __LIBSOS2 = [
+            'OS2.list',
+            'OS2.team',
+            'OS2.page',
+            'OS2.class.warndraw',
+            'OS2.class.player',
+            'OS2.class.column',
+            'OS2.class.table',
+            'OS2.page.team',
+            'OS2.zat'
+        ];
+    const __LIBSTESTBASE = [
+            'test.class.unittest',
+            'test.assert'
+        ];
+    const __LIBSTEST = [
+            'util.log',
+            'util.store'
+        ];
+
+    const __REQS     = new Requirements(__LIBPATH, __LIBEXT);
+    const __REQSTEST = new Requirements(__TESTPATH, __TESTEXT);
+
+    const __RET = __REQS.open(__LIBS).appendPre(document.body);
+//    const __RET = __REQS.open(__LIBSUTIL).appendPre(document.body);
+//    const __RET = __REQS.open(__LIBSCLASS).appendPre(document.body);
+//    const __RET = __REQS.open(__LIBSOPTION).appendPre(document.body);
+//    const __RET = __REQS.open(__LIBSOS2BASE).appendPre(document.body);
+//    const __RET = __REQS.open(__LIBSOS2).appendPre(document.body);
+//    const __RET = __REQS.open(__LIBSTESTBASE).appendPre(document.body);
+//    const __RET = __REQSTEST.open(__LIBSTEST).appendPre(document.body);
+//    const __RET = __REQS.open(__LIBSTESTBASE).appendPre(document.body).then(reqs => __REQSTEST.open(__LIBSTEST).appendPre(document.body));
+
+//    return __RET;
+})();
+
+//]]>
+            </script>
+            <noscript>Your browser does not support JavaScript!</noscript>
+
+            <!-- <h3>Benutzerscript-Bibliothek f&uuml;r Online-Soccer 2.0 unter dem Greasemonkey AddOn</h3> -->
+            <!-- <textarea name="allscripts" id="allscripts" cols=80 rows=30></textarea> -->
+        </div>
+    </body>
+</html>
