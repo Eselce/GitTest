@@ -7,7 +7,7 @@
 // _description  JS-lib mit ASSERT-Funktionen aller Art und AssertFailed
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
-// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // ==/UserScript==
 
@@ -73,7 +73,6 @@ const ASSERT = function(test, whatFailed, msg, thisArg, ...params) {
     return true;
 };
 
-
 // Basisfunktion fuer die Durchfuehrung einer Ueberpruefung einer Fehler-Bedingung
 // test: Bedingung, die als falsch angenommen wird
 // whatFailed: Info, was schief lief fuer den Fall einer Uebereinstimmung
@@ -99,61 +98,68 @@ const ASSERT_NOT_TRUE = function(test, msg, thisArg, ...params) {
 }
 
 const ASSERT_NULL = function(test, msg, thisArg, ...params) {
-    return ASSERT(test === null, test + " !== null", msg, thisArg, ...params);
+    return ASSERT(test === null, getValStr(test, false, true, true, true) + " !== null", msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_NULL = function(test, msg, thisArg, ...params) {
-    return ASSERT(test !== null, test + " === null", msg, thisArg, ...params);
+    return ASSERT(test !== null, getValStr(test, false, true, true, true) + " === null", msg, thisArg, ...params);
 }
 
 const ASSERT_SET = function(test, msg, thisArg, ...params) {
-    return ASSERT(test != undefined, test + " == undefined", msg, thisArg, ...params);
+    return ASSERT(test != undefined, getValStr(test, false, true, true, true) + " == undefined", msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_SET = function(test, msg, thisArg, ...params) {
-    return ASSERT(test == undefined, test + " != undefined", msg, thisArg, ...params);
+    return ASSERT(test == undefined, getValStr(test, false, true, true, true) + " != undefined", msg, thisArg, ...params);
 }
 
 const ASSERT_EQUAL = function(erg, exp, msg, thisArg, ...params) {
-    return ASSERT(erg === exp, erg + " !== " + exp, msg, thisArg, ...params);
+    return ASSERT(getValStr(erg, false, true, true, true) === getValStr(exp, false, true, true, true), getValStr(erg, false, true, true, true) + " !== " + getValStr(exp, false, true, true, true), msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_EQUAL = function(erg, exp, msg, thisArg, ...params) {
-    return ASSERT(erg !== exp, erg + " === " + exp, msg, thisArg, ...params);
+    return ASSERT(getValStr(erg, false, true, true, true) !== getValStr(exp, false, true, true, true), getValStr(erg, false, true, true, true) + " === " + getValStr(exp, false, true, true, true), msg, thisArg, ...params);
 }
 
 const ASSERT_ALIKE = function(erg, exp, msg, thisArg, ...params) {
-    return ASSERT(erg == exp, erg + " != " + exp, msg, thisArg, ...params);
+    return ASSERT(erg == exp, getValStr(erg, false, true, true, true) + " != " + getValStr(exp, false, true, true, true), msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_ALIKE = function(erg, exp, msg, thisArg, ...params) {
-    return ASSERT(erg != exp, erg + " == " + exp, msg, thisArg, ...params);
+    return ASSERT(erg != exp, getValStr(erg, false, true, true, true) + " == " + getValStr(exp, false, true, true, true), msg, thisArg, ...params);
 }
 
 const ASSERT_IN_DELTA = function(erg, exp, delta, msg, thisArg, ...params) {
-    return ASSERT(Math.abs(erg - exp) <= delta, erg + " != " + exp + " +/- " + delta, msg, thisArg, ...params);
+    return ASSERT(Math.abs(erg - exp) <= delta, getValStr(erg, false, true, true, true) + " != " + getValStr(exp, false, true, true, true) + " +/- " + delta, msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_IN_DELTA = function(erg, exp, delta, msg, thisArg, ...params) {
-    return ASSERT(Math.abs(erg - exp) > delta, erg + " == " + exp + " +/- " + delta, msg, thisArg, ...params);
+    return ASSERT(Math.abs(erg - exp) > delta, getValStr(erg, false, true, true, true) + " == " + getValStr(exp, false, true, true, true) + " +/- " + delta, msg, thisArg, ...params);
 }
 
 const ASSERT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
-    return ASSERT((obj instanceof cls), obj + " ist kein " + cls, msg, thisArg, ...params);
+    return ASSERT((obj instanceof cls), getValStr(obj, false, true, true, true) + " ist kein " + getValStr(cls, false, true, true, true), msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
-    return ASSERT_NOT((obj instanceof cls), obj + " ist " + cls, msg, thisArg, ...params);
+    return ASSERT_NOT((obj instanceof cls), getValStr(obj, false, true, true, true) + " ist " + getValStr(cls, false, true, true, true), msg, thisArg, ...params);
 }
 
 const ASSERT_MATCH = function(str, pattern, msg, thisArg, ...params) {
-    return ASSERT((str || "").match(pattern), str + " match-t " + pattern, msg, thisArg, ...params);
+    return ASSERT((str || "").match(pattern), getValStr(str, false, true, true, true) + " match-t " + getValStr(pattern, false, true, true, true), msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_MATCH = function(str, pattern, msg, thisArg, ...params) {
-    return ASSERT_NOT((str || "").match(pattern), str + " match-t nicht " + pattern, msg, thisArg, ...params);
+    return ASSERT_NOT((str || "").match(pattern), getValStr(str, false, true, true, true) + " match-t nicht " + getValStr(pattern, false, true, true, true), msg, thisArg, ...params);
 }
 
 // ==================== Ende Abschnitt fuer sonstige ASSERT-Funktionen ====================
+
+// ==================== Abschnitt fuer globale Variablen ====================
+
+// Parameter fuer ASSERT_IN_DELTA und ASSERT_NOT_IN_DELTA (Float-Genauigkeit)...
+const __ASSERTDELTA = 0.000001;
+
+// ==================== Ende Abschnitt fuer globale Variablen ====================
 
 // *** EOF ***
