@@ -7,6 +7,7 @@
 // _description  JS-lib mit Basisklasse fuer Unit-Tests fuer ein JS-Modul
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // ==/UserScript==
 
