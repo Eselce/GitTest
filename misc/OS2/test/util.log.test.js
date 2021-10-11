@@ -6,6 +6,7 @@
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Logging und safeStringify()
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.log.test.js

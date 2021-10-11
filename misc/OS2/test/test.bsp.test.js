@@ -6,6 +6,7 @@
 // _author       Sven Loges (SLC)
 // _description  Einfache Beispiele fuer Unit-Tests
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/test.bsp.test.js
