@@ -19,10 +19,10 @@
 // value: Zu speichernder String/Integer/Boolean-Wert
 // return Promise auf ein Objekt, das 'name' und 'value' der Operation enthaelt
 function storeValue(name, value) {
-    __LOG[4](name + " >> " + value);
+    __LOG[5](name + " >> " + value);
 
     return GM.setValue(name, value).then(voidValue => {
-            __LOG[5]("OK " + name + " >> " + value);
+            __LOG[6]("OK " + name + " >> " + value);
 
             return Promise.resolve({
                     'name'  : name,
@@ -37,11 +37,11 @@ function storeValue(name, value) {
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
 function summonValue(name, defValue = undefined) {
     return GM.getValue(name, defValue).then(value => {
-            __LOG[4](name + " << " + value);
+            __LOG[5](name + " << " + value);
 
             return Promise.resolve(value);
         }, ex => {
-            __LOG[0](name + ": " + ex.message);
+            __LOG[1](name + ": " + ex.message);
 
             return Promise.reject(ex);
         }, defaultCatch);

@@ -63,11 +63,11 @@ const ASSERT = function(test, whatFailed, msg, thisArg, ...params) {
 
     if (! test) {
         const __FAIL = new AssertionFailed(whatFailed, msg, thisArg, ...params);
-        __LOG[3]("FAIL", __FAIL);
+        __LOG[4]("FAIL", __FAIL);
 
         throw __FAIL;
     } else {
-        __LOG[6]("OK", test);
+        __LOG[8]("OK", test);
     }
 
     return true;

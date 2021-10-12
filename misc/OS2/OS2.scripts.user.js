@@ -52,7 +52,7 @@
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 
-const __LOGLEVEL = 3;
+const __LOGLEVEL = 4;
 
 // Moegliche Optionen (hier die Standardwerte editieren oder ueber das Benutzermenu setzen):
 const __OPTCONFIG = {
@@ -245,7 +245,7 @@ function getScriptFromArray(path, lines) {
                             __CALLS[__FUN] = __LIB;
                             __LIBS[__LIB] = getValue(__LIBS[__LIB], 0) + 1;
 
-                            __LOG[5](__FUN, __LIBS, __LIB);
+                            __LOG[6](__FUN, __LIBS, __LIB);
                         }
                     }
 
@@ -343,7 +343,7 @@ function procScript() {
             return defaultCatch(ex);
         }
     })().then(rc => {
-            __LOG[1]('SCRIPT END', __DBMOD.Name, rc);
+            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
         });
 })();
 

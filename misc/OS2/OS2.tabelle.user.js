@@ -54,7 +54,7 @@
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 
-const __LOGLEVEL = 3;
+const __LOGLEVEL = 4;
 
 // Moegliche Optionen (hier die Standardwerte editieren oder ueber das Benutzermenu setzen):
 const __OPTCONFIG = {
@@ -759,7 +759,7 @@ function initFairplaySaisonData(saisonData, fpTyp, teamIds, laender) {
 
             __LDATA.FP = [ __TEAMID, __QUALI, __QUALI ];
         } else {
-            __LOG[0]("initFairplaySaisonData(): #" + __TEAMID + " " + __LAND);
+            __LOG[1]("initFairplaySaisonData(): #" + __TEAMID + " " + __LAND);
         }
     }
 }

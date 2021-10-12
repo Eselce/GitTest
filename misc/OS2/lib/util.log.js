@@ -33,7 +33,7 @@ const __LOG = {
                                 ],                      // [""] Log:  Table
                                                         // [true]     {
                                                         // [false]    }
-                  'init'      : function(win, logLevel = 3) {  // TODO: Parameter 'win' als Referenz-Window
+                  'init'      : function(win, logLevel = 4) {  // TODO: Parameter 'win' als Referenz-Window
                                     for (let level = 0; level < this.logFun.length; level++) {
                                         this[level] = ((level > logLevel) ? function() { } : this.logFun[level]);
                                     }
@@ -57,7 +57,7 @@ const __LOG = {
                                 }
               };
 
-__LOG.init(window, 3);  // Zunaechst mal Loglevel 3, erneutes __LOG.init(window, __LOGLEVEL) im Hauptprogramm...
+__LOG.init(window, 4);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window, __LOGLEVEL) im Hauptprogramm...
 
 // ==================== Notizen zum console-Objekt fuer Logging ====================
 

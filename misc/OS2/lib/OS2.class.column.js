@@ -19,7 +19,7 @@
 function ColumnManager(optSet, colIdx, showCol) {
     'use strict';
 
-    __LOG[3]("ColumnManager()");
+    __LOG[4]("ColumnManager()");
 
     const __SHOWCOL = getValue(showCol, true);
     const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));

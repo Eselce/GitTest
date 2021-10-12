@@ -53,7 +53,7 @@ function initOptAction(optAction, item = undefined, optSet = undefined, optConfi
                                break;
         case __OPTACTION.RST : fun = function() {
                                        return resetOptions(optSet, __RELOAD).then(
-                                               result => __LOG[3]("RESETTING (" + result + ")..."),
+                                               result => __LOG[4]("RESETTING (" + result + ")..."),
                                                defaultCatch);
                                    };
                                break;
@@ -250,7 +250,7 @@ async function startOptions(optConfig, optSet = undefined, classification = unde
 function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
     // Anzeige im Benutzermenue...
     if (! optParams.hideMenu) {
-        buildOptionMenu(optSet).then(() => __LOG[3]("Menu OK"));
+        buildOptionMenu(optSet).then(() => __LOG[4]("Menu OK"));
     }
 
     // Anzeige auf der Seite...

@@ -59,7 +59,7 @@ Object.entries({
         }
     });
 
-__LOG[4](GM);
+__LOG[7](GM);
 
 // ==================== Ende Abschnitt fuer Mock GM3-Funktionen ====================
 

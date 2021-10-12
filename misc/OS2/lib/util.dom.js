@@ -55,7 +55,7 @@ function addEvent(obj, type, callback, capture = false) {
     } else if (obj.attachEvent) {
         return obj.attachEvent('on' + type, callback);
     } else {
-        __LOG[0]("Could not add " + type + " event:");
+        __LOG[1]("Could not add " + type + " event:");
         __LOG[2](callback);
 
         return false;
@@ -74,7 +74,7 @@ function removeEvent(obj, type, callback, capture = false) {
     } else if (obj.detachEvent) {
         return obj.detachEvent('on' + type, callback);
     } else {
-        __LOG[0]("Could not remove " + type + " event:");
+        __LOG[1]("Could not remove " + type + " event:");
         __LOG[2](callback);
 
         return false;

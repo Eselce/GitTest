@@ -33,7 +33,7 @@ function registerMenuOption(val, menuOn, funOn, keyOn, menuOff, funOff, keyOff) 
     const __ON  = (val ? '*' : "");
     const __OFF = (val ? "" : '*');
 
-    __LOG[3]("OPTION " + __ON + menuOn + __ON + " / " + __OFF + menuOff + __OFF);
+    __LOG[4]("OPTION " + __ON + menuOn + __ON + " / " + __OFF + menuOff + __OFF);
 
     if (val) {
         return Promise.resolve(GM.registerMenuCommand(menuOff, funOff, keyOff)).then(result => menuOn);
@@ -60,7 +60,7 @@ function registerNextMenuOption(val, arr, menu, fun, key) {
             options += " / " + value;
         }
     }
-    __LOG[3](options);
+    __LOG[4](options);
 
     return Promise.resolve(GM.registerMenuCommand(__MENU, fun, key)).then(result => __MENU);
 }
@@ -79,7 +79,7 @@ function registerDataOption(val, menu, fun, key, hidden = false, serial = true) 
     const __OPTIONS = (hidden ? "HIDDEN " : "") + "OPTION " + __MENU +
                       getValue(__VALUE, "", " = " + __VALUE);
 
-    __LOG[hidden ? 4 : 3](__OPTIONS);
+    __LOG[hidden ? 5 : 4](__OPTIONS);
 
     if (hidden) {
         return Promise.resolve(__VALUE);
@@ -121,11 +121,11 @@ function registerOption(opt) {
 // optSet: Gesetzte Optionen
 // return Promise auf void
 async function buildOptionMenu(optSet) {
-    __LOG[3]("buildOptionMenu()");
+    __LOG[4]("buildOptionMenu()");
 
     for (let opt in optSet) {
         await registerOption(optSet[opt]).then(
-                result => __LOG[6](`REGISTEROPTION[${opt}] = ${result}`),
+                result => __LOG[8](`REGISTEROPTION[${opt}] = ${result}`),
                 defaultCatch);
     }
 }

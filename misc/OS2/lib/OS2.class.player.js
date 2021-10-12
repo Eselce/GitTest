@@ -120,13 +120,13 @@ Class.define(PlayerRecord, Object, {
 
                                           if (__LASTZAT < 72) {  // U19
                                               this.warnDraw = new WarnDrawPlayer(this, getColor('STU'));  // rot
-                                              __LOG[4](this.getAge().toFixed(2), "rot");
+                                              __LOG[5](this.getAge().toFixed(2), "rot");
                                           } else if (__LASTZAT < Math.max(2, klasse) * 72) {  // Rest bis inkl. U18 (Liga 1 und 2) bzw. U17 (Liga 3)
                                               // do nothing
                                           } else if (__LASTZAT < (klasse + 1) * 72) {  // U17/U16 je nach Liga 2/3
                                               this.warnDrawAufstieg = new WarnDrawPlayer(this, getColor('OMI'));  // magenta
                                               this.warnDrawAufstieg.setAufstieg();
-                                              __LOG[4](this.getAge().toFixed(2), "magenta");
+                                              __LOG[5](this.getAge().toFixed(2), "magenta");
                                           }
                                       }
                                   },  // Ende this.createWarnDraw()
@@ -220,7 +220,7 @@ Class.define(PlayerRecord, Object, {
                                       } else if (this.zatAge !== undefined) {
                                           return this.zatAge;
                                       } else {
-                                          __LOG[4]("Empty getZatAge()");
+                                          __LOG[3]("Empty getZatAge()");
 
                                           return NaN;
                                       }

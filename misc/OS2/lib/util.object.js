@@ -44,7 +44,7 @@
 // return Ein neues Object mit gemappten Werten
 Object.map = function(obj, mapFun, thisArg, filterFun, sortFun) {
     if (! obj) {
-        __LOG[4]("Object.map():", "Keine Aktion bei leerem Objekt", obj);
+        __LOG[3]("Object.map():", "Keine Aktion bei leerem Objekt", obj);
 
         return obj;
     } else if ((typeof obj) === 'object') {
@@ -157,6 +157,7 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
                            typeStr = (__CLASSNAME ? __CLASSNAME : typeStr);
                            valueStr = (__CLASSNAME ? __CLASSNAME + __SPACE : "") + __OBJDELIM1 + (__LENGTH ? __SPACE + __VALSTR + __SPACE : "") + __OBJDELIM2;
                        }
+                       break;
     default :          break;
     }
 

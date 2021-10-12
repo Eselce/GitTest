@@ -24,7 +24,7 @@
 
     const __BSPTESTS = new UnitTest('util.log.js', "Alles rund um das Logging", {
             'log0'                : function() {
-                                        __LOG[3]("Testausgabe!");
+                                        __LOG[4]("Testausgabe!");
 
                                         return true;
                                     },

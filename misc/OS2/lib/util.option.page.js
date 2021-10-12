@@ -130,7 +130,7 @@ function addOptionForm(anchor, form = "", script = "") {
 // 'formWidth': Anzahl der Elemente pro Zeile
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
 function buildOptionForm(anchor, optSet, optParams = { }) {
-    __LOG[3]("buildOptionForm()");
+    __LOG[4]("buildOptionForm()");
 
     const __FORM = getOptionForm(optSet, optParams);
     const __SCRIPT = getOptionScript(optSet, optParams);

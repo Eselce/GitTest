@@ -15,7 +15,7 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
-__LOG.init(window, 7);  // Testphase
+__LOG.init(window, 9);  // Testphase
 
 // ==================== Abschnitt fuer Klasse UnitTest ====================
 
@@ -96,7 +96,7 @@ Class.define(UnitTest, Object, {
                                                  const __RESULT = new UnitTestResults(__NAME, __DESC, __THIS);
 
                                                  __RESULT.running();  // Testzaehler erhoehen...
-                                                 __LOG[3]("Running test '" + name + "'->'" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
+                                                 __LOG[4]("Running test '" + name + "'->'" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
 
                                                  try {
                                                      const __RETVAL = await __TFUN.call(__THIS);
@@ -104,13 +104,13 @@ Class.define(UnitTest, Object, {
                                                      __RESULT.checkResult(__RETVAL);  // entscheiden, ob erfolgreich oder nicht...
                                                      __RETVALS.push(__RETVAL);
 
-                                                     __LOG[4]("Test '" + name + "'->'" + __NAME + "' returned:", __RETVAL);
+                                                     __LOG[5]("Test '" + name + "'->'" + __NAME + "' returned:", __RETVAL);
                                                  } catch (ex) {
                                                      // Fehler im Einzeltest...
                                                      __RESULT.checkException(ex);
 
                                                     if (ex instanceof AssertionFailed) {
-                                                        __LOG[3]("Test '" + name + "'->'" + __NAME + "' failed:", __RESULT.sum());
+                                                        __LOG[4]("Test '" + name + "'->'" + __NAME + "' failed:", __RESULT.sum());
                                                     } else {
                                                         __LOG[1]("Exception", ex, "in test '" + name + "'->'" + __NAME + "':", __RESULT.sum());
                                                     }
@@ -156,7 +156,7 @@ UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId,
             const __THIS = (thisArg || __TEST);
             const __RESULTS = new UnitTestResults("SUMME", __NAME, __TEST);
 
-            __LOG[1]("Starting tests for module '" + __NAME + "': " + __DESC);
+            __LOG[2]("Starting tests for module '" + __NAME + "': " + __DESC);
 
             try {
                 __LIBRESULTS[__NAME] = await __TFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
@@ -168,8 +168,8 @@ UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId,
             } finally {
                 __ALLRESULTS.merge(__RESULTS);  // aufaddieren...
 
-                __LOG[1]("Finished tests for module '" + __NAME + "':", __RESULTS.sum());
-                __LOG[5]("Total results after module '" + __NAME + "':", __ALLRESULTS.sum());
+                __LOG[2]("Finished tests for module '" + __NAME + "':", __RESULTS.sum());
+                __LOG[6]("Total results after module '" + __NAME + "':", __ALLRESULTS.sum());
 
                 // Ergebnis eintragen...
                 resultFun.call(__THIS, null, tableId, document);  // Leerzeile
@@ -185,8 +185,8 @@ UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId,
     }
 
     try {
-        __LOG[4]("Detailed results for all tests:", __LIBRESULTS);
-        __LOG[1]("Results for all tests:", __ALLRESULTS.sum());
+        __LOG[5]("Detailed results for all tests:", __LIBRESULTS);
+        __LOG[2]("Results for all tests:", __ALLRESULTS.sum());
 
         // Endergebnis eintragen...
         resultFun.call(thisArg, null, tableId, document);  // Leerzeile

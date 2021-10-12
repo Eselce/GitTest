@@ -44,7 +44,7 @@ function ScriptModule(meta) {
 
     const __DBMOD = { };
 
-    __LOG[5](__META);
+    __LOG[6](__META);
 
     // Infos zu diesem Script...
     addProps(__DBMOD, __META, __PROPS);

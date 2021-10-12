@@ -52,7 +52,7 @@
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 
-const __LOGLEVEL = 3;
+const __LOGLEVEL = 4;
 
 // Moegliche Optionen (hier die Standardwerte editieren oder ueber das Benutzermenu setzen):
 const __OPTCONFIG = {
@@ -310,7 +310,7 @@ function procSpielplan() {
             const __ROWS = getRows(2);
 
             if (! __ROWS) {
-                __LOG[0]("Kein Spielplan vorhanden!");
+                __LOG[1]("Kein Spielplan vorhanden!");
                 return;
             }
 

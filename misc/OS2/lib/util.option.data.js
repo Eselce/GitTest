@@ -126,7 +126,7 @@ function setOptName(opt, name) {
     const __NAME = getOptName(opt);
 
     if (__NAME !== name) {
-        __LOG[4]("RENAME " + __NAME + " => " + name);
+        __LOG[5]("RENAME " + __NAME + " => " + name);
 
         __CONFIG.Name = name;
     }
@@ -163,7 +163,7 @@ function getOptName(opt) {
 function setOptValue(opt, value) {
     if (opt !== undefined) {
         if (! opt.ReadOnly) {
-            __LOG[6](getOptName(opt) + ": " + __LOG.changed(opt.Value, value));
+            __LOG[8](getOptName(opt) + ": " + __LOG.changed(opt.Value, value));
 
             opt.Value = value;
         }
@@ -292,7 +292,7 @@ function promptNextOpt(opt, value = undefined, reload = false, freeValue = false
             }
         }
     } catch (ex) {
-        __LOG[0]("promptNextOpt: " + ex.message);
+        __LOG[1]("promptNextOpt: " + ex.message);
     }
 
     return __VALUE;

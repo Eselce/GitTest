@@ -83,7 +83,7 @@ function canUseMemory(memory = undefined) {
         __MEMORY.removeItem(__TESTITEM);
     }
 
-    __LOG[2]("canUseStorage(" + __STORAGE.Name + ") = " + ret);
+    __LOG[4]("canUseStorage(" + __STORAGE.Name + ") = " + ret);
 
     return ret;
 }
@@ -100,7 +100,7 @@ function getMemSize(memory = undefined) {
     if (__MEMORY !== undefined) {
         const __SIZE = safeStringify(__MEMORY).length;
 
-        __LOG[2]("MEM: " + __SIZE + " bytes");
+        __LOG[4]("MEM: " + __SIZE + " bytes");
         return __SIZE;
     } else {
         return 0;
@@ -109,11 +109,11 @@ function getMemSize(memory = undefined) {
 
 // Gibt rekursiv und detailliert die Groesse des benutzten Speichers fuer ein Objekt aus
 // value: (Enumerierbares) Objekt oder Wert, dessen Groesse gemessen wird
-// out: Logfunktion, etwa __LOG[4]
+// out: Logfunktion, etwa __LOG[5]
 // depth: Gewuenschte Rekursionstiefe (0 = nur dieses Objekt, -1 = alle Ebenen)
 // name: Name des Objekts
 function getMemUsage(value = undefined, out = undefined, depth = -1, name = '$') {
-    const __OUT = (out || __LOG[4]);
+    const __OUT = (out || __LOG[5]);
 
     if ((typeof value) === 'string') {
         const __SIZE = value.length;

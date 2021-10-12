@@ -70,7 +70,7 @@ function loadOption(opt, force = false) {
         if (opt.Loaded && ! __ISSHARED) {
             const __ERROR = "Error: Oprion '" + __NAME + "' bereits geladen!";
 
-            __LOG[0](__ERROR);
+            __LOG[1](__ERROR);
 
             return Promise.reject(__ERROR);
         }
@@ -90,7 +90,7 @@ function loadOption(opt, force = false) {
                 if (opt.Loaded || ! opt.Promise) {
                     showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", safeStringify(opt));
                 }
-                __LOG[5]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value));
+                __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value));
 
                 // Wert intern setzen...
                 const __VAL = setOptValue(opt, value);
@@ -118,7 +118,7 @@ function loadOptions(optSet, force = false) {
 
         if (! __OPT.Loaded) {
             const __PROMISE = loadOption(__OPT, force).then(value => {
-                    __LOG[5]("LOADED " + opt + " << " + value);
+                    __LOG[6]("LOADED " + opt + " << " + value);
 
                     return Promise.resolve({
                             'name'  : opt,
@@ -144,7 +144,7 @@ function deleteOption(opt, force = false, reset = true) {
     if (force || ! __CONFIG.Permanent) {
         const __NAME = getOptName(opt);
 
-        __LOG[4]("DELETE " + __NAME);
+        __LOG[5]("DELETE " + __NAME);
 
         return GM.deleteValue(__NAME).then(voidValue => {
                 if (reset || __CONFIG.AutoReset) {
@@ -229,14 +229,14 @@ function postfixName(name, postfix) {
 // return Promise auf diesen Vorgang
 async function renameOptions(optSet, optSelect, renameParam = undefined, renameFun = prefixName) {
     if (renameFun === undefined) {
-        __LOG[0]("RENAME: Illegale Funktion!");
+        __LOG[1]("RENAME: Illegale Funktion!");
     }
     for (let opt in optSelect) {
         const __OPTPARAMS = optSelect[opt];
         const __OPT = optSet[opt];
 
         if (__OPT === undefined) {
-            __LOG[0]("RENAME: Option '" + opt + "' nicht gefunden!");
+            __LOG[1]("RENAME: Option '" + opt + "' nicht gefunden!");
         } else {
             const __NAME = getOptName(__OPT);
             const __NEWNAME = renameFun(__NAME, renameParam);
@@ -287,7 +287,7 @@ function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false
         }
     } else {
         if (! (opt && opt.Loaded)) {
-            __LOG[0](`Warnung: loadOptValue(${getOptName(opt)}) erlaubt kein Nachladen!`);
+            __LOG[1](`Warnung: loadOptValue(${getOptName(opt)}) erlaubt kein Nachladen!`);
         }
 
         return getOptValue(opt, defValue);

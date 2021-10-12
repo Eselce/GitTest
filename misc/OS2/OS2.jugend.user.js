@@ -58,7 +58,7 @@
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 
-const __LOGLEVEL = 3;
+const __LOGLEVEL = 4;
 
 // Moegliche Optionen (hier die Standardwerte editieren oder ueber das Benutzermenu setzen):
 const __OPTCONFIG = {
@@ -904,7 +904,7 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
                         const __BOXDONATION = document.getElementsByTagName('option');
                         const __DONATION = getSelectionFromComboBox(__BOXDONATION, 10000, 'Number');
 
-                        __LOG[3]("Jugendf\xF6rderung: " + __DONATION + " Euro");
+                        __LOG[4]("Jugendf\xF6rderung: " + __DONATION + " Euro");
 
                         // ... und abspeichern...
                         setOpt(optSet.foerderung, __DONATION, false);
@@ -951,7 +951,7 @@ function init(playerRows, optSet, colIdx, offsetUpper = 1, offsetLower = 0, page
     const __CATIDS = __IDMAP.catIds;
     const __PLAYERS = [];
 
-    __LOG[5](__IDMAP);
+    __LOG[7](__IDMAP);
 
     for (let i = offsetUpper, j = 0; i < playerRows.length - offsetLower; i++) {
         const __CELLS = playerRows[i].cells;
@@ -1165,7 +1165,7 @@ function storePlayerDataColsFromHTML(playerRows, optSet, colDefs, offsetUpper = 
     for (let key in colDefs) {
         const __COLDEF = colDefs[key];
 
-        __LOG[7]('Schreibe ' + __COLDEF.name + ': ' + __DATA[key]);
+        __LOG[9]('Schreibe ' + __COLDEF.name + ': ' + __DATA[key]);
 
         setOpt(optSet[__COLDEF.name], __DATA[key], false);
     }
@@ -1254,74 +1254,6 @@ function getAufwertFromHTML(cells, colIdxAuf, shortForm = true) {
 }
 
 // ==================== Ende Abschnitt genereller Code zur Anzeige der Jugend ====================
-
-// ==================== Abschnitt fuer sonstige Parameter des Spielplans ====================
-
-const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uuml;ro von TEAM</b><br>LIGA LAND<a href=..."
-        'Zeile'  : 0,
-        'Spalte' : 1,
-        'start'  : " von ",
-        'middle' : "</b><br>",
-        'liga'   : ". Liga",
-        'land'   : ' ',
-        'end'    : "<a href="
-    };
-
-const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LAND</a></b>"
-        'Zeile'  : 0,
-        'Spalte' : 0,
-        'start'  : "<b>",
-        'middle' : " - ",
-        'liga'   : ". Liga",
-        'land'   : 'target="_blank">',
-        'end'    : "</a></b>"
-    };
-
-// Ermittelt, wie das eigene Team heisst und aus welchem Land bzw. Liga es kommt (zur Unterscheidung von Erst- und Zweitteam)
-// cell: Tabellenzelle mit den Parametern zum Team "startTEAMmiddleLIGA...landLANDend", LIGA = "#liga[ (A|B|C|D)]"
-// teamSeach: Muster fuer die Suche, die Eintraege fuer 'start', 'middle', 'liga', 'land' und 'end' enthaelt
-// return Im Beispiel { 'Team' : "TEAM", 'Liga' : "LIGA", 'Land' : "LAND", 'LdNr' : LAND-NUMMER, 'LgNr' : LIGA-NUMMER },
-//        z.B. { 'Team' : "Choromonets Odessa", 'Liga' : "1. Liga", 'Land' : "Ukraine", 'LdNr' : 20, 'LgNr' : 1 }
-function getTeamParamsFromTable(table, teamSearch = undefined) {
-    const __TEAMSEARCH   = getValue(teamSearch, __TEAMSEARCHHAUPT);
-    const __TEAMCELLROW  = getValue(__TEAMSEARCH.Zeile, 0);
-    const __TEAMCELLCOL  = getValue(__TEAMSEARCH.Spalte, 0);
-    const __TEAMCELLSTR  = (table === undefined) ? "" : table.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
-    const __SEARCHSTART  = __TEAMSEARCH.start;
-    const __SEARCHMIDDLE = __TEAMSEARCH.middle;
-    const __SEARCHLIGA   = __TEAMSEARCH.liga;
-    const __SEARCHLAND   = __TEAMSEARCH.land;
-    const __SEARCHEND    = __TEAMSEARCH.end;
-    const __INDEXSTART   = __TEAMCELLSTR.indexOf(__SEARCHSTART);
-    const __INDEXEND     = __TEAMCELLSTR.indexOf(__SEARCHEND);
-
-    let teamParams = __TEAMCELLSTR.substring(__INDEXSTART + __SEARCHSTART.length, __INDEXEND);
-    const __INDEXLIGA = teamParams.indexOf(__SEARCHLIGA);
-    const __INDEXMIDDLE = teamParams.indexOf(__SEARCHMIDDLE);
-
-    let land = ((~ __INDEXLIGA) ? teamParams.substring(__INDEXLIGA + __SEARCHLIGA.length) : undefined);
-    const __TEAMNAME = ((~ __INDEXMIDDLE) ? teamParams.substring(0, __INDEXMIDDLE) : undefined);
-    let liga = (((~ __INDEXLIGA) && (~ __INDEXMIDDLE)) ? teamParams.substring(__INDEXMIDDLE + __SEARCHMIDDLE.length) : undefined);
-
-    if (land !== undefined) {
-        if (land.charAt(2) === ' ') {    // Land z.B. hinter "2. Liga A " statt "1. Liga "
-            land = land.substr(2);
-        }
-        if (liga !== undefined) {
-            liga = liga.substring(0, liga.length - land.length);
-        }
-        const __INDEXLAND = land.indexOf(__SEARCHLAND);
-        if (~ __INDEXLAND) {
-            land = land.substr(__INDEXLAND + __SEARCHLAND.length);
-        }
-    }
-
-    const __TEAM = new Team(__TEAMNAME, land, liga);
-
-    return __TEAM;
-}
-
-// ==================== Ende Abschnitt fuer sonstige Parameter des Spielplans ====================
 
 // ==================== Hauptprogramm ====================
 
@@ -1424,9 +1356,9 @@ function procTeamuebersicht() {
         };
 
     if (getElement('transfer') !== undefined) {
-        __LOG[2]("Ziehen-Seite");
+        __LOG[1]("Ziehen-Seite");
     } else if (getRows(1) === undefined) {
-        __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+        __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
     } else {
         return buildOptions(__OPTCONFIG, __OPTSET, {
                                 'menuAnchor' : getTable(0, 'div'),
@@ -1578,7 +1510,7 @@ function procSpielereinzelwerte() {
         };
 
     if (getRows(1) === undefined) {
-        __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+        __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
     } else {
         return buildOptions(__OPTCONFIG, __OPTSET, {
                                 'menuAnchor' : getTable(0, 'div'),
@@ -1649,7 +1581,7 @@ function procOptSkill() {
         };
 
     if (getRows(1) === undefined) {
-        __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+        __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
     } else {
         return buildOptions(__OPTCONFIG, __OPTSET, {
                                 'menuAnchor' : getTable(0, 'div'),
