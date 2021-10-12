@@ -74,8 +74,11 @@ __LOG.init(window, 3);  // Zunaechst mal Loglevel 3, erneutes __LOG.init(window,
 // 8  * I info                  nicht-aufgeklappt
 // --
 // 9    D debug                 nicht-aufgeklappt   (low-prio)
---
+// --
 // ""   L table                 aufgeklappt     (erzwungene-7)
+// --
+// true   group
+// false  groupEnd
 
 // Filter (im Konsolenfenster):
 // E error  (i Kreis weiß rot gefüllt auf blassrot) error exception
@@ -87,7 +90,7 @@ __LOG.init(window, 3);  // Zunaechst mal Loglevel 3, erneutes __LOG.init(window,
 
 // Tabelle:
 // table    Tabelle mit name und value Spalte
-// 
+//
 // console-Befehle:
 // group/groupEnd/groupCollapsed
 // time/timeEnd/timeLog
