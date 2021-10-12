@@ -21,30 +21,83 @@
 // Ein Satz von Logfunktionen, die je nach Loglevel zur Verfuegung stehen. Aufruf: __LOG[level](text)
 const __LOG = {
                   'logFun'    : [
-                                    console.error,  // [0] Alert
-                                    console.error,  // [1] Error
-                                    console.log,    // [2] Log: Release
-                                    console.log,    // [3] Log: Info
-                                    console.log,    // [4] Log: Debug
-                                    console.log,    // [5] Log: Verbose
-                                    console.log,    // [6] Log: Very verbose
-                                    console.warn    // [7] Log: Testing
-                                ],
-                  'init'      : function(win, logLevel = 1) {
+                                    console.exception,  // [0] Error: Alert
+                                    console.error,      // [1] Error: Error
+                                    console.warn,       // [2] Warn:  Warning
+                                    console.trace,      // [3] Log:   Release
+                                    console.dir,        // [4] Log:   Info
+                                    console.log,        // [5] Log:   Log
+                                    console.dirxml,     // [6] Log:   Debug
+                                    console.table,      // [7] Log:   Verbose
+                                    console.info,       // [8] Info:  Very verbose
+                                    console.debug       // [9] Debug: Testing
+                                ],                      // [""] Log:  Table
+                                                        // [true]     {
+                                                        // [false]    }
+                  'init'      : function(win, logLevel = 3) {  // TODO: Parameter 'win' als Referenz-Window
                                     for (let level = 0; level < this.logFun.length; level++) {
                                         this[level] = ((level > logLevel) ? function() { } : this.logFun[level]);
                                     }
+                                    this[""]    = this.logFun[7];   // console.table
+                                    this[true]  = console.group;    // console.group
+                                    this[false] = console.groupEnd; // console.groupEnd
                                 },
                   'stringify' : safeStringify,      // JSON.stringify
-                  'changed'   : function(oldVal, newVal) {
-                                    const __OLDVAL = this.stringify(oldVal);
-                                    const __NEWVAL = this.stringify(newVal);
+                  'info'      : function(obj, showType = true, elementType = false) {
+                                    const __KEYSTRINGS = ! showType;  // kompakte Schreibweise ohne Typ
+                                    const __STEPIN = elementType;     // detailliertere Ausgabe der Elemente
+                                    const __SHOWLEN = true;           // Laenge/Groesse immer angeben
+
+                                    return getValStr(obj, __KEYSTRINGS, showType, __SHOWLEN, __STEPIN);
+                                },
+                  'changed'   : function(oldVal, newVal, showType, elementType) {
+                                    const __OLDVAL = this.info(oldVal, showType, elementType);      // this.stringify(oldVal)
+                                    const __NEWVAL = this.info(newVal, showType, elementType);      // this.stringify(newVal)
 
                                     return ((__OLDVAL !== __NEWVAL) ? __OLDVAL + " => " : "") + __NEWVAL;
                                 }
               };
 
 __LOG.init(window, 3);  // Zunaechst mal Loglevel 3, erneutes __LOG.init(window, __LOGLEVEL) im Hauptprogramm...
+
+// ==================== Notizen zum console-Objekt fuer Logging ====================
+
+// === Das console-Objekt ===
+// __LOG[level](text):
+// 0    E exception rot trace   nicht-aufgeklappt
+// 1  * E error     rot trace   nicht-aufgeklappt
+// --
+// 2  * W warn      gelb        nicht-aufgeklappt
+// --
+// 3    L trace         trace   aufgeklappt
+// 4    L dir                   aufgeklappt
+// 5  * L log                   nicht-aufgeklappt
+// 6    L dirxml                nicht-aufgeklappt
+// 7    L table                 aufgeklappt-bei-Daten
+// --
+// 8  * I info                  nicht-aufgeklappt
+// --
+// 9    D debug                 nicht-aufgeklappt   (low-prio)
+--
+// ""   L table                 aufgeklappt     (erzwungene-7)
+
+// Filter (im Konsolenfenster):
+// E error  (i Kreis weiß rot gefüllt auf blassrot) error exception
+// W warn   (i Dreieck gelb gefüllt auf blassgelb)  warn
+// L log    (leer)  log dir dirxml table trace (count timeEnd timeLog -time)
+// I info   (i Kreis schwarz weiß gefüllt)          info
+// D debug  (leer)                                  debug
+// - -      (leer)                                  (group -groupEnd)
+
+// Tabelle:
+// table    Tabelle mit name und value Spalte
+// 
+// console-Befehle:
+// group/groupEnd/groupCollapsed
+// time/timeEnd/timeLog
+// clear
+// count/countReset
+// assert
 
 // ==================== Abschnitt fuer safeStringify() ====================
 
