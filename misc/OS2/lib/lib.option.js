@@ -170,7 +170,7 @@ function setOptName(opt, name) {
     const __NAME = getOptName(opt);
 
     if (__NAME !== name) {
-        __LOG[4]("RENAME " + __NAME + " => " + name);
+        __LOG[5]("RENAME " + __NAME + " => " + name);
 
         __CONFIG.Name = name;
     }
@@ -207,7 +207,7 @@ function getOptName(opt) {
 function setOptValue(opt, value) {
     if (opt !== undefined) {
         if (! opt.ReadOnly) {
-            __LOG[6](getOptName(opt) + ": " + __LOG.changed(opt.Value, value));
+            __LOG[8](getOptName(opt) + ": " + __LOG.changed(opt.Value, value));
 
             opt.Value = value;
         }
@@ -336,7 +336,7 @@ function promptNextOpt(opt, value = undefined, reload = false, freeValue = false
             }
         }
     } catch (ex) {
-        __LOG[0]("promptNextOpt: " + ex.message);
+        __LOG[1]("promptNextOpt: " + ex.message);
     }
 
     return __VALUE;
@@ -478,7 +478,7 @@ function loadOption(opt, force = false) {
         if (opt.Loaded && ! __ISSHARED) {
             const __ERROR = "Error: Oprion '" + __NAME + "' bereits geladen!";
 
-            __LOG[0](__ERROR);
+            __LOG[1](__ERROR);
 
             return Promise.reject(__ERROR);
         }
@@ -498,7 +498,7 @@ function loadOption(opt, force = false) {
                 if (opt.Loaded || ! opt.Promise) {
                     showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", safeStringify(opt));
                 }
-                __LOG[5]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value));
+                __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value));
 
                 // Wert intern setzen...
                 const __VAL = setOptValue(opt, value);
@@ -526,7 +526,7 @@ function loadOptions(optSet, force = false) {
 
         if (! __OPT.Loaded) {
             const __PROMISE = loadOption(__OPT, force).then(value => {
-                    __LOG[5]("LOADED " + opt + " << " + value);
+                    __LOG[6]("LOADED " + opt + " << " + value);
 
                     return Promise.resolve({
                             'name'  : opt,
@@ -552,7 +552,7 @@ function deleteOption(opt, force = false, reset = true) {
     if (force || ! __CONFIG.Permanent) {
         const __NAME = getOptName(opt);
 
-        __LOG[4]("DELETE " + __NAME);
+        __LOG[5]("DELETE " + __NAME);
 
         return GM.deleteValue(__NAME).then(voidValue => {
                 if (reset || __CONFIG.AutoReset) {
@@ -637,14 +637,14 @@ function postfixName(name, postfix) {
 // return Promise auf diesen Vorgang
 async function renameOptions(optSet, optSelect, renameParam = undefined, renameFun = prefixName) {
     if (renameFun === undefined) {
-        __LOG[0]("RENAME: Illegale Funktion!");
+        __LOG[1]("RENAME: Illegale Funktion!");
     }
     for (let opt in optSelect) {
         const __OPTPARAMS = optSelect[opt];
         const __OPT = optSet[opt];
 
         if (__OPT === undefined) {
-            __LOG[0]("RENAME: Option '" + opt + "' nicht gefunden!");
+            __LOG[1]("RENAME: Option '" + opt + "' nicht gefunden!");
         } else {
             const __NAME = getOptName(__OPT);
             const __NEWNAME = renameFun(__NAME, renameParam);
@@ -695,7 +695,7 @@ function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false
         }
     } else {
         if (! (opt && opt.Loaded)) {
-            __LOG[0](`Warnung: loadOptValue(${getOptName(opt)}) erlaubt kein Nachladen!`);
+            __LOG[1](`Warnung: loadOptValue(${getOptName(opt)}) erlaubt kein Nachladen!`);
         }
 
         return getOptValue(opt, defValue);
@@ -795,7 +795,7 @@ function canUseMemory(memory = undefined) {
         __MEMORY.removeItem(__TESTITEM);
     }
 
-    __LOG[2]("canUseStorage(" + __STORAGE.Name + ") = " + ret);
+    __LOG[4]("canUseStorage(" + __STORAGE.Name + ") = " + ret);
 
     return ret;
 }
@@ -812,7 +812,7 @@ function getMemSize(memory = undefined) {
     if (__MEMORY !== undefined) {
         const __SIZE = safeStringify(__MEMORY).length;
 
-        __LOG[2]("MEM: " + __SIZE + " bytes");
+        __LOG[4]("MEM: " + __SIZE + " bytes");
         return __SIZE;
     } else {
         return 0;
@@ -821,11 +821,11 @@ function getMemSize(memory = undefined) {
 
 // Gibt rekursiv und detailliert die Groesse des benutzten Speichers fuer ein Objekt aus
 // value: (Enumerierbares) Objekt oder Wert, dessen Groesse gemessen wird
-// out: Logfunktion, etwa __LOG[4]
+// out: Logfunktion, etwa __LOG[5]
 // depth: Gewuenschte Rekursionstiefe (0 = nur dieses Objekt, -1 = alle Ebenen)
 // name: Name des Objekts
 function getMemUsage(value = undefined, out = undefined, depth = -1, name = '$') {
-    const __OUT = (out || __LOG[4]);
+    const __OUT = (out || __LOG[5]);
 
     if ((typeof value) === 'string') {
         const __SIZE = value.length;
@@ -1028,7 +1028,7 @@ function getStoredCmds(memory = undefined) {
             try {
                 value = JSON.parse(value);
             } catch (ex) {
-                __LOG[0]("getStoredCmds(): " + __CMD + " '" + __KEY + "' hat illegalen Wert '" + value + "'");
+                __LOG[1]("getStoredCmds(): " + __CMD + " '" + __KEY + "' hat illegalen Wert '" + value + "'");
                 // ... meist kann man den String selber aber speichern, daher kein "return"...
             }
 
@@ -1072,14 +1072,14 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
                 invalidated = true;
             }
             switch (__OPTACTION[__CMD]) {
-            case __OPTACTION.SET : __LOG[4]("SET '" + __KEY + "' " + __VAL);
+            case __OPTACTION.SET : __LOG[5]("SET '" + __KEY + "' " + __VAL);
                                    setStored(__KEY, __VAL, false, false, onFulfilled, onRejected);
                                    break;
-            case __OPTACTION.NXT : __LOG[4]("SETNEXT '" + __KEY + "' " + __VAL);
+            case __OPTACTION.NXT : __LOG[5]("SETNEXT '" + __KEY + "' " + __VAL);
                                    //setNextStored(__CONFIG.Choice, __KEY, __VAL, false, false, onFulfilled, onRejected);
                                    setStored(__KEY, __VAL, false, false, onFulfilled, onRejected);
                                    break;
-            case __OPTACTION.RST : __LOG[4]("RESET (delayed)");
+            case __OPTACTION.RST : __LOG[5]("RESET (delayed)");
                                    __LOADEDCMDS.push(__STORED);
                                    break;
             default :              break;
@@ -1087,9 +1087,9 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
         } else {
             switch (__OPTACTION[__CMD]) {
             case __OPTACTION.SET :
-            case __OPTACTION.NXT : __LOG[2]("SET/SETNEXT (undefined)");
+            case __OPTACTION.NXT : __LOG[3]("SET/SETNEXT (undefined)");
                                    break;
-            case __OPTACTION.RST : __LOG[4]("RESET");
+            case __OPTACTION.RST : __LOG[5]("RESET");
                                    await resetOptions(optSet, false);
                                    await loadOptions(optSet);  // Reset auf umbenannte Optionen anwenden!
                                    break;
@@ -1142,7 +1142,7 @@ function registerMenuOption(val, menuOn, funOn, keyOn, menuOff, funOff, keyOff) 
     const __ON  = (val ? '*' : "");
     const __OFF = (val ? "" : '*');
 
-    __LOG[3]("OPTION " + __ON + menuOn + __ON + " / " + __OFF + menuOff + __OFF);
+    __LOG[4]("OPTION " + __ON + menuOn + __ON + " / " + __OFF + menuOff + __OFF);
 
     if (val) {
         return Promise.resolve(GM.registerMenuCommand(menuOff, funOff, keyOff)).then(result => menuOn);
@@ -1169,7 +1169,7 @@ function registerNextMenuOption(val, arr, menu, fun, key) {
             options += " / " + value;
         }
     }
-    __LOG[3](options);
+    __LOG[4](options);
 
     return Promise.resolve(GM.registerMenuCommand(__MENU, fun, key)).then(result => __MENU);
 }
@@ -1188,7 +1188,7 @@ function registerDataOption(val, menu, fun, key, hidden = false, serial = true) 
     const __OPTIONS = (hidden ? "HIDDEN " : "") + "OPTION " + __MENU +
                       getValue(__VALUE, "", " = " + __VALUE);
 
-    __LOG[hidden ? 4 : 3](__OPTIONS);
+    __LOG[hidden ? 5 : 4](__OPTIONS);
 
     if (hidden) {
         return Promise.resolve(__VALUE);
@@ -1230,11 +1230,11 @@ function registerOption(opt) {
 // optSet: Gesetzte Optionen
 // return Promise auf void
 async function buildOptionMenu(optSet) {
-    __LOG[3]("buildOptionMenu()");
+    __LOG[4]("buildOptionMenu()");
 
     for (let opt in optSet) {
         await registerOption(optSet[opt]).then(
-                result => __LOG[6](`REGISTEROPTION[${opt}] = ${result}`),
+                result => __LOG[8](`REGISTEROPTION[${opt}] = ${result}`),
                 defaultCatch);
     }
 }
@@ -1718,7 +1718,7 @@ function addOptionForm(anchor, form = "", script = "") {
 // 'formWidth': Anzahl der Elemente pro Zeile
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
 function buildOptionForm(anchor, optSet, optParams = { }) {
-    __LOG[3]("buildOptionForm()");
+    __LOG[4]("buildOptionForm()");
 
     const __FORM = getOptionForm(optSet, optParams);
     const __SCRIPT = getOptionScript(optSet, optParams);
@@ -1789,7 +1789,7 @@ function initOptAction(optAction, item = undefined, optSet = undefined, optConfi
                                break;
         case __OPTACTION.RST : fun = function() {
                                        return resetOptions(optSet, __RELOAD).then(
-                                               result => __LOG[3]("RESETTING (" + result + ")..."),
+                                               result => __LOG[4]("RESETTING (" + result + ")..."),
                                                defaultCatch);
                                    };
                                break;
@@ -1986,7 +1986,7 @@ async function startOptions(optConfig, optSet = undefined, classification = unde
 function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
     // Anzeige im Benutzermenue...
     if (! optParams.hideMenu) {
-        buildOptionMenu(optSet).then(() => __LOG[3]("Menu OK"));
+        buildOptionMenu(optSet).then(() => __LOG[4]("Menu OK"));
     }
 
     // Anzeige auf der Seite...

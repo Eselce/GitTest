@@ -37,7 +37,7 @@ const __LOG = {
                                 ],                      // [""] Log:  Table
                                                         // [true]     {
                                                         // [false]    }
-                  'init'      : function(win, logLevel = 3) {  // TODO: Parameter 'win' als Referenz-Window
+                  'init'      : function(win, logLevel = 4) {  // TODO: Parameter 'win' als Referenz-Window
                                     for (let level = 0; level < this.logFun.length; level++) {
                                         this[level] = ((level > logLevel) ? function() { } : this.logFun[level]);
                                     }
@@ -61,7 +61,7 @@ const __LOG = {
                                 }
               };
 
-__LOG.init(window, 3);  // Zunaechst mal Loglevel 3, erneutes __LOG.init(window, __LOGLEVEL) im Hauptprogramm...
+__LOG.init(window, 4);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window, __LOGLEVEL) im Hauptprogramm...
 
 // ==================== Notizen zum console-Objekt fuer Logging ====================
 
@@ -654,7 +654,7 @@ function ScriptModule(meta) {
 
     const __DBMOD = { };
 
-    __LOG[5](__META);
+    __LOG[6](__META);
 
     // Infos zu diesem Script...
     addProps(__DBMOD, __META, __PROPS);
@@ -802,10 +802,10 @@ function defaultCatch(error) {
 // value: Zu speichernder String/Integer/Boolean-Wert
 // return Promise auf ein Objekt, das 'name' und 'value' der Operation enthaelt
 function storeValue(name, value) {
-    __LOG[4](name + " >> " + value);
+    __LOG[5](name + " >> " + value);
 
     return GM.setValue(name, value).then(voidValue => {
-            __LOG[5]("OK " + name + " >> " + value);
+            __LOG[6]("OK " + name + " >> " + value);
 
             return Promise.resolve({
                     'name'  : name,
@@ -820,11 +820,11 @@ function storeValue(name, value) {
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
 function summonValue(name, defValue = undefined) {
     return GM.getValue(name, defValue).then(value => {
-            __LOG[4](name + " << " + value);
+            __LOG[5](name + " << " + value);
 
             return Promise.resolve(value);
         }, ex => {
-            __LOG[0](name + ": " + ex.message);
+            __LOG[1](name + ": " + ex.message);
 
             return Promise.reject(ex);
         }, defaultCatch);
@@ -962,7 +962,7 @@ function addEvent(obj, type, callback, capture = false) {
     } else if (obj.attachEvent) {
         return obj.attachEvent('on' + type, callback);
     } else {
-        __LOG[0]("Could not add " + type + " event:");
+        __LOG[1]("Could not add " + type + " event:");
         __LOG[2](callback);
 
         return false;
@@ -981,7 +981,7 @@ function removeEvent(obj, type, callback, capture = false) {
     } else if (obj.detachEvent) {
         return obj.detachEvent('on' + type, callback);
     } else {
-        __LOG[0]("Could not remove " + type + " event:");
+        __LOG[1]("Could not remove " + type + " event:");
         __LOG[2](callback);
 
         return false;

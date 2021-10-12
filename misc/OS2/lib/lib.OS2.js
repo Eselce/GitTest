@@ -498,7 +498,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
             addProps(myTeam, __TEAM, myTeam.__TEAMITEMS);
             __LOG[2]("Gespeichert: " + safeStringify(myTeam));
         } else {
-            __LOG[4]("Team nicht ermittelt: " + safeStringify(__TEAM));
+            __LOG[3]("Team nicht ermittelt: " + safeStringify(__TEAM));
         }
     }
 
@@ -1041,13 +1041,13 @@ Class.define(PlayerRecord, Object, {
 
                                           if (__LASTZAT < 72) {  // U19
                                               this.warnDraw = new WarnDrawPlayer(this, getColor('STU'));  // rot
-                                              __LOG[4](this.getAge().toFixed(2), "rot");
+                                              __LOG[5](this.getAge().toFixed(2), "rot");
                                           } else if (__LASTZAT < Math.max(2, klasse) * 72) {  // Rest bis inkl. U18 (Liga 1 und 2) bzw. U17 (Liga 3)
                                               // do nothing
                                           } else if (__LASTZAT < (klasse + 1) * 72) {  // U17/U16 je nach Liga 2/3
                                               this.warnDrawAufstieg = new WarnDrawPlayer(this, getColor('OMI'));  // magenta
                                               this.warnDrawAufstieg.setAufstieg();
-                                              __LOG[4](this.getAge().toFixed(2), "magenta");
+                                              __LOG[5](this.getAge().toFixed(2), "magenta");
                                           }
                                       }
                                   },  // Ende this.createWarnDraw()
@@ -1141,7 +1141,7 @@ Class.define(PlayerRecord, Object, {
                                       } else if (this.zatAge !== undefined) {
                                           return this.zatAge;
                                       } else {
-                                          __LOG[4]("Empty getZatAge()");
+                                          __LOG[3]("Empty getZatAge()");
 
                                           return NaN;
                                       }
@@ -1438,7 +1438,7 @@ function sortPositionArray(array) {
 function ColumnManager(optSet, colIdx, showCol) {
     'use strict';
 
-    __LOG[3]("ColumnManager()");
+    __LOG[4]("ColumnManager()");
 
     const __SHOWCOL = getValue(showCol, true);
     const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
