@@ -191,8 +191,8 @@ Class.define(Classification, Object, {
     // loadOptions (Rest): PreInit/Rest runStoredCmds
     // updateScriptDB: startMemoryByOpt
     // showOptions: startMemoryByOpt renameOptions
-    // buildMenu: showOptions
-    // buildForm: showOptions
+    // buildOptionMenu: showOptions
+    // buildOptionForm: showOptions
 
 // Initialisiert die gesetzten Optionen und den Speicher und laedt die Optionen zum Start
 // optConfig: Konfiguration der Optionen
@@ -250,12 +250,12 @@ async function startOptions(optConfig, optSet = undefined, classification = unde
 function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
     // Anzeige im Benutzermenue...
     if (! optParams.hideMenu) {
-        buildMenu(optSet).then(() => __LOG[3]("Menu OK"));
+        buildOptionMenu(optSet).then(() => __LOG[3]("Menu OK"));
     }
 
     // Anzeige auf der Seite...
     if ((optParams.menuAnchor !== undefined) && (myOptMem !== __OPTMEMINAKTIVE)) {
-        buildForm(optParams.menuAnchor, optSet, optParams);
+        buildOptionForm(optParams.menuAnchor, optSet, optParams);
     }
 
     return optSet;

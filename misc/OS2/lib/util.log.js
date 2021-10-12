@@ -12,6 +12,9 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
+/* eslint no-multi-spaces: 0 */
+/* eslint dot-notation: 0 */
+
 // ==================== Abschnitt fuer Logging ====================
 
 // Ein Satz von Logfunktionen, die je nach Loglevel zur Verfuegung stehen. Aufruf: __LOG[level](text)

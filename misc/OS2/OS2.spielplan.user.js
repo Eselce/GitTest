@@ -375,7 +375,7 @@ function procSpielplan() {
                     } else {
                         stats = "";
                     }
-                    __CELLS[__COLUMNINDEX.Zus].innerHTML = getZusatz(__ZAT, true) + stats;
+                    __CELLS[__COLUMNINDEX.Zus].innerHTML = getZatLink(__ZAT, __TEAMCLASS.team, true) + stats;
                 }
 
                 if (getOptValue(__OPTSET.sepMonths) && (__ZAT.ZAT % __ZAT.anzZATpMonth === 0) && (i < __ROWS.length - __ROWOFFSETLOWER - 1)) {

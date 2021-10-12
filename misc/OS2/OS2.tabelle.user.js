@@ -45,6 +45,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.table.js
 // ==/UserScript==
 
 // ECMAScript 6:
@@ -556,35 +557,6 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 // ==================== Ende Abschnitt fuer Optionen ====================
 
 // ==================== Abschnitt fuer sonstige Parameter ====================
-
-// Ermittelt aus dem Inhalt einer Tabellenzelle die Zusaetze zum Team-Namen und liefert diese zurueck
-// cell: Tabellenzelle mit dem Team-Namen und -Zusaetzen
-// return Array mit den Flags zum Team
-function getTeamFlagsFromCell(cell) {
-    const __FLAGS = cell.textContent.replace(/[^\[]*\[?([MPNAZ,OSCE]*)\]?$/, "$1");
-
-    return (__FLAGS ? __FLAGS.split(',') : undefined);
-}
-
-// Ermittelt den Team-Namen aus einer Tabellenzelle und liefert diesen zurueck
-// cell: Tabellenzelle mit dem Team-Namen
-// return Team-Name des Teams
-function getTeamNameFromCell(cell) {
-    const __NAME = cell.textContent.replace(/\s\[[MPNAZ,OSCE]+\]$/, "");
-
-    return __NAME;
-}
-
-// Ermittelt die OS2-Team-ID aus einer Tabellenzelle mit Link auf das Team und liefert diese ID zurueck
-// cell: Tabellenzelle mit Teamlink
-// return OS2-Team-ID des Teams
-function getTeamIdFromCell(cell) {
-    //const __IDSTR = cell.innerHTML.replace(/.*javascript:teaminfo\((\d+)\).*/, "$1");  // eigentlich .* ...
-    const __IDSTR = cell.innerHTML.replace(/.*javascript:teaminfo\((\d+)\)[^]*/, "$1");  // ... aber es gibt Vereinsnamen mit '\n' drin!
-    const __TEAMID = Number(__IDSTR);
-
-    return __TEAMID;
-}
 
 // Ermittelt die TLA des Landes aus einer Tabellenzelle mit Link auf die Flagge des Landes und liefert diese TLA zurueck
 // cell: Tabellenzelle mit Flaggenlink

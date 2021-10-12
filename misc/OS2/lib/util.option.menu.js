@@ -120,8 +120,8 @@ function registerOption(opt) {
 // Baut das Benutzermenu auf (asynchron im Hintergrund)
 // optSet: Gesetzte Optionen
 // return Promise auf void
-async function buildMenu(optSet) {
-    __LOG[3]("buildMenu()");
+async function buildOptionMenu(optSet) {
+    __LOG[3]("buildOptionMenu()");
 
     for (let opt in optSet) {
         await registerOption(optSet[opt]).then(

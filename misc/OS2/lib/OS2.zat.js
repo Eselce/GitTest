@@ -198,12 +198,13 @@ function incZAT(currZAT, anzZAT = 1) {
     }
 }
 
-// Liefert die Beschreibung des Spiels am aktuellen ZAT
-// currZAT: Enthaelt den Spielplanzeiger auf den aktuellen ZAT
-// showLink: Angabe, ob ein Link eingefuegt werden soll
-// return Beschreibung des Spiels
-function getZusatz(currZAT, showLink = true) {
-    const __LINK = new RundenLink(currZAT.saison, __TEAMCLASS.team);
+// Liefert die Beschreibung des Spiels am aktuellen ZAT fuer das Team
+// currZAT: Enthaelt den Spielplanzeiger auf den aktuellen ZAT (inkl. Saison)
+// team: Enthaelt ein Team-Objekt fuer das betroffene Team
+// showLink: Angabe, ob ein Link eingefuegt werden soll (normalerweise true)
+// return Beschreibung des Spiels mit Link, falls showLink true ist, sonst Leerstring
+function getZatLink(currZAT, team, showLink = true) {
+    const __LINK = new RundenLink(currZAT.saison, team);
 
     if (currZAT.gameType === 'Liga') {
         if (currZAT.ZAT < 70) {
