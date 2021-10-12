@@ -1229,8 +1229,8 @@ function registerOption(opt) {
 // Baut das Benutzermenu auf (asynchron im Hintergrund)
 // optSet: Gesetzte Optionen
 // return Promise auf void
-async function buildMenu(optSet) {
-    __LOG[3]("buildMenu()");
+async function buildOptionMenu(optSet) {
+    __LOG[3]("buildOptionMenu()");
 
     for (let opt in optSet) {
         await registerOption(optSet[opt]).then(
@@ -1636,7 +1636,7 @@ function groupData(data, byFun, filterFun, sortFun) {
 // 'formWidth': Anzahl der Elemente pro Zeile
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
 // return String mit dem HTML-Code
-function getForm(optSet, optParams = { }) {
+function getOptionForm(optSet, optParams = { }) {
     const __FORM = '<form id="options" method="POST"><table><tbody><tr>';
     const __FORMEND = '</tr></tbody></table></form>';
     const __FORMWIDTH = getValue(optParams.formWidth, 3);
@@ -1672,13 +1672,13 @@ function getForm(optSet, optParams = { }) {
     return form;
 }
 
-// Fuegt das Script in die Seite ein
+// Fuegt das Script fuer die Optionen in die Seite ein
 // optSet: Gesetzte Optionen
 // optParams: Eventuell notwendige Parameter
 // 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // return String mit dem HTML-Code fuer das Script
-function getScript(optSet, optParams = { }) {
+function getOptionScript(optSet, optParams = { }) {
     //const __SCRIPT = '<script type="text/javascript">function activateMenu() { console.log("TADAAA!"); }</script>';
     //const __SCRIPT = '<script type="text/javascript">\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionRst(key, value) { alert("RESET"); }\n</script>';
     //const __FORM = '<form method="POST"><input type="button" id="showOpts" name="showOpts" value="Optionen anzeigen" onclick="activateMenu()" /></form>';
@@ -1696,7 +1696,7 @@ const __FORMS = { };
 // anchor: Element, das als Anker fuer die Anzeige dient
 // form: HTML-Form des Optionsmenu (hinten angefuegt)
 // script: Script mit Reaktionen
-function addForm(anchor, form = "", script = "") {
+function addOptionForm(anchor, form = "", script = "") {
     const __OLDFORM = __FORMS[anchor];
     const __REST = (__OLDFORM === undefined) ? anchor.innerHTML :
                    anchor.innerHTML.substring(0, anchor.innerHTML.length - __OLDFORM.Script.length - __OLDFORM.Form.length);
@@ -1717,13 +1717,13 @@ function addForm(anchor, form = "", script = "") {
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // 'formWidth': Anzahl der Elemente pro Zeile
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
-function buildForm(anchor, optSet, optParams = { }) {
-    __LOG[3]("buildForm()");
+function buildOptionForm(anchor, optSet, optParams = { }) {
+    __LOG[3]("buildOptionForm()");
 
-    const __FORM = getForm(optSet, optParams);
-    const __SCRIPT = getScript(optSet, optParams);
+    const __FORM = getOptionForm(optSet, optParams);
+    const __SCRIPT = getOptionScript(optSet, optParams);
 
-    addForm(anchor, __FORM, __SCRIPT);
+    addOptionForm(anchor, __FORM, __SCRIPT);
 }
 
 // ==================== Ende Abschnitt fuer Optionen auf der Seite ====================
@@ -1927,8 +1927,8 @@ Class.define(Classification, Object, {
     // loadOptions (Rest): PreInit/Rest runStoredCmds
     // updateScriptDB: startMemoryByOpt
     // showOptions: startMemoryByOpt renameOptions
-    // buildMenu: showOptions
-    // buildForm: showOptions
+    // buildOptionMenu: showOptions
+    // buildOptionForm: showOptions
 
 // Initialisiert die gesetzten Optionen und den Speicher und laedt die Optionen zum Start
 // optConfig: Konfiguration der Optionen
@@ -1986,12 +1986,12 @@ async function startOptions(optConfig, optSet = undefined, classification = unde
 function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
     // Anzeige im Benutzermenue...
     if (! optParams.hideMenu) {
-        buildMenu(optSet).then(() => __LOG[3]("Menu OK"));
+        buildOptionMenu(optSet).then(() => __LOG[3]("Menu OK"));
     }
 
     // Anzeige auf der Seite...
     if ((optParams.menuAnchor !== undefined) && (myOptMem !== __OPTMEMINAKTIVE)) {
-        buildForm(optParams.menuAnchor, optSet, optParams);
+        buildOptionForm(optParams.menuAnchor, optSet, optParams);
     }
 
     return optSet;

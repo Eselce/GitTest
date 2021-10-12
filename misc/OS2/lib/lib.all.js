@@ -16,6 +16,9 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
+/* eslint no-multi-spaces: 0 */
+/* eslint dot-notation: 0 */
+
 // ==================== Abschnitt fuer Logging ====================
 
 // Ein Satz von Logfunktionen, die je nach Loglevel zur Verfuegung stehen. Aufruf: __LOG[level](text)
@@ -3527,8 +3530,8 @@ function registerOption(opt) {
 // Baut das Benutzermenu auf (asynchron im Hintergrund)
 // optSet: Gesetzte Optionen
 // return Promise auf void
-async function buildMenu(optSet) {
-    __LOG[3]("buildMenu()");
+async function buildOptionMenu(optSet) {
+    __LOG[3]("buildOptionMenu()");
 
     for (let opt in optSet) {
         await registerOption(optSet[opt]).then(
@@ -3934,7 +3937,7 @@ function groupData(data, byFun, filterFun, sortFun) {
 // 'formWidth': Anzahl der Elemente pro Zeile
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
 // return String mit dem HTML-Code
-function getForm(optSet, optParams = { }) {
+function getOptionForm(optSet, optParams = { }) {
     const __FORM = '<form id="options" method="POST"><table><tbody><tr>';
     const __FORMEND = '</tr></tbody></table></form>';
     const __FORMWIDTH = getValue(optParams.formWidth, 3);
@@ -3970,13 +3973,13 @@ function getForm(optSet, optParams = { }) {
     return form;
 }
 
-// Fuegt das Script in die Seite ein
+// Fuegt das Script fuer die Optionen in die Seite ein
 // optSet: Gesetzte Optionen
 // optParams: Eventuell notwendige Parameter
 // 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // return String mit dem HTML-Code fuer das Script
-function getScript(optSet, optParams = { }) {
+function getOptionScript(optSet, optParams = { }) {
     //const __SCRIPT = '<script type="text/javascript">function activateMenu() { console.log("TADAAA!"); }</script>';
     //const __SCRIPT = '<script type="text/javascript">\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionRst(key, value) { alert("RESET"); }\n</script>';
     //const __FORM = '<form method="POST"><input type="button" id="showOpts" name="showOpts" value="Optionen anzeigen" onclick="activateMenu()" /></form>';
@@ -3994,7 +3997,7 @@ const __FORMS = { };
 // anchor: Element, das als Anker fuer die Anzeige dient
 // form: HTML-Form des Optionsmenu (hinten angefuegt)
 // script: Script mit Reaktionen
-function addForm(anchor, form = "", script = "") {
+function addOptionForm(anchor, form = "", script = "") {
     const __OLDFORM = __FORMS[anchor];
     const __REST = (__OLDFORM === undefined) ? anchor.innerHTML :
                    anchor.innerHTML.substring(0, anchor.innerHTML.length - __OLDFORM.Script.length - __OLDFORM.Form.length);
@@ -4015,13 +4018,13 @@ function addForm(anchor, form = "", script = "") {
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // 'formWidth': Anzahl der Elemente pro Zeile
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
-function buildForm(anchor, optSet, optParams = { }) {
-    __LOG[3]("buildForm()");
+function buildOptionForm(anchor, optSet, optParams = { }) {
+    __LOG[3]("buildOptionForm()");
 
-    const __FORM = getForm(optSet, optParams);
-    const __SCRIPT = getScript(optSet, optParams);
+    const __FORM = getOptionForm(optSet, optParams);
+    const __SCRIPT = getOptionScript(optSet, optParams);
 
-    addForm(anchor, __FORM, __SCRIPT);
+    addOptionForm(anchor, __FORM, __SCRIPT);
 }
 
 // ==================== Ende Abschnitt fuer Optionen auf der Seite ====================
@@ -4225,8 +4228,8 @@ Class.define(Classification, Object, {
     // loadOptions (Rest): PreInit/Rest runStoredCmds
     // updateScriptDB: startMemoryByOpt
     // showOptions: startMemoryByOpt renameOptions
-    // buildMenu: showOptions
-    // buildForm: showOptions
+    // buildOptionMenu: showOptions
+    // buildOptionForm: showOptions
 
 // Initialisiert die gesetzten Optionen und den Speicher und laedt die Optionen zum Start
 // optConfig: Konfiguration der Optionen
@@ -4284,12 +4287,12 @@ async function startOptions(optConfig, optSet = undefined, classification = unde
 function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
     // Anzeige im Benutzermenue...
     if (! optParams.hideMenu) {
-        buildMenu(optSet).then(() => __LOG[3]("Menu OK"));
+        buildOptionMenu(optSet).then(() => __LOG[3]("Menu OK"));
     }
 
     // Anzeige auf der Seite...
     if ((optParams.menuAnchor !== undefined) && (myOptMem !== __OPTMEMINAKTIVE)) {
-        buildForm(optParams.menuAnchor, optSet, optParams);
+        buildOptionForm(optParams.menuAnchor, optSet, optParams);
     }
 
     return optSet;
@@ -6338,6 +6341,39 @@ Class.define(TableManager, Object, {
 
 // ==================== Ende Abschnitt fuer Klasse TableManager ====================
 
+// ==================== Abschnitt fuer Hilfsfunktionen zum Zugriff auf die Seite ====================
+
+// Ermittelt aus dem Inhalt einer Tabellenzelle die Zusaetze zum Team-Namen und liefert diese zurueck
+// cell: Tabellenzelle mit dem Team-Namen und -Zusaetzen
+// return Array mit den Flags zum Team
+function getTeamFlagsFromCell(cell) {
+    const __FLAGS = cell.textContent.replace(/[^\[]*\[?([MPNAZ,OSCE]*)\]?$/, "$1");
+
+    return (__FLAGS ? __FLAGS.split(',') : undefined);
+}
+
+// Ermittelt den Team-Namen aus einer Tabellenzelle und liefert diesen zurueck
+// cell: Tabellenzelle mit dem Team-Namen
+// return Team-Name des Teams
+function getTeamNameFromCell(cell) {
+    const __NAME = cell.textContent.replace(/\s\[[MPNAZ,OSCE]+\]$/, "");
+
+    return __NAME;
+}
+
+// Ermittelt die OS2-Team-ID aus einer Tabellenzelle mit Link auf das Team und liefert diese ID zurueck
+// cell: Tabellenzelle mit Teamlink
+// return OS2-Team-ID des Teams
+function getTeamIdFromCell(cell) {
+    //const __IDSTR = cell.innerHTML.replace(/.*javascript:teaminfo\((\d+)\).*/, "$1");  // eigentlich .* ...
+    const __IDSTR = cell.innerHTML.replace(/.*javascript:teaminfo\((\d+)\)[^]*/, "$1");  // ... aber es gibt Vereinsnamen mit '\n' drin!
+    const __TEAMID = Number(__IDSTR);
+
+    return __TEAMID;
+}
+
+// ==================== Ende Abschnitt fuer Hilfsfunktionen zum Zugriff auf die Seite ====================
+
 // *** EOF ***
 
 /*** Ende OS2.class.table.js ***/
@@ -6632,12 +6668,13 @@ function incZAT(currZAT, anzZAT = 1) {
     }
 }
 
-// Liefert die Beschreibung des Spiels am aktuellen ZAT
-// currZAT: Enthaelt den Spielplanzeiger auf den aktuellen ZAT
-// showLink: Angabe, ob ein Link eingefuegt werden soll
-// return Beschreibung des Spiels
-function getZusatz(currZAT, showLink = true) {
-    const __LINK = new RundenLink(currZAT.saison, __TEAMCLASS.team);
+// Liefert die Beschreibung des Spiels am aktuellen ZAT fuer das Team
+// currZAT: Enthaelt den Spielplanzeiger auf den aktuellen ZAT (inkl. Saison)
+// team: Enthaelt ein Team-Objekt fuer das betroffene Team
+// showLink: Angabe, ob ein Link eingefuegt werden soll (normalerweise true)
+// return Beschreibung des Spiels mit Link, falls showLink true ist, sonst Leerstring
+function getZatLink(currZAT, team, showLink = true) {
+    const __LINK = new RundenLink(currZAT.saison, team);
 
     if (currZAT.gameType === 'Liga') {
         if (currZAT.ZAT < 70) {
