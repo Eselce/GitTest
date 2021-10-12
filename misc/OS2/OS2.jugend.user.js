@@ -26,10 +26,12 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.script.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
@@ -44,6 +46,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.warndraw.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.player.js
