@@ -104,7 +104,7 @@ const GM_info = {  // Mock GM_info data
             <h3>Unit-Tests zur Benutzerscript-Bibliothek f&uuml;r Online-Soccer 2.0 unter dem Greasemonkey AddOn</h3>
 
             || <a onClick="UnitTest.runAll();return false;" href="index.html">Unit-Tests starten</a>
-            || <a onClick="document.getElementById('UnitTest').innerHTML='';return false;" href="index.html">Tabelle leeren</a>
+            || <a onClick="(document.getElementById('UnitTest') || { }).innerHTML='';return false;" href="index.html">Tabelle leeren</a>
             ||
         </div>
         <br />
