@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.scripts
 // @namespace    http://github.com/
-// @version      0.10
+// @version      0.10+lib
 // @copyright    2017+
 // @author       Sven Loges (SLC)
 // @description  Analysiert die Scripts auf GitHub

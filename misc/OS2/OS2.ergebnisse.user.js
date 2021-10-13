@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.ergebnisse
 // @namespace    http://os.ongapo.com/
-// @version      0.32+WE+
+// @version      0.32+lib
 // @copyright    2016+
 // @author       Sven Loges (SLC)
 // @description  Aktiviert als Standard die Option "Ergebnisse anzeigen" fuer Online Soccer 2.0

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.tabelle
 // @namespace    http://os.ongapo.com/
-// @version      0.11+WE+
+// @version      0.11+lib
 // @copyright    2016+
 // @author       Sven Loges (SLC)
 // @description  Tabellen-Script fuer Online Soccer 2.0

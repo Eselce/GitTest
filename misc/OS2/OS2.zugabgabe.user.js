@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.zugabgabe
 // @namespace    http://os.ongapo.com/
-// @version      0.10+WE+
+// @version      0.10+lib
 // @copyright    2017+
 // @author       Sven Loges (SLC)
 // @description  Zugabgabe-Script fuer Online Soccer 2.0

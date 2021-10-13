@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.haupt
 // @namespace    http://os.ongapo.com/
-// @version      0.41+WE+
+// @version      0.41+lib
 // @copyright    2016+
 // @author       Sven Loges (SLC)
 // @description  Managerbuero-Abschnitt aus dem Master-Script fuer Online Soccer 2.0
