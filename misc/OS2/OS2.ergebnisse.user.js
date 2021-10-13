@@ -18,6 +18,7 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_info
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
@@ -43,7 +44,9 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
 // ==/UserScript==
 
 // ECMAScript 6:

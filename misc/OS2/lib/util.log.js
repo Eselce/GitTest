@@ -5,6 +5,7 @@
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Logging und safeStringify()
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // ==/UserScript==
 
