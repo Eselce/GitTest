@@ -9,9 +9,9 @@
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit ASSERT-Funktionen aller Art und AssertFailed
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
-// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // ==/UserScript==
 
