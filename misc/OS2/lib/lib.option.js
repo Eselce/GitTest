@@ -171,7 +171,7 @@ function setOptName(opt, name) {
     const __NAME = getOptName(opt);
 
     if (__NAME !== name) {
-        __LOG[5]("RENAME " + __NAME + " => " + name);
+        __LOG[5]("RENAME " + __LOG.changed(__NAME, name, false, false));
 
         __CONFIG.Name = name;
     }
@@ -208,7 +208,7 @@ function getOptName(opt) {
 function setOptValue(opt, value) {
     if (opt !== undefined) {
         if (! opt.ReadOnly) {
-            __LOG[8](getOptName(opt) + ": " + __LOG.changed(opt.Value, value));
+            __LOG[8](getOptName(opt) + ": " + __LOG.changed(opt.Value, value, true, false));
 
             opt.Value = value;
         }
@@ -433,9 +433,9 @@ function promptNextOptByName(optSet, item, value = undefined, reload = false, fr
 // opt: Zu invalidierende Option
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf resultierenden Wert
-function invalidateOpt(opt, force = false) {
+function invalidateOpt(opt, force = false, reload = true) {
     return Promise.resolve(opt.Promise).then(value => {
-            if (opt.Loaded && ! opt.ReadOnly) {
+            if (opt.Loaded && reload && ! opt.ReadOnly) {
                 const __CONFIG = getOptConfig(opt);
 
                 // Wert "ungeladen"...
@@ -455,11 +455,11 @@ function invalidateOpt(opt, force = false) {
 // optSet: Object mit den Optionen
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf Object mit den geladenen Optionen
-async function invalidateOpts(optSet, force = false) {
+async function invalidateOpts(optSet, force = false, reload = true) {
     for (let opt in optSet) {
         const __OPT = optSet[opt];
 
-        await invalidateOpt(__OPT, force);
+        await invalidateOpt(__OPT, force, reload);
     }
 
     return optSet;
@@ -492,7 +492,7 @@ function loadOption(opt, force = false) {
         } else {
             value = (__CONFIG.Serial ?
                             deserialize(__NAME, __DEFAULT) :
-                            GM.getValue(__NAME, __DEFAULT));
+                            summonValue(__NAME, __DEFAULT));
         }
 
         opt.Promise = Promise.resolve(value).then(value => {
@@ -500,7 +500,7 @@ function loadOption(opt, force = false) {
                 if (opt.Loaded || ! opt.Promise) {
                     showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", safeStringify(opt));
                 }
-                __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value));
+                __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value, true, true));
 
                 // Wert intern setzen...
                 const __VAL = setOptValue(opt, value);
@@ -528,7 +528,7 @@ function loadOptions(optSet, force = false) {
 
         if (! __OPT.Loaded) {
             const __PROMISE = loadOption(__OPT, force).then(value => {
-                    __LOG[6]("LOADED " + opt + " << " + value);
+                    __LOG[6]("LOADED " + __LOG.info(opt, false, false) + " << " + __LOG.info(value, true, false));
 
                     return Promise.resolve({
                             'name'  : opt,
@@ -553,13 +553,14 @@ function deleteOption(opt, force = false, reset = true) {
 
     if (force || ! __CONFIG.Permanent) {
         const __NAME = getOptName(opt);
+        const __VALUE = getOptValue(opt, undefined, false);
+        let newValue;
 
-        __LOG[5]("DELETE " + __NAME);
-
-        return GM.deleteValue(__NAME).then(voidValue => {
+        return discardValue(__NAME).then(voidValue => {
                 if (reset || __CONFIG.AutoReset) {
-                    setOptValue(opt, initOptValue(__CONFIG));
+                    newValue = setOptValue(opt, initOptValue(__CONFIG));
                 }
+                __LOG[6]("OK DELETE " + __LOG.changed(__VALUE, newValue, true, false));
             }, defaultCatch);
     }
 
@@ -585,6 +586,41 @@ async function deleteOptions(optSet, optSelect = undefined, force = false, reset
     return Promise.resolve();
 }
 
+// Speichert eine (ueber Menu) gesetzte Option (ggfs. erneut)
+// opt: Gesetzte Option
+// return Promise von setOptValue() (oder void)
+function saveOption(opt) {
+    const __CONFIG = getOptConfig(opt);
+
+    if (__CONFIG !== undefined) {
+        const __NAME = getOptName(opt);
+        const __VALUE = getOptValue(opt);
+
+        __LOG[4]("SAVE " + __NAME);
+
+        return setOpt(opt, __VALUE, false);
+    }
+
+    return Promise.resolve();
+}
+
+// Speichert die (ueber Menu) gesetzten Optionen im Speicher
+// optSet: Gesetzte Optionen
+// optSelect: Liste von ausgewaehlten Optionen, true = speichern, false = nicht speichern
+// return Promise auf diesen Vorgang
+async function saveOptions(optSet, optSelect = undefined) {
+    const __SAVEALL = ((optSelect === undefined) || (optSelect === true));
+    const __OPTSELECT = getValue(optSelect, { });
+
+    for (let opt in optSet) {
+        if (getValue(__OPTSELECT[opt], __SAVEALL)) {
+            await saveOption(optSet[opt]);
+        }
+    }
+
+    return Promise.resolve();
+}
+
 // Benennt eine Option um und laedt sie ggfs. nach
 // opt: Gesetzte Option
 // name: Neu zu setzender Name (Speicheradresse)
@@ -595,11 +631,11 @@ async function renameOption(opt, name, reload = false, force = false) {
     const __NAME = getOptName(opt);
 
     if (__NAME !== name) {
-        await deleteOption(opt, true, ! reload);
+        await deleteOption(opt, true, false);
 
         setOptName(opt, name);
 
-        await invalidateOpt(opt, opt.Loaded);
+        await invalidateOpt(opt, opt.Loaded, reload);
 
         if (reload) {
             opt.Loaded = false;
@@ -1883,32 +1919,68 @@ function initOptions(optConfig, optSet = undefined, preInit = undefined) {
 // ==================== Abschnitt fuer Klasse Classification ====================
 
 // Basisklasse fuer eine Klassifikation der Optionen nach Kriterium (z.B. Erst- und Zweitteam oder Fremdteam)
-function Classification() {
+function Classification(prefix) {
     'use strict';
 
     this.renameFun = prefixName;
-    //this.renameParamFun = undefined;
+    this.prefix = (prefix || 'old');
     this.optSet = undefined;
     this.optSelect = { };
 }
 
 Class.define(Classification, Object, {
-                    'renameOptions' : function() {
-                                          const __PARAM = this.renameParamFun();
+                    'renameOptions'  : function() {
+                                           const __PARAM = this.renameParamFun();
 
-                                          if (__PARAM !== undefined) {
-                                              // Klassifizierte Optionen umbenennen...
-                                              return renameOptions(this.optSet, this.optSelect, __PARAM, this.renameFun);
-                                          } else {
-                                              return Promise.resolve();
-                                          }
-                                      },
-                    'deleteOptions' : function(ignList) {
-                                          const __OPTSELECT = addProps([], this.optSelect, null, ignList);
+                                           if (__PARAM !== undefined) {
+                                               // Klassifizierte Optionen umbenennen...
+                                               return renameOptions(this.optSet, this.optSelect, __PARAM, this.renameFun);
+                                           } else {
+                                               return Promise.resolve();
+                                           }
+                                       },
+                    'saveOptions'    : function(ignList) {
+                                           const __OPTSELECT = optSelect(this.optSelect, ignList);
 
-                                          return deleteOptions(this.optSet, __OPTSELECT, true, true);
-                                      }
+                                           return saveOptions(this.optSet, __OPTSELECT);
+                                       },
+                    'deleteOptions'  : function(ignList) {
+                                           const __OPTSELECT = optSelect(this.optSelectl, ignList);
+
+                                           return deleteOptions(this.optSet, __OPTSELECT, true, true);
+                                       },
+                    'prefixParamFun' : function() {
+                                           // Parameter fuer 'prefixName': Prefix "old:"
+                                           return ((this.prefix !== undefined) ? this.prefix + ':' : this.prefix);
+                                       },
+                    'renameParamFun' : function() {
+                                           // Parameter fuer 'renameFun': Default ist 'prefixName' ("old:")
+                                           return this.prefixParamFun();
+                                       }
                 });
+
+// Wandelt ein Array von Options-Schluesseln (props) in das optSelect-Format { 'key1' : true, 'key2' : true, ... }
+// props: Array von Keys
+// return Mapping mit Eintraegen, in denen die Keys auf true gesetzt sind: { 'key1' : true, 'key2' : true, ... }
+function optSelectFromProps(props) {
+    const __RET = { };
+
+    if (props) {
+        props.map(item => (__RET[item] = true));
+    }
+
+    return __RET;
+}
+
+// Errechnet aus einer Ausswahlliste und einer Ignore-Liste eine resultierende Liste im optSelect-Format
+// selList: Mapping von auf true gesetzten Eintraegen (optSelect), die eine Grundmenge darstellen
+// ignList: Mapping von auf true gesetzten Eintraegen (optSelect), die aus obiger Liste ausgetragen werden sollen
+// return Resultierendes Mapping mit Eintraegen (optSelect), in denen die Keys auf true gesetzt sind: { 'key1' : true, 'key2' : true, ... }
+function optSelect(selList, ignList) {
+    const __PROPS = addProps([], selList, null, ignList);
+
+    return optSelectFromProps(__PROPS);
+}
 
 // ==================== Ende Abschnitt fuer Klasse Classification ====================
 

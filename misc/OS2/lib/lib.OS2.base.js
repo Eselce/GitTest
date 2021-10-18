@@ -404,6 +404,8 @@ function TeamClassification() {
 
     Classification.call(this);
 
+    this.prefix = undefined;
+
     this.team = undefined;
     this.teamParams = undefined;
 }
@@ -414,10 +416,12 @@ Class.define(TeamClassification, Classification, {
 
                                            if (__MYTEAM.LdNr) {
                                                // Prefix fuer die Optionen mit gesonderten Behandlung...
-                                               return __MYTEAM.LdNr.toString() + '.' + __MYTEAM.LgNr.toString() + ':';
+                                               this.prefix = __MYTEAM.LdNr.toString() + '.' + __MYTEAM.LgNr.toString();
                                            } else {
-                                               return undefined;
+                                               this.prefix = undefined;
                                            }
+
+                                           return this.prefixParamFun();
                                        }
                 });
 

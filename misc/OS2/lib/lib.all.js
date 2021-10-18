@@ -54,11 +54,11 @@ const __LOG = {
 
                                     return getValStr(obj, __KEYSTRINGS, showType, __SHOWLEN, __STEPIN);
                                 },
-                  'changed'   : function(oldVal, newVal, showType, elementType) {
+                  'changed'   : function(oldVal, newVal, showType, elementType, delim = " => ") {
                                     const __OLDVAL = this.info(oldVal, showType, elementType);      // this.stringify(oldVal)
                                     const __NEWVAL = this.info(newVal, showType, elementType);      // this.stringify(newVal)
 
-                                    return ((__OLDVAL !== __NEWVAL) ? __OLDVAL + " => " : "") + __NEWVAL;
+                                    return ((__OLDVAL !== __NEWVAL) ? __OLDVAL + delim : "") + __NEWVAL;
                                 }
               };
 
@@ -676,9 +676,9 @@ function getAllProperties(obj) {
 
 // ==================== Ende Abschnitt fuer diverse Utilities fuer Function-Prototypes ====================
 
-// ==================== Abschnitt fuer diverse Funktionen, die bekannte Prototypes erweitern ====================
+// ==================== Abschnitt mit Ergaenzungen und Polyfills zu Standardobjekten ====================
 
-// Kompatibilitaetsfunktion zur Ermittlung des Namens einer Funktion (falle <Function>.name nicht vorhanden ist)
+// Kompatibilitaetsfunktion zur Ermittlung des Namens einer Funktion (falls <Function>.name nicht vorhanden ist)
 if (Function.prototype.name === undefined) {
     Object.defineProperty(Function.prototype, 'name', {
             get : function() {
@@ -709,7 +709,7 @@ String.prototype.format = function() {
                                     });
 };
 
-// ==================== Ende Abschnitt fuer diverse Funktionen, die bekannte Prototypes erweitern ====================
+// ==================== Ende Abschnitt mit Ergaenzungen und Polyfills zu Standardobjekten ====================
 
 // *** EOF ***
 
@@ -999,6 +999,42 @@ function defaultCatch(error) {
 /* jshint esnext: true */
 /* jshint moz: true */
 
+// ==================== Konfigurations-Abschnitt fuer Speicherung (GM.setValue, GM.deleteValue) ====================
+
+const __GMWRITE = true;
+
+// ==================== Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
+
+// Generator-Funktion: Liefert eine ausgewählte GM-Funktion
+// action: Name der Funktion im GM-Objekt
+// label: Ausgabe-Titel
+// condition: Bedingung fuer die Auswahl
+// altAction: Alternative zu Parameter 'action' im Falle "condition === false"
+// level: Ausgabe-Loglevel
+// return Ausgewaehlte GM-Funktion
+function GM_function(action, label, condition = true, altAction = undefined, level = 8) {
+    return function(...args) {
+        __LOG[level]((condition ? '+' : '-') + ' ' + label + ' ' + __LOG.info(args[0], false, false));
+        return GM[condition ? action : altAction](...args);
+    }
+}
+
+// Umlenkung von Speicherung und Loeschung auf nicht-inversible 'getValue'-Funktion.
+// Falls __GMWRITE false ist, wird nicht geschrieben, bei true werden Optionen gespeichert.
+// TODO: Dynamische Variante
+const __GETVALUE = GM_function('getValue', 'GET');
+const __SETVALUE = GM_function('setValue', 'SET', __GMWRITE, 'getValue');
+const __DELETEVALUE = GM_function('deleteValue', 'DELETE', __GMWRITE, 'getValue');
+const __LISTVALUES = GM_function('listValues', 'KEYS');
+
+if (__GMWRITE) {
+    __LOG[0]("Schreiben von Optionen wurde AKTIVIERT!");
+} else {
+    __LOG[0]("Schreiben von Optionen wurde DEAKTIVIERT!");
+}
+
+// ==================== Ende Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
+
 // ==================== Abschnitt fuer die Sicherung und das Laden von Daten ====================
 
 // Speichert einen String/Integer/Boolean-Wert unter einem Namen ab
@@ -1008,14 +1044,18 @@ function defaultCatch(error) {
 function storeValue(name, value) {
     __LOG[5](name + " >> " + value);
 
-    return GM.setValue(name, value).then(voidValue => {
+    return __SETVALUE(name, value).then(voidValue => {
             __LOG[6]("OK " + name + " >> " + value);
 
             return Promise.resolve({
                     'name'  : name,
                     'value' : value
                 });
-        }, defaultCatch);
+        }, ex => {
+            __LOG[1](name + ": " + ex.message);
+
+            return Promise.reject(ex);
+        });
 }
 
 // Holt einen String/Integer/Boolean-Wert unter einem Namen zurueck
@@ -1023,7 +1063,7 @@ function storeValue(name, value) {
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
 function summonValue(name, defValue = undefined) {
-    return GM.getValue(name, defValue).then(value => {
+    return __GETVALUE(name, defValue).then(value => {
             __LOG[5](name + " << " + value);
 
             return Promise.resolve(value);
@@ -1031,7 +1071,38 @@ function summonValue(name, defValue = undefined) {
             __LOG[1](name + ": " + ex.message);
 
             return Promise.reject(ex);
-        }, defaultCatch);
+        });
+}
+
+// Entfernt einen String/Integer/Boolean-Wert, der unter einem Namen gespeichert ist
+// name: GM.deleteValue()-Name, unter dem die Daten gespeichert wurden
+// return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
+function discardValue(name) {
+    __LOG[5]("DELETE " + __LOG.info(name, false, false));
+
+    return __DELETEVALUE(name).then(value => {
+            __LOG[5]("OK DELETE " + name);
+
+            return Promise.resolve(value);
+        }, ex => {
+            __LOG[1](name + ": " + ex.message);
+
+            return Promise.reject(ex);
+        });
+}
+
+// Listet die Namen aller Orte auf, unter der ein String/Integer/Boolean-Wert gespeichert ist
+// return Promise fuer ein Array von GM.listValues()-Namen, unter denen String/Integer/Boolean-Werte gespeichert sind
+function keyValues() {
+    return __LISTVALUES().then(keys => {
+            __LOG[5]("KEYS:", keys);
+
+            return Promise.resolve(keys);
+        }, ex => {
+            __LOG[1]("KEYS: " + ex.message);
+
+            return Promise.reject(ex);
+        });
 }
 
 // Speichert einen beliebiegen (strukturierten) Wert unter einem Namen ab
@@ -2474,7 +2545,7 @@ function setOptName(opt, name) {
     const __NAME = getOptName(opt);
 
     if (__NAME !== name) {
-        __LOG[5]("RENAME " + __NAME + " => " + name);
+        __LOG[5]("RENAME " + __LOG.changed(__NAME, name, false, false));
 
         __CONFIG.Name = name;
     }
@@ -2511,7 +2582,7 @@ function getOptName(opt) {
 function setOptValue(opt, value) {
     if (opt !== undefined) {
         if (! opt.ReadOnly) {
-            __LOG[8](getOptName(opt) + ": " + __LOG.changed(opt.Value, value));
+            __LOG[8](getOptName(opt) + ": " + __LOG.changed(opt.Value, value, true, false));
 
             opt.Value = value;
         }
@@ -2736,9 +2807,9 @@ function promptNextOptByName(optSet, item, value = undefined, reload = false, fr
 // opt: Zu invalidierende Option
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf resultierenden Wert
-function invalidateOpt(opt, force = false) {
+function invalidateOpt(opt, force = false, reload = true) {
     return Promise.resolve(opt.Promise).then(value => {
-            if (opt.Loaded && ! opt.ReadOnly) {
+            if (opt.Loaded && reload && ! opt.ReadOnly) {
                 const __CONFIG = getOptConfig(opt);
 
                 // Wert "ungeladen"...
@@ -2758,11 +2829,11 @@ function invalidateOpt(opt, force = false) {
 // optSet: Object mit den Optionen
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf Object mit den geladenen Optionen
-async function invalidateOpts(optSet, force = false) {
+async function invalidateOpts(optSet, force = false, reload = true) {
     for (let opt in optSet) {
         const __OPT = optSet[opt];
 
-        await invalidateOpt(__OPT, force);
+        await invalidateOpt(__OPT, force, reload);
     }
 
     return optSet;
@@ -2795,7 +2866,7 @@ function loadOption(opt, force = false) {
         } else {
             value = (__CONFIG.Serial ?
                             deserialize(__NAME, __DEFAULT) :
-                            GM.getValue(__NAME, __DEFAULT));
+                            summonValue(__NAME, __DEFAULT));
         }
 
         opt.Promise = Promise.resolve(value).then(value => {
@@ -2803,7 +2874,7 @@ function loadOption(opt, force = false) {
                 if (opt.Loaded || ! opt.Promise) {
                     showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", safeStringify(opt));
                 }
-                __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value));
+                __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value, true, true));
 
                 // Wert intern setzen...
                 const __VAL = setOptValue(opt, value);
@@ -2831,7 +2902,7 @@ function loadOptions(optSet, force = false) {
 
         if (! __OPT.Loaded) {
             const __PROMISE = loadOption(__OPT, force).then(value => {
-                    __LOG[6]("LOADED " + opt + " << " + value);
+                    __LOG[6]("LOADED " + __LOG.info(opt, false, false) + " << " + __LOG.info(value, true, false));
 
                     return Promise.resolve({
                             'name'  : opt,
@@ -2856,13 +2927,14 @@ function deleteOption(opt, force = false, reset = true) {
 
     if (force || ! __CONFIG.Permanent) {
         const __NAME = getOptName(opt);
+        const __VALUE = getOptValue(opt, undefined, false);
+        let newValue;
 
-        __LOG[5]("DELETE " + __NAME);
-
-        return GM.deleteValue(__NAME).then(voidValue => {
+        return discardValue(__NAME).then(voidValue => {
                 if (reset || __CONFIG.AutoReset) {
-                    setOptValue(opt, initOptValue(__CONFIG));
+                    newValue = setOptValue(opt, initOptValue(__CONFIG));
                 }
+                __LOG[6]("OK DELETE " + __LOG.changed(__VALUE, newValue, true, false));
             }, defaultCatch);
     }
 
@@ -2888,6 +2960,41 @@ async function deleteOptions(optSet, optSelect = undefined, force = false, reset
     return Promise.resolve();
 }
 
+// Speichert eine (ueber Menu) gesetzte Option (ggfs. erneut)
+// opt: Gesetzte Option
+// return Promise von setOptValue() (oder void)
+function saveOption(opt) {
+    const __CONFIG = getOptConfig(opt);
+
+    if (__CONFIG !== undefined) {
+        const __NAME = getOptName(opt);
+        const __VALUE = getOptValue(opt);
+
+        __LOG[4]("SAVE " + __NAME);
+
+        return setOpt(opt, __VALUE, false);
+    }
+
+    return Promise.resolve();
+}
+
+// Speichert die (ueber Menu) gesetzten Optionen im Speicher
+// optSet: Gesetzte Optionen
+// optSelect: Liste von ausgewaehlten Optionen, true = speichern, false = nicht speichern
+// return Promise auf diesen Vorgang
+async function saveOptions(optSet, optSelect = undefined) {
+    const __SAVEALL = ((optSelect === undefined) || (optSelect === true));
+    const __OPTSELECT = getValue(optSelect, { });
+
+    for (let opt in optSet) {
+        if (getValue(__OPTSELECT[opt], __SAVEALL)) {
+            await saveOption(optSet[opt]);
+        }
+    }
+
+    return Promise.resolve();
+}
+
 // Benennt eine Option um und laedt sie ggfs. nach
 // opt: Gesetzte Option
 // name: Neu zu setzender Name (Speicheradresse)
@@ -2898,11 +3005,11 @@ async function renameOption(opt, name, reload = false, force = false) {
     const __NAME = getOptName(opt);
 
     if (__NAME !== name) {
-        await deleteOption(opt, true, ! reload);
+        await deleteOption(opt, true, false);
 
         setOptName(opt, name);
 
-        await invalidateOpt(opt, opt.Loaded);
+        await invalidateOpt(opt, opt.Loaded, reload);
 
         if (reload) {
             opt.Loaded = false;
@@ -4186,32 +4293,68 @@ function initOptions(optConfig, optSet = undefined, preInit = undefined) {
 // ==================== Abschnitt fuer Klasse Classification ====================
 
 // Basisklasse fuer eine Klassifikation der Optionen nach Kriterium (z.B. Erst- und Zweitteam oder Fremdteam)
-function Classification() {
+function Classification(prefix) {
     'use strict';
 
     this.renameFun = prefixName;
-    //this.renameParamFun = undefined;
+    this.prefix = (prefix || 'old');
     this.optSet = undefined;
     this.optSelect = { };
 }
 
 Class.define(Classification, Object, {
-                    'renameOptions' : function() {
-                                          const __PARAM = this.renameParamFun();
+                    'renameOptions'  : function() {
+                                           const __PARAM = this.renameParamFun();
 
-                                          if (__PARAM !== undefined) {
-                                              // Klassifizierte Optionen umbenennen...
-                                              return renameOptions(this.optSet, this.optSelect, __PARAM, this.renameFun);
-                                          } else {
-                                              return Promise.resolve();
-                                          }
-                                      },
-                    'deleteOptions' : function(ignList) {
-                                          const __OPTSELECT = addProps([], this.optSelect, null, ignList);
+                                           if (__PARAM !== undefined) {
+                                               // Klassifizierte Optionen umbenennen...
+                                               return renameOptions(this.optSet, this.optSelect, __PARAM, this.renameFun);
+                                           } else {
+                                               return Promise.resolve();
+                                           }
+                                       },
+                    'saveOptions'    : function(ignList) {
+                                           const __OPTSELECT = optSelect(this.optSelect, ignList);
 
-                                          return deleteOptions(this.optSet, __OPTSELECT, true, true);
-                                      }
+                                           return saveOptions(this.optSet, __OPTSELECT);
+                                       },
+                    'deleteOptions'  : function(ignList) {
+                                           const __OPTSELECT = optSelect(this.optSelectl, ignList);
+
+                                           return deleteOptions(this.optSet, __OPTSELECT, true, true);
+                                       },
+                    'prefixParamFun' : function() {
+                                           // Parameter fuer 'prefixName': Prefix "old:"
+                                           return ((this.prefix !== undefined) ? this.prefix + ':' : this.prefix);
+                                       },
+                    'renameParamFun' : function() {
+                                           // Parameter fuer 'renameFun': Default ist 'prefixName' ("old:")
+                                           return this.prefixParamFun();
+                                       }
                 });
+
+// Wandelt ein Array von Options-Schluesseln (props) in das optSelect-Format { 'key1' : true, 'key2' : true, ... }
+// props: Array von Keys
+// return Mapping mit Eintraegen, in denen die Keys auf true gesetzt sind: { 'key1' : true, 'key2' : true, ... }
+function optSelectFromProps(props) {
+    const __RET = { };
+
+    if (props) {
+        props.map(item => (__RET[item] = true));
+    }
+
+    return __RET;
+}
+
+// Errechnet aus einer Ausswahlliste und einer Ignore-Liste eine resultierende Liste im optSelect-Format
+// selList: Mapping von auf true gesetzten Eintraegen (optSelect), die eine Grundmenge darstellen
+// ignList: Mapping von auf true gesetzten Eintraegen (optSelect), die aus obiger Liste ausgetragen werden sollen
+// return Resultierendes Mapping mit Eintraegen (optSelect), in denen die Keys auf true gesetzt sind: { 'key1' : true, 'key2' : true, ... }
+function optSelect(selList, ignList) {
+    const __PROPS = addProps([], selList, null, ignList);
+
+    return optSelectFromProps(__PROPS);
+}
 
 // ==================== Ende Abschnitt fuer Klasse Classification ====================
 
@@ -4712,6 +4855,8 @@ function TeamClassification() {
 
     Classification.call(this);
 
+    this.prefix = undefined;
+
     this.team = undefined;
     this.teamParams = undefined;
 }
@@ -4722,10 +4867,12 @@ Class.define(TeamClassification, Classification, {
 
                                            if (__MYTEAM.LdNr) {
                                                // Prefix fuer die Optionen mit gesonderten Behandlung...
-                                               return __MYTEAM.LdNr.toString() + '.' + __MYTEAM.LgNr.toString() + ':';
+                                               this.prefix = __MYTEAM.LdNr.toString() + '.' + __MYTEAM.LgNr.toString();
                                            } else {
-                                               return undefined;
+                                               this.prefix = undefined;
                                            }
+
+                                           return this.prefixParamFun();
                                        }
                 });
 

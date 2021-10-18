@@ -54,11 +54,11 @@ const __LOG = {
 
                                     return getValStr(obj, __KEYSTRINGS, showType, __SHOWLEN, __STEPIN);
                                 },
-                  'changed'   : function(oldVal, newVal, showType, elementType) {
+                  'changed'   : function(oldVal, newVal, showType, elementType, delim = " => ") {
                                     const __OLDVAL = this.info(oldVal, showType, elementType);      // this.stringify(oldVal)
                                     const __NEWVAL = this.info(newVal, showType, elementType);      // this.stringify(newVal)
 
-                                    return ((__OLDVAL !== __NEWVAL) ? __OLDVAL + " => " : "") + __NEWVAL;
+                                    return ((__OLDVAL !== __NEWVAL) ? __OLDVAL + delim : "") + __NEWVAL;
                                 }
               };
 
@@ -676,9 +676,9 @@ function getAllProperties(obj) {
 
 // ==================== Ende Abschnitt fuer diverse Utilities fuer Function-Prototypes ====================
 
-// ==================== Abschnitt fuer diverse Funktionen, die bekannte Prototypes erweitern ====================
+// ==================== Abschnitt mit Ergaenzungen und Polyfills zu Standardobjekten ====================
 
-// Kompatibilitaetsfunktion zur Ermittlung des Namens einer Funktion (falle <Function>.name nicht vorhanden ist)
+// Kompatibilitaetsfunktion zur Ermittlung des Namens einer Funktion (falls <Function>.name nicht vorhanden ist)
 if (Function.prototype.name === undefined) {
     Object.defineProperty(Function.prototype, 'name', {
             get : function() {
@@ -709,7 +709,7 @@ String.prototype.format = function() {
                                     });
 };
 
-// ==================== Ende Abschnitt fuer diverse Funktionen, die bekannte Prototypes erweitern ====================
+// ==================== Ende Abschnitt mit Ergaenzungen und Polyfills zu Standardobjekten ====================
 
 // *** EOF ***
 
@@ -999,6 +999,42 @@ function defaultCatch(error) {
 /* jshint esnext: true */
 /* jshint moz: true */
 
+// ==================== Konfigurations-Abschnitt fuer Speicherung (GM.setValue, GM.deleteValue) ====================
+
+const __GMWRITE = true;
+
+// ==================== Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
+
+// Generator-Funktion: Liefert eine ausgewählte GM-Funktion
+// action: Name der Funktion im GM-Objekt
+// label: Ausgabe-Titel
+// condition: Bedingung fuer die Auswahl
+// altAction: Alternative zu Parameter 'action' im Falle "condition === false"
+// level: Ausgabe-Loglevel
+// return Ausgewaehlte GM-Funktion
+function GM_function(action, label, condition = true, altAction = undefined, level = 8) {
+    return function(...args) {
+        __LOG[level]((condition ? '+' : '-') + ' ' + label + ' ' + __LOG.info(args[0], false, false));
+        return GM[condition ? action : altAction](...args);
+    }
+}
+
+// Umlenkung von Speicherung und Loeschung auf nicht-inversible 'getValue'-Funktion.
+// Falls __GMWRITE false ist, wird nicht geschrieben, bei true werden Optionen gespeichert.
+// TODO: Dynamische Variante
+const __GETVALUE = GM_function('getValue', 'GET');
+const __SETVALUE = GM_function('setValue', 'SET', __GMWRITE, 'getValue');
+const __DELETEVALUE = GM_function('deleteValue', 'DELETE', __GMWRITE, 'getValue');
+const __LISTVALUES = GM_function('listValues', 'KEYS');
+
+if (__GMWRITE) {
+    __LOG[0]("Schreiben von Optionen wurde AKTIVIERT!");
+} else {
+    __LOG[0]("Schreiben von Optionen wurde DEAKTIVIERT!");
+}
+
+// ==================== Ende Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
+
 // ==================== Abschnitt fuer die Sicherung und das Laden von Daten ====================
 
 // Speichert einen String/Integer/Boolean-Wert unter einem Namen ab
@@ -1008,14 +1044,18 @@ function defaultCatch(error) {
 function storeValue(name, value) {
     __LOG[5](name + " >> " + value);
 
-    return GM.setValue(name, value).then(voidValue => {
+    return __SETVALUE(name, value).then(voidValue => {
             __LOG[6]("OK " + name + " >> " + value);
 
             return Promise.resolve({
                     'name'  : name,
                     'value' : value
                 });
-        }, defaultCatch);
+        }, ex => {
+            __LOG[1](name + ": " + ex.message);
+
+            return Promise.reject(ex);
+        });
 }
 
 // Holt einen String/Integer/Boolean-Wert unter einem Namen zurueck
@@ -1023,7 +1063,7 @@ function storeValue(name, value) {
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
 function summonValue(name, defValue = undefined) {
-    return GM.getValue(name, defValue).then(value => {
+    return __GETVALUE(name, defValue).then(value => {
             __LOG[5](name + " << " + value);
 
             return Promise.resolve(value);
@@ -1031,7 +1071,38 @@ function summonValue(name, defValue = undefined) {
             __LOG[1](name + ": " + ex.message);
 
             return Promise.reject(ex);
-        }, defaultCatch);
+        });
+}
+
+// Entfernt einen String/Integer/Boolean-Wert, der unter einem Namen gespeichert ist
+// name: GM.deleteValue()-Name, unter dem die Daten gespeichert wurden
+// return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
+function discardValue(name) {
+    __LOG[5]("DELETE " + __LOG.info(name, false, false));
+
+    return __DELETEVALUE(name).then(value => {
+            __LOG[5]("OK DELETE " + name);
+
+            return Promise.resolve(value);
+        }, ex => {
+            __LOG[1](name + ": " + ex.message);
+
+            return Promise.reject(ex);
+        });
+}
+
+// Listet die Namen aller Orte auf, unter der ein String/Integer/Boolean-Wert gespeichert ist
+// return Promise fuer ein Array von GM.listValues()-Namen, unter denen String/Integer/Boolean-Werte gespeichert sind
+function keyValues() {
+    return __LISTVALUES().then(keys => {
+            __LOG[5]("KEYS:", keys);
+
+            return Promise.resolve(keys);
+        }, ex => {
+            __LOG[1]("KEYS: " + ex.message);
+
+            return Promise.reject(ex);
+        });
 }
 
 // Speichert einen beliebiegen (strukturierten) Wert unter einem Namen ab
