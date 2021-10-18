@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.spielbericht.XXL
 // @namespace    http://os.ongapo.com/
-// @version      0.70beta3+WE
+// @version      0.71beta3
 // @copyright    2013+
 // @author       Andreas Eckes (Strindheim BK) / Michael Bertram / Sven Loges (SLC)
 // @description  OS 2.0 - Ergaenzt Summen- und Durchschnittswerte bei den Spielerstatistiken im Spielbericht / Zaehlt Textbausteine / Quoten mit Nachkomma / Leere Zeilen nicht genullt / Fenstergroesse

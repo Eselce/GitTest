@@ -870,20 +870,20 @@ const __TEAMCLASS = new TeamClassification();
 
 // Optionen mit Daten, die ZAT- und Team-bezogen gemerkt werden...
 __TEAMCLASS.optSelect = {
-                            'datenZat'        : true,
-                            'oldDatenZat'     : true,
-                            'fingerprints'    : true,
-                            'birthdays'       : true,
-                            'tClasses'        : true,
-                            'progresses'      : true,
-                            'ziehAnz'         : true,
-                            'ziehAnzAufstieg' : true,
-                            'zatAges'         : true,
-                            'trainiert'       : true,
-                            'positions'       : true,
-                            'skills'          : true,
-                            'foerderung'      : true
-                        };
+        'datenZat'        : true,
+        'oldDatenZat'     : true,
+        'fingerprints'    : true,
+        'birthdays'       : true,
+        'tClasses'        : true,
+        'progresses'      : true,
+        'ziehAnz'         : true,
+        'ziehAnzAufstieg' : true,
+        'zatAges'         : true,
+        'trainiert'       : true,
+        'positions'       : true,
+        'skills'          : true,
+        'foerderung'      : true
+    };
 
 // Behandelt die Optionen und laedt das Benutzermenu
 // optConfig: Konfiguration der Optionen

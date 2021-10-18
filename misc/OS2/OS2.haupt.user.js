@@ -175,9 +175,9 @@ const __TEAMCLASS = new TeamClassification();
 
 // Optionen mit Daten, die ZAT- und Team-bezogen gemerkt werden...
 __TEAMCLASS.optSelect = {
-                       'datenZat'   : true,
-                       'ligaSize'   : true
-                   };
+        'datenZat'   : true,
+        'ligaSize'   : true
+    };
 
 // Behandelt die Optionen und laedt das Benutzermenu
 // optConfig: Konfiguration der Optionen
