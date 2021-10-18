@@ -165,8 +165,8 @@ const __OPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (wird von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = { };
+// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
+const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
 
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);

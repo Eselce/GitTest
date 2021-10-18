@@ -21,7 +21,6 @@
 // @grant        GM_deleteValue
 // @grant        GM_registerMenuCommand
 // @grant        GM_info
-// _require      https://eselce.github.io/GitTest/misc/OS2/lib/lib.all.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
@@ -60,7 +59,7 @@
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 
-const __LOGLEVEL = 7;
+const __LOGLEVEL = 9;
 
 // Moegliche Optionen (hier die Standardwerte editieren oder ueber das Benutzermenu setzen):
 const __OPTCONFIG = {
@@ -756,7 +755,7 @@ const __OPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (wird von initOptions() angelegt und von loadOptions() gefuellt):
+// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
 const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
 
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
