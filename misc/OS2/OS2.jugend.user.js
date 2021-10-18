@@ -1217,14 +1217,6 @@ function getSkillsFromHTML(cells, colIdx) {
     return __RESULT;
 }
 
-// Liest aus, ob der Spieler Torwart oder Feldspieler ist
-// cells: Die Zellen einer Zeile
-// colIdxClass: Spaltenindex einer fuer TOR eingefaerbten Zelle
-// return Angabe, der Spieler Torwart oder Feldspieler ist
-function isGoalieFromHTML(cells, colIdxClass) {
-    return (cells[colIdxClass].className === 'TOR');
-}
-
 // Konvertiert den Aufwertungstext einer Zelle auf der Jugend-Teamuebersicht
 // value: Der Inhalt dieser Zeile ("+1 SKI +1 OPT" bzw. "+2 SKI)
 // cell: Zelle, in der der Text stand (optional)

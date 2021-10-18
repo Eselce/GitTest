@@ -5330,6 +5330,21 @@ function setErgebnisFromCell(currZAT, cell) {
     return currZAT;
 }
 
+// Liest aus, ob der Spieler Torwart oder Feldspieler ist (Version mit Zelle)
+// cell: Eine fuer TOR eingefaerbte Zelle
+// return Angabe, der Spieler Torwart oder Feldspieler ist
+function isGoalieFromCell(cell) {
+    return (cell.className === 'TOR');
+}
+
+// Liest aus, ob der Spieler Torwart oder Feldspieler ist (Version mit Zell-Array)
+// cells: Die Zellen einer Zeile
+// colIdxClass: Spaltenindex einer fuer TOR eingefaerbten Zelle (Default: 0)
+// return Angabe, der Spieler Torwart oder Feldspieler ist
+function isGoalieFromHTML(cells, colIdxClass = 0) {
+    return isGoalieFromCell(cells[colIdxClass]);
+}
+
 // ==================== Ende Abschnitt fuer Parameter von den OS2-Seiten ====================
 
 // *** EOF ***
