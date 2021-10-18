@@ -300,7 +300,7 @@
 // ==UserScript==
 // @name         OS2.jugend
 // @namespace    http://os.ongapo.com/
-// @version      0.73+lib
+// @version      0.74+lib
 // @copyright    2013+
 // @author       Sven Loges (SLC) / Andreas Eckes (Strindheim BK)
 // @description  Jugendteam-Script fuer Online Soccer 2.0
@@ -424,7 +424,7 @@
 // ==UserScript==
 // @name         OS2.spielbericht.XXL
 // @namespace    http://os.ongapo.com/
-// @version      0.70beta3+WE
+// @version      0.71beta3
 // @copyright    2013+
 // @author       Andreas Eckes (Strindheim BK) / Michael Bertram / Sven Loges (SLC)
 // @description  OS 2.0 - Ergaenzt Summen- und Durchschnittswerte bei den Spielerstatistiken im Spielbericht / Zaehlt Textbausteine / Quoten mit Nachkomma / Leere Zeilen nicht genullt / Fenstergroesse
@@ -505,7 +505,7 @@
 // ==UserScript==
 // @name         OS2.tabelle
 // @namespace    http://os.ongapo.com/
-// @version      0.11+lib
+// @version      0.12+lib
 // @copyright    2016+
 // @author       Sven Loges (SLC)
 // @description  Tabellen-Script fuer Online Soccer 2.0
@@ -556,6 +556,56 @@
 // ==/UserScript==
 					`, 'training' : String.raw`
 // ==UserScript==
+// @name         OS2.training
+// @namespace    http://os.ongapo.com/
+// @version      0.30beta4+lib
+// @copyright    2013+
+// @author       Sven Loges (SLC) / Andreas Eckes (Strindheim BK)
+// @description  OS 2.0 - Berechnet die Trainingswahrscheinlichkeiten abhaengig von der Art des Einsatzes
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\S+)*)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/trainer\.php(\?\S+(&\S+)*)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/training\.php(\?\S+(&\S+)*)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zar\.php(\?\S+(&\S+)*)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zugabgabe\.php(\?\S+(&\S+)*)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
 // ==/UserScript==
 					`, 'unittest' : String.raw`
 // ==UserScript==

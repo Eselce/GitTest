@@ -17,8 +17,8 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
-/* eslint no-multi-spaces: 0 */
-/* eslint dot-notation: 0 */
+/* eslint no-multi-spaces: "off" */
+/* eslint dot-notation: "off" */
 
 // ==================== Abschnitt fuer Logging ====================
 
@@ -518,6 +518,44 @@ function floorValue(value, dot = '.') {
     } else {
         return value;
     }
+}
+
+// Liefert eine generische Funktion zurueck, die die Elemente eines Arrays auf eine vorgegebene Weise formatiert
+// formatFun: Formatierfunktion fuer ein Element
+// - element: Wert des Elements
+// - index: Laufende Nummer des Elements (0-basiert)
+// - arr: Das gesamte Array, wobei arr[index] === element
+// return Generische Funktion, die an Array-Funktionen uebergeben werden kann, z.B. als Replacer fuer safeStringify()
+function replaceArrayFun(formatFun, space = ' ') {
+    return function(key, value) {
+               const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
+
+               if (Array.isArray(__VALUE)) {
+                   const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
+
+                   return '[' + space + __RET.join(',' + space) + space + ']';
+               }
+
+               return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
+           };
+}
+
+// Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise rechtsbuending formatiert,
+// indem er links mit den übergebenen Zeichen aufgefuellt wird. Laenge und Zeichen werden fest vorgegeben.
+// targetLength: Zielbreite, es wird allerdings nicht abgeschnitten (falls der Wert zu klein ist, bleibt das Original)
+// padString: Auffuell-Zeichen oder -String (Muster), das ggfs. auf die richtige Laenge zugeschnitten wird
+// return Generische Funktion mit fester Zielbreite und Fuellzeichen. Moegliche Nutzung: replaceArrayFun(padStartFun(4))
+function padStartFun(targetLength = 4, padString = ' ') {
+    return (value => String(value).padStart(targetLength, padString));
+}
+
+// Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise linksbuending formatiert,
+// indem er rechts mit den übergebenen Zeichen aufgefuellt wird. Laenge und Zeichen werden fest vorgegeben.
+// targetLength: Zielbreite, es wird allerdings nicht abgeschnitten (falls der Wert zu klein ist, bleibt das Original)
+// padString: Auffuell-Zeichen oder -String (Muster), das ggfs. auf die richtige Laenge zugeschnitten wird
+// return Generische Funktion mit fester Zielbreite und Fuellzeichen. Moegliche Nutzung: replaceArrayFun(padEndFun(4))
+function padEndFun(targetLength = 4, padString = ' ') {
+    return (value => String(value).padEnd(targetLength, padString));
 }
 
 // Liefert einen rechtsbuendigen Text zurueck, der links aufgefuellt wird
@@ -1028,9 +1066,9 @@ const __DELETEVALUE = GM_function('deleteValue', 'DELETE', __GMWRITE, 'getValue'
 const __LISTVALUES = GM_function('listValues', 'KEYS');
 
 if (__GMWRITE) {
-    __LOG[0]("Schreiben von Optionen wurde AKTIVIERT!");
+    __LOG[8]("Schreiben von Optionen wurde AKTIVIERT!");
 } else {
-    __LOG[0]("Schreiben von Optionen wurde DEAKTIVIERT!");
+    __LOG[8]("Schreiben von Optionen wurde DEAKTIVIERT!");
 }
 
 // ==================== Ende Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
@@ -1352,16 +1390,22 @@ function getRowsById(id, doc = document) {
 // Fuegt eine Zelle ans Ende der uebergebenen Zeile hinzu und fuellt sie
 // row: Zeile, die verlaengert wird
 // content: Textinhalt der neuen Zelle
-// color: Schriftfarbe der neuen Zelle (z.B. "#FFFFFF" fuer weiss)
+// color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
 // Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
 function appendCell(row, content, color) {
-    row.insertCell(-1);
+    const __ROW = (row || { });
+    const __CELLS = __ROW.cells;
 
-    const __COLIDX = row.cells.length - 1;
+    __ROW.insertCell(-1);
 
-    row.cells[__COLIDX].textContent = content;
-    row.cells[__COLIDX].align = "center";
-    row.cells[__COLIDX].style.color = color;
+    const __COLIDX = __CELLS.length - 1;
+    const __CELL = __CELLS[__COLIDX];
+
+    __CELL.textContent = content;
+    __CELL.align = 'center';
+    __CELL.style.color = color;
+
+    return __CELL;
 }
 
 // Fuegt eine Zelle ans Ende der uebergebenen Zeile hinzu und fuellt sie
@@ -2401,7 +2445,7 @@ const __OPTTYPES = {
     'SI' : "simple option"
 };
 
-// Options-Typen
+// Aktions-Typen der Optionen
 const __OPTACTION = {
     'SET' : "set option value",
     'NXT' : "set next option value",
@@ -2779,6 +2823,77 @@ function promptNextOptByName(optSet, item, value = undefined, reload = false, fr
 
 /*** Ende util.option.data.js ***/
 
+/*** Modul util.option.class.options.js ***/
+
+// ==UserScript==
+// _name         util.option.class.options
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2021+
+// _author       Sven Loges (SLC)
+// _description  JS-lib mit Funktionen und Objekt-Klasse fuer die Script-Optionen
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Klasse Options ====================
+
+// Basisklasse fuer Optionen
+function Options(optConfig, optSetLabel) {
+    'use strict';
+
+    this.setConst('config', (optConfig || { }), false);
+    this.setConst('setLabel', (optSetLabel || '__OPTSET'), false);
+}
+
+Class.define(Options, Object, {
+                    'checkKey' : function(key) {
+                        // Hier kann man Keys 'unsichtbar' machen...
+                        return true;
+                    },
+                    'toString' : function() {
+                        let retStr = this.setLabel + " = {\n";
+
+                        for (const [ __KEY, __OPT ] of Object.entries(this)) {
+                            if (this.checkKey(__KEY)) {
+                                const __CONFIG = getOptConfig(__OPT);
+                                const __NAME = getOptName(__OPT);
+                                const __VAL = getOptValue(__OPT);
+                                const __OUT = [
+                                                  getValStr(__VAL, false, true, true),
+                                                  getValStr(__KEY, true),
+                                                  getValStr(__NAME, true),
+                                                  getValStr(__CONFIG.FormLabel),
+                                                  getValStr(__CONFIG.Default, false, true, true)
+                                    ];
+
+                                retStr += '\t' + __OUT.join('\t') + '\n';
+                            }
+                        }
+
+                        retStr += "}";
+
+                        return retStr;
+                    }
+                });
+
+// ==================== Ende Abschnitt fuer Klasse Options ====================
+
+// *** EOF ***
+
+/*** Ende util.option.class.options.js ***/
+
 /*** Modul util.option.api.js ***/
 
 // ==UserScript==
@@ -2794,6 +2909,7 @@ function promptNextOptByName(optSet, item, value = undefined, reload = false, fr
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // ==/UserScript==
 
@@ -3132,6 +3248,7 @@ function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.js
 // ==/UserScript==
@@ -3142,6 +3259,7 @@ function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false
 
 // ==================== Abschnitt fuer Speicher ====================
 
+// Speicher-Typen der Optionen
 const __OPTMEM = {
     'normal' : {
                    'Name'      : "Browser",
@@ -3532,6 +3650,7 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.menu.js
 // ==/UserScript==
 
@@ -3740,6 +3859,7 @@ function formatLabel(label, defLabel = undefined, isSelect = false, isForm = tru
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.action.js
 // ==/UserScript==
@@ -3829,6 +3949,7 @@ function getFormActionEvent(opt, isAlt = false, value = undefined, type = 'click
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.label.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.action.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.node.js
@@ -3875,7 +3996,7 @@ function getOptionRadio(opt) {
     const __VALUE = getOptValue(opt, false);
     const __ACTION = getFormActionEvent(opt, false, true, 'click', false);
     const __ALTACTION = getFormActionEvent(opt, true, false, 'click', false);
-    const __FORMLABEL = formatLabel(__CONFIG.FormLabel); // nur nutzen, falls angegeben
+    const __FORMLABEL = formatLabel(__CONFIG.FormLabel);  // nur nutzen, falls angegeben
     const __TITLE = getValue(__CONFIG.Title, '$');
     const __TITLEON = substParam(__TITLE, __CONFIG.Label);
     const __TITLEOFF = substParam(getValue(__CONFIG.AltTitle, __TITLE), __CONFIG.AltLabel);
@@ -4009,6 +4130,7 @@ function getOptionElement(opt) {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.node.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.js
 // ==/UserScript==
@@ -4164,6 +4286,7 @@ function buildOptionForm(anchor, optSet, optParams = { }) {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.cmd.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.menu.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.js
@@ -4248,7 +4371,7 @@ function getSharedConfig(optConfig, item = undefined) {
 // return Gefuelltes Objekt mit den gesetzten Optionen
 function initOptions(optConfig, optSet = undefined, preInit = undefined) {
     if (optSet === undefined) {
-        optSet = { };
+        optSet = new Options();
     }
 
     for (let opt in optConfig) {
@@ -4357,6 +4480,75 @@ function optSelect(selList, ignList) {
 }
 
 // ==================== Ende Abschnitt fuer Klasse Classification ====================
+
+// ==================== Abschnitt fuer Klasse ClassificationPair ====================
+
+// Klasse fuer die Klassifikation der Optionen nach Team (Erst- und Zweitteam oder Fremdteam)
+function ClassificationPair(classA, classB) {
+    'use strict';
+
+    Classification.call(this);
+
+    this.prefix = undefined;
+
+    this.A = classA;
+    this.B = classB;
+
+    // Zugriff auf optSelect synchronisieren...
+    Object.defineProperty(this, 'optSelect', {
+                    get : function() {
+                              const __A = getValue(this.A, { });
+                              const __B = getValue(this.B, { });
+
+                              return (this.A ? __A.optSelect : __B.optSelect);
+                          },
+                    set : function(optSelect) {
+                              const __A = getValue(this.A, { });
+                              const __B = getValue(this.B, { });
+
+                              __A.optSelect = optSelect;
+                              __B.optSelect = optSelect;
+
+                              return optSelect;
+                          }
+                });
+
+    // Zugriff auf optSet synchronisieren...
+    Object.defineProperty(this, 'optSet', {
+                    get : function() {
+                              const __A = getValue(this.A, { });
+                              const __B = getValue(this.B, { });
+
+                              return (this.A ? __A.optSet : __B.optSet);
+                          },
+                    set : function(optSet) {
+                              const __A = getValue(this.A, { });
+                              const __B = getValue(this.B, { });
+
+                              __A.optSet = optSet;
+                              __B.optSet = optSet;
+
+                              return optSet;
+                          }
+                });
+}
+
+Class.define(ClassificationPair, Classification, {
+                    'renameOptions'  : function() {
+                                           return (this.A ? this.A.renameOptions() : Promise.resolve()).then(retValue =>
+                                                   (this.B ? this.B.renameOptions() : Promise.resolve()));
+                                       },
+                    'saveOptions'    : function(ignList) {
+                                           return (this.A ? this.A.saveOptions(ignList) : Promise.resolve()).then(retValue =>
+                                                   (this.B ? this.B.saveOptions(ignList) : Promise.resolve()));
+                                       },
+                    'deleteOptions'  : function(ignList) {
+                                           return (this.A ? this.A.deleteOptions(ignList) : Promise.resolve()).then(retValue =>
+                                                   (this.B ? this.B.deleteOptions(ignList) : Promise.resolve()));
+                                       }
+                });
+
+// ==================== Ende Abschnitt fuer Klasse ClassificationPair ====================
 
     // Abhaengigkeiten:
     // ================
@@ -4809,14 +5001,14 @@ function getIdxSecSkills(pos) {
 // Gibt die zur Position gehoerige Farbe zurueck
 function getColor(pos) {
     switch (pos) {
-        case 'TOR' : return "#FFFF00";
-        case 'ABW' : return "#00FF00";
-        case 'DMI' : return "#3366FF";
-        case 'MIT' : return "#66FFFF";
-        case 'OMI' : return "#FF66FF";
-        case 'STU' : return "#FF0000";
-        case 'LEI' : return "#FFFFFF";
-        case "" :    return "#111166";  // osBlau
+        case 'TOR' : return '#FFFF00';
+        case 'ABW' : return '#00FF00';
+        case 'DMI' : return '#3366FF';
+        case 'MIT' : return '#66FFFF';
+        case 'OMI' : return '#FF66FF';
+        case 'STU' : return '#FF0000';
+        case 'LEI' : return '#FFFFFF';
+        case "" :    return '#111166';  // osBlau
         default :    return "";
     }
 }
@@ -4838,6 +5030,7 @@ function getColor(pos) {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.run.js
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.list.js
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.team.js

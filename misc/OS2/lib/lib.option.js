@@ -27,7 +27,7 @@ const __OPTTYPES = {
     'SI' : "simple option"
 };
 
-// Options-Typen
+// Aktions-Typen der Optionen
 const __OPTACTION = {
     'SET' : "set option value",
     'NXT' : "set next option value",
@@ -405,6 +405,77 @@ function promptNextOptByName(optSet, item, value = undefined, reload = false, fr
 
 /*** Ende util.option.data.js ***/
 
+/*** Modul util.option.class.options.js ***/
+
+// ==UserScript==
+// _name         util.option.class.options
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2021+
+// _author       Sven Loges (SLC)
+// _description  JS-lib mit Funktionen und Objekt-Klasse fuer die Script-Optionen
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Klasse Options ====================
+
+// Basisklasse fuer Optionen
+function Options(optConfig, optSetLabel) {
+    'use strict';
+
+    this.setConst('config', (optConfig || { }), false);
+    this.setConst('setLabel', (optSetLabel || '__OPTSET'), false);
+}
+
+Class.define(Options, Object, {
+                    'checkKey' : function(key) {
+                        // Hier kann man Keys 'unsichtbar' machen...
+                        return true;
+                    },
+                    'toString' : function() {
+                        let retStr = this.setLabel + " = {\n";
+
+                        for (const [ __KEY, __OPT ] of Object.entries(this)) {
+                            if (this.checkKey(__KEY)) {
+                                const __CONFIG = getOptConfig(__OPT);
+                                const __NAME = getOptName(__OPT);
+                                const __VAL = getOptValue(__OPT);
+                                const __OUT = [
+                                                  getValStr(__VAL, false, true, true),
+                                                  getValStr(__KEY, true),
+                                                  getValStr(__NAME, true),
+                                                  getValStr(__CONFIG.FormLabel),
+                                                  getValStr(__CONFIG.Default, false, true, true)
+                                    ];
+
+                                retStr += '\t' + __OUT.join('\t') + '\n';
+                            }
+                        }
+
+                        retStr += "}";
+
+                        return retStr;
+                    }
+                });
+
+// ==================== Ende Abschnitt fuer Klasse Options ====================
+
+// *** EOF ***
+
+/*** Ende util.option.class.options.js ***/
+
 /*** Modul util.option.api.js ***/
 
 // ==UserScript==
@@ -420,6 +491,7 @@ function promptNextOptByName(optSet, item, value = undefined, reload = false, fr
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // ==/UserScript==
 
@@ -758,6 +830,7 @@ function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.js
 // ==/UserScript==
@@ -768,6 +841,7 @@ function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false
 
 // ==================== Abschnitt fuer Speicher ====================
 
+// Speicher-Typen der Optionen
 const __OPTMEM = {
     'normal' : {
                    'Name'      : "Browser",
@@ -1158,6 +1232,7 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.menu.js
 // ==/UserScript==
 
@@ -1366,6 +1441,7 @@ function formatLabel(label, defLabel = undefined, isSelect = false, isForm = tru
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.action.js
 // ==/UserScript==
@@ -1455,6 +1531,7 @@ function getFormActionEvent(opt, isAlt = false, value = undefined, type = 'click
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.label.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.action.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.node.js
@@ -1501,7 +1578,7 @@ function getOptionRadio(opt) {
     const __VALUE = getOptValue(opt, false);
     const __ACTION = getFormActionEvent(opt, false, true, 'click', false);
     const __ALTACTION = getFormActionEvent(opt, true, false, 'click', false);
-    const __FORMLABEL = formatLabel(__CONFIG.FormLabel); // nur nutzen, falls angegeben
+    const __FORMLABEL = formatLabel(__CONFIG.FormLabel);  // nur nutzen, falls angegeben
     const __TITLE = getValue(__CONFIG.Title, '$');
     const __TITLEON = substParam(__TITLE, __CONFIG.Label);
     const __TITLEOFF = substParam(getValue(__CONFIG.AltTitle, __TITLE), __CONFIG.AltLabel);
@@ -1635,6 +1712,7 @@ function getOptionElement(opt) {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.node.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.js
 // ==/UserScript==
@@ -1790,6 +1868,7 @@ function buildOptionForm(anchor, optSet, optParams = { }) {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.cmd.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.menu.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.js
@@ -1874,7 +1953,7 @@ function getSharedConfig(optConfig, item = undefined) {
 // return Gefuelltes Objekt mit den gesetzten Optionen
 function initOptions(optConfig, optSet = undefined, preInit = undefined) {
     if (optSet === undefined) {
-        optSet = { };
+        optSet = new Options();
     }
 
     for (let opt in optConfig) {
@@ -1983,6 +2062,75 @@ function optSelect(selList, ignList) {
 }
 
 // ==================== Ende Abschnitt fuer Klasse Classification ====================
+
+// ==================== Abschnitt fuer Klasse ClassificationPair ====================
+
+// Klasse fuer die Klassifikation der Optionen nach Team (Erst- und Zweitteam oder Fremdteam)
+function ClassificationPair(classA, classB) {
+    'use strict';
+
+    Classification.call(this);
+
+    this.prefix = undefined;
+
+    this.A = classA;
+    this.B = classB;
+
+    // Zugriff auf optSelect synchronisieren...
+    Object.defineProperty(this, 'optSelect', {
+                    get : function() {
+                              const __A = getValue(this.A, { });
+                              const __B = getValue(this.B, { });
+
+                              return (this.A ? __A.optSelect : __B.optSelect);
+                          },
+                    set : function(optSelect) {
+                              const __A = getValue(this.A, { });
+                              const __B = getValue(this.B, { });
+
+                              __A.optSelect = optSelect;
+                              __B.optSelect = optSelect;
+
+                              return optSelect;
+                          }
+                });
+
+    // Zugriff auf optSet synchronisieren...
+    Object.defineProperty(this, 'optSet', {
+                    get : function() {
+                              const __A = getValue(this.A, { });
+                              const __B = getValue(this.B, { });
+
+                              return (this.A ? __A.optSet : __B.optSet);
+                          },
+                    set : function(optSet) {
+                              const __A = getValue(this.A, { });
+                              const __B = getValue(this.B, { });
+
+                              __A.optSet = optSet;
+                              __B.optSet = optSet;
+
+                              return optSet;
+                          }
+                });
+}
+
+Class.define(ClassificationPair, Classification, {
+                    'renameOptions'  : function() {
+                                           return (this.A ? this.A.renameOptions() : Promise.resolve()).then(retValue =>
+                                                   (this.B ? this.B.renameOptions() : Promise.resolve()));
+                                       },
+                    'saveOptions'    : function(ignList) {
+                                           return (this.A ? this.A.saveOptions(ignList) : Promise.resolve()).then(retValue =>
+                                                   (this.B ? this.B.saveOptions(ignList) : Promise.resolve()));
+                                       },
+                    'deleteOptions'  : function(ignList) {
+                                           return (this.A ? this.A.deleteOptions(ignList) : Promise.resolve()).then(retValue =>
+                                                   (this.B ? this.B.deleteOptions(ignList) : Promise.resolve()));
+                                       }
+                });
+
+// ==================== Ende Abschnitt fuer Klasse ClassificationPair ====================
 
     // Abhaengigkeiten:
     // ================

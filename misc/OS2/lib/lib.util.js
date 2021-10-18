@@ -17,8 +17,8 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
-/* eslint no-multi-spaces: 0 */
-/* eslint dot-notation: 0 */
+/* eslint no-multi-spaces: "off" */
+/* eslint dot-notation: "off" */
 
 // ==================== Abschnitt fuer Logging ====================
 
@@ -518,6 +518,44 @@ function floorValue(value, dot = '.') {
     } else {
         return value;
     }
+}
+
+// Liefert eine generische Funktion zurueck, die die Elemente eines Arrays auf eine vorgegebene Weise formatiert
+// formatFun: Formatierfunktion fuer ein Element
+// - element: Wert des Elements
+// - index: Laufende Nummer des Elements (0-basiert)
+// - arr: Das gesamte Array, wobei arr[index] === element
+// return Generische Funktion, die an Array-Funktionen uebergeben werden kann, z.B. als Replacer fuer safeStringify()
+function replaceArrayFun(formatFun, space = ' ') {
+    return function(key, value) {
+               const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
+
+               if (Array.isArray(__VALUE)) {
+                   const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
+
+                   return '[' + space + __RET.join(',' + space) + space + ']';
+               }
+
+               return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
+           };
+}
+
+// Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise rechtsbuending formatiert,
+// indem er links mit den übergebenen Zeichen aufgefuellt wird. Laenge und Zeichen werden fest vorgegeben.
+// targetLength: Zielbreite, es wird allerdings nicht abgeschnitten (falls der Wert zu klein ist, bleibt das Original)
+// padString: Auffuell-Zeichen oder -String (Muster), das ggfs. auf die richtige Laenge zugeschnitten wird
+// return Generische Funktion mit fester Zielbreite und Fuellzeichen. Moegliche Nutzung: replaceArrayFun(padStartFun(4))
+function padStartFun(targetLength = 4, padString = ' ') {
+    return (value => String(value).padStart(targetLength, padString));
+}
+
+// Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise linksbuending formatiert,
+// indem er rechts mit den übergebenen Zeichen aufgefuellt wird. Laenge und Zeichen werden fest vorgegeben.
+// targetLength: Zielbreite, es wird allerdings nicht abgeschnitten (falls der Wert zu klein ist, bleibt das Original)
+// padString: Auffuell-Zeichen oder -String (Muster), das ggfs. auf die richtige Laenge zugeschnitten wird
+// return Generische Funktion mit fester Zielbreite und Fuellzeichen. Moegliche Nutzung: replaceArrayFun(padEndFun(4))
+function padEndFun(targetLength = 4, padString = ' ') {
+    return (value => String(value).padEnd(targetLength, padString));
 }
 
 // Liefert einen rechtsbuendigen Text zurueck, der links aufgefuellt wird
@@ -1028,9 +1066,9 @@ const __DELETEVALUE = GM_function('deleteValue', 'DELETE', __GMWRITE, 'getValue'
 const __LISTVALUES = GM_function('listValues', 'KEYS');
 
 if (__GMWRITE) {
-    __LOG[0]("Schreiben von Optionen wurde AKTIVIERT!");
+    __LOG[8]("Schreiben von Optionen wurde AKTIVIERT!");
 } else {
-    __LOG[0]("Schreiben von Optionen wurde DEAKTIVIERT!");
+    __LOG[8]("Schreiben von Optionen wurde DEAKTIVIERT!");
 }
 
 // ==================== Ende Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
@@ -1352,16 +1390,22 @@ function getRowsById(id, doc = document) {
 // Fuegt eine Zelle ans Ende der uebergebenen Zeile hinzu und fuellt sie
 // row: Zeile, die verlaengert wird
 // content: Textinhalt der neuen Zelle
-// color: Schriftfarbe der neuen Zelle (z.B. "#FFFFFF" fuer weiss)
+// color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
 // Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
 function appendCell(row, content, color) {
-    row.insertCell(-1);
+    const __ROW = (row || { });
+    const __CELLS = __ROW.cells;
 
-    const __COLIDX = row.cells.length - 1;
+    __ROW.insertCell(-1);
 
-    row.cells[__COLIDX].textContent = content;
-    row.cells[__COLIDX].align = "center";
-    row.cells[__COLIDX].style.color = color;
+    const __COLIDX = __CELLS.length - 1;
+    const __CELL = __CELLS[__COLIDX];
+
+    __CELL.textContent = content;
+    __CELL.align = 'center';
+    __CELL.style.color = color;
+
+    return __CELL;
 }
 
 // Fuegt eine Zelle ans Ende der uebergebenen Zeile hinzu und fuellt sie
