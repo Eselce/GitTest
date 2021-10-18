@@ -145,32 +145,68 @@ function initOptions(optConfig, optSet = undefined, preInit = undefined) {
 // ==================== Abschnitt fuer Klasse Classification ====================
 
 // Basisklasse fuer eine Klassifikation der Optionen nach Kriterium (z.B. Erst- und Zweitteam oder Fremdteam)
-function Classification() {
+function Classification(prefix) {
     'use strict';
 
     this.renameFun = prefixName;
-    //this.renameParamFun = undefined;
+    this.prefix = (prefix || 'old');
     this.optSet = undefined;
     this.optSelect = { };
 }
 
 Class.define(Classification, Object, {
-                    'renameOptions' : function() {
-                                          const __PARAM = this.renameParamFun();
+                    'renameOptions'  : function() {
+                                           const __PARAM = this.renameParamFun();
 
-                                          if (__PARAM !== undefined) {
-                                              // Klassifizierte Optionen umbenennen...
-                                              return renameOptions(this.optSet, this.optSelect, __PARAM, this.renameFun);
-                                          } else {
-                                              return Promise.resolve();
-                                          }
-                                      },
-                    'deleteOptions' : function(ignList) {
-                                          const __OPTSELECT = addProps([], this.optSelect, null, ignList);
+                                           if (__PARAM !== undefined) {
+                                               // Klassifizierte Optionen umbenennen...
+                                               return renameOptions(this.optSet, this.optSelect, __PARAM, this.renameFun);
+                                           } else {
+                                               return Promise.resolve();
+                                           }
+                                       },
+                    'saveOptions'    : function(ignList) {
+                                           const __OPTSELECT = optSelect(this.optSelect, ignList);
 
-                                          return deleteOptions(this.optSet, __OPTSELECT, true, true);
-                                      }
+                                           return saveOptions(this.optSet, __OPTSELECT);
+                                       },
+                    'deleteOptions'  : function(ignList) {
+                                           const __OPTSELECT = optSelect(this.optSelectl, ignList);
+
+                                           return deleteOptions(this.optSet, __OPTSELECT, true, true);
+                                       },
+                    'prefixParamFun' : function() {
+                                           // Parameter fuer 'prefixName': Prefix "old:"
+                                           return ((this.prefix !== undefined) ? this.prefix + ':' : this.prefix);
+                                       },
+                    'renameParamFun' : function() {
+                                           // Parameter fuer 'renameFun': Default ist 'prefixName' ("old:")
+                                           return this.prefixParamFun();
+                                       }
                 });
+
+// Wandelt ein Array von Options-Schluesseln (props) in das optSelect-Format { 'key1' : true, 'key2' : true, ... }
+// props: Array von Keys
+// return Mapping mit Eintraegen, in denen die Keys auf true gesetzt sind: { 'key1' : true, 'key2' : true, ... }
+function optSelectFromProps(props) {
+    const __RET = { };
+
+    if (props) {
+        props.map(item => (__RET[item] = true));
+    }
+
+    return __RET;
+}
+
+// Errechnet aus einer Ausswahlliste und einer Ignore-Liste eine resultierende Liste im optSelect-Format
+// selList: Mapping von auf true gesetzten Eintraegen (optSelect), die eine Grundmenge darstellen
+// ignList: Mapping von auf true gesetzten Eintraegen (optSelect), die aus obiger Liste ausgetragen werden sollen
+// return Resultierendes Mapping mit Eintraegen (optSelect), in denen die Keys auf true gesetzt sind: { 'key1' : true, 'key2' : true, ... }
+function optSelect(selList, ignList) {
+    const __PROPS = addProps([], selList, null, ignList);
+
+    return optSelectFromProps(__PROPS);
+}
 
 // ==================== Ende Abschnitt fuer Klasse Classification ====================
 

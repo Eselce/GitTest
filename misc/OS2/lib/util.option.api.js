@@ -24,9 +24,9 @@
 // opt: Zu invalidierende Option
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf resultierenden Wert
-function invalidateOpt(opt, force = false) {
+function invalidateOpt(opt, force = false, reload = true) {
     return Promise.resolve(opt.Promise).then(value => {
-            if (opt.Loaded && ! opt.ReadOnly) {
+            if (opt.Loaded && reload && ! opt.ReadOnly) {
                 const __CONFIG = getOptConfig(opt);
 
                 // Wert "ungeladen"...
@@ -46,11 +46,11 @@ function invalidateOpt(opt, force = false) {
 // optSet: Object mit den Optionen
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf Object mit den geladenen Optionen
-async function invalidateOpts(optSet, force = false) {
+async function invalidateOpts(optSet, force = false, reload = true) {
     for (let opt in optSet) {
         const __OPT = optSet[opt];
 
-        await invalidateOpt(__OPT, force);
+        await invalidateOpt(__OPT, force, reload);
     }
 
     return optSet;
@@ -83,7 +83,7 @@ function loadOption(opt, force = false) {
         } else {
             value = (__CONFIG.Serial ?
                             deserialize(__NAME, __DEFAULT) :
-                            GM.getValue(__NAME, __DEFAULT));
+                            summonValue(__NAME, __DEFAULT));
         }
 
         opt.Promise = Promise.resolve(value).then(value => {
@@ -91,7 +91,7 @@ function loadOption(opt, force = false) {
                 if (opt.Loaded || ! opt.Promise) {
                     showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", safeStringify(opt));
                 }
-                __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value));
+                __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value, true, true));
 
                 // Wert intern setzen...
                 const __VAL = setOptValue(opt, value);
@@ -119,7 +119,7 @@ function loadOptions(optSet, force = false) {
 
         if (! __OPT.Loaded) {
             const __PROMISE = loadOption(__OPT, force).then(value => {
-                    __LOG[6]("LOADED " + opt + " << " + value);
+                    __LOG[6]("LOADED " + __LOG.info(opt, false, false) + " << " + __LOG.info(value, true, false));
 
                     return Promise.resolve({
                             'name'  : opt,
@@ -144,13 +144,14 @@ function deleteOption(opt, force = false, reset = true) {
 
     if (force || ! __CONFIG.Permanent) {
         const __NAME = getOptName(opt);
+        const __VALUE = getOptValue(opt, undefined, false);
+        let newValue;
 
-        __LOG[5]("DELETE " + __NAME);
-
-        return GM.deleteValue(__NAME).then(voidValue => {
+        return discardValue(__NAME).then(voidValue => {
                 if (reset || __CONFIG.AutoReset) {
-                    setOptValue(opt, initOptValue(__CONFIG));
+                    newValue = setOptValue(opt, initOptValue(__CONFIG));
                 }
+                __LOG[6]("OK DELETE " + __LOG.changed(__VALUE, newValue, true, false));
             }, defaultCatch);
     }
 
@@ -186,11 +187,11 @@ async function renameOption(opt, name, reload = false, force = false) {
     const __NAME = getOptName(opt);
 
     if (__NAME !== name) {
-        await deleteOption(opt, true, ! reload);
+        await deleteOption(opt, true, false);
 
         setOptName(opt, name);
 
-        await invalidateOpt(opt, opt.Loaded);
+        await invalidateOpt(opt, opt.Loaded, reload);
 
         if (reload) {
             opt.Loaded = false;

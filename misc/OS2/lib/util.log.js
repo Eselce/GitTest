@@ -50,11 +50,11 @@ const __LOG = {
 
                                     return getValStr(obj, __KEYSTRINGS, showType, __SHOWLEN, __STEPIN);
                                 },
-                  'changed'   : function(oldVal, newVal, showType, elementType) {
+                  'changed'   : function(oldVal, newVal, showType, elementType, delim = " => ") {
                                     const __OLDVAL = this.info(oldVal, showType, elementType);      // this.stringify(oldVal)
                                     const __NEWVAL = this.info(newVal, showType, elementType);      // this.stringify(newVal)
 
-                                    return ((__OLDVAL !== __NEWVAL) ? __OLDVAL + " => " : "") + __NEWVAL;
+                                    return ((__OLDVAL !== __NEWVAL) ? __OLDVAL + delim : "") + __NEWVAL;
                                 }
               };
 

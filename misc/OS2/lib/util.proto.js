@@ -67,9 +67,9 @@ function getAllProperties(obj) {
 
 // ==================== Ende Abschnitt fuer diverse Utilities fuer Function-Prototypes ====================
 
-// ==================== Abschnitt fuer diverse Funktionen, die bekannte Prototypes erweitern ====================
+// ==================== Abschnitt mit Ergaenzungen und Polyfills zu Standardobjekten ====================
 
-// Kompatibilitaetsfunktion zur Ermittlung des Namens einer Funktion (falle <Function>.name nicht vorhanden ist)
+// Kompatibilitaetsfunktion zur Ermittlung des Namens einer Funktion (falls <Function>.name nicht vorhanden ist)
 if (Function.prototype.name === undefined) {
     Object.defineProperty(Function.prototype, 'name', {
             get : function() {
@@ -100,6 +100,6 @@ String.prototype.format = function() {
                                     });
 };
 
-// ==================== Ende Abschnitt fuer diverse Funktionen, die bekannte Prototypes erweitern ====================
+// ==================== Ende Abschnitt mit Ergaenzungen und Polyfills zu Standardobjekten ====================
 
 // *** EOF ***

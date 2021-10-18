@@ -127,7 +127,7 @@ function setOptName(opt, name) {
     const __NAME = getOptName(opt);
 
     if (__NAME !== name) {
-        __LOG[5]("RENAME " + __NAME + " => " + name);
+        __LOG[5]("RENAME " + __LOG.changed(__NAME, name, false, false));
 
         __CONFIG.Name = name;
     }
@@ -164,7 +164,7 @@ function getOptName(opt) {
 function setOptValue(opt, value) {
     if (opt !== undefined) {
         if (! opt.ReadOnly) {
-            __LOG[8](getOptName(opt) + ": " + __LOG.changed(opt.Value, value));
+            __LOG[8](getOptName(opt) + ": " + __LOG.changed(opt.Value, value, true, false));
 
             opt.Value = value;
         }
