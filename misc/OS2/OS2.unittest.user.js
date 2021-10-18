@@ -69,7 +69,7 @@
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 
-const __LOGLEVEL = 4;
+const __LOGLEVEL = 9;
 
 // Moegliche Optionen (hier die Standardwerte editieren oder ueber das Benutzermenu setzen):
 const __OPTCONFIG = {

@@ -177,6 +177,41 @@ async function deleteOptions(optSet, optSelect = undefined, force = false, reset
     return Promise.resolve();
 }
 
+// Speichert eine (ueber Menu) gesetzte Option (ggfs. erneut)
+// opt: Gesetzte Option
+// return Promise von setOptValue() (oder void)
+function saveOption(opt) {
+    const __CONFIG = getOptConfig(opt);
+
+    if (__CONFIG !== undefined) {
+        const __NAME = getOptName(opt);
+        const __VALUE = getOptValue(opt);
+
+        __LOG[4]("SAVE " + __NAME);
+
+        return setOpt(opt, __VALUE, false);
+    }
+
+    return Promise.resolve();
+}
+
+// Speichert die (ueber Menu) gesetzten Optionen im Speicher
+// optSet: Gesetzte Optionen
+// optSelect: Liste von ausgewaehlten Optionen, true = speichern, false = nicht speichern
+// return Promise auf diesen Vorgang
+async function saveOptions(optSet, optSelect = undefined) {
+    const __SAVEALL = ((optSelect === undefined) || (optSelect === true));
+    const __OPTSELECT = getValue(optSelect, { });
+
+    for (let opt in optSet) {
+        if (getValue(__OPTSELECT[opt], __SAVEALL)) {
+            await saveOption(optSet[opt]);
+        }
+    }
+
+    return Promise.resolve();
+}
+
 // Benennt eine Option um und laedt sie ggfs. nach
 // opt: Gesetzte Option
 // name: Neu zu setzender Name (Speicheradresse)

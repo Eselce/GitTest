@@ -12,6 +12,10 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
+// ==================== Konfigurations-Abschnitt fuer Speicherung (GM.setValue, GM.deleteValue) ====================
+
+const __GMWRITE = true;
+
 // ==================== Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
 
 // Generator-Funktion: Liefert eine ausgewählte GM-Funktion
