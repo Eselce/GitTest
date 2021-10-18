@@ -9,6 +9,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.action.js
 // ==/UserScript==

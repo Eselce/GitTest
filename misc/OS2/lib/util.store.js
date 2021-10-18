@@ -41,9 +41,9 @@ const __DELETEVALUE = GM_function('deleteValue', 'DELETE', __GMWRITE, 'getValue'
 const __LISTVALUES = GM_function('listValues', 'KEYS');
 
 if (__GMWRITE) {
-    __LOG[0]("Schreiben von Optionen wurde AKTIVIERT!");
+    __LOG[8]("Schreiben von Optionen wurde AKTIVIERT!");
 } else {
-    __LOG[0]("Schreiben von Optionen wurde DEAKTIVIERT!");
+    __LOG[8]("Schreiben von Optionen wurde DEAKTIVIERT!");
 }
 
 // ==================== Ende Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================

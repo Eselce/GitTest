@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.tabelle
 // @namespace    http://os.ongapo.com/
-// @version      0.11+lib
+// @version      0.12+lib
 // @copyright    2016+
 // @author       Sven Loges (SLC)
 // @description  Tabellen-Script fuer Online Soccer 2.0
@@ -33,6 +33,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
@@ -780,7 +781,12 @@ function initFairplayData(data, laender) {
                           8 : [  896, 1415,  610 ],
                           9 : [  145,  840,  442 ],
                          10 : [ 1715,   99,  534 ],
-                         11 : [  927, 1646,  888 ]
+                         11 : [  927, 1646,  888 ],
+                         12 : [  534,  297,  346 ],
+                         13 : [  919, 1270,  442 ],
+                         14 : [  191,  466, 1352 ],
+                         15 : [  346, 1756,  754 ],
+                         16 : [  927, 1608, 1466 ]
                      };
 
     for (let saison in __FPDATA) {

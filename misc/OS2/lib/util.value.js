@@ -122,6 +122,44 @@ function floorValue(value, dot = '.') {
     }
 }
 
+// Liefert eine generische Funktion zurueck, die die Elemente eines Arrays auf eine vorgegebene Weise formatiert
+// formatFun: Formatierfunktion fuer ein Element
+// - element: Wert des Elements
+// - index: Laufende Nummer des Elements (0-basiert)
+// - arr: Das gesamte Array, wobei arr[index] === element
+// return Generische Funktion, die an Array-Funktionen uebergeben werden kann, z.B. als Replacer fuer safeStringify()
+function replaceArrayFun(formatFun, space = ' ') {
+    return function(key, value) {
+               const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
+
+               if (Array.isArray(__VALUE)) {
+                   const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
+
+                   return '[' + space + __RET.join(',' + space) + space + ']';
+               }
+
+               return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
+           };
+}
+
+// Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise rechtsbuending formatiert,
+// indem er links mit den übergebenen Zeichen aufgefuellt wird. Laenge und Zeichen werden fest vorgegeben.
+// targetLength: Zielbreite, es wird allerdings nicht abgeschnitten (falls der Wert zu klein ist, bleibt das Original)
+// padString: Auffuell-Zeichen oder -String (Muster), das ggfs. auf die richtige Laenge zugeschnitten wird
+// return Generische Funktion mit fester Zielbreite und Fuellzeichen. Moegliche Nutzung: replaceArrayFun(padStartFun(4))
+function padStartFun(targetLength = 4, padString = ' ') {
+    return (value => String(value).padStart(targetLength, padString));
+}
+
+// Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise linksbuending formatiert,
+// indem er rechts mit den übergebenen Zeichen aufgefuellt wird. Laenge und Zeichen werden fest vorgegeben.
+// targetLength: Zielbreite, es wird allerdings nicht abgeschnitten (falls der Wert zu klein ist, bleibt das Original)
+// padString: Auffuell-Zeichen oder -String (Muster), das ggfs. auf die richtige Laenge zugeschnitten wird
+// return Generische Funktion mit fester Zielbreite und Fuellzeichen. Moegliche Nutzung: replaceArrayFun(padEndFun(4))
+function padEndFun(targetLength = 4, padString = ' ') {
+    return (value => String(value).padEnd(targetLength, padString));
+}
+
 // Liefert einen rechtsbuendigen Text zurueck, der links aufgefuellt wird
 // value: Ein uebergebener Wert
 // size: Zielbreite (clipping fuer < 0: Abschneiden, falls zu lang)

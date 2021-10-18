@@ -11,6 +11,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.menu.js
 // ==/UserScript==
 

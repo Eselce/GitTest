@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.jugend
 // @namespace    http://os.ongapo.com/
-// @version      0.73+lib
+// @version      0.74+lib
 // @copyright    2013+
 // @author       Sven Loges (SLC) / Andreas Eckes (Strindheim BK)
 // @description  Jugendteam-Script fuer Online Soccer 2.0
@@ -34,6 +34,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
@@ -57,8 +58,6 @@
 // ECMAScript 6:
 /* jshint esnext: true */
 /* jshint moz: true */
-
-/* eslint no-multi-spaces: "off" */
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 

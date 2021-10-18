@@ -8,6 +8,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.js
 // ==/UserScript==
@@ -18,6 +19,7 @@
 
 // ==================== Abschnitt fuer Speicher ====================
 
+// Speicher-Typen der Optionen
 const __OPTMEM = {
     'normal' : {
                    'Name'      : "Browser",

@@ -354,14 +354,14 @@ function getIdxSecSkills(pos) {
 // Gibt die zur Position gehoerige Farbe zurueck
 function getColor(pos) {
     switch (pos) {
-        case 'TOR' : return "#FFFF00";
-        case 'ABW' : return "#00FF00";
-        case 'DMI' : return "#3366FF";
-        case 'MIT' : return "#66FFFF";
-        case 'OMI' : return "#FF66FF";
-        case 'STU' : return "#FF0000";
-        case 'LEI' : return "#FFFFFF";
-        case "" :    return "#111166";  // osBlau
+        case 'TOR' : return '#FFFF00';
+        case 'ABW' : return '#00FF00';
+        case 'DMI' : return '#3366FF';
+        case 'MIT' : return '#66FFFF';
+        case 'OMI' : return '#FF66FF';
+        case 'STU' : return '#FF0000';
+        case 'LEI' : return '#FFFFFF';
+        case "" :    return '#111166';  // osBlau
         default :    return "";
     }
 }

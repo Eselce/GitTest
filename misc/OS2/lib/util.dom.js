@@ -170,16 +170,22 @@ function getRowsById(id, doc = document) {
 // Fuegt eine Zelle ans Ende der uebergebenen Zeile hinzu und fuellt sie
 // row: Zeile, die verlaengert wird
 // content: Textinhalt der neuen Zelle
-// color: Schriftfarbe der neuen Zelle (z.B. "#FFFFFF" fuer weiss)
+// color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
 // Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
 function appendCell(row, content, color) {
-    row.insertCell(-1);
+    const __ROW = (row || { });
+    const __CELLS = __ROW.cells;
 
-    const __COLIDX = row.cells.length - 1;
+    __ROW.insertCell(-1);
 
-    row.cells[__COLIDX].textContent = content;
-    row.cells[__COLIDX].align = "center";
-    row.cells[__COLIDX].style.color = color;
+    const __COLIDX = __CELLS.length - 1;
+    const __CELL = __CELLS[__COLIDX];
+
+    __CELL.textContent = content;
+    __CELL.align = 'center';
+    __CELL.style.color = color;
+
+    return __CELL;
 }
 
 // Fuegt eine Zelle ans Ende der uebergebenen Zeile hinzu und fuellt sie

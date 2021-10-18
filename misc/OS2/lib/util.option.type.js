@@ -23,7 +23,7 @@ const __OPTTYPES = {
     'SI' : "simple option"
 };
 
-// Options-Typen
+// Aktions-Typen der Optionen
 const __OPTACTION = {
     'SET' : "set option value",
     'NXT' : "set next option value",

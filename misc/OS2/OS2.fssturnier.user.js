@@ -33,6 +33,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
@@ -2033,7 +2034,7 @@ const __OPTCONFIG = {
                                     878,   82,   75,  902, 1822, 1190, 1181, 1360,  394,  545, 1209,  610, 1821, 1238,  820,  667,  376, 1292, 1910,  836,
                                    1150, 1576,  463,  352,  346, 1110,  419,  595, 1396,  373, 1663,  779,  763,  455, 1352, 1842, 1787,/#1036#/307,  137,
                                      16,  436, 1659, 1203,  172, 1224,  859, 1275,  322, 1197 ],
-                                 [ undefined, // S12, ZAT 7, ZAT 8 - 9
+                                 [ undefined, // S12, ZAT 7 - 9
                                    1574, 1912,  778, 1872,  881, 1568, 1175, 1935,  728, 1802, 1476, 1810,  133, 1447,  705,  817,  300, 1755, 1797, 1069,
                                     569,  559,   51, 1652,  181, 1030,  980,  145, 1018,  798,  602,  954,  495, 1430, 1420, 1066,   39, 1261, 1789,  161,
                                     169,  660,   67,  920,  890,  404,   68,   13,  510,  157,  837,  382,  314, 1226,  520,  121,  761,  224, 1813,  331,
@@ -3392,28 +3393,6 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 }
 
 // ==================== Ende Abschnitt fuer Optionen ====================
-
-function padStartFun(targetLength = 4, padString = ' ') {
-    return (value => String(value).padStart(targetLength, padString));
-}
-
-function padEndFun(targetLength = 4, padString = ' ') {
-    return (value => String(value).padEnd(targetLength, padString));
-}
-
-function replaceArrayFun(formatFun, space = ' ') {
-    return function(key, value) {
-               const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
-
-               if (Array.isArray(__VALUE)) {
-                   const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
-
-                   return '[' + space + __RET.join(',' + space) + space + ']';
-               }
-
-               return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
-           };
-}
 
 // ==================== Abschnitt fuer sonstige Parameter ====================
 

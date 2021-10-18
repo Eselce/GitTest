@@ -10,6 +10,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.label.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.action.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.node.js
@@ -56,7 +57,7 @@ function getOptionRadio(opt) {
     const __VALUE = getOptValue(opt, false);
     const __ACTION = getFormActionEvent(opt, false, true, 'click', false);
     const __ALTACTION = getFormActionEvent(opt, true, false, 'click', false);
-    const __FORMLABEL = formatLabel(__CONFIG.FormLabel); // nur nutzen, falls angegeben
+    const __FORMLABEL = formatLabel(__CONFIG.FormLabel);  // nur nutzen, falls angegeben
     const __TITLE = getValue(__CONFIG.Title, '$');
     const __TITLEON = substParam(__TITLE, __CONFIG.Label);
     const __TITLEOFF = substParam(getValue(__CONFIG.AltTitle, __TITLE), __CONFIG.AltLabel);

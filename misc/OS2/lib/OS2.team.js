@@ -9,6 +9,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.run.js
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.list.js
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.team.js

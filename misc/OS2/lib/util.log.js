@@ -13,8 +13,8 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
-/* eslint no-multi-spaces: 0 */
-/* eslint dot-notation: 0 */
+/* eslint no-multi-spaces: "off" */
+/* eslint dot-notation: "off" */
 
 // ==================== Abschnitt fuer Logging ====================
 
