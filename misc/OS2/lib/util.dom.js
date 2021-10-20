@@ -169,43 +169,43 @@ function getRowsById(id, doc = document) {
 
 // Fuegt eine Zelle ans Ende der uebergebenen Zeile hinzu und fuellt sie
 // row: Zeile, die verlaengert wird
-// content: Textinhalt der neuen Zelle
+// content: Textinhalt oder HTML-Inhalt der neuen Zelle
 // color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
-// Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
-function appendCell(row, content, color) {
+//      Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
+// return Die angehaengte Zelle
+function appendCell(row, content, color = undefined, align = 'center') {
     const __ROW = (row || { });
-    const __CELLS = __ROW.cells;
-
-    __ROW.insertCell(-1);
-
-    const __COLIDX = __CELLS.length - 1;
-    const __CELL = __CELLS[__COLIDX];
+    const __CELL = __ROW.insertCell(-1);
 
     __CELL.textContent = content;
-    __CELL.align = 'center';
+    __CELL.align = align;
     __CELL.style.color = color;
 
     return __CELL;
 }
 
-// Fuegt eine Zelle ans Ende der uebergebenen Zeile hinzu und fuellt sie
-// row: Zeile, die verlaengert wird
-// content: HTML-Inhalt der neuen Zelle
-// color: Schriftfarbe der neuen Zelle (z.B. "#FFFFFF" fuer weiss)
-// Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
-function appendHTML(row, content, color) {
-    row.insertCell(-1);
+// Erzeugt die uebergebene Anzahl von Zellen in der uebergebenen Zeile
+// row: Zeile, die aufgepumpt werden soll
+// arrOrLength: Entweder ein Datenarray oder String zum Fuellen
+//      oder die Anzahl der zu erzeugenden Zellen (Default: 1)
+// color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
+// return Die aufgeblaehte Zeile
+function inflateRow(row, arrOrLength = 1, color = undefined, align = 'center') {
+    const __ROW = (row || { });
+    const __ARR = ((typeof arrOrLength === 'string') ? [ arrOrLength ] :
+                    ((typeof arrOrLength === 'number') ? [] : arrOrLength));
+    const __LENGTH = getValue(__ARR.length, arrOrLength);
 
-    const __COLIDX = row.cells.length - 1;
+    for (let i = 0; i < __LENGTH; i++) {
+        appendCell(row, __ARR[i], color, align);
+    }
 
-    row.cells[__COLIDX].innerHTML = content;
-    row.cells[__COLIDX].align = "center";
-    row.cells[__COLIDX].style.color = color;
+    return __ROW;
 }
 
 // Formatiert eine Zelle um (mit einfachen Parametern)
 // cell: Zu formatierende Zelle
-// bold: Inhalt fett darstellen (true = ja, false = nein)
+// bold: Inhalt fett darstellen (Default: true = ja, false = nein)
 // color: Falls angegeben, die Schriftfarbe
 // bgColor: Falls angegeben, die Hintergrundfarbe
 // opacity: Falls angegeben, die Opazitaet
@@ -227,6 +227,28 @@ function formatCell(cell, bold = true, color = undefined, bgColor = undefined, o
     }
 
     return cell;
+}
+
+// Formatiert eine ganze Zeile um (mit einfachen Parametern)
+// row: Zu formatierende Zeile
+// bold: Inhalt fett darstellen (Default: true = ja, false = nein)
+// color: Falls angegeben, die Schriftfarbe
+// bgColor: Falls angegeben, die Hintergrundfarbe
+// opacity: Falls angegeben, die Opazitaet
+// return Die formatierte Zeile
+function formatRow(row, bold = true, color = undefined, bgColor = undefined, opacity = undefined) {
+    const __ROW = (row || { });
+    const __CELLS = __ROW.cells;
+
+    if (__CELLS) {
+        const __LENGTH = __CELLS.length;
+
+        for (let i = 0; i < __LENGTH; i++) {
+            formatCell(__CELLS[i], bold, color, bgColor, opacity);
+        }
+    }
+
+    return row;
 }
 
 // Ermittelt ein Stil-Attribut in Abhaengigkeit der Klasse aus einem Array von Elementen
@@ -414,7 +436,7 @@ function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
 // convertFun: Funktion, die die Werte konvertiert
 // return Array mit Spalteneintraegen als String ("" fuer "nicht gefunden")
 function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sameValue) {
-    const __ARR = ((typeof arrOrLength === 'number') ? { } : arrOrLength);
+    const __ARR = ((typeof arrOrLength === 'number') ? [] : arrOrLength);
     const __LENGTH = getValue(__ARR.length, arrOrLength);
     const __RET = [];
 

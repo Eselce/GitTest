@@ -325,7 +325,7 @@ const __OPTCONFIG = {
                    'FreeValue' : true,
                    'SelValue'  : false,
                    'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ],
-                   'Default'   : 16,
+                   'Default'   : 17,
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Saison: $",
                    'Hotkey'    : 'a',
@@ -984,7 +984,7 @@ Class.define(ColumnManagerBase, Object, {
                                const __HEIGHT = Math.max(3, getMulValue(zoom / 100, height * (__LENGTH / __WIDTH), 0, 0));
 
                                // HTML-Code fuer Anteilsbalken...
-                               return '<img src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height=' + __HEIGHT + '>';
+                               return '<img src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height="' + __HEIGHT + '">';
                            },
         'insertTitles'   : function(table, titleColor = '#FFFFFF') { },  // Ende insertTitles()
         'addTitles'      : function(headers, titleColor = '#FFFFFF') { },  // Ende addTitles()
@@ -1089,7 +1089,7 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                            },
         'addTitles'      : function(headers, titleColor = '#FFFFFF') {
                                // Spaltentitel zentrieren
-                               headers.align = "center";
+                               headers.align = 'center';
 
                                // Titel fuer die aktuellen Werte
                                if (this.id) {
@@ -1108,10 +1108,10 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                                    this.addAndFillCell(headers, "Opti", titleColor);
                                }
                                if (this.verletzt) {
-                                   this.addAndFillCell(headers, "V", titleColor);
+                                   this.addAndFillCell(headers, 'V', titleColor);
                                }
                                if (this.blessur) {
-                                   this.addAndFillCell(headers, "#", titleColor);
+                                   this.addAndFillCell(headers, '#', titleColor);
                                }
                                if (this.skillPos) {
                                    this.addAndFillCell(headers, "Skill", titleColor);
@@ -1126,10 +1126,10 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                                    this.addAndFillCell(headers, "Tr.", titleColor);
                                }
                                if (this.tNr) {
-                                   this.addAndFillCell(headers, "#", titleColor);
+                                   this.addAndFillCell(headers, '#', titleColor);
                                }
                                if (this.prio) {
-                                   this.addAndFillCell(headers, "P", titleColor);
+                                   this.addAndFillCell(headers, 'P', titleColor);
                                }
                                if (this.eins) {
                                    this.addAndFillCell(headers, "Eins", titleColor);
@@ -1138,7 +1138,7 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                                    this.addAndFillCell(headers, "Trainings-%", titleColor);
                                }
                                if (this.proz) {
-                                   this.addAndFillCell(headers, "%", titleColor);
+                                   this.addAndFillCell(headers, '%', titleColor);
                                }
                                if (this.erw || this.erwB) {
                                    this.addAndFillCell(headers, (this.erwB ? "EW+" : "EW"), titleColor);
@@ -2608,13 +2608,10 @@ function procTraining() {
                 const __WARN2 = "Die maximale Wahrscheinlichkeit einer Aufwertung ist immer 99.00 %! Zu erwartende Aufwertungen = " + sum.toFixed(2).toString();
 
                 const __TABLE = getTable(1);
-                const __NEWCELL1 = __TABLE.insertRow(-1).insertCell(-1);
+                const __NEWCELL1 = appendCell(__TABLE.insertRow(-1), __WARN1 /* , '#FFFF00' */);
                 __NEWCELL1.setAttribute('colspan', 4, false);
-                __NEWCELL1.textContent = __WARN1;
-                //__NEWCELL1.style.color = '#FFFF00';
-                const __NEWCELL12 = __TABLE.insertRow(-1).insertCell(-1);
-                __NEWCELL12.setAttribute('colspan', 3, false);
-                __NEWCELL12.textContent = __WARN2;
+                const __NEWCELL2 = appendCell(__TABLE.insertRow(-1), __WARN2 /* , '#FFFF00' */);
+                __NEWCELL2.setAttribute('colspan', 3, false);
 
                 setOpt(optSet.trainer, __TRAINER, false);
                 setOpt(optSet.tAnzahlen, __TANZAHL, false);

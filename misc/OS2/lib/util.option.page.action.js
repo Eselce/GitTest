@@ -36,7 +36,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
     if (__MEMORY !== undefined) {
         const __RELOAD = "window.location.reload()";
         const __SETITEM = function(item, val, quotes = true) {
-                              return (__MEMSTR + ".setItem('" + __RUNPREFIX + item + "', " + (quotes ? "'" + val + "'" : val) + "),");
+                              return (__MEMSTR + ".setItem(" + __LOG.info(__RUNPREFIX + item, false) + ", " + (quotes ? __LOG.info(val, false) : val) + "),");
                           };
         const __SETITEMS = function(cmd, key = undefined, val = undefined) {
                               return ('(' + __SETITEM('cmd', cmd) + ((key === undefined) ? "" :
@@ -51,9 +51,9 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
 
         if (__ACTION !== undefined) {
             switch (__ACTION) {
-            case __OPTACTION.SET : //return "doActionSet('" + getOptName(opt) + "', " + getNextOpt(opt, __VALSTR) + ')';
+            case __OPTACTION.SET : //return "doActionSet(" + __LOG.info(getOptName(opt), false) + ", " + getNextOpt(opt, __VALSTR) + ')';
                                    return __SETITEMS('SET', getOptName(opt), __VALSTR);
-            case __OPTACTION.NXT : //return "doActionNxt('" + getOptName(opt) + "', " + getNextOpt(opt, __VALSTR) + ')';
+            case __OPTACTION.NXT : //return "doActionNxt(" + __LOG.info(getOptName(opt), false) + ", " + getNextOpt(opt, __VALSTR) + ')';
                                    return __SETITEMS('NXT', getOptName(opt), __VALSTR);
             case __OPTACTION.RST : //return "doActionRst()";
                                    return __SETITEMS('RST');

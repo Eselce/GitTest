@@ -45,7 +45,7 @@ function getStoredCmds(memory = undefined) {
             try {
                 value = JSON.parse(value);
             } catch (ex) {
-                __LOG[1]("getStoredCmds(): " + __CMD + " '" + __KEY + "' hat illegalen Wert '" + value + "'");
+                __LOG[1]("getStoredCmds():", __CMD, __LOG.info(__KEY, false), "hat illegalen Wert", __LOG.info(value, false));
                 // ... meist kann man den String selber aber speichern, daher kein "return"...
             }
 
@@ -89,14 +89,14 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
                 invalidated = true;
             }
             switch (__OPTACTION[__CMD]) {
-            case __OPTACTION.SET : __LOG[5]("SET '" + __KEY + "' " + __VAL);
+            case __OPTACTION.SET : __LOG[5]('SET', __LOG.info(__KEY, false), __VAL);
                                    setStored(__KEY, __VAL, false, false, onFulfilled, onRejected);
                                    break;
-            case __OPTACTION.NXT : __LOG[5]("SETNEXT '" + __KEY + "' " + __VAL);
+            case __OPTACTION.NXT : __LOG[5]('SETNEXT', __LOG.info(__KEY, false), __VAL);
                                    //setNextStored(__CONFIG.Choice, __KEY, __VAL, false, false, onFulfilled, onRejected);
                                    setStored(__KEY, __VAL, false, false, onFulfilled, onRejected);
                                    break;
-            case __OPTACTION.RST : __LOG[5]("RESET (delayed)");
+            case __OPTACTION.RST : __LOG[5]('RESET', '(delayed)');
                                    __LOADEDCMDS.push(__STORED);
                                    break;
             default :              break;
@@ -104,9 +104,9 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
         } else {
             switch (__OPTACTION[__CMD]) {
             case __OPTACTION.SET :
-            case __OPTACTION.NXT : __LOG[3]("SET/SETNEXT (undefined)");
+            case __OPTACTION.NXT : __LOG[3]('SET/SETNEXT', '(undefined)');
                                    break;
-            case __OPTACTION.RST : __LOG[5]("RESET");
+            case __OPTACTION.RST : __LOG[5]('RESET');
                                    await resetOptions(optSet, false);
                                    await loadOptions(optSet);  // Reset auf umbenannte Optionen anwenden!
                                    break;

@@ -70,7 +70,7 @@ function loadOption(opt, force = false) {
         let value;
 
         if (opt.Loaded && ! __ISSHARED) {
-            const __ERROR = "Error: Oprion '" + __NAME + "' bereits geladen!";
+            const __ERROR = "Error: Option " + __LOG.info(__NAME, false) + " bereits geladen!";
 
             __LOG[1](__ERROR);
 
@@ -274,7 +274,7 @@ async function renameOptions(optSet, optSelect, renameParam = undefined, renameF
         const __OPT = optSet[opt];
 
         if (__OPT === undefined) {
-            __LOG[1]("RENAME: Option '" + opt + "' nicht gefunden!");
+            __LOG[1]("RENAME: Option", __LOG.info(opt, false), "nicht gefunden!");
         } else {
             const __NAME = getOptName(__OPT);
             const __NEWNAME = renameFun(__NAME, renameParam);

@@ -14,33 +14,37 @@
 
 // ==================== Abschnitt fuer Debugging und Error-Handling ====================
 
-// Gibt eine Meldung in der Console aus und oeffnet ein Bestaetigungsfenster mit der Meldung
+// Gibt eine Meldung in der Console aus und oeffnet ggfa. ein Bestaetigungsfenster mit der Meldung
 // label: Eine Ueberschrift
 // message: Der Meldungs-Text
 // data: Ein Wert. Ist er angegeben, wird er in der Console ausgegeben
+// show: Angabe, ob neben Logs auch noch ein alert-Dialog aufpoppen soll (Default: true)
 // return Liefert die Parameter zurueck
-function showAlert(label, message, data = undefined) {
+function showAlert(label, message, data = undefined, show = true) {
     __LOG[0](label + ": " + message);
 
     if (data !== undefined) {
         __LOG[2](data);
     }
 
-    alert(label + "\n\n" + message);
+    if (show) {
+        alert(label + "\n\n" + message);
+    }
 
     return arguments;
 }
 
-// Gibt eine Meldung in der Console aus und oeffnet ein Bestaetigungsfenster
+// Gibt eine Meldung in der Console aus und oeffnet ggfa. ein Bestaetigungsfenster
 // mit der Meldung zu einer Exception oder einer Fehlermeldung
 // label: Eine Ueberschrift
 // ex: Exception oder sonstiges Fehlerobjekt
+// show: Angabe, dass neben Logs auch ein alert-Dialog aufpoppen soll (Default: true)
 // return Liefert die showAlert()-Parameter zurueck
-function showException(label, ex) {
+function showException(label, ex, show = true) {
     if (ex && ex.message) {  // Exception
-        return showAlert(label, ex.message, ex);
+        return showAlert(label, ex.message, ex, show);
     } else {  // sonstiger Fehler
-        return showAlert(label, ex);
+        return showAlert(label, ex, undefined, show);
     }
 }
 
@@ -54,7 +58,7 @@ function defaultCatch(error) {
 
         return showException(__LABEL, error);
     } catch (ex) {
-        return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex.message, ex);
+        return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex);
     }
 }
 

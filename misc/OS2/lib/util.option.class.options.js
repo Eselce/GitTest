@@ -44,11 +44,11 @@ Class.define(Options, Object, {
                                 const __NAME = getOptName(__OPT);
                                 const __VAL = getOptValue(__OPT);
                                 const __OUT = [
-                                                  getValStr(__VAL, false, true, true),
-                                                  getValStr(__KEY, true),
-                                                  getValStr(__NAME, true),
+                                                  __LOG.info(__VAL, true),
+                                                  __LOG.info(__KEY, false),
+                                                  __LOG.info(__NAME, false),
                                                   getValStr(__CONFIG.FormLabel),
-                                                  getValStr(__CONFIG.Default, false, true, true)
+                                                  __LOG.info(__CONFIG.Default, true)
                                     ];
 
                                 retStr += '\t' + __OUT.join('\t') + '\n';

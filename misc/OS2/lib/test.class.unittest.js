@@ -86,7 +86,7 @@ Class.define(UnitTest, Object, {
                                          const __THIS = (thisArg || this);
                                          const __RETVALS = [];
 
-                                         __LOG[2]("Running " + __TDEFS.length + " tests for module '" + name + "': " + desc);
+                                         __LOG[2]("Running", __TDEFS.length, "tests for module", __LOG.info(name, false) + ':', desc);
 
                                          try {
                                              for (let entry of __TDEFS) {
@@ -96,7 +96,7 @@ Class.define(UnitTest, Object, {
                                                  const __RESULT = new UnitTestResults(__NAME, __DESC, __THIS);
 
                                                  __RESULT.running();  // Testzaehler erhoehen...
-                                                 __LOG[4]("Running test '" + name + "'->'" + __NAME + "'" + (__DESC ? " (" + __DESC + ')' : "") + "...");
+                                                 __LOG[4]("Running test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + (__DESC ? " (" + __DESC + ')' : "") + "...");
 
                                                  try {
                                                      const __RETVAL = await __TFUN.call(__THIS);
@@ -104,15 +104,15 @@ Class.define(UnitTest, Object, {
                                                      __RESULT.checkResult(__RETVAL);  // entscheiden, ob erfolgreich oder nicht...
                                                      __RETVALS.push(__RETVAL);
 
-                                                     __LOG[5]("Test '" + name + "'->'" + __NAME + "' returned:", __RETVAL);
+                                                     __LOG[5]("Test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "returned:", __RETVAL);
                                                  } catch (ex) {
                                                      // Fehler im Einzeltest...
                                                      __RESULT.checkException(ex);
 
                                                     if (ex instanceof AssertionFailed) {
-                                                        __LOG[4]("Test '" + name + "'->'" + __NAME + "' failed:", __RESULT.sum());
+                                                        __LOG[4]("Test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "failed:", __RESULT.sum());
                                                     } else {
-                                                        __LOG[1]("Exception", ex, "in test '" + name + "'->'" + __NAME + "':", __RESULT.sum());
+                                                        __LOG[1]("Exception", ex, "in test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + ':', __RESULT.sum());
                                                     }
                                                  }
 
@@ -125,7 +125,7 @@ Class.define(UnitTest, Object, {
                                              // Fehler im Framework der Klasse...
                                              __RESULTS.checkException(ex);
 
-                                            __LOG[1]("Exception", ex, "in module '" + name + "':", __RESULTS.sum());
+                                            __LOG[1]("Exception", ex, "in module", __LOG.info(name, false) + ':', __RESULTS.sum());
 
                                              //throw ex;  // weiterleiten an runAll() ???
                                          } finally {
@@ -156,7 +156,7 @@ UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId,
             const __THIS = (thisArg || __TEST);
             const __RESULTS = new UnitTestResults("SUMME", __NAME, __TEST);
 
-            __LOG[2]("Starting tests for module '" + __NAME + "': " + __DESC);
+            __LOG[2]("Starting tests for module", __LOG.info(__NAME, false) + ':', __DESC);
 
             try {
                 __LIBRESULTS[__NAME] = await __TFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
@@ -164,12 +164,12 @@ UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId,
                 // Fehler im Framework der Testklasse...
                 __RESULTS.checkException(ex);
 
-                __LOG[1]("Exception", ex, "in module '" + __NAME + "':", __RESULTS.sum());
+                __LOG[1]("Exception", ex, "in module", __LOG.info(__NAME, false) + ':', __RESULTS.sum());
             } finally {
                 __ALLRESULTS.merge(__RESULTS);  // aufaddieren...
 
-                __LOG[2]("Finished tests for module '" + __NAME + "':", __RESULTS.sum());
-                __LOG[6]("Total results after module '" + __NAME + "':", __ALLRESULTS.sum());
+                __LOG[2]("Finished tests for module", __LOG.info(__NAME, false) + ':',  __RESULTS.sum());
+                __LOG[6]("Total results after module", __LOG.info(__NAME, false) + ':',  __ALLRESULTS.sum());
 
                 // Ergebnis eintragen...
                 resultFun.call(__THIS, null, tableId, document);  // Leerzeile
@@ -180,7 +180,7 @@ UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId,
             // Fehler im Framework der UnitTests und Module...
             __ALLRESULTS.checkException(ex);
 
-            __LOG[1]("Exception", ex, "in module '" + __NAME + "':", __ALLRESULTS.sum());
+            __LOG[1]("Exception", ex, "in module", __LOG.info(__NAME, false) + ':',  __ALLRESULTS.sum());
         }
     }
 
