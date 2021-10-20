@@ -1462,7 +1462,7 @@ console.log(__LTITEL);
                         const __LFILL = ((__LTITELSIZE && __TIT) ? [] : undefined);
                         const __LTITSHOWN = (__SHOWQUALITITLES ? __LTIT : undefined);
 
-                        const __OSBLAU = "#111166";
+                        const __OSBLAU = '#111166';
                         const __LCOLOR = (__LTIT ? __TABCOLORS[__LTIT] : __OSBLAU);
                         const __TCOLOR = ((__TABLEMAN.isCurrSaison && ! __TABLEMAN.isAbschluss) ? __LCOLOR : undefined);
 

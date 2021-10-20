@@ -1410,7 +1410,7 @@ function procTeamuebersicht() {
                             }).then(optSet => {
                 const __ROWS = getRows(1);
                 const __HEADERS = __ROWS[0];
-                const __TITLECOLOR = getColor('LEI');  // "#FFFFFF"
+                const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
                 const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 1);
                 const __COLMAN = new ColumnManager(__OPTSET, __COLUMNINDEX, {
@@ -1527,7 +1527,7 @@ function procSpielereinzelwerte() {
                             }).then(optSet => {
                 const __ROWS = getRows(1);
                 const __HEADERS = __ROWS[0];
-                const __TITLECOLOR = getColor('LEI');  // "#FFFFFF"
+                const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
                 const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 2);
                 const __COLMAN = new ColumnManager(__OPTSET, __COLUMNINDEX, true);
@@ -1634,7 +1634,7 @@ function procOptSkill() {
                             }).then(optSet => {
                 const __ROWS = getRows(1);
                 const __HEADERS = __ROWS[0];
-                const __TITLECOLOR = getColor('LEI');  // "#FFFFFF"
+                const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
                 const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 3);
                 const __COLMAN = new ColumnManager(__OPTSET, __COLUMNINDEX, {
