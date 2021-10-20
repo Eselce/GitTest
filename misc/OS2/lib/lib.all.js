@@ -971,33 +971,37 @@ function substParam(text, par1) {
 
 // ==================== Abschnitt fuer Debugging und Error-Handling ====================
 
-// Gibt eine Meldung in der Console aus und oeffnet ein Bestaetigungsfenster mit der Meldung
+// Gibt eine Meldung in der Console aus und oeffnet ggfa. ein Bestaetigungsfenster mit der Meldung
 // label: Eine Ueberschrift
 // message: Der Meldungs-Text
 // data: Ein Wert. Ist er angegeben, wird er in der Console ausgegeben
+// show: Angabe, ob neben Logs auch noch ein alert-Dialog aufpoppen soll (Default: true)
 // return Liefert die Parameter zurueck
-function showAlert(label, message, data = undefined) {
+function showAlert(label, message, data = undefined, show = true) {
     __LOG[0](label + ": " + message);
 
     if (data !== undefined) {
         __LOG[2](data);
     }
 
-    alert(label + "\n\n" + message);
+    if (show) {
+        alert(label + "\n\n" + message);
+    }
 
     return arguments;
 }
 
-// Gibt eine Meldung in der Console aus und oeffnet ein Bestaetigungsfenster
+// Gibt eine Meldung in der Console aus und oeffnet ggfa. ein Bestaetigungsfenster
 // mit der Meldung zu einer Exception oder einer Fehlermeldung
 // label: Eine Ueberschrift
 // ex: Exception oder sonstiges Fehlerobjekt
+// show: Angabe, dass neben Logs auch ein alert-Dialog aufpoppen soll (Default: true)
 // return Liefert die showAlert()-Parameter zurueck
-function showException(label, ex) {
+function showException(label, ex, show = true) {
     if (ex && ex.message) {  // Exception
-        return showAlert(label, ex.message, ex);
+        return showAlert(label, ex.message, ex, show);
     } else {  // sonstiger Fehler
-        return showAlert(label, ex);
+        return showAlert(label, ex, undefined, show);
     }
 }
 
@@ -1011,7 +1015,7 @@ function defaultCatch(error) {
 
         return showException(__LABEL, error);
     } catch (ex) {
-        return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex.message, ex);
+        return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex);
     }
 }
 
@@ -1389,43 +1393,43 @@ function getRowsById(id, doc = document) {
 
 // Fuegt eine Zelle ans Ende der uebergebenen Zeile hinzu und fuellt sie
 // row: Zeile, die verlaengert wird
-// content: Textinhalt der neuen Zelle
+// content: Textinhalt oder HTML-Inhalt der neuen Zelle
 // color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
-// Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
-function appendCell(row, content, color) {
+//      Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
+// return Die angehaengte Zelle
+function appendCell(row, content, color = undefined, align = 'center') {
     const __ROW = (row || { });
-    const __CELLS = __ROW.cells;
-
-    __ROW.insertCell(-1);
-
-    const __COLIDX = __CELLS.length - 1;
-    const __CELL = __CELLS[__COLIDX];
+    const __CELL = __ROW.insertCell(-1);
 
     __CELL.textContent = content;
-    __CELL.align = 'center';
+    __CELL.align = align;
     __CELL.style.color = color;
 
     return __CELL;
 }
 
-// Fuegt eine Zelle ans Ende der uebergebenen Zeile hinzu und fuellt sie
-// row: Zeile, die verlaengert wird
-// content: HTML-Inhalt der neuen Zelle
-// color: Schriftfarbe der neuen Zelle (z.B. "#FFFFFF" fuer weiss)
-// Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
-function appendHTML(row, content, color) {
-    row.insertCell(-1);
+// Erzeugt die uebergebene Anzahl von Zellen in der uebergebenen Zeile
+// row: Zeile, die aufgepumpt werden soll
+// arrOrLength: Entweder ein Datenarray oder String zum Fuellen
+//      oder die Anzahl der zu erzeugenden Zellen (Default: 1)
+// color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
+// return Die aufgeblaehte Zeile
+function inflateRow(row, arrOrLength = 1, color = undefined, align = 'center') {
+    const __ROW = (row || { });
+    const __ARR = ((typeof arrOrLength === 'string') ? [ arrOrLength ] :
+                    ((typeof arrOrLength === 'number') ? [] : arrOrLength));
+    const __LENGTH = getValue(__ARR.length, arrOrLength);
 
-    const __COLIDX = row.cells.length - 1;
+    for (let i = 0; i < __LENGTH; i++) {
+        appendCell(row, __ARR[i], color, align);
+    }
 
-    row.cells[__COLIDX].innerHTML = content;
-    row.cells[__COLIDX].align = "center";
-    row.cells[__COLIDX].style.color = color;
+    return __ROW;
 }
 
 // Formatiert eine Zelle um (mit einfachen Parametern)
 // cell: Zu formatierende Zelle
-// bold: Inhalt fett darstellen (true = ja, false = nein)
+// bold: Inhalt fett darstellen (Default: true = ja, false = nein)
 // color: Falls angegeben, die Schriftfarbe
 // bgColor: Falls angegeben, die Hintergrundfarbe
 // opacity: Falls angegeben, die Opazitaet
@@ -1447,6 +1451,28 @@ function formatCell(cell, bold = true, color = undefined, bgColor = undefined, o
     }
 
     return cell;
+}
+
+// Formatiert eine ganze Zeile um (mit einfachen Parametern)
+// row: Zu formatierende Zeile
+// bold: Inhalt fett darstellen (Default: true = ja, false = nein)
+// color: Falls angegeben, die Schriftfarbe
+// bgColor: Falls angegeben, die Hintergrundfarbe
+// opacity: Falls angegeben, die Opazitaet
+// return Die formatierte Zeile
+function formatRow(row, bold = true, color = undefined, bgColor = undefined, opacity = undefined) {
+    const __ROW = (row || { });
+    const __CELLS = __ROW.cells;
+
+    if (__CELLS) {
+        const __LENGTH = __CELLS.length;
+
+        for (let i = 0; i < __LENGTH; i++) {
+            formatCell(__CELLS[i], bold, color, bgColor, opacity);
+        }
+    }
+
+    return row;
 }
 
 // Ermittelt ein Stil-Attribut in Abhaengigkeit der Klasse aus einem Array von Elementen
@@ -1634,7 +1660,7 @@ function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
 // convertFun: Funktion, die die Werte konvertiert
 // return Array mit Spalteneintraegen als String ("" fuer "nicht gefunden")
 function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sameValue) {
-    const __ARR = ((typeof arrOrLength === 'number') ? { } : arrOrLength);
+    const __ARR = ((typeof arrOrLength === 'number') ? [] : arrOrLength);
     const __LENGTH = getValue(__ARR.length, arrOrLength);
     const __RET = [];
 
@@ -2871,11 +2897,11 @@ Class.define(Options, Object, {
                                 const __NAME = getOptName(__OPT);
                                 const __VAL = getOptValue(__OPT);
                                 const __OUT = [
-                                                  getValStr(__VAL, false, true, true),
-                                                  getValStr(__KEY, true),
-                                                  getValStr(__NAME, true),
+                                                  __LOG.info(__VAL, true),
+                                                  __LOG.info(__KEY, false),
+                                                  __LOG.info(__NAME, false),
                                                   getValStr(__CONFIG.FormLabel),
-                                                  getValStr(__CONFIG.Default, false, true, true)
+                                                  __LOG.info(__CONFIG.Default, true)
                                     ];
 
                                 retStr += '\t' + __OUT.join('\t') + '\n';
@@ -2968,7 +2994,7 @@ function loadOption(opt, force = false) {
         let value;
 
         if (opt.Loaded && ! __ISSHARED) {
-            const __ERROR = "Error: Oprion '" + __NAME + "' bereits geladen!";
+            const __ERROR = "Error: Option " + __LOG.info(__NAME, false) + " bereits geladen!";
 
             __LOG[1](__ERROR);
 
@@ -3172,7 +3198,7 @@ async function renameOptions(optSet, optSelect, renameParam = undefined, renameF
         const __OPT = optSet[opt];
 
         if (__OPT === undefined) {
-            __LOG[1]("RENAME: Option '" + opt + "' nicht gefunden!");
+            __LOG[1]("RENAME: Option", __LOG.info(opt, false), "nicht gefunden!");
         } else {
             const __NAME = getOptName(__OPT);
             const __NEWNAME = renameFun(__NAME, renameParam);
@@ -3558,7 +3584,7 @@ function getStoredCmds(memory = undefined) {
             try {
                 value = JSON.parse(value);
             } catch (ex) {
-                __LOG[1]("getStoredCmds(): " + __CMD + " '" + __KEY + "' hat illegalen Wert '" + value + "'");
+                __LOG[1]("getStoredCmds():", __CMD, __LOG.info(__KEY, false), "hat illegalen Wert", __LOG.info(value, false));
                 // ... meist kann man den String selber aber speichern, daher kein "return"...
             }
 
@@ -3602,14 +3628,14 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
                 invalidated = true;
             }
             switch (__OPTACTION[__CMD]) {
-            case __OPTACTION.SET : __LOG[5]("SET '" + __KEY + "' " + __VAL);
+            case __OPTACTION.SET : __LOG[5]('SET', __LOG.info(__KEY, false), __VAL);
                                    setStored(__KEY, __VAL, false, false, onFulfilled, onRejected);
                                    break;
-            case __OPTACTION.NXT : __LOG[5]("SETNEXT '" + __KEY + "' " + __VAL);
+            case __OPTACTION.NXT : __LOG[5]('SETNEXT', __LOG.info(__KEY, false), __VAL);
                                    //setNextStored(__CONFIG.Choice, __KEY, __VAL, false, false, onFulfilled, onRejected);
                                    setStored(__KEY, __VAL, false, false, onFulfilled, onRejected);
                                    break;
-            case __OPTACTION.RST : __LOG[5]("RESET (delayed)");
+            case __OPTACTION.RST : __LOG[5]('RESET', '(delayed)');
                                    __LOADEDCMDS.push(__STORED);
                                    break;
             default :              break;
@@ -3617,9 +3643,9 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
         } else {
             switch (__OPTACTION[__CMD]) {
             case __OPTACTION.SET :
-            case __OPTACTION.NXT : __LOG[3]("SET/SETNEXT (undefined)");
+            case __OPTACTION.NXT : __LOG[3]('SET/SETNEXT', '(undefined)');
                                    break;
-            case __OPTACTION.RST : __LOG[5]("RESET");
+            case __OPTACTION.RST : __LOG[5]('RESET');
                                    await resetOptions(optSet, false);
                                    await loadOptions(optSet);  // Reset auf umbenannte Optionen anwenden!
                                    break;
@@ -3886,7 +3912,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
     if (__MEMORY !== undefined) {
         const __RELOAD = "window.location.reload()";
         const __SETITEM = function(item, val, quotes = true) {
-                              return (__MEMSTR + ".setItem('" + __RUNPREFIX + item + "', " + (quotes ? "'" + val + "'" : val) + "),");
+                              return (__MEMSTR + ".setItem(" + __LOG.info(__RUNPREFIX + item, false) + ", " + (quotes ? __LOG.info(val, false) : val) + "),");
                           };
         const __SETITEMS = function(cmd, key = undefined, val = undefined) {
                               return ('(' + __SETITEM('cmd', cmd) + ((key === undefined) ? "" :
@@ -3901,9 +3927,9 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
 
         if (__ACTION !== undefined) {
             switch (__ACTION) {
-            case __OPTACTION.SET : //return "doActionSet('" + getOptName(opt) + "', " + getNextOpt(opt, __VALSTR) + ')';
+            case __OPTACTION.SET : //return "doActionSet(" + __LOG.info(getOptName(opt), false) + ", " + getNextOpt(opt, __VALSTR) + ')';
                                    return __SETITEMS('SET', getOptName(opt), __VALSTR);
-            case __OPTACTION.NXT : //return "doActionNxt('" + getOptName(opt) + "', " + getNextOpt(opt, __VALSTR) + ')';
+            case __OPTACTION.NXT : //return "doActionNxt(" + __LOG.info(getOptName(opt), false) + ", " + getNextOpt(opt, __VALSTR) + ')';
                                    return __SETITEMS('NXT', getOptName(opt), __VALSTR);
             case __OPTACTION.RST : //return "doActionRst()";
                                    return __SETITEMS('RST');
@@ -6723,11 +6749,11 @@ Class.define(ColumnManager, Object, {
                                const __HEIGHT = Math.max(3, getMulValue(zoom / 100, height * (__LENGTH / __WIDTH), 0, 0));
 
                                // HTML-Code fuer Anteilsbalken...
-                               return '<img src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height=' + __HEIGHT + '>';
+                               return '<img src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height="' + __HEIGHT + '">';
                            },
-        'addTitles'      : function(headers, titleColor = "#FFFFFF") {
+        'addTitles'      : function(headers, titleColor = '#FFFFFF') {
                                // Spaltentitel zentrieren
-                               headers.align = "center";
+                               headers.align = 'center';
 
                                // Titel fuer die aktuellen Werte
                                if (this.fpId) {
@@ -6812,7 +6838,7 @@ Class.define(ColumnManager, Object, {
                                    }
                                }
                            },  // Ende addTitles()
-        'addValues'      : function(player, playerRow, color = "#FFFFFF") {
+        'addValues'      : function(player, playerRow, color = '#FFFFFF') {
                                // Warnlevel des Spielers anpassen...
                                const __WARNDRAW = player.warnDraw || player.warnDrawAufstieg || __NOWARNDRAW;
                                __WARNDRAW.setWarn(this.warn, this.warnMonth, this.warnAufstieg);

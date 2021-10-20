@@ -453,11 +453,11 @@ Class.define(Options, Object, {
                                 const __NAME = getOptName(__OPT);
                                 const __VAL = getOptValue(__OPT);
                                 const __OUT = [
-                                                  getValStr(__VAL, false, true, true),
-                                                  getValStr(__KEY, true),
-                                                  getValStr(__NAME, true),
+                                                  __LOG.info(__VAL, true),
+                                                  __LOG.info(__KEY, false),
+                                                  __LOG.info(__NAME, false),
                                                   getValStr(__CONFIG.FormLabel),
-                                                  getValStr(__CONFIG.Default, false, true, true)
+                                                  __LOG.info(__CONFIG.Default, true)
                                     ];
 
                                 retStr += '\t' + __OUT.join('\t') + '\n';
@@ -550,7 +550,7 @@ function loadOption(opt, force = false) {
         let value;
 
         if (opt.Loaded && ! __ISSHARED) {
-            const __ERROR = "Error: Oprion '" + __NAME + "' bereits geladen!";
+            const __ERROR = "Error: Option " + __LOG.info(__NAME, false) + " bereits geladen!";
 
             __LOG[1](__ERROR);
 
@@ -754,7 +754,7 @@ async function renameOptions(optSet, optSelect, renameParam = undefined, renameF
         const __OPT = optSet[opt];
 
         if (__OPT === undefined) {
-            __LOG[1]("RENAME: Option '" + opt + "' nicht gefunden!");
+            __LOG[1]("RENAME: Option", __LOG.info(opt, false), "nicht gefunden!");
         } else {
             const __NAME = getOptName(__OPT);
             const __NEWNAME = renameFun(__NAME, renameParam);
@@ -1140,7 +1140,7 @@ function getStoredCmds(memory = undefined) {
             try {
                 value = JSON.parse(value);
             } catch (ex) {
-                __LOG[1]("getStoredCmds(): " + __CMD + " '" + __KEY + "' hat illegalen Wert '" + value + "'");
+                __LOG[1]("getStoredCmds():", __CMD, __LOG.info(__KEY, false), "hat illegalen Wert", __LOG.info(value, false));
                 // ... meist kann man den String selber aber speichern, daher kein "return"...
             }
 
@@ -1184,14 +1184,14 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
                 invalidated = true;
             }
             switch (__OPTACTION[__CMD]) {
-            case __OPTACTION.SET : __LOG[5]("SET '" + __KEY + "' " + __VAL);
+            case __OPTACTION.SET : __LOG[5]('SET', __LOG.info(__KEY, false), __VAL);
                                    setStored(__KEY, __VAL, false, false, onFulfilled, onRejected);
                                    break;
-            case __OPTACTION.NXT : __LOG[5]("SETNEXT '" + __KEY + "' " + __VAL);
+            case __OPTACTION.NXT : __LOG[5]('SETNEXT', __LOG.info(__KEY, false), __VAL);
                                    //setNextStored(__CONFIG.Choice, __KEY, __VAL, false, false, onFulfilled, onRejected);
                                    setStored(__KEY, __VAL, false, false, onFulfilled, onRejected);
                                    break;
-            case __OPTACTION.RST : __LOG[5]("RESET (delayed)");
+            case __OPTACTION.RST : __LOG[5]('RESET', '(delayed)');
                                    __LOADEDCMDS.push(__STORED);
                                    break;
             default :              break;
@@ -1199,9 +1199,9 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
         } else {
             switch (__OPTACTION[__CMD]) {
             case __OPTACTION.SET :
-            case __OPTACTION.NXT : __LOG[3]("SET/SETNEXT (undefined)");
+            case __OPTACTION.NXT : __LOG[3]('SET/SETNEXT', '(undefined)');
                                    break;
-            case __OPTACTION.RST : __LOG[5]("RESET");
+            case __OPTACTION.RST : __LOG[5]('RESET');
                                    await resetOptions(optSet, false);
                                    await loadOptions(optSet);  // Reset auf umbenannte Optionen anwenden!
                                    break;
@@ -1468,7 +1468,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
     if (__MEMORY !== undefined) {
         const __RELOAD = "window.location.reload()";
         const __SETITEM = function(item, val, quotes = true) {
-                              return (__MEMSTR + ".setItem('" + __RUNPREFIX + item + "', " + (quotes ? "'" + val + "'" : val) + "),");
+                              return (__MEMSTR + ".setItem(" + __LOG.info(__RUNPREFIX + item, false) + ", " + (quotes ? __LOG.info(val, false) : val) + "),");
                           };
         const __SETITEMS = function(cmd, key = undefined, val = undefined) {
                               return ('(' + __SETITEM('cmd', cmd) + ((key === undefined) ? "" :
@@ -1483,9 +1483,9 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
 
         if (__ACTION !== undefined) {
             switch (__ACTION) {
-            case __OPTACTION.SET : //return "doActionSet('" + getOptName(opt) + "', " + getNextOpt(opt, __VALSTR) + ')';
+            case __OPTACTION.SET : //return "doActionSet(" + __LOG.info(getOptName(opt), false) + ", " + getNextOpt(opt, __VALSTR) + ')';
                                    return __SETITEMS('SET', getOptName(opt), __VALSTR);
-            case __OPTACTION.NXT : //return "doActionNxt('" + getOptName(opt) + "', " + getNextOpt(opt, __VALSTR) + ')';
+            case __OPTACTION.NXT : //return "doActionNxt(" + __LOG.info(getOptName(opt), false) + ", " + getNextOpt(opt, __VALSTR) + ')';
                                    return __SETITEMS('NXT', getOptName(opt), __VALSTR);
             case __OPTACTION.RST : //return "doActionRst()";
                                    return __SETITEMS('RST');

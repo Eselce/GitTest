@@ -2080,11 +2080,11 @@ Class.define(ColumnManager, Object, {
                                const __HEIGHT = Math.max(3, getMulValue(zoom / 100, height * (__LENGTH / __WIDTH), 0, 0));
 
                                // HTML-Code fuer Anteilsbalken...
-                               return '<img src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height=' + __HEIGHT + '>';
+                               return '<img src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height="' + __HEIGHT + '">';
                            },
-        'addTitles'      : function(headers, titleColor = "#FFFFFF") {
+        'addTitles'      : function(headers, titleColor = '#FFFFFF') {
                                // Spaltentitel zentrieren
-                               headers.align = "center";
+                               headers.align = 'center';
 
                                // Titel fuer die aktuellen Werte
                                if (this.fpId) {
@@ -2169,7 +2169,7 @@ Class.define(ColumnManager, Object, {
                                    }
                                }
                            },  // Ende addTitles()
-        'addValues'      : function(player, playerRow, color = "#FFFFFF") {
+        'addValues'      : function(player, playerRow, color = '#FFFFFF') {
                                // Warnlevel des Spielers anpassen...
                                const __WARNDRAW = player.warnDraw || player.warnDrawAufstieg || __NOWARNDRAW;
                                __WARNDRAW.setWarn(this.warn, this.warnMonth, this.warnAufstieg);
