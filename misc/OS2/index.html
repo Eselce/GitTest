@@ -61,7 +61,7 @@
 						if (match) {
 							var item = match[1];
 							var value = match[2];
-							if (typeof data[item] == 'object') {
+							if ((typeof data[item]) == 'object') {
 								data[item].push(value);
 							} else {
 								data[item] = value;

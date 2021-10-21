@@ -24,26 +24,27 @@
 // params: ggfs. Parameter fuer die msg-Funktion
 function AssertionFailed(whatFailed, msg, thisArg, ...params) {
     //'use strict';
+    const __THIS = (thisArg || this);
 
     if (msg === undefined) {
-        this.text = "";
-    } else if (typeof msg === 'function') {
-        const __TEXT = msg.call(thisArg, ...params);
+        this.message = "";
+    } else if ((typeof msg) === 'function') {
+        const __TEXT = msg.call(__THIS, ...params);
 
-        this.text = ((__TEXT === undefined) ? __TEXT : String(__TEXT));
+        this.message = ((__TEXT === undefined) ? __TEXT : __LOG.info(__TEXT, false, true));
     } else {
-        this.text = String(msg);
+        this.message = __LOG.info(msg, ((typeof msg) !== 'string'), true);
     }
 
     if (whatFailed) {
-        this.text += " (" + whatFailed + ')';
+        this.message += " (" + whatFailed + ')';
     }
 }
 
 Class.define(AssertionFailed, Object, {
-                  'getText'       : function() {
-                                        return this.text;
-                                    }
+                  'getTextMessage'    : function() {
+                                            return this.message;
+                                        }
     });
 
 // ==================== Ende Abschnitt fuer Klasse AssertionFailed ====================
@@ -61,9 +62,17 @@ function assertionCatch(error, ...attribs) {
         const __ERROR = Object.assign(error, ...attribs);
         const __RET = showException(__LABEL, __ERROR, false);
 
-        return ASSERT(false, "Promise rejected!", __RET);
+        ASSERT(! false, "Promise rejected!", __RET);  // TODO
+
+        return __ERROR;
     } catch (ex) {
-        return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex);
+        if (ex instanceof AssertionFailed) {
+            __LOG[0]("ASSERTIONCATCH!!!", ex);  // TODO!!!
+
+            return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex, false);
+        } else {
+            return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex);
+        }
     }
 }
 
@@ -114,7 +123,7 @@ const ASSERT = function(test, whatFailed, msg, thisArg, ...params) {
 
     if (! test) {
         const __FAIL = new AssertionFailed(whatFailed, msg, thisArg, ...params);
-        __LOG[4]("FAIL", __FAIL);
+        __LOG[4]("FAIL", __LOG.info(__FAIL, true, true));
 
         throw __FAIL;
     } else {
@@ -188,6 +197,20 @@ const ASSERT_NOT_IN_DELTA = function(erg, exp, delta, msg, thisArg, ...params) {
     return ASSERT(Math.abs(erg - exp) > delta, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- " + delta, msg, thisArg, ...params);
 }
 
+const ASSERT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILON, msg, thisArg, ...params) {
+    const __EPSILON = scale * epsilon;
+    const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
+
+    return ASSERT(Math.abs(erg - exp) <= __DELTA, __LOG.info(erg, true, true) + " != " + __LOG.info(exp, true, true) + " +/- rel. " + __EPSILON, msg, thisArg, ...params);
+}
+
+const ASSERT_NOT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILON, msg, thisArg, ...params) {
+    const __EPSILON = scale * epsilon;
+    const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
+
+    return ASSERT(Math.abs(erg - exp) > __DELTA, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- rel. " + __EPSILON, msg, thisArg, ...params);
+}
+
 const ASSERT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
     return ASSERT((obj instanceof cls), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(cls, true, true), msg, thisArg, ...params);
 }
@@ -208,8 +231,9 @@ const ASSERT_NOT_MATCH = function(str, pattern, msg, thisArg, ...params) {
 
 // ==================== Abschnitt fuer globale Variablen ====================
 
-// Parameter fuer ASSERT_IN_DELTA und ASSERT_NOT_IN_DELTA (Float-Genauigkeit)...
+// Parameter fuer ASSERT_IN_DELTA, ASSERT_NOT_IN_DELTA, ASSERT_IN_EPSILON und ASSERT_NOT_IN_EPSILON (Float-Genauigkeit)...
 const __ASSERTDELTA = 0.000001;
+const __ASSERTEPSILON = Number.EPSILON;
 
 // ==================== Ende Abschnitt fuer globale Variablen ====================
 
