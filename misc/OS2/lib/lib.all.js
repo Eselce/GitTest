@@ -40,7 +40,9 @@ const __LOG = {
                                                         // [false]    }
                   'init'      : function(win, logLevel = 4) {  // TODO: Parameter 'win' als Referenz-Window
                                     for (let level = 0; level < this.logFun.length; level++) {
-                                        this[level] = ((level > logLevel) ? function() { } : this.logFun[level]);
+                                        this[level] = ((level > logLevel) ? function() { } : function() {
+                                                    return this.logFun[level]('[' + level + ']', ...arguments);
+                                                });
                                     }
                                     this[""]    = this.logFun[7];   // console.table
                                     this[true]  = console.group;    // console.group
@@ -267,35 +269,6 @@ Object.map = function(obj, mapFun, thisArg, filterFun, sortFun) {
     }
 }
 
-//
-// Hilfsfunktionen, die von Options.toString() genutzt werden
-//
-
-// Liefert die Klasse des Objektes (ggfs. nach util.class verschieben!)
-// obj: Das Objekt, um das es geht
-// return Klassenname der Klasse des Objektes
-function getClass(obj) {
-    if (obj != undefined) {
-        if (typeof obj === 'object') {
-            if (obj.getClass) {
-                return obj.getClass();
-            }
-        }
-    }
-
-    return undefined;
-}
-
-
-// Liefert den Klassennamen des Objektes (ggfs. nach util.class verschieben!)
-// obj: Das Objekt, um das es geht
-// return Klassenname der Klasse des Objektes
-function getClassName(obj) {
-    const __CLASS = getClass(obj);
-
-    return ((__CLASS ? __CLASS.className : undefined));  // __CLASS.getName() problematisch?
-}
-
 // Liefert Datentyp und detaillierte Angaben zu einem Objekt aller Art, also Object, Array, Function, String, etc.
 // obj: Das Objekt, um das es geht
 // keyStrings: Nutzt bei Strings '' statt ""
@@ -303,7 +276,7 @@ function getClassName(obj) {
 // stepIn: Eingelagerte Objekte werden rekursiv aufgeloest
 // return [typ, valstr]: Liefert Datentyp des Objekts und Ausgabestring mit den Details
 function getObjInfo(obj, keyStrings, longForm, stepIn) {
-    const __TYPEOF = typeof obj;
+    const __TYPEOF = (typeof obj);
     const __VALUEOF = Object.valueOf(obj);
     const __LENGTH = ((obj != undefined) ? ((__TYPEOF === 'object') ? Object.entries(obj) : obj).length : obj);
     const __STRDELIM1 = (keyStrings ? "'" : '"');
@@ -1416,8 +1389,8 @@ function appendCell(row, content, color = undefined, align = 'center') {
 // return Die aufgeblaehte Zeile
 function inflateRow(row, arrOrLength = 1, color = undefined, align = 'center') {
     const __ROW = (row || { });
-    const __ARR = ((typeof arrOrLength === 'string') ? [ arrOrLength ] :
-                    ((typeof arrOrLength === 'number') ? [] : arrOrLength));
+    const __ARR = (((typeof arrOrLength) === 'string') ? [ arrOrLength ] :
+                    (((typeof arrOrLength) === 'number') ? [] : arrOrLength));
     const __LENGTH = getValue(__ARR.length, arrOrLength);
 
     for (let i = 0; i < __LENGTH; i++) {
@@ -1425,6 +1398,39 @@ function inflateRow(row, arrOrLength = 1, color = undefined, align = 'center') {
     }
 
     return __ROW;
+}
+
+// Formatiert eine Zelle um (mit 'style' Parametern)
+// cell: Zu formatierende Zelle
+// style: Objekt mit den Stil-Paramtern (siehe cell.style)
+// return Die formatierte Zelle
+function setCellStyle(cell, style) {
+    const __STYLE = style || { };
+
+    if (cell) {
+        Object.assign(cell.style, __STYLE);
+    }
+
+    return cell;
+}
+
+// Formatiert eine ganze Zeile um (mit 'style' Parametern)
+// row: Zu formatierende Zeile
+// style: Objekt mit den Stil-Paramtern (siehe cell.style)
+// return Die formatierte Zeile
+function setRowStyle(row, style) {
+    const __ROW = (row || { });
+    const __CELLS = __ROW.cells;
+
+    if (__CELLS) {
+        const __LENGTH = __CELLS.length;
+
+        for (let i = 0; i < __LENGTH; i++) {
+            setCellStyle(__CELLS[i], style);
+        }
+    }
+
+    return row;
 }
 
 // Formatiert eine Zelle um (mit einfachen Parametern)
@@ -1436,18 +1442,22 @@ function inflateRow(row, arrOrLength = 1, color = undefined, align = 'center') {
 // return Die formatierte Zelle
 function formatCell(cell, bold = true, color = undefined, bgColor = undefined, opacity = undefined) {
     if (cell) {
+        const __STYLE = { };
+
         if (bold) {
-            cell.style.fontWeight = 'bold';
+            __STYLE.fontWeight = 'bold';
         }
         if (color) {
-            cell.style.color = color;
+            __STYLE.color = color;
         }
         if (bgColor) {
-            cell.style.backgroundColor = bgColor;
+            __STYLE.backgroundColor = bgColor;
         }
         if (opacity) {
-            cell.style.opacity = opacity;
+            __STYLE.opacity = opacity;
         }
+
+        return setCellStyle(cell, __STYLE);
     }
 
     return cell;
@@ -1660,7 +1670,7 @@ function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
 // convertFun: Funktion, die die Werte konvertiert
 // return Array mit Spalteneintraegen als String ("" fuer "nicht gefunden")
 function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sameValue) {
-    const __ARR = ((typeof arrOrLength === 'number') ? [] : arrOrLength);
+    const __ARR = (((typeof arrOrLength) === 'number') ? [] : arrOrLength);
     const __LENGTH = getValue(__ARR.length, arrOrLength);
     const __RET = [];
 
@@ -1868,6 +1878,38 @@ Class.define(Class, Object, {
                 });
 
 // ==================== Ende Abschnitt fuer Klasse Class ====================
+
+// ==================== Abschnitt fuer Hilfsfunktionen ====================
+
+//
+// Hilfsfunktionen, die von Options.toString() genutzt werden
+//
+
+// Liefert die Klasse des Objektes
+// obj: Das Objekt, um das es geht
+// return Klassenname der Klasse des Objektes
+function getClass(obj) {
+    if (obj != undefined) {
+        if ((typeof obj) === 'object') {
+            if (obj.getClass) {
+                return obj.getClass();
+            }
+        }
+    }
+
+    return undefined;
+}
+
+// Liefert den Klassennamen des Objektes
+// obj: Das Objekt, um das es geht
+// return Klassenname der Klasse des Objektes
+function getClassName(obj) {
+    const __CLASS = getClass(obj);
+
+    return ((__CLASS ? __CLASS.className : undefined));  // __CLASS.getName() problematisch?
+}
+
+// ==================== Abschnitt fuer Hilfsfunktionen ====================
 
 // *** EOF ***
 

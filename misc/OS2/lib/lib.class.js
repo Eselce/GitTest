@@ -130,6 +130,38 @@ Class.define(Class, Object, {
 
 // ==================== Ende Abschnitt fuer Klasse Class ====================
 
+// ==================== Abschnitt fuer Hilfsfunktionen ====================
+
+//
+// Hilfsfunktionen, die von Options.toString() genutzt werden
+//
+
+// Liefert die Klasse des Objektes
+// obj: Das Objekt, um das es geht
+// return Klassenname der Klasse des Objektes
+function getClass(obj) {
+    if (obj != undefined) {
+        if ((typeof obj) === 'object') {
+            if (obj.getClass) {
+                return obj.getClass();
+            }
+        }
+    }
+
+    return undefined;
+}
+
+// Liefert den Klassennamen des Objektes
+// obj: Das Objekt, um das es geht
+// return Klassenname der Klasse des Objektes
+function getClassName(obj) {
+    const __CLASS = getClass(obj);
+
+    return ((__CLASS ? __CLASS.className : undefined));  // __CLASS.getName() problematisch?
+}
+
+// ==================== Abschnitt fuer Hilfsfunktionen ====================
+
 // *** EOF ***
 
 /*** Ende util.class.js ***/

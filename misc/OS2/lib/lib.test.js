@@ -77,6 +77,33 @@
 
 // ==================== Abschnitt fuer die Sicherung und das Laden von Daten ====================
 
+    const __TESTDATA = {
+            'String'    : [ 'UnitTestS',    "Teststring",                                                                           '"Teststring"' ],
+            'Int'       : [ 'UnitTestI',    42,                                                                                     '42' ],
+            'Bool'      : [ 'UnitTestB',    false,                                                                                  'false' ],
+            'Float'     : [ 'UnitTestI',    47.11,                                                                                  '47.11' ],
+            'Array'     : [ 'UnitTestA',    [ 1, 2, 4, 8 ],                                                                         '[1,2,4,8]' ],
+            'Array2'    : [ 'UnitTestA',    [ '1', null, false, 815 ],                                                              '["1",null,false,815]' ],
+            'Array3'    : [ 'UnitTestA',    [ String(1), undefined, Boolean(true), new AssertionFailed(815, "Fehler") ],            '["1",null,true,{"text":"Fehler (815)"}]' ],
+            'Object'    : [ 'UnitTestO',    { eins : 1, zwei : 2, fuenf : 5 },                                                      '{"eins":1,"zwei":2,"fuenf":5}' ],
+            'Object2'   : [ 'UnitTestO',    { 'const': { innen : true, aussen : null }, a : { b : { c : [ 2, 47.11, true ] } } },   '{"const":{"innen":true,"aussen":null},"a":{"b":{"c":[2,47.11,true]}}}' ],
+            'Object3'   : [ 'UnitTestO',    { 'fun' : function(x) { return x * x; }, 'bool' : new Boolean(true) },                  '{"bool":true}' ],
+            'Undef'     : [ 'UnitTestU',    undefined,                                                                              undefined ],
+            'Null'      : [ 'UnitTestN',    null,                                                                                   'null' ],
+            'NaN'       : [ 'UnitTestNaN',  Number.NaN,                                                                             String(Number.NaN) ],  // TODO: 'null'?
+            'PosInf'    : [ 'UnitTestInf',  Number.POSITIVE_INFINITY,                                                               String(Number.POSITIVE_INFINITY) ],
+            'NegInf'    : [ 'UnitTestInf',  Number.NEGATIVE_INFINITY,                                                               String(Number.NEGATIVE_INFINITY) ],
+            'MinVal'    : [ 'UnitTestMin',  Number.MIN_VALUE,                                                                       String(Number.MIN_VALUE) ],
+            'MaxVal'    : [ 'UnitTestMax',  Number.MAX_VALUE,                                                                       String(Number.MAX_VALUE) ],
+            'MinInt'    : [ 'UnitTestMin',  Number.MIN_SAFE_INTEGER,                                                                String(Number.MIN_SAFE_INTEGER) ],
+            'MaxInt'    : [ 'UnitTestMax',  Number.MAX_SAFE_INTEGER,                                                                String(Number.MAX_SAFE_INTEGER) ],
+            'Epsilon'   : [ 'UnitTestInf',  Number.EPSILON,                                                                         String(Number.EPSILON) ],
+            'Function'  : [ 'UnitTestP',    function(x) { return x * x; },                                                          undefined ],
+            'Default'   : [ 'UnitTestD',    undefined,                                                                              undefined,          'ERROR' ],
+            'Default2'  : [ 'UnitTestD',    null,                                                                                   'null',             'ERROR' ],
+            'Default3'  : [ 'UnitTestD',    "",                                                                                     '',                 'ERROR' ]
+        };
+
     // Komponenten der Testreihen (sto/ser x ent/sum/des):
     // storeValue*   = STO/ent
     // summonValue*  = sto/SUM * DEF
@@ -86,9 +113,7 @@
     // deserialize2* = ser/DES * DEF
     const __UNITTESTSTORE1 = new UnitTest('util.store.js Daten', "Sicherung und das Laden von Daten", {
             'storeValueString'    : function() {
-                                        const __NAME = "UnitTestS";
-                                        const __VAL = "Teststring";
-                                        const __EXP = '"Teststring"';
+                                        const [ __NAME, __VAL ] = __TESTDATA['String'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -99,9 +124,7 @@
                                             });
                                     },
             'storeValueInt'       : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 42;
-                                        const __EXP = '42';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Int'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -112,9 +135,7 @@
                                             });
                                     },
             'storeValueBool'      : function() {
-                                        const __NAME = "UnitTestB";
-                                        const __VAL = false;
-                                        const __EXP = 'false';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Bool'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -125,9 +146,7 @@
                                             });
                                     },
             'storeValueFloat'     : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 47.11;
-                                        const __EXP = '47.11';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Float'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -138,9 +157,7 @@
                                             });
                                     },
             'storeValueArray'     : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ 1, 2, 4, 8 ];
-                                        const __EXP = '[1,2,4,8]';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -151,9 +168,7 @@
                                             });
                                     },
             'storeValueArray2'   : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ "1", null, false, 815 ];
-                                        const __EXP = '["1",null,false,815]';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array2'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -164,9 +179,7 @@
                                             });
                                     },
             'storeValueArray3'   : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ String(1), undefined, Boolean(true), new AssertionFailed(815, "Fehler") ];
-                                        const __EXP = '["1",null,true,{"text":"Fehler (815)"}]';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array3'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -177,9 +190,7 @@
                                             });
                                     },
             'storeValueObject'    : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { eins : 1, zwei : 2, fuenf : 5 };
-                                        const __EXP = '{"eins":1,"zwei":2,"fuenf":5}';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -190,9 +201,7 @@
                                             });
                                     },
             'storeValueObject2'   : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'const': { innen : true, aussen : null }, a : { b : { c : [ 2, 47.11, true ] } } };
-                                        const __EXP = '{"const":{"innen":true,"aussen":null},"a":{"b":{"c":[2,47.11,true]}}}';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object2'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -203,9 +212,7 @@
                                             });
                                     },
             'storeValueObject3'   : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'fun' : function(x) { return x * x; }, 'bool' : new Boolean(true) };
-                                        const __EXP = '{"bool":true}';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object3'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -216,9 +223,7 @@
                                             });
                                     },
             'storeValueUndef'     : function() {
-                                        const __NAME = "UnitTestU";
-                                        const __VAL = undefined;
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -229,9 +234,7 @@
                                             });
                                     },
             'storeValueNull'      : function() {
-                                        const __NAME = "UnitTestN";
-                                        const __VAL = null;
-                                        const __EXP = 'null';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Null'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -242,9 +245,7 @@
                                             });
                                     },
             'storeValueNaN'       : function() {
-                                        const __NAME = "UnitTestNaN";
-                                        const __VAL = NaN;
-                                        const __EXP = 'null';  // TODO: richtig?
+                                        const [ __NAME, __VAL ] = __TESTDATA['NaN'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -254,10 +255,85 @@
                                                 return ASSERT_EQUAL(__RET, __VAL, "NaN falsch gespeichert");
                                             });
                                     },
+            'storeValuePosInf'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['PosInf'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "+Infinity falsch gespeichert");
+                                            });
+                                    },
+            'storeValueNegInf'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['NegInf'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "-Infinity falsch gespeichert");
+                                            });
+                                    },
+            'storeValueMinVal'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MinVal'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "MinVal falsch gespeichert");
+                                            });
+                                    },
+            'storeValueMaxVal'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MaxVal'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "MaxVal falsch gespeichert");
+                                            });
+                                    },
+            'storeValueMinInt'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MinInt'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "MinInt falsch gespeichert");
+                                            });
+                                    },
+            'storeValueMaxInt'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MaxInt'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "MaxInt falsch gespeichert");
+                                            });
+                                    },
+            'storeValueEpsilon'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Epsilon'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch gespeichert");
+                                            });
+                                    },
             'storeValueFunction'  : function() {
-                                        const __NAME = "UnitTestP";
-                                        const __VAL = function(x) { return x * x; };
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -268,9 +344,7 @@
                                             });
                                     },
             'summonValueString'   : function() {
-                                        const __NAME = "UnitTestS";
-                                        const __VAL = "Teststring";
-                                        const __EXP = '"Teststring"';
+                                        const [ __NAME, __VAL ] = __TESTDATA['String'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -279,9 +353,7 @@
                                             });
                                     },
             'summonValueInt'      : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 42;
-                                        const __EXP = '42';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Int'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -290,9 +362,7 @@
                                             });
                                     },
             'summonValueBool'     : function() {
-                                        const __NAME = "UnitTestB";
-                                        const __VAL = false;
-                                        const __EXP = 'false';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Bool'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -301,9 +371,7 @@
                                             });
                                     },
             'summonValueFloat'    : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 47.11;
-                                        const __EXP = '47.11';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Float'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -312,9 +380,7 @@
                                             });
                                     },
             'summonValueArray'    : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ 1, 2, 4, 8 ];
-                                        const __EXP = '[1,2,4,8]';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -323,9 +389,7 @@
                                             });
                                     },
             'summonValueArray2'   : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ "1", null, false, 815 ];
-                                        const __EXP = '["1",null,false,815]';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array2'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -334,9 +398,7 @@
                                             });
                                     },
             'summonValueArray3'   : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ String(1), undefined, Boolean(true), new AssertionFailed(815, "Fehler") ];
-                                        const __EXP = '["1",null,true,{"text":"Fehler (815)"}]';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array3'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -345,9 +407,7 @@
                                             });
                                     },
             'summonValueObject'   : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { eins : 1, zwei : 2, fuenf : 5 };
-                                        const __EXP = '{"eins":1,"zwei":2,"fuenf":5}';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -356,9 +416,7 @@
                                             });
                                     },
             'summonValueObject2'  : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'const': { innen : true, aussen : null }, a : { b : { c : [ 2, 47.11, true ] } } };
-                                        const __EXP = '{"const":{"innen":true,"aussen":null},"a":{"b":{"c":[2,47.11,true]}}}';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object2'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -367,9 +425,7 @@
                                             });
                                     },
             'summonValueObject3'  : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'fun' : function(x) { return x * x; }, 'bool' : new Boolean(true) };
-                                        const __EXP = '{"bool":true}';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object3'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -378,9 +434,7 @@
                                             });
                                     },
             'summonValueUndef'    : function() {
-                                        const __NAME = "UnitTestU";
-                                        const __VAL = undefined;
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name), value => {
                                                 const __RET = value;
@@ -389,9 +443,7 @@
                                             });
                                     },
             'summonValueNull'     : function() {
-                                        const __NAME = "UnitTestN";
-                                        const __VAL = null;
-                                        const __EXP = 'null';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Null'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name), value => {
                                                 const __RET = value;
@@ -400,9 +452,7 @@
                                             });
                                     },
             'summonValueNaN'      : function() {
-                                        const __NAME = "UnitTestNaN";
-                                        const __VAL = NaN;
-                                        const __EXP = 'null';  // TODO: richtig?
+                                        const [ __NAME, __VAL ] = __TESTDATA['NaN'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -410,10 +460,71 @@
                                                 return ASSERT_EQUAL(__RET, __VAL, "NaN falsch geladen");
                                             });
                                     },
+            'summonValuePosInf'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['PosInf'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "+Infinity falsch geladen");
+                                            });
+                                    },
+            'summonValueNegInf'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['NegInf'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "-Infinity falsch geladen");
+                                            });
+                                    },
+            'summonValueMinVal'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MinVal'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MinVal falsch geladen");
+                                            });
+                                    },
+            'summonValueMaxVal'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MaxVal'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MaxVal falsch geladen");
+                                            });
+                                    },
+            'summonValueMinInt'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MinInt'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MinInt falsch geladen");
+                                            });
+                                    },
+            'summonValueMaxInt'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MaxInt'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MaxInt falsch geladen");
+                                            });
+                                    },
+            'summonValueEpsilon'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Epsilon'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch geladen");
+                                            });
+                                    },
             'summonValueFunction' : function() {
-                                        const __NAME = "UnitTestP";
-                                        const __VAL = function(x) { return x * x; };
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -422,42 +533,34 @@
                                             });
                                     },
             'summonValueDefault'  : function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = 'ERROR';
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
 
-                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Defaultwert bei undefined ignoriert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei undefined ignoriert");
                                             });
                                     },
             'summonValueDefault2' : function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = 'ERROR';
-                                        const __EXP = null;
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Defaultwert bei null ignoriert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei null ignoriert");
                                             });
                                     },
             'summonValueDefault3' : function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = 'ERROR';
-                                        const __EXP = "";
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Defaultwert bei \"\" ignoriert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei \"\" ignoriert");
                                             });
                                     },
             'serializeString'     : function() {
-                                        const __NAME = "UnitTestS";
-                                        const __VAL = "Teststring";
-                                        const __EXP = '"Teststring"';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['String'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -466,9 +569,7 @@
                                             });
                                     },
             'serializeInt'        : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 42;
-                                        const __EXP = '42';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Int'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -477,9 +578,7 @@
                                             });
                                     },
             'serializeBool'       : function() {
-                                        const __NAME = "UnitTestB";
-                                        const __VAL = false;
-                                        const __EXP = 'false';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Bool'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -488,9 +587,7 @@
                                             });
                                     },
             'serializeFloat'      : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 47.11;
-                                        const __EXP = '47.11';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Float'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -499,9 +596,7 @@
                                             });
                                     },
             'serializeArray'      : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ 1, 2, 4, 8 ];
-                                        const __EXP = '[1,2,4,8]';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Array'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -510,9 +605,7 @@
                                             });
                                     },
             'serializeArray2'     : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ "1", null, false, 815 ];
-                                        const __EXP = '["1",null,false,815]';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Array2'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -521,9 +614,7 @@
                                             });
                                     },
             'serializeArray3'     : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ String(1), undefined, Boolean(true), new AssertionFailed(815, "Fehler") ];
-                                        const __EXP = '["1",null,true,{"text":"Fehler (815)"}]';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Array3'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -532,9 +623,7 @@
                                             });
                                     },
             'serializeObject'     : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { eins : 1, zwei : 2, fuenf : 5 };
-                                        const __EXP = '{"eins":1,"zwei":2,"fuenf":5}';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Object'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -543,9 +632,7 @@
                                             });
                                     },
             'serializeObject2'    : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'const': { innen : true, aussen : null }, a : { b : { c : [ 2, 47.11, true ] } } };
-                                        const __EXP = '{"const":{"innen":true,"aussen":null},"a":{"b":{"c":[2,47.11,true]}}}';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Object2'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -554,9 +641,7 @@
                                             });
                                     },
             'serializeObject3'    : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'fun' : function(x) { return x * x; }, 'bool' : new Boolean(true) };
-                                        const __EXP = '{"bool":true}';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Object3'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -565,9 +650,7 @@
                                             });
                                     },
             'serializeUndef'      : function() {
-                                        const __NAME = "UnitTestU";
-                                        const __VAL = undefined;
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name), value => {
                                                 const __RET = value;
@@ -576,9 +659,7 @@
                                             });
                                     },
             'serializeNull'       : function() {
-                                        const __NAME = "UnitTestN";
-                                        const __VAL = null;
-                                        const __EXP = 'null';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Null'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name), value => {
                                                 const __RET = value;
@@ -587,9 +668,7 @@
                                             });
                                     },
             'serializeNaN'        : function() {
-                                        const __NAME = "UnitTestNaN";
-                                        const __VAL = NaN;
-                                        const __EXP = 'null';  // TODO: richtig?
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NaN'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -597,10 +676,71 @@
                                                 return ASSERT_EQUAL(__RET, __EXP, "NaN falsch gespeichert");
                                             });
                                     },
+            'serializePosInf'     : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['PosInf'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "+Infinity falsch gespeichert");
+                                            });
+                                    },
+            'serializeNegInf'     : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NegInf'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "-Infinity falsch gespeichert");
+                                            });
+                                    },
+            'serializeMinVal'     : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MinVal'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "MinVal falsch gespeichert");
+                                            });
+                                    },
+            'serializeMaxVal'     : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MaxVal'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "MaxVal falsch gespeichert");
+                                            });
+                                    },
+            'serializeMinInt'     : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MinInt'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "MinInt falsch gespeichert");
+                                            });
+                                    },
+            'serializeMaxInt'     : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MaxInt'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "MaxInt falsch gespeichert");
+                                            });
+                                    },
+            'serializeEpsilon'    : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Epsilon'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "Epsilon falsch gespeichert");
+                                            });
+                                    },
             'serializeFunction'   : function() {
-                                        const __NAME = "UnitTestP";
-                                        const __VAL = function(x) { return x * x; };
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -609,42 +749,34 @@
                                             });
                                     },
             'serializeDefault'    : function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = undefined;
-                                        const __EXP = 'ERROR';
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "Defaultwert bei undefined ignoriert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei undefined ignoriert");
                                             });
                                     },
             'serializeDefault2'   : function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = null;
-                                        const __EXP = 'ERROR';
+                                        const [ __NAME, __VAL, __EXP, __ERR ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "Defaultwert bei null ignoriert");
+                                                return ASSERT_EQUAL(__RET, __EXP, "Serialize-Wert bei null ignoriert");
                                             });
                                     },
             'serializeDefault3'   : function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = "";
-                                        const __EXP = 'ERROR';
+                                        const [ __NAME, __VAL, __EXP, __ERR ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "Defaultwert bei \"\" ignoriert");
+                                                return ASSERT_EQUAL(__RET, __EXP, "Serialize-Wert bei \"\" ignoriert");
                                             });
                                     },
             'serialize2String'    : function() {
-                                        const __NAME = "UnitTestS";
-                                        const __VAL = "Teststring";
-                                        const __EXP = '"Teststring"';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['String'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -655,9 +787,7 @@
                                             });
                                     },
             'serialize2Int'       : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 42;
-                                        const __EXP = '42';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Int'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -668,9 +798,7 @@
                                             });
                                     },
             'serialize2Bool'      : function() {
-                                        const __NAME = "UnitTestB";
-                                        const __VAL = false;
-                                        const __EXP = 'false';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Bool'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -681,9 +809,7 @@
                                             });
                                     },
             'serialize2Float'     : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 47.11;
-                                        const __EXP = '47.11';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Float'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -694,9 +820,7 @@
                                             });
                                     },
             'serialize2Array'     : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ 1, 2, 4, 8 ];
-                                        const __EXP = '[1,2,4,8]';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Array'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -707,9 +831,7 @@
                                             });
                                     },
             'serialize2Array2'    : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ "1", null, false, 815 ];
-                                        const __EXP = '["1",null,false,815]';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Array2'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -720,9 +842,7 @@
                                             });
                                     },
             'serialize2Array3'    : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ String(1), undefined, Boolean(true), new AssertionFailed(815, "Fehler") ];
-                                        const __EXP = '["1",null,true,{"text":"Fehler (815)"}]';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Array3'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -733,9 +853,7 @@
                                             });
                                     },
             'serialize2Object'    : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { eins : 1, zwei : 2, fuenf : 5 };
-                                        const __EXP = '{"eins":1,"zwei":2,"fuenf":5}';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Object'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -746,9 +864,7 @@
                                             });
                                     },
             'serialize2Object2'   : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'const': { innen : true, aussen : null }, a : { b : { c : [ 2, 47.11, true ] } } };
-                                        const __EXP = '{"const":{"innen":true,"aussen":null},"a":{"b":{"c":[2,47.11,true]}}}';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Object2'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -759,9 +875,7 @@
                                             });
                                     },
             'serialize2Object3'   : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'fun' : function(x) { return x * x; }, 'bool' : new Boolean(true) };
-                                        const __EXP = '{"bool":true}';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Object3'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -772,9 +886,7 @@
                                             });
                                     },
             'serialize2Undef'     : function() {
-                                        const __NAME = "UnitTestU";
-                                        const __VAL = undefined;
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -785,9 +897,7 @@
                                             });
                                     },
             'serialize2Null'      : function() {
-                                        const __NAME = "UnitTestN";
-                                        const __VAL = null;
-                                        const __EXP = 'null';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Null'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -798,9 +908,7 @@
                                             });
                                     },
             'serialize2NaN'       : function() {
-                                        const __NAME = "UnitTestNaN";
-                                        const __VAL = NaN;
-                                        const __EXP = 'null';  // TODO: richtig?
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NaN'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -810,10 +918,85 @@
                                                 return ASSERT_EQUAL(__RET, __EXP, "NaN falsch gespeichert");
                                             });
                                     },
+            'serialize2PosInf'    : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['PosInf'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "+Infinity falsch gespeichert");
+                                            });
+                                    },
+            'serialize2NegInf'    : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NegInf'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "-Infinity falsch gespeichert");
+                                            });
+                                    },
+            'serialize2MinVal'    : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MinVal'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "MinVal falsch gespeichert");
+                                            });
+                                    },
+            'serialize2MaxVal'    : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MaxVal'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "MaxVal falsch gespeichert");
+                                            });
+                                    },
+            'serialize2MinInt'    : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MinInt'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "MinInt falsch gespeichert");
+                                            });
+                                    },
+            'serialize2MaxInt'    : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MaxInt'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "MaxInt falsch gespeichert");
+                                            });
+                                    },
+            'serialize2Epsilon'   : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Epsilon'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "Epsilon falsch gespeichert");
+                                            });
+                                    },
             'serialize2Function'  : function() {
-                                        const __NAME = "UnitTestP";
-                                        const __VAL = function(x) { return x * x; };
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
@@ -824,9 +1007,7 @@
                                             });
                                     },
             'deserializeString'   : function() {
-                                        const __NAME = "UnitTestS";
-                                        const __VAL = "Teststring";
-                                        const __EXP = '"Teststring"';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['String'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -835,9 +1016,7 @@
                                             });
                                     },
             'deserializeInt'      : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 42;
-                                        const __EXP = '42';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Int'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -846,9 +1025,7 @@
                                             });
                                     },
             'deserializeBool'     : function() {
-                                        const __NAME = "UnitTestB";
-                                        const __VAL = false;
-                                        const __EXP = 'false';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Bool'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -857,9 +1034,7 @@
                                             });
                                     },
             'deserializeFloat'    : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 47.11;
-                                        const __EXP = '47.11';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Float'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -868,9 +1043,7 @@
                                             });
                                     },
             'deserializeArray'    : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ 1, 2, 4, 8 ];
-                                        const __EXP = '[1,2,4,8]';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Array'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -879,9 +1052,7 @@
                                             });
                                     },
             'deserializeArray2'   : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ "1", null, false, 815 ];
-                                        const __EXP = '["1",null,false,815]';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Array2'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -890,9 +1061,7 @@
                                             });
                                     },
             'deserializeArray3'   : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ String(1), undefined, Boolean(true), new AssertionFailed(815, "Fehler") ];
-                                        const __EXP = '["1",null,true,{"text":"Fehler (815)"}]';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Array3'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -901,9 +1070,7 @@
                                             });
                                     },
             'deserializeObject'   : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { eins : 1, zwei : 2, fuenf : 5 };
-                                        const __EXP = '{"eins":1,"zwei":2,"fuenf":5}';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Object'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -912,9 +1079,7 @@
                                             });
                                     },
             'deserializeObject2'  : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'const': { innen : true, aussen : null }, a : { b : { c : [ 2, 47.11, true ] } } };
-                                        const __EXP = '{"const":{"innen":true,"aussen":null},"a":{"b":{"c":[2,47.11,true]}}}';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Object2'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -923,9 +1088,7 @@
                                             });
                                     },
             'deserializeObject3'  : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'fun' : function(x) { return x * x; }, 'bool' : new Boolean(true) };
-                                        const __EXP = '{"bool":true}';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Object3'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -934,9 +1097,7 @@
                                             });
                                     },
             'deserializeUndef'    : function() {
-                                        const __NAME = "UnitTestU";
-                                        const __VAL = undefined;
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name), value => {
                                                 const __RET = value;
@@ -945,9 +1106,7 @@
                                             });
                                     },
             'deserializeNull'     : function() {
-                                        const __NAME = "UnitTestN";
-                                        const __VAL = null;
-                                        const __EXP = 'null';
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Null'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name), value => {
                                                 const __RET = value;
@@ -956,9 +1115,7 @@
                                             });
                                     },
             'deserializeNaN'      : function() {
-                                        const __NAME = "UnitTestNaN";
-                                        const __VAL = NaN;
-                                        const __EXP = 'null';  // TODO: richtig?
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NaN'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -966,10 +1123,71 @@
                                                 return ASSERT_EQUAL(__RET, __VAL, "NaN falsch geladen");
                                             });
                                     },
+            'deserializePosInf'   : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['PosInf'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "+Infinity falsch geladen");
+                                            });
+                                    },
+            'deserializeNegInf'   : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NegInf'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "-Infinity falsch geladen");
+                                            });
+                                    },
+            'deserializeMinVal'   : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MinVal'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MinVal falsch geladen");
+                                            });
+                                    },
+            'deserializeMaxVal'   : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MaxVal'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MaxVal falsch geladen");
+                                            });
+                                    },
+            'deserializeMinInt'   : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MinInt'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MinInt falsch geladen");
+                                            });
+                                    },
+            'deserializeMaxInt'   : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['MaxInt'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MaxInt falsch geladen");
+                                            });
+                                    },
+            'deserializeEpsilon'  : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Epsilon'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch geladen");
+                                            });
+                                    },
             'deserializeFunction' : function() {
-                                        const __NAME = "UnitTestP";
-                                        const __VAL = function(x) { return x * x; };
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -978,42 +1196,34 @@
                                             });
                                     },
             'deserializeDefault'  : function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = 'ERROR';
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Defaultwert bei undefined ignoriert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei undefined ignoriert");
                                             });
                                     },
             'deserializeDefault2' : function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = 'ERROR';
-                                        const __EXP = null;
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Defaultwert bei null ignoriert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei null ignoriert");
                                             });
                                     },
             'deserializeDefault3' : function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = 'ERROR';
-                                        const __EXP = "";
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Defaultwert bei \"\" ignoriert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei \"\" ignoriert");
                                             });
                                     },
             'deserialize2String'  : function() {
-                                        const __NAME = "UnitTestS";
-                                        const __VAL = "Teststring";
-                                        const __EXP = '"Teststring"';
+                                        const [ __NAME, __VAL ] = __TESTDATA['String'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1022,9 +1232,7 @@
                                             });
                                     },
             'deserialize2Int'     : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 42;
-                                        const __EXP = '42';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Int'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1033,9 +1241,7 @@
                                             });
                                     },
             'deserialize2Bool'    : function() {
-                                        const __NAME = "UnitTestB";
-                                        const __VAL = false;
-                                        const __EXP = 'false';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Bool'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1044,9 +1250,7 @@
                                             });
                                     },
             'deserialize2Float'   : function() {
-                                        const __NAME = "UnitTestI";
-                                        const __VAL = 47.11;
-                                        const __EXP = '47.11';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Float'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1055,9 +1259,7 @@
                                             });
                                     },
             'deserialize2Array'   : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ 1, 2, 4, 8 ];
-                                        const __EXP = '[1,2,4,8]';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1066,9 +1268,7 @@
                                             });
                                     },
             'deserialize2Array2'  : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ "1", null, false, 815 ];
-                                        const __EXP = '["1",null,false,815]';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array2'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1077,9 +1277,7 @@
                                             });
                                     },
             'deserialize2Array3'  : function() {
-                                        const __NAME = "UnitTestA";
-                                        const __VAL = [ String(1), undefined, Boolean(true), new AssertionFailed(815, "Fehler") ];
-                                        const __EXP = '["1",null,true,{"text":"Fehler (815)"}]';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array3'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1088,9 +1286,7 @@
                                             });
                                     },
             'deserialize2Object'  : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { eins : 1, zwei : 2, fuenf : 5 };
-                                        const __EXP = '{"eins":1,"zwei":2,"fuenf":5}';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1099,9 +1295,7 @@
                                             });
                                     },
             'deserialize2Object2' : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'const': { innen : true, aussen : null }, a : { b : { c : [ 2, 47.11, true ] } } };
-                                        const __EXP = '{"const":{"innen":true,"aussen":null},"a":{"b":{"c":[2,47.11,true]}}}';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object2'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1110,9 +1304,7 @@
                                             });
                                     },
             'deserialize2Object3' : function() {
-                                        const __NAME = "UnitTestO";
-                                        const __VAL = { 'fun' : function(x) { return x * x; }, 'bool' : new Boolean(true) };
-                                        const __EXP = '{"bool":true}';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object3'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1121,9 +1313,7 @@
                                             });
                                     },
             'deserialize2Undef'   : function() {
-                                        const __NAME = "UnitTestU";
-                                        const __VAL = undefined;
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name), value => {
                                                 const __RET = value;
@@ -1132,9 +1322,7 @@
                                             });
                                     },
             'deserialize2Null'    : function() {
-                                        const __NAME = "UnitTestN";
-                                        const __VAL = null;
-                                        const __EXP = 'null';
+                                        const [ __NAME, __VAL ] = __TESTDATA['Null'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name), value => {
                                                 const __RET = value;
@@ -1143,9 +1331,7 @@
                                             });
                                     },
             'deserialize2NaN'     : function() {
-                                        const __NAME = "UnitTestNaN";
-                                        const __VAL = NaN;
-                                        const __EXP = 'null';  // TODO: richtig?
+                                        const [ __NAME, __VAL ] = __TESTDATA['NaN'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1153,10 +1339,71 @@
                                                 return ASSERT_EQUAL(__RET, __VAL, "NaN falsch geladen");
                                             });
                                     },
+            'deserialize2PosInf'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['PosInf'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "+Infinity falsch geladen");
+                                            });
+                                    },
+            'deserialize2NegInf'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['NegInf'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "-Infinity falsch geladen");
+                                            });
+                                    },
+            'deserialize2MinVal'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MinVal'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MinVal falsch geladen");
+                                            });
+                                    },
+            'deserialize2MaxVal'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MaxVal'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MaxVal falsch geladen");
+                                            });
+                                    },
+            'deserialize2MinInt'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MinInt'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MinInt falsch geladen");
+                                            });
+                                    },
+            'deserialize2MaxInt'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MaxInt'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MaxInt falsch geladen");
+                                            });
+                                    },
+            'deserialize2Epsilon'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Epsilon'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch geladen");
+                                            });
+                                    },
             'deserialize2Function': function() {
-                                        const __NAME = "UnitTestP";
-                                        const __VAL = function(x) { return x * x; };
-                                        const __EXP = undefined;
+                                        const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
                                                 const __RET = value;
@@ -1165,36 +1412,30 @@
                                             });
                                     },
             'deserialize2Default' : function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = undefined;
-                                        const __EXP = 'ERROR';
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "Defaultwert bei undefined ignoriert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei undefined ignoriert");
                                             });
                                     },
             'deserialize2Default2': function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = null;
-                                        const __EXP = 'ERROR';
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "Defaultwert bei null ignoriert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei null ignoriert");
                                             });
                                     },
             'deserialize2Default3': function() {
-                                        const __NAME = "UnitTestD";
-                                        const __VAL = "";
-                                        const __EXP = 'ERROR';
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, 'ERROR'), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "Defaultwert bei \"\" ignoriert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei \"\" ignoriert");
                                             });
                                     }
         });

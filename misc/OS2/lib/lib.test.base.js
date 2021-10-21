@@ -28,26 +28,27 @@
 // params: ggfs. Parameter fuer die msg-Funktion
 function AssertionFailed(whatFailed, msg, thisArg, ...params) {
     //'use strict';
+    const __THIS = (thisArg || this);
 
     if (msg === undefined) {
-        this.text = "";
-    } else if (typeof msg === 'function') {
-        const __TEXT = msg.call(thisArg, ...params);
+        this.message = "";
+    } else if ((typeof msg) === 'function') {
+        const __TEXT = msg.call(__THIS, ...params);
 
-        this.text = ((__TEXT === undefined) ? __TEXT : String(__TEXT));
+        this.message = ((__TEXT === undefined) ? __TEXT : __LOG.info(__TEXT, false, true));
     } else {
-        this.text = String(msg);
+        this.message = __LOG.info(msg, ((typeof msg) !== 'string'), true);
     }
 
     if (whatFailed) {
-        this.text += " (" + whatFailed + ')';
+        this.message += " (" + whatFailed + ')';
     }
 }
 
 Class.define(AssertionFailed, Object, {
-                  'getText'       : function() {
-                                        return this.text;
-                                    }
+                  'getTextMessage'    : function() {
+                                            return this.message;
+                                        }
     });
 
 // ==================== Ende Abschnitt fuer Klasse AssertionFailed ====================
@@ -65,9 +66,17 @@ function assertionCatch(error, ...attribs) {
         const __ERROR = Object.assign(error, ...attribs);
         const __RET = showException(__LABEL, __ERROR, false);
 
-        return ASSERT(false, "Promise rejected!", __RET);
+        ASSERT(! false, "Promise rejected!", __RET);  // TODO
+
+        return __ERROR;
     } catch (ex) {
-        return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex);
+        if (ex instanceof AssertionFailed) {
+            __LOG[0]("ASSERTIONCATCH!!!", ex);  // TODO!!!
+
+            return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex, false);
+        } else {
+            return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex);
+        }
     }
 }
 
@@ -118,7 +127,7 @@ const ASSERT = function(test, whatFailed, msg, thisArg, ...params) {
 
     if (! test) {
         const __FAIL = new AssertionFailed(whatFailed, msg, thisArg, ...params);
-        __LOG[4]("FAIL", __FAIL);
+        __LOG[4]("FAIL", __LOG.info(__FAIL, true, true));
 
         throw __FAIL;
     } else {
@@ -192,6 +201,20 @@ const ASSERT_NOT_IN_DELTA = function(erg, exp, delta, msg, thisArg, ...params) {
     return ASSERT(Math.abs(erg - exp) > delta, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- " + delta, msg, thisArg, ...params);
 }
 
+const ASSERT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILON, msg, thisArg, ...params) {
+    const __EPSILON = scale * epsilon;
+    const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
+
+    return ASSERT(Math.abs(erg - exp) <= __DELTA, __LOG.info(erg, true, true) + " != " + __LOG.info(exp, true, true) + " +/- rel. " + __EPSILON, msg, thisArg, ...params);
+}
+
+const ASSERT_NOT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILON, msg, thisArg, ...params) {
+    const __EPSILON = scale * epsilon;
+    const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
+
+    return ASSERT(Math.abs(erg - exp) > __DELTA, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- rel. " + __EPSILON, msg, thisArg, ...params);
+}
+
 const ASSERT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
     return ASSERT((obj instanceof cls), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(cls, true, true), msg, thisArg, ...params);
 }
@@ -212,8 +235,9 @@ const ASSERT_NOT_MATCH = function(str, pattern, msg, thisArg, ...params) {
 
 // ==================== Abschnitt fuer globale Variablen ====================
 
-// Parameter fuer ASSERT_IN_DELTA und ASSERT_NOT_IN_DELTA (Float-Genauigkeit)...
+// Parameter fuer ASSERT_IN_DELTA, ASSERT_NOT_IN_DELTA, ASSERT_IN_EPSILON und ASSERT_NOT_IN_EPSILON (Float-Genauigkeit)...
 const __ASSERTDELTA = 0.000001;
+const __ASSERTEPSILON = Number.EPSILON;
 
 // ==================== Ende Abschnitt fuer globale Variablen ====================
 
@@ -295,7 +319,7 @@ Class.define(UnitTest, Object, {
                                          const __NAME = name;
                                          const __TFUN = (tFun || { });  // TODO: Dummy
                                          const __TFUNDOBJ = __TFUN.description;
-                                         const __TFUNDESC = (__TFUNDOBJ ? String((typeof __TFUNDOBJ === 'function') ? __TFUNDOBJ() : __TFUNDOBJ) : undefined);
+                                         const __TFUNDESC = (__TFUNDOBJ ? String(((typeof __TFUNDOBJ) === 'function') ? __TFUNDOBJ() : __TFUNDOBJ) : undefined);
                                          const __DESC = (desc || __TFUNDESC);
                                          const __ENTRY = {
                                                              'name' : __NAME,
@@ -431,20 +455,22 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
 
     if (__TABLE) {
         const __ROW = doc.createElement('tr');
-        const __COLOR = undefined;
+        const __STYLE = UnitTest.getStyleFromResults(__RESULTS);
 
         if (__RESULTS.name) {
-            appendCell(__ROW, __UNITTEST.name, __COLOR);
-            appendCell(__ROW, __UNITTEST.desc, __COLOR);
-            appendCell(__ROW, __RESULTS.name, __COLOR);
-            appendCell(__ROW, __RESULTS.desc, __COLOR);
-            appendCell(__ROW, __RESULTS.countRunning, __COLOR);
-            appendCell(__ROW, __RESULTS.countSuccess, __COLOR);
-            appendCell(__ROW, __RESULTS.countFailed, __COLOR);
-            appendCell(__ROW, __RESULTS.countError, __COLOR);
-            appendCell(__ROW, __RESULTS.countException, __COLOR);
-            appendCell(__ROW, __RESULTS.result, __COLOR);
+            appendCell(__ROW, __UNITTEST.name);
+            appendCell(__ROW, __UNITTEST.desc);
+            appendCell(__ROW, __RESULTS.name);
+            appendCell(__ROW, __RESULTS.desc);
+            appendCell(__ROW, __RESULTS.countRunning);
+            appendCell(__ROW, __RESULTS.countSuccess);
+            appendCell(__ROW, __RESULTS.countFailed);
+            appendCell(__ROW, __RESULTS.countException);
+            appendCell(__ROW, __RESULTS.countError);
+            appendCell(__ROW, __RESULTS.result);
         }
+
+        setRowStyle(__ROW, __STYLE);
 
         __TABLE.appendChild(__ROW);
     }
@@ -472,14 +498,42 @@ UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = docum
         appendCell(__ROW, "Anz", __COLOR);
         appendCell(__ROW, "OK", __COLOR);
         appendCell(__ROW, "FAIL", __COLOR);
-        appendCell(__ROW, "ERR", __COLOR);
         appendCell(__ROW, "EX", __COLOR);
+        appendCell(__ROW, "ERR", __COLOR);
         appendCell(__ROW, "Ergebnis", __COLOR);
 
         table.appendChild(__ROW);
     }
 
     return table;
+}
+
+UnitTest.getStyleFromResults = function(results) {
+    const __RESULTS = (results || { });
+    const __STYLE = { };
+
+    if (__RESULTS.countRunning > 0) {
+        // Alle Stiloptionen...
+        const __STYLES = {
+                'countSuccess'      : { 'color' : 'darkgreen' },
+                'countFailed'       : { 'color' : 'darkorange' },
+                'countException'    : { 'color' : 'magenta', 'bold' : true },
+                'countError'        : { 'color' : 'red', 'bold' : true }
+            };
+        const __STYLEKEYS = Object.keys(__STYLES);
+//        // Relevanter Key ist der mit den haeufigsten Treffern...
+//        const [ __MAXKEY, ] = __STYLEKEYS.reduceRight(([ maxKey, maxCount], key) =>
+//                ((__RESULTS[key] > maxCount) ? [ key, __RESULTS[key]] : [ maxKey, maxCount]),
+//            [ "", 0 ]);
+        // Relevanter Key ist die hoechste Kategorie mit mindestens einem Treffer...
+        const [ __MAXKEY, ] = __STYLEKEYS.reduce(([ maxKey, maxCount], key) =>
+                ((__RESULTS[key] > 0) ? [ key, __RESULTS[key]] : [ maxKey, maxCount]),
+            [ "", 0 ]);
+
+        Object.assign(__STYLE, __STYLES[__MAXKEY]);
+    }
+
+    return __STYLE;
 }
 
 // ==================== Ende Abschnitt fuer Klasse UnitTest ====================
@@ -500,8 +554,8 @@ function UnitTestResults(libName, libDesc, libTest) {
     this.countRunning   = 0;  // Zaehler Tests
     this.countSuccess   = 0;  // Zaehler OK
     this.countFailed    = 0;  // Zaehler FAIL
+    this.countException = 0;  // Zaehler EX (andere Exceptions ausser ERR)
     this.countError     = 0;  // Zaehler ERR (Fehler im Test, Spezial-Exception)
-    this.countException = 0;  // Zaehler EX (andere Exceptions)
 }
 
 Class.define(UnitTestResults, Object, {
@@ -514,18 +568,11 @@ Class.define(UnitTestResults, Object, {
                 'failed'              : function() {
                                             return ++this.countFailed;
                                         },
-                'error'               : function(ex) {
-                                            const __EX = (ex || { });
-
-                                            this.result = __EX.message;
-
-                                            return ++this.countError;
-                                        },
                 'exception'           : function(ex) {
                                             const __EX = (ex || { });
 
                                             if (__EX instanceof AssertionFailed) {
-                                                this.result = __EX.getText();
+                                                this.result = __EX.getTextMessage();
 
                                                 return this.failed();
                                             } else {
@@ -533,6 +580,13 @@ Class.define(UnitTestResults, Object, {
 
                                                 return ++this.countException;
                                             }
+                                        },
+                'error'               : function(ex) {
+                                            const __EX = (ex || { });
+
+                                            this.result = __EX.message;
+
+                                            return ++this.countError;
                                         },
                 'checkResult'         : function(result) {
                                             this.result = result;
@@ -560,8 +614,8 @@ Class.define(UnitTestResults, Object, {
                                             this.countRunning   += resultsToAdd.countRunning;
                                             this.countSuccess   += resultsToAdd.countSuccess;
                                             this.countFailed    += resultsToAdd.countFailed;
-                                            this.countError     += resultsToAdd.countError;
                                             this.countException += resultsToAdd.countException;
+                                            this.countError     += resultsToAdd.countError;
 
                                             if (! this.results) {
                                                 this.results = { };
@@ -577,8 +631,8 @@ Class.define(UnitTestResults, Object, {
                                                     'running'   : this.countRunning,
                                                     'success'   : this.countSuccess,
                                                     'failed'    : this.countFailed,
-                                                    'error'     : this.countError,
                                                     'exception' : this.countException,
+                                                    'error'     : this.countError,
                                                     'tests'     : this.test.tDefs,
                                                     'results'   : this.results
                                                 };
