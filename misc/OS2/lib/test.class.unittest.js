@@ -70,7 +70,7 @@ Class.define(UnitTest, Object, {
                                          const __NAME = name;
                                          const __TFUN = (tFun || { });  // TODO: Dummy
                                          const __TFUNDOBJ = __TFUN.description;
-                                         const __TFUNDESC = (__TFUNDOBJ ? String((typeof __TFUNDOBJ === 'function') ? __TFUNDOBJ() : __TFUNDOBJ) : undefined);
+                                         const __TFUNDESC = (__TFUNDOBJ ? String(((typeof __TFUNDOBJ) === 'function') ? __TFUNDOBJ() : __TFUNDOBJ) : undefined);
                                          const __DESC = (desc || __TFUNDESC);
                                          const __ENTRY = {
                                                              'name' : __NAME,
@@ -206,20 +206,22 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
 
     if (__TABLE) {
         const __ROW = doc.createElement('tr');
-        const __COLOR = undefined;
+        const __STYLE = UnitTest.getStyleFromResults(__RESULTS);
 
         if (__RESULTS.name) {
-            appendCell(__ROW, __UNITTEST.name, __COLOR);
-            appendCell(__ROW, __UNITTEST.desc, __COLOR);
-            appendCell(__ROW, __RESULTS.name, __COLOR);
-            appendCell(__ROW, __RESULTS.desc, __COLOR);
-            appendCell(__ROW, __RESULTS.countRunning, __COLOR);
-            appendCell(__ROW, __RESULTS.countSuccess, __COLOR);
-            appendCell(__ROW, __RESULTS.countFailed, __COLOR);
-            appendCell(__ROW, __RESULTS.countError, __COLOR);
-            appendCell(__ROW, __RESULTS.countException, __COLOR);
-            appendCell(__ROW, __RESULTS.result, __COLOR);
+            appendCell(__ROW, __UNITTEST.name);
+            appendCell(__ROW, __UNITTEST.desc);
+            appendCell(__ROW, __RESULTS.name);
+            appendCell(__ROW, __RESULTS.desc);
+            appendCell(__ROW, __RESULTS.countRunning);
+            appendCell(__ROW, __RESULTS.countSuccess);
+            appendCell(__ROW, __RESULTS.countFailed);
+            appendCell(__ROW, __RESULTS.countException);
+            appendCell(__ROW, __RESULTS.countError);
+            appendCell(__ROW, __RESULTS.result);
         }
+
+        setRowStyle(__ROW, __STYLE);
 
         __TABLE.appendChild(__ROW);
     }
@@ -247,14 +249,42 @@ UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = docum
         appendCell(__ROW, "Anz", __COLOR);
         appendCell(__ROW, "OK", __COLOR);
         appendCell(__ROW, "FAIL", __COLOR);
-        appendCell(__ROW, "ERR", __COLOR);
         appendCell(__ROW, "EX", __COLOR);
+        appendCell(__ROW, "ERR", __COLOR);
         appendCell(__ROW, "Ergebnis", __COLOR);
 
         table.appendChild(__ROW);
     }
 
     return table;
+}
+
+UnitTest.getStyleFromResults = function(results) {
+    const __RESULTS = (results || { });
+    const __STYLE = { };
+
+    if (__RESULTS.countRunning > 0) {
+        // Alle Stiloptionen...
+        const __STYLES = {
+                'countSuccess'      : { 'color' : 'darkgreen' },
+                'countFailed'       : { 'color' : 'darkorange' },
+                'countException'    : { 'color' : 'magenta', 'bold' : true },
+                'countError'        : { 'color' : 'red', 'bold' : true }
+            };
+        const __STYLEKEYS = Object.keys(__STYLES);
+//        // Relevanter Key ist der mit den haeufigsten Treffern...
+//        const [ __MAXKEY, ] = __STYLEKEYS.reduceRight(([ maxKey, maxCount], key) =>
+//                ((__RESULTS[key] > maxCount) ? [ key, __RESULTS[key]] : [ maxKey, maxCount]),
+//            [ "", 0 ]);
+        // Relevanter Key ist die hoechste Kategorie mit mindestens einem Treffer...
+        const [ __MAXKEY, ] = __STYLEKEYS.reduce(([ maxKey, maxCount], key) =>
+                ((__RESULTS[key] > 0) ? [ key, __RESULTS[key]] : [ maxKey, maxCount]),
+            [ "", 0 ]);
+
+        Object.assign(__STYLE, __STYLES[__MAXKEY]);
+    }
+
+    return __STYLE;
 }
 
 // ==================== Ende Abschnitt fuer Klasse UnitTest ====================
@@ -275,8 +305,8 @@ function UnitTestResults(libName, libDesc, libTest) {
     this.countRunning   = 0;  // Zaehler Tests
     this.countSuccess   = 0;  // Zaehler OK
     this.countFailed    = 0;  // Zaehler FAIL
+    this.countException = 0;  // Zaehler EX (andere Exceptions ausser ERR)
     this.countError     = 0;  // Zaehler ERR (Fehler im Test, Spezial-Exception)
-    this.countException = 0;  // Zaehler EX (andere Exceptions)
 }
 
 Class.define(UnitTestResults, Object, {
@@ -289,18 +319,11 @@ Class.define(UnitTestResults, Object, {
                 'failed'              : function() {
                                             return ++this.countFailed;
                                         },
-                'error'               : function(ex) {
-                                            const __EX = (ex || { });
-
-                                            this.result = __EX.message;
-
-                                            return ++this.countError;
-                                        },
                 'exception'           : function(ex) {
                                             const __EX = (ex || { });
 
                                             if (__EX instanceof AssertionFailed) {
-                                                this.result = __EX.getText();
+                                                this.result = __EX.getTextMessage();
 
                                                 return this.failed();
                                             } else {
@@ -308,6 +331,13 @@ Class.define(UnitTestResults, Object, {
 
                                                 return ++this.countException;
                                             }
+                                        },
+                'error'               : function(ex) {
+                                            const __EX = (ex || { });
+
+                                            this.result = __EX.message;
+
+                                            return ++this.countError;
                                         },
                 'checkResult'         : function(result) {
                                             this.result = result;
@@ -335,8 +365,8 @@ Class.define(UnitTestResults, Object, {
                                             this.countRunning   += resultsToAdd.countRunning;
                                             this.countSuccess   += resultsToAdd.countSuccess;
                                             this.countFailed    += resultsToAdd.countFailed;
-                                            this.countError     += resultsToAdd.countError;
                                             this.countException += resultsToAdd.countException;
+                                            this.countError     += resultsToAdd.countError;
 
                                             if (! this.results) {
                                                 this.results = { };
@@ -352,8 +382,8 @@ Class.define(UnitTestResults, Object, {
                                                     'running'   : this.countRunning,
                                                     'success'   : this.countSuccess,
                                                     'failed'    : this.countFailed,
-                                                    'error'     : this.countError,
                                                     'exception' : this.countException,
+                                                    'error'     : this.countError,
                                                     'tests'     : this.test.tDefs,
                                                     'results'   : this.results
                                                 };

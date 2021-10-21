@@ -14,7 +14,7 @@
 
 // ==================== Abschnitt fuer Mock GM3-Funktionen ====================
 
-if (typeof GM_getValue == 'undefined') {
+if ((typeof GM_getValue) == 'undefined') {
     this.GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
             if (__MOCKSTORAGE.hasOwnProperty(name)) {
                 return __MOCKSTORAGE[name];
@@ -24,15 +24,27 @@ if (typeof GM_getValue == 'undefined') {
         };
 }
 
-if (typeof GM_setValue == 'undefined') {
+if ((typeof GM_setValue) == 'undefined') {
     this.GM_setValue = function(name, value) {  // Mock GM_setValue function
             __MOCKSTORAGE[name] = value;
+
+            return value;
         };
 }
 
-if (typeof GM_deleteValue == 'undefined') {
+if ((typeof GM_deleteValue) == 'undefined') {
     this.GM_deleteValue = function(name) {  // Mock GM_deleteValue function
+            const __VALUE = __MOCKSTORAGE[name];
+
             delete __MOCKSTORAGE[name];
+
+            return __VALUE;
+        };
+}
+
+if ((typeof GM_listValues) == 'undefined') {
+    this.GM_listValues = function(name) {  // Mock GM_listValues function
+            return Object.keys(__MOCKSTORAGE);
         };
 }
 
@@ -43,10 +55,11 @@ const __MOCKSTORAGE = { };
 Object.entries({
         'GM_deleteValue' : 'deleteValue',
         'GM_getValue'    : 'getValue',
+        'GM_listValues'  : 'listValues',
         'GM_setValue'    : 'setValue'
     }).forEach(([oldKey, newKey]) => {
         let old = this[oldKey];
-        if (old && (typeof GM[newKey] == 'undefined')) {
+        if (old && ((typeof GM[newKey]) == 'undefined')) {
             GM[newKey] = function(...args) {
                     return new Promise((resolve, reject) => {
                             try {

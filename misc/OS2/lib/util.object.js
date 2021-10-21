@@ -72,35 +72,6 @@ Object.map = function(obj, mapFun, thisArg, filterFun, sortFun) {
     }
 }
 
-//
-// Hilfsfunktionen, die von Options.toString() genutzt werden
-//
-
-// Liefert die Klasse des Objektes (ggfs. nach util.class verschieben!)
-// obj: Das Objekt, um das es geht
-// return Klassenname der Klasse des Objektes
-function getClass(obj) {
-    if (obj != undefined) {
-        if (typeof obj === 'object') {
-            if (obj.getClass) {
-                return obj.getClass();
-            }
-        }
-    }
-
-    return undefined;
-}
-
-
-// Liefert den Klassennamen des Objektes (ggfs. nach util.class verschieben!)
-// obj: Das Objekt, um das es geht
-// return Klassenname der Klasse des Objektes
-function getClassName(obj) {
-    const __CLASS = getClass(obj);
-
-    return ((__CLASS ? __CLASS.className : undefined));  // __CLASS.getName() problematisch?
-}
-
 // Liefert Datentyp und detaillierte Angaben zu einem Objekt aller Art, also Object, Array, Function, String, etc.
 // obj: Das Objekt, um das es geht
 // keyStrings: Nutzt bei Strings '' statt ""
@@ -108,7 +79,7 @@ function getClassName(obj) {
 // stepIn: Eingelagerte Objekte werden rekursiv aufgeloest
 // return [typ, valstr]: Liefert Datentyp des Objekts und Ausgabestring mit den Details
 function getObjInfo(obj, keyStrings, longForm, stepIn) {
-    const __TYPEOF = typeof obj;
+    const __TYPEOF = (typeof obj);
     const __VALUEOF = Object.valueOf(obj);
     const __LENGTH = ((obj != undefined) ? ((__TYPEOF === 'object') ? Object.entries(obj) : obj).length : obj);
     const __STRDELIM1 = (keyStrings ? "'" : '"');
