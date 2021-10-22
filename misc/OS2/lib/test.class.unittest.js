@@ -136,7 +136,7 @@ Class.define(UnitTest, Object, {
                                      }
                 });
 
-UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId, resultObj, thisArg) {
+UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResultFun, tableId, resultObj, thisArg) {
     const __LIBCOUNT = Object.keys(__ALLLIBS).length;
     const __ALLRESULTS = (resultObj || (new UnitTestResults("TOTAL", __LIBCOUNT + " Module")));
 
@@ -155,6 +155,9 @@ UnitTest.runAll = async function(resultFun = UnitTest.defaultResultFun, tableId,
             const __TFUN = __TEST['run'];  // TODO: __TEST.run, aber variabel gehalten!
             const __THIS = (thisArg || __TEST);
             const __RESULTS = new UnitTestResults("SUMME", __NAME, __TEST);
+
+            // Ausgabefilter verankern...
+            __THIS.minLevel =  minLevel;
 
             __LOG[2]("Starting tests for module", __LOG.info(__NAME, false) + ':', __DESC);
 
@@ -203,12 +206,29 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
     const __TABLE = UnitTest.getOrCreateTestResultTable(tableId, doc);
     const __RESULTS = (resultObj || { });
     const __UNITTEST = (__RESULTS.test || { });
+    const __MINLEVEL = getValue(this.minLevel, 1);
+    const __STYLE = UnitTest.getStyleFromResults(__RESULTS);
+    const __SHOW = (__STYLE.__RESULTCLASS >= __MINLEVEL);
+    const __ENDSUMMARY = (__RESULTS.name == 'TOTAL');
+    const __SUMMARY = ((__UNITTEST.name === __RESULTS.desc) || __ENDSUMMARY);
+    const __SHOWRESULT = (__RESULTS.name && (__SHOW || __SUMMARY));
+    const __CREATEROW = (__SHOWRESULT || (__MINLEVEL < 1));
 
-    if (__TABLE) {
+    if (__RESULTS.name && __SUMMARY) {
+        const __BORDERSTRING = (__ENDSUMMARY ? 'solid medium grey' : 'solid thin grey');
+
+        if (__ENDSUMMARY) {
+            __STYLE.paddingTop    = '6px';
+            __STYLE.paddingBottom = '6px';
+            __STYLE.borderBottom  = __BORDERSTRING;
+        }
+        __STYLE.borderTop = __BORDERSTRING;
+    }
+
+    if (__TABLE && __CREATEROW) {
         const __ROW = doc.createElement('tr');
-        const __STYLE = UnitTest.getStyleFromResults(__RESULTS);
 
-        if (__RESULTS.name) {
+        if (__SHOWRESULT) {
             appendCell(__ROW, __UNITTEST.name);
             appendCell(__ROW, __UNITTEST.desc);
             appendCell(__ROW, __RESULTS.name);
@@ -266,22 +286,26 @@ UnitTest.getStyleFromResults = function(results) {
     if (__RESULTS.countRunning > 0) {
         // Alle Stiloptionen...
         const __STYLES = {
-                'countSuccess'      : { 'color' : 'darkgreen' },
+                'countSuccess'      : { 'color' : 'green' },
                 'countFailed'       : { 'color' : 'darkorange' },
                 'countException'    : { 'color' : 'magenta', 'bold' : true },
                 'countError'        : { 'color' : 'red', 'bold' : true }
             };
         const __STYLEKEYS = Object.keys(__STYLES);
 //        // Relevanter Key ist der mit den haeufigsten Treffern...
-//        const [ __MAXKEY, ] = __STYLEKEYS.reduceRight(([ maxKey, maxCount], key) =>
+//        const [ __MAXKEY, __MAXCOUNT ] = __STYLEKEYS.reduceRight(([ maxKey, maxCount], key) =>
 //                ((__RESULTS[key] > maxCount) ? [ key, __RESULTS[key]] : [ maxKey, maxCount]),
 //            [ "", 0 ]);
         // Relevanter Key ist die hoechste Kategorie mit mindestens einem Treffer...
-        const [ __MAXKEY, ] = __STYLEKEYS.reduce(([ maxKey, maxCount], key) =>
+        const [ __MAXKEY, __MAXCOUNT ] = __STYLEKEYS.reduce(([ maxKey, maxCount], key) =>
                 ((__RESULTS[key] > 0) ? [ key, __RESULTS[key]] : [ maxKey, maxCount]),
             [ "", 0 ]);
 
-        Object.assign(__STYLE, __STYLES[__MAXKEY]);
+        Object.assign(__STYLE, __STYLES[__MAXKEY], {
+                '__RESULTCLASS' : __STYLEKEYS.indexOf(__MAXKEY),
+                '__RESULTKEY'   : __MAXKEY,
+                '__MAXCOUNT'    : __MAXCOUNT
+                });
     }
 
     return __STYLE;
