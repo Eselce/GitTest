@@ -3,9 +3,9 @@
     <head>
         <meta charset="utf-8">
         <title>Online-Soccer 2.0 - Greasemonkey Benutzerscript-Bibliothek</title>
-        <link rel="stylesheet" type="text/css" href="css/os_styles.css" />
-        <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
-        <link rel="shortcut icon" type="image/ico" href="img/favicon.ico" />
+        <link rel="stylesheet" type="text/css" href="../css/os_styles.css" />
+        <link rel="stylesheet" type="text/css" href="../css/print.css" media="print" />
+        <link rel="shortcut icon" type="image/ico" href="../img/favicon.ico" />
         <style>
             .script {
                 border:2px solid grey;
@@ -16,10 +16,59 @@
                 border-collapse:collapse;
             }
         </style>
+        <script type="text/javascript">
+//<![CDATA[
+
+const GM_info = {  // Mock GM_info data
+        'script' : {
+                'name'        : "lib/index.html",
+                'version'     : "0.10",
+                'namespace'   : "http://os.ongapo.com/",
+                'description' : "Online-Soccer 2.0 - Benutzerscript-Bibliotheken unter dem Greasemonkey AddOn"
+            }
+    };
+
+//]]>
+        </script>
+
+        <!-- ====================== Script-Includes: GM4-Polyfill, Module und Unit-Tests ====================== -->
+
+
+        <script type="text/javascript" defer src="https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js"></script>
+
+        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/lib.all.js"></script>
+
+<!--
+        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js"></script>
+        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js"></script>
+        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js"></script>
+        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js"></script>
+        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js"></script>
+        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js"></script>
+        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js"></script>
+-->
+
+        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.mock.gm.js"></script>
     </head>
     <body>
         <div>
-            <script type="text/javascript">
+            <h3>Benutzerscript-Bibliotheken unter dem Greasemonkey AddOn</h3>
+
+            || <a onClick="__MAIN();return false;" href="index.html">Bibliothek generieren</a>
+            || <a onClick="__BUILDLIB(1);return false;" href="index.html">lib.all.js</a>
+            || <a onClick="__BUILDLIB(2);return false;" href="index.html">lib.util.js</a>
+            || <a onClick="__BUILDLIB(3);return false;" href="index.html">lib.class.js</a>
+            || <a onClick="__BUILDLIB(4);return false;" href="index.html">lib.option.js</a>
+            || <a onClick="__BUILDLIB(5);return false;" href="index.html">lib.OS2.base.js</a>
+            || <a onClick="__BUILDLIB(6);return false;" href="index.html">lib.OS2.js</a>
+            || <a onClick="__BUILDLIB(7);return false;" href="index.html">lib.test.base.js</a>
+            || <a onClick="__BUILDLIB(8);return false;" href="index.html">lib.test.js</a>
+            || <a onClick="__BUILDLIB(9);return false;" href="index.html">lib.test.all.js</a>
+            ||
+        </div>
+        <br />
+
+        <script type="text/javascript">
 //<![CDATA[
 
 // ==================== Abschnitt fuer XHR Netzzugriff ====================
@@ -241,7 +290,159 @@ function Requirements(path, ext, libs) {
 
 //==================== Hauptprogramm ====================
 
-(() => {
+const __BUILDLIB = (async (libNumber) => {
+    const __LIBPATH  = "https://eselce.github.io/GitTest/misc/OS2/lib/";   // Alternativer Libpfad
+    const __TESTPATH = "https://eselce.github.io/GitTest/misc/OS2/test/";  // Alternativer Testpfad
+    const __LIBPRE = 'lib.';
+    const __LIBEXT = '.js';
+    const __TESTEXT = '.test.js';
+
+    const __REQS     = new Requirements(__LIBPATH, __LIBEXT);
+    const __REQSTEST = new Requirements(__TESTPATH, __TESTEXT);
+
+    const __LIBS = [
+            'util.log',
+            'util.object',
+            'util.value',
+            'util.proto',
+            'util.prop',
+            'util.mem.mod',
+            'util.debug',
+            'util.store',
+            'util.dom',
+            'util.script',
+            'util.class',
+            'util.class.delim',
+            'util.class.path',
+            'util.class.uri',
+            'util.option.type',
+            'util.option.data',
+            'util.option.class.options',
+            'util.option.api',
+            'util.mem',
+            'util.mem.db',
+            'util.mem.cmd',
+            'util.option.menu',
+            'util.option.page.label',
+            'util.option.page.action',
+            'util.option.page.node',
+            'util.option.page',
+            'util.option.run',
+            'OS2.list',
+            'OS2.team',
+            'OS2.page.team',
+            'OS2.page',
+            'OS2.zat',
+            'OS2.class.warndraw',
+            'OS2.class.player',
+            'OS2.class.column',
+            'OS2.class.table',
+//          'util.main'
+        ];
+    const __LIBSUTIL = [
+            'util.log',
+            'util.object',
+            'util.value',
+            'util.proto',
+            'util.prop',
+            'util.mem.mod',
+            'util.debug',
+            'util.store',
+            'util.dom',
+            'util.script'
+        ];
+    const __LIBSCLASS = [
+            'util.class',
+            'util.class.delim',
+            'util.class.path',
+            'util.class.uri'
+        ];
+    const __LIBSOPTION = [
+            'util.option.type',
+            'util.option.data',
+            'util.option.class.options',
+            'util.option.api',
+            'util.mem',
+            'util.mem.db',
+            'util.mem.cmd',
+            'util.option.menu',
+            'util.option.page.label',
+            'util.option.page.action',
+            'util.option.page.node',
+            'util.option.page',
+            'util.option.run'
+        ];
+    const __LIBSOS2BASE = [
+            'OS2.list',
+            'OS2.team',
+            'OS2.page.team',
+            'OS2.page',
+            'OS2.zat'
+        ];
+    const __LIBSOS2 = [
+            'OS2.list',
+            'OS2.team',
+            'OS2.page.team',
+            'OS2.page',
+            'OS2.zat',
+            'OS2.class.warndraw',
+            'OS2.class.player',
+            'OS2.class.column',
+            'OS2.class.table'
+        ];
+    const __LIBSTESTBASE = [
+            'test.assert',
+            'test.class.unittest'
+        ];
+    const __LIBSTEST = [
+            'util.log',
+            'util.store'
+        ];
+
+    const __LIBSDEF = {
+            'ALL'       : { 'reqs' : __REQS,        'libs' : __LIBS         },
+            'UTIL'      : { 'reqs' : __REQS,        'libs' : __LIBSUTIL     },
+            'CLASS'     : { 'reqs' : __REQS,        'libs' : __LIBSCLASS    },
+            'OPTION'    : { 'reqs' : __REQS,        'libs' : __LIBSOPTION   },
+            'OS2BASE'   : { 'reqs' : __REQS,        'libs' : __LIBSOS2BASE  },
+            'OS2'       : { 'reqs' : __REQS,        'libs' : __LIBSOS2      },
+            'TESTBASE'  : { 'reqs' : __REQS,        'libs' : __LIBSTESTBASE },
+            'TEST'      : { 'reqs' : __REQSTEST,    'libs' : __LIBSTEST     },
+        };
+
+    const __LIBPKGS = {
+            'default'   : 'ALL',
+            'all'       : 'ALL',
+            'util'      : 'UTIL',
+            'class'     : 'CLASS',
+            'option'    : 'OPTION',
+            'OS2.base'  : 'OS2BASE',
+            'OS2'       : 'OS2',
+            'test.base' : 'TESTBASE',
+            'test'      : 'TEST',
+            'test.all'  : [ 'TESTBASE', 'TEST' ]
+        };
+    const __LIBPKGKEYS = Object.keys(__LIBPKGS);
+
+    // libNumber: Lfd. Nummer der Keys oder uebergebener Name...
+    const __PKGNAME = (Number.isInteger(libNumber) ? __LIBPKGKEYS[Number.parseInt(libNumber, 10)] : (libNumber || 'default'));
+    const __LIBNAME = __LIBPRE + __PKGNAME + __LIBEXT;
+    const __PKGDEF = __LIBPKGS[__PKGNAME];
+    const __PKGLIBS = (((typeof __PKGDEF) === 'string') ? [ __PKGDEF ] : __PKGDEF);
+    const __PKGFUNS = __PKGLIBS.map(libsKey => __LIBSDEF[libsKey].reqs.open(__LIBSDEF[libsKey].libs).appendPre(document.body));
+
+    document.body.innerHTML = "<pre>/****** JavaScript-Bibliothek " + __LOG.info(__LIBNAME, false) + ' ' + __LOG.info(__PKGLIBS, false) + " ******/\n\n"
+                            + __PKGLIBS.reduce((pre, libsKey) => pre + __LIBSDEF[libsKey].libs.map(libName => (libName + __LIBSDEF[libsKey].reqs.libExt)
+                                    ).reduce((pre, lib) => pre + "\n//\t" + lib, "\n// " + __LIBSDEF[libsKey].reqs.libPath + '&lt;' + libsKey + "&gt;: "),
+                                "// Inhaltsverzeichnis:") + "</pre>";
+
+    // Promise-Chain abarbeiten...
+    const __LIBREQS = await __PKGFUNS.reduce((prom, fun) => prom.then(fun, defaultCatch), Promise.resolve());
+
+    return __LIBREQS;
+});
+
+const __BUILDLIB0 = (async (libNumber) => {
     const __LIBPATH  = "https://eselce.github.io/GitTest/misc/OS2/lib/";   // Alternativer Libpfad
     const __TESTPATH = "https://eselce.github.io/GitTest/misc/OS2/test/";  // Alternativer Testpfad
     const __LIBEXT = '.js';
@@ -349,25 +550,51 @@ function Requirements(path, ext, libs) {
     const __REQS     = new Requirements(__LIBPATH, __LIBEXT);
     const __REQSTEST = new Requirements(__TESTPATH, __TESTEXT);
 
-    const __RET = __REQS.open(__LIBS).appendPre(document.body);
-//    const __RET = __REQS.open(__LIBSUTIL).appendPre(document.body);
-//    const __RET = __REQS.open(__LIBSCLASS).appendPre(document.body);
-//    const __RET = __REQS.open(__LIBSOPTION).appendPre(document.body);
-//    const __RET = __REQS.open(__LIBSOS2BASE).appendPre(document.body);
-//    const __RET = __REQS.open(__LIBSOS2).appendPre(document.body);
-//    const __RET = __REQS.open(__LIBSTESTBASE).appendPre(document.body);
-//    const __RET = __REQSTEST.open(__LIBSTEST).appendPre(document.body);
-//    const __RET = __REQS.open(__LIBSTESTBASE).appendPre(document.body).then(reqs => __REQSTEST.open(__LIBSTEST).appendPre(document.body));
+    let reqs;
 
-//    return __RET;
-})();
+    document.body.innerHTML = "";
+
+    // Verzweige in unterschiedliche Verarbeitungen je nach Wert von libNumber:
+    switch (libNumber) {
+        case 0  :
+        case 1  : reqs = await __REQS.open(__LIBS).appendPre(document.body); break;
+        case 2  : reqs = await __REQS.open(__LIBSUTIL).appendPre(document.body); break;
+        case 3  : reqs = await __REQS.open(__LIBSCLASS).appendPre(document.body); break;
+        case 4  : reqs = await __REQS.open(__LIBSOPTION).appendPre(document.body); break;
+        case 5  : reqs = await __REQS.open(__LIBSOS2BASE).appendPre(document.body); break;
+        case 6  : reqs = await __REQS.open(__LIBSOS2).appendPre(document.body); break;
+        case 7  : reqs = await __REQS.open(__LIBSTESTBASE).appendPre(document.body); break;
+        case 8  : reqs = await __REQSTEST.open(__LIBSTEST).appendPre(document.body); break;
+        case 9  : reqs = await __REQS.open(__LIBSTESTBASE).appendPre(document.body).then(reqs => __REQSTEST.open(__LIBSTEST).appendPre(document.body)); break;
+        default : break;
+    }
+
+    return reqs;
+});
+
+const __MAIN = (async () => {
+    // URL-Legende (lib=n oder lib=pkgname):
+    // lib=1: lib.all.js        (lib=all)
+    // lib=2: lib.util.js       (lib=util)
+    // lib=3: lib.class.js      (lib=class)
+    // lib=4: lib.option.js     (lib=option)
+    // lib=5: lib.OS2.base.js   (lib=OS2.base)
+    // lib=6: lib.OS2.js        (lib=OS2)
+    // lib=7: lib.test.base.js  (lib=test.base)
+    // lib=8: lib.test.js       (lib=test)
+    // lib=9: lib.test.all.js   (lib=test.all)
+
+    // Verzweige in unterschiedliche Verarbeitungen je nach Wert von lib:
+    const __LIBNUMBER = getPageIdFromURL(window.location.href, {
+                'index.html' : 1   // Ansicht "Bibliothek generieren" (lib = 1, 2, ..., 9 bzw. lib = all, util, class, ...)
+            }, 'lib');
+    const __REQS = __BUILDLIB(__LIBNUMBER);
+
+    return __REQS;
+});
 
 //]]>
-            </script>
-            <noscript>Your browser does not support JavaScript!</noscript>
-
-            <!-- <h3>Benutzerscript-Bibliothek f&uuml;r Online-Soccer 2.0 unter dem Greasemonkey AddOn</h3> -->
-            <!-- <textarea name="allscripts" id="allscripts" cols=80 rows=30></textarea> -->
-        </div>
+        </script>
+        <noscript>Your browser does not support JavaScript!</noscript>
     </body>
 </html>

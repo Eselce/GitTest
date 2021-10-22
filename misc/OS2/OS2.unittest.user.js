@@ -74,9 +74,23 @@ const __LOGLEVEL = 9;
 
 // Moegliche Optionen (hier die Standardwerte editieren oder ueber das Benutzermenu setzen):
 const __OPTCONFIG = {
+    'minLevel' : {        // Minimal angezeigter Fehlerlevel: 0 = alle, 1 = ab FAILED, 2 = ab Exception, 3 = ab Error, 4 = nur Summen
+                   'Name'      : "minLevel",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'Number',
+                   'Permanent' : true,
+                   'Default'   : 1,
+                   'FreeValue' : false,
+                   'Choice'    : [ 1, 2, 3, 4, 0 ],
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Min. Level: $",
+                   'Hotkey'    : 'L',
+                   'FormLabel' : "Min. Level:|$"
+               },
     'loadScript' : {      // Auswahl der Art und Weise, wie das Unit-Test-Script gelesen wird (true = loadScript(), false = eval())
                    'Name'      : "loadScript",
                    'Type'      : __OPTTYPES.SW,
+                   'Permanent' : true,
                    'Default'   : true,
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "loadScript() nutzen",
@@ -202,21 +216,20 @@ function procHaupt() {
     return buildOptions(__OPTCONFIG, __OPTSET, {
 //                            'menuAnchor' : getTable(0, 'div'),
                             'hideMenu'   : false,
-                            'showForm'   : {
-                                               'showForm'             : true
-                                           }
+                            'showForm'   : true
                         }).then(async optSet => {
+            const __MINLEVEL = getOptValue(optSet.minLevel);
             const __LOADSCRIPT = getOptValue(optSet.loadScript);
             const __EVAL = (__LOADSCRIPT ? "" : document.body.textContent);
 
             document.body.innerHTML = '';  // Seite leeren
 
             if (__LOADSCRIPT) {
-                return getScript(window.location.href, UnitTest.runAll);
+                return getScript(window.location.href, UnitTest.runAll, __MINLEVEL);
             } else {
                 eval(__EVAL);  // Die gerade geladene JS-Datei
 
-                return UnitTest.runAll();
+                return UnitTest.runAll(__MINLEVEL);
             }
         });
 }
