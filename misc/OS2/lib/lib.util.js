@@ -1,4 +1,17 @@
+/****** JavaScript-Bibliothek 'lib.util.js' ["UTIL"] ******/
 
+// Inhaltsverzeichnis:
+// https://eselce.github.io/GitTest/misc/OS2/lib/<UTIL>: 
+//  util.log.js
+//  util.object.js
+//  util.value.js
+//  util.proto.js
+//  util.prop.js
+//  util.mem.mod.js
+//  util.debug.js
+//  util.store.js
+//  util.dom.js
+//  util.script.js
 
 /*** Modul util.log.js ***/
 

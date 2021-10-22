@@ -1,4 +1,16 @@
+/****** JavaScript-Bibliothek 'lib.OS2.js' ["OS2"] ******/
 
+// Inhaltsverzeichnis:
+// https://eselce.github.io/GitTest/misc/OS2/lib/<OS2>: 
+//  OS2.list.js
+//  OS2.team.js
+//  OS2.page.team.js
+//  OS2.page.js
+//  OS2.zat.js
+//  OS2.class.warndraw.js
+//  OS2.class.player.js
+//  OS2.class.column.js
+//  OS2.class.table.js
 
 /*** Modul OS2.list.js ***/
 

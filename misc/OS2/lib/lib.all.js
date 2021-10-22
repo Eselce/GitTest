@@ -1,4 +1,43 @@
+/****** JavaScript-Bibliothek 'lib.all.js' ["ALL"] ******/
 
+// Inhaltsverzeichnis:
+// https://eselce.github.io/GitTest/misc/OS2/lib/<ALL>: 
+//  util.log.js
+//  util.object.js
+//  util.value.js
+//  util.proto.js
+//  util.prop.js
+//  util.mem.mod.js
+//  util.debug.js
+//  util.store.js
+//  util.dom.js
+//  util.script.js
+//  util.class.js
+//  util.class.delim.js
+//  util.class.path.js
+//  util.class.uri.js
+//  util.option.type.js
+//  util.option.data.js
+//  util.option.class.options.js
+//  util.option.api.js
+//  util.mem.js
+//  util.mem.db.js
+//  util.mem.cmd.js
+//  util.option.menu.js
+//  util.option.page.label.js
+//  util.option.page.action.js
+//  util.option.page.node.js
+//  util.option.page.js
+//  util.option.run.js
+//  OS2.list.js
+//  OS2.team.js
+//  OS2.page.team.js
+//  OS2.page.js
+//  OS2.zat.js
+//  OS2.class.warndraw.js
+//  OS2.class.player.js
+//  OS2.class.column.js
+//  OS2.class.table.js
 
 /*** Modul util.log.js ***/
 

@@ -1,4 +1,11 @@
+/****** JavaScript-Bibliothek 'lib.class.js' ["CLASS"] ******/
 
+// Inhaltsverzeichnis:
+// https://eselce.github.io/GitTest/misc/OS2/lib/<CLASS>: 
+//  util.class.js
+//  util.class.delim.js
+//  util.class.path.js
+//  util.class.uri.js
 
 /*** Modul util.class.js ***/
 

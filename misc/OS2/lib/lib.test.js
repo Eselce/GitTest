@@ -1,4 +1,9 @@
+/****** JavaScript-Bibliothek 'lib.test.js' ["TEST"] ******/
 
+// Inhaltsverzeichnis:
+// https://eselce.github.io/GitTest/misc/OS2/test/<TEST>: 
+//  util.log.test.js
+//  util.store.test.js
 
 /*** Modul util.log.test.js ***/
 

@@ -1,4 +1,20 @@
+/****** JavaScript-Bibliothek 'lib.option.js' ["OPTION"] ******/
 
+// Inhaltsverzeichnis:
+// https://eselce.github.io/GitTest/misc/OS2/lib/<OPTION>: 
+//  util.option.type.js
+//  util.option.data.js
+//  util.option.class.options.js
+//  util.option.api.js
+//  util.mem.js
+//  util.mem.db.js
+//  util.mem.cmd.js
+//  util.option.menu.js
+//  util.option.page.label.js
+//  util.option.page.action.js
+//  util.option.page.node.js
+//  util.option.page.js
+//  util.option.run.js
 
 /*** Modul util.option.type.js ***/
 
