@@ -66,7 +66,7 @@ __LOG.init(window, 4);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window,
 
 // === Das console-Objekt ===
 // __LOG[level](text):
-// 0    E exception rot trace   nicht-aufgeklappt
+// 0    E exception rot         nicht-aufgeklappt
 // 1  * E error     rot trace   nicht-aufgeklappt
 // --
 // 2  * W warn      gelb        nicht-aufgeklappt

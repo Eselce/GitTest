@@ -67,7 +67,7 @@ function assertionCatch(error, ...attribs) {
         return __ERROR;
     } catch (ex) {
         if (ex instanceof AssertionFailed) {
-            __LOG[0]("ASSERTIONCATCH!!!", ex);  // TODO!!!
+            __LOG[1]("ASSERTIONCATCH!!!", ex);  // TODO!!!
 
             return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex, false);
         } else {
