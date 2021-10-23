@@ -83,30 +83,30 @@
 // ==================== Abschnitt fuer die Sicherung und das Laden von Daten ====================
 
     const __TESTDATA = {
-            'String'    : [ 'UnitTestS',    "Teststring",                                                                           '"Teststring"' ],
-            'Int'       : [ 'UnitTestI',    42,                                                                                     '42' ],
-            'Bool'      : [ 'UnitTestB',    false,                                                                                  'false' ],
-            'Float'     : [ 'UnitTestI',    47.11,                                                                                  '47.11' ],
-            'Array'     : [ 'UnitTestA',    [ 1, 2, 4, 8 ],                                                                         '[1,2,4,8]' ],
-            'Array2'    : [ 'UnitTestA',    [ '1', null, false, 815 ],                                                              '["1",null,false,815]' ],
-            'Array3'    : [ 'UnitTestA',    [ String(1), undefined, Boolean(true), new AssertionFailed(815, "Fehler") ],            '["1",null,true,{"text":"Fehler (815)"}]' ],
-            'Object'    : [ 'UnitTestO',    { eins : 1, zwei : 2, fuenf : 5 },                                                      '{"eins":1,"zwei":2,"fuenf":5}' ],
-            'Object2'   : [ 'UnitTestO',    { 'const': { innen : true, aussen : null }, a : { b : { c : [ 2, 47.11, true ] } } },   '{"const":{"innen":true,"aussen":null},"a":{"b":{"c":[2,47.11,true]}}}' ],
-            'Object3'   : [ 'UnitTestO',    { 'fun' : function(x) { return x * x; }, 'bool' : new Boolean(true) },                  '{"bool":true}' ],
-            'Undef'     : [ 'UnitTestU',    undefined,                                                                              undefined ],
-            'Null'      : [ 'UnitTestN',    null,                                                                                   'null' ],
-            'NaN'       : [ 'UnitTestNaN',  Number.NaN,                                                                             String(Number.NaN) ],  // TODO: 'null'?
-            'PosInf'    : [ 'UnitTestInf',  Number.POSITIVE_INFINITY,                                                               String(Number.POSITIVE_INFINITY) ],
-            'NegInf'    : [ 'UnitTestInf',  Number.NEGATIVE_INFINITY,                                                               String(Number.NEGATIVE_INFINITY) ],
-            'MinVal'    : [ 'UnitTestMin',  Number.MIN_VALUE,                                                                       String(Number.MIN_VALUE) ],
-            'MaxVal'    : [ 'UnitTestMax',  Number.MAX_VALUE,                                                                       String(Number.MAX_VALUE) ],
-            'MinInt'    : [ 'UnitTestMin',  Number.MIN_SAFE_INTEGER,                                                                String(Number.MIN_SAFE_INTEGER) ],
-            'MaxInt'    : [ 'UnitTestMax',  Number.MAX_SAFE_INTEGER,                                                                String(Number.MAX_SAFE_INTEGER) ],
-            'Epsilon'   : [ 'UnitTestInf',  Number.EPSILON,                                                                         String(Number.EPSILON) ],
-            'Function'  : [ 'UnitTestP',    function(x) { return x * x; },                                                          undefined ],
-            'Default'   : [ 'UnitTestD',    undefined,                                                                              undefined,          'ERROR' ],
-            'Default2'  : [ 'UnitTestD',    null,                                                                                   'null',             'ERROR' ],
-            'Default3'  : [ 'UnitTestD',    "",                                                                                     '',                 'ERROR' ]
+            'String'    : [ 'UnitTestS',    "Teststring",                                                       '"Teststring"' ],
+            'Int'       : [ 'UnitTestI',    42,                                                                 '42' ],
+            'Bool'      : [ 'UnitTestB',    false,                                                              'false' ],
+            'Float'     : [ 'UnitTestI',    47.11,                                                              '47.11' ],
+            'Array'     : [ 'UnitTestA',    [ 1, 2, 4, 8 ],                                                     '[1,2,4,8]' ],
+            'Array2'    : [ 'UnitTestA',    [ '1', null, false, 815 ],                                          '["1",null,false,815]' ],
+            'Array3'    : [ 'UnitTestA',    [ String(1), undefined, new Boolean(true) ],                        '["1",null,true]' ],
+            'Object'    : [ 'UnitTestO',    { eins : 1, zwei : 2, fuenf : 5 },                                  '{"eins":1,"zwei":2,"fuenf":5}' ],
+            'Object2'   : [ 'UnitTestO',    { 'c': { i : true, a : null }, a : { b : { c : [ 2, 47.11 ] } } },  '{"c":{"i":true,"a":null},"a":{"b":{"c":[2,47.11]}}}' ],
+            'Object3'   : [ 'UnitTestO',    new AssertionFailed(new Boolean(true), "Fehler"),                   '{"message":"\'Fehler\' (true)"}' ],
+            'Undef'     : [ 'UnitTestU',    undefined,                                                          undefined ],
+            'Null'      : [ 'UnitTestN',    null,                                                               'null' ],
+            'NaN'       : [ 'UnitTestNaN',  Number.NaN,                                                         String(Number.NaN) ],  // TODO: 'null'?
+            'PosInf'    : [ 'UnitTestInf',  Number.POSITIVE_INFINITY,                                           String(Number.POSITIVE_INFINITY) ],
+            'NegInf'    : [ 'UnitTestInf',  Number.NEGATIVE_INFINITY,                                           String(Number.NEGATIVE_INFINITY) ],
+            'MinVal'    : [ 'UnitTestMin',  Number.MIN_VALUE,                                                   String(Number.MIN_VALUE) ],
+            'MaxVal'    : [ 'UnitTestMax',  Number.MAX_VALUE,                                                   String(Number.MAX_VALUE) ],
+            'MinInt'    : [ 'UnitTestMin',  Number.MIN_SAFE_INTEGER,                                            String(Number.MIN_SAFE_INTEGER) ],
+            'MaxInt'    : [ 'UnitTestMax',  Number.MAX_SAFE_INTEGER,                                            String(Number.MAX_SAFE_INTEGER) ],
+            'Epsilon'   : [ 'UnitTestInf',  Number.EPSILON,                                                     String(Number.EPSILON) ],
+            'Function'  : [ 'UnitTestP',    function(x) { return x * x; },                                      undefined ],
+            'Default'   : [ 'UnitTestD',    undefined,                                                          undefined,              'ERROR' ],
+            'Default2'  : [ 'UnitTestD',    null,                                                               'null',                 'ERROR' ],
+            'Default3'  : [ 'UnitTestD',    "",                                                                 '""',                   'ERROR' ]
         };
 
     // Komponenten der Testreihen (sto/ser x ent/sum/des):

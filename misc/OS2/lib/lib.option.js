@@ -616,7 +616,7 @@ function loadOptions(optSet, force = false) {
 
         if (! __OPT.Loaded) {
             const __PROMISE = loadOption(__OPT, force).then(value => {
-                    __LOG[6]("LOADED " + __LOG.info(opt, false, false) + " << " + __LOG.info(value, true, false));
+                    __LOG[6]("LOADED " + __LOG.info(opt, false) + " << " + __LOG.info(value, true));
 
                     return Promise.resolve({
                             'name'  : opt,

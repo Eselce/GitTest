@@ -314,7 +314,7 @@ Class.define(UnitTest, Object, {
                                                  }
                                              } else {
                                                  this.addTest('MISSING_TESTS', function() {
-                                                                                       const __MSG = "No tests available for " + __LIBNAME;
+                                                                                       const __MSG = "No tests available for " + __LOG.info(__LIBNAME, false);
                                                                                        __LOG[1](__MSG);
                                                                                        throw __MSG;
                                                                                    });

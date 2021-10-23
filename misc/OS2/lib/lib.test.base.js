@@ -76,7 +76,7 @@ function assertionCatch(error, ...attribs) {
         return __ERROR;
     } catch (ex) {
         if (ex instanceof AssertionFailed) {
-            __LOG[0]("ASSERTIONCATCH!!!", ex);  // TODO!!!
+            __LOG[1]("ASSERTIONCATCH!!!", ex);  // TODO!!!
 
             return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex, false);
         } else {
@@ -311,7 +311,7 @@ Class.define(UnitTest, Object, {
                                                  }
                                              } else {
                                                  this.addTest('MISSING_TESTS', function() {
-                                                                                       const __MSG = "No tests available for " + __LIBNAME;
+                                                                                       const __MSG = "No tests available for " + __LOG.info(__LIBNAME, false);
                                                                                        __LOG[1](__MSG);
                                                                                        throw __MSG;
                                                                                    });

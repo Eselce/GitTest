@@ -83,7 +83,7 @@ __LOG.init(window, 4);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window,
 
 // === Das console-Objekt ===
 // __LOG[level](text):
-// 0    E exception rot trace   nicht-aufgeklappt
+// 0    E exception rot         nicht-aufgeklappt
 // 1  * E error     rot trace   nicht-aufgeklappt
 // --
 // 2  * W warn      gelb        nicht-aufgeklappt
@@ -1042,7 +1042,7 @@ const __GMWRITE = true;
 // return Ausgewaehlte GM-Funktion
 function GM_function(action, label, condition = true, altAction = undefined, level = 8) {
     return function(...args) {
-        __LOG[level]((condition ? '+' : '-') + ' ' + label + ' ' + __LOG.info(args[0], false, false));
+        __LOG[level]((condition ? '+' : '-') + ' ' + label + ' ' + __LOG.info(args[0], false));
         return GM[condition ? action : altAction](...args);
     }
 }
@@ -1106,7 +1106,7 @@ function summonValue(name, defValue = undefined) {
 // name: GM.deleteValue()-Name, unter dem die Daten gespeichert wurden
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
 function discardValue(name) {
-    __LOG[5]("DELETE " + __LOG.info(name, false, false));
+    __LOG[5]("DELETE " + __LOG.info(name, false));
 
     return __DELETEVALUE(name).then(value => {
             __LOG[5]("OK DELETE " + name);
@@ -1150,7 +1150,12 @@ function serialize(name, value) {
 function deserialize(name, defValue = undefined) {
     return summonValue(name).then(stream => {
             if (stream && stream.length) {
-                return JSON.parse(stream);
+                try {
+                    return JSON.parse(stream);
+                } catch (ex) {
+                    __LOG[1](__LOG.info(name, false) + " << " + __LOG.info(stream, true, true));
+                     throw ex;
+                }
             } else {
                 return defValue;
             }
