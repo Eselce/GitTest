@@ -55,15 +55,15 @@ const GM_info = {  // Mock GM_info data
             <h3>Benutzerscript-Bibliotheken unter dem Greasemonkey AddOn</h3>
 
             || <a onClick="__MAIN();return false;" href="index.html">Bibliothek generieren</a>
-            || <a onClick="__BUILDLIB(1);return false;" href="index.html">lib.all.js</a>
-            || <a onClick="__BUILDLIB(2);return false;" href="index.html">lib.util.js</a>
-            || <a onClick="__BUILDLIB(3);return false;" href="index.html">lib.class.js</a>
-            || <a onClick="__BUILDLIB(4);return false;" href="index.html">lib.option.js</a>
-            || <a onClick="__BUILDLIB(5);return false;" href="index.html">lib.OS2.base.js</a>
-            || <a onClick="__BUILDLIB(6);return false;" href="index.html">lib.OS2.js</a>
-            || <a onClick="__BUILDLIB(7);return false;" href="index.html">lib.test.base.js</a>
-            || <a onClick="__BUILDLIB(8);return false;" href="index.html">lib.test.js</a>
-            || <a onClick="__BUILDLIB(9);return false;" href="index.html">lib.test.all.js</a>
+            || <a onClick="__BUILDLIB('all');return false;" href="index.html">lib.all.js</a>
+            || <a onClick="__BUILDLIB('util');return false;" href="index.html">lib.util.js</a>
+            || <a onClick="__BUILDLIB('class');return false;" href="index.html">lib.class.js</a>
+            || <a onClick="__BUILDLIB('option');return false;" href="index.html">lib.option.js</a>
+            || <a onClick="__BUILDLIB('OS2.base');return false;" href="index.html">lib.OS2.base.js</a>
+            || <a onClick="__BUILDLIB('OS2');return false;" href="index.html">lib.OS2.js</a>
+            || <a onClick="__BUILDLIB('test.base');return false;" href="index.html">lib.test.base.js</a>
+            || <a onClick="__BUILDLIB('test');return false;" href="index.html">lib.test.js</a>
+            || <a onClick="__BUILDLIB('test.all');return false;" href="index.html">lib.test.all.js</a>
             ||
         </div>
         <br />
@@ -440,136 +440,6 @@ const __BUILDLIB = (async (libNumber) => {
     const __LIBREQS = await __PKGFUNS.reduce((prom, fun) => prom.then(fun, defaultCatch), Promise.resolve());
 
     return __LIBREQS;
-});
-
-const __BUILDLIB0 = (async (libNumber) => {
-    const __LIBPATH  = "https://eselce.github.io/GitTest/misc/OS2/lib/";   // Alternativer Libpfad
-    const __TESTPATH = "https://eselce.github.io/GitTest/misc/OS2/test/";  // Alternativer Testpfad
-    const __LIBEXT = '.js';
-    const __TESTEXT = '.test.js';
-
-    const __LIBS = [
-            'util.log',
-            'util.object',
-            'util.value',
-            'util.proto',
-            'util.prop',
-            'util.mem.mod',
-            'util.debug',
-            'util.store',
-            'util.dom',
-            'util.script',
-            'util.class',
-            'util.class.delim',
-            'util.class.path',
-            'util.class.uri',
-            'util.option.type',
-            'util.option.data',
-            'util.option.class.options',
-            'util.option.api',
-            'util.mem',
-            'util.mem.db',
-            'util.mem.cmd',
-            'util.option.menu',
-            'util.option.page.label',
-            'util.option.page.action',
-            'util.option.page.node',
-            'util.option.page',
-            'util.option.run',
-            'OS2.list',
-            'OS2.team',
-            'OS2.page.team',
-            'OS2.page',
-            'OS2.zat',
-            'OS2.class.warndraw',
-            'OS2.class.player',
-            'OS2.class.column',
-            'OS2.class.table',
-//          'util.main'
-        ];
-    const __LIBSUTIL = [
-            'util.log',
-            'util.object',
-            'util.value',
-            'util.proto',
-            'util.prop',
-            'util.mem.mod',
-            'util.debug',
-            'util.store',
-            'util.dom',
-            'util.script'
-        ];
-    const __LIBSCLASS = [
-            'util.class',
-            'util.class.delim',
-            'util.class.path',
-            'util.class.uri'
-        ];
-    const __LIBSOPTION = [
-            'util.option.type',
-            'util.option.data',
-            'util.option.class.options',
-            'util.option.api',
-            'util.mem',
-            'util.mem.db',
-            'util.mem.cmd',
-            'util.option.menu',
-            'util.option.page.label',
-            'util.option.page.action',
-            'util.option.page.node',
-            'util.option.page',
-            'util.option.run'
-        ];
-    const __LIBSOS2BASE = [
-            'OS2.list',
-            'OS2.team',
-            'OS2.page.team',
-            'OS2.page',
-            'OS2.zat'
-        ];
-    const __LIBSOS2 = [
-            'OS2.list',
-            'OS2.team',
-            'OS2.page.team',
-            'OS2.page',
-            'OS2.zat',
-            'OS2.class.warndraw',
-            'OS2.class.player',
-            'OS2.class.column',
-            'OS2.class.table'
-        ];
-    const __LIBSTESTBASE = [
-            'test.assert',
-            'test.class.unittest'
-        ];
-    const __LIBSTEST = [
-            'util.log',
-            'util.store'
-        ];
-
-    const __REQS     = new Requirements(__LIBPATH, __LIBEXT);
-    const __REQSTEST = new Requirements(__TESTPATH, __TESTEXT);
-
-    let reqs;
-
-    document.body.innerHTML = "";
-
-    // Verzweige in unterschiedliche Verarbeitungen je nach Wert von libNumber:
-    switch (libNumber) {
-        case 0  :
-        case 1  : reqs = await __REQS.open(__LIBS).appendPre(document.body); break;
-        case 2  : reqs = await __REQS.open(__LIBSUTIL).appendPre(document.body); break;
-        case 3  : reqs = await __REQS.open(__LIBSCLASS).appendPre(document.body); break;
-        case 4  : reqs = await __REQS.open(__LIBSOPTION).appendPre(document.body); break;
-        case 5  : reqs = await __REQS.open(__LIBSOS2BASE).appendPre(document.body); break;
-        case 6  : reqs = await __REQS.open(__LIBSOS2).appendPre(document.body); break;
-        case 7  : reqs = await __REQS.open(__LIBSTESTBASE).appendPre(document.body); break;
-        case 8  : reqs = await __REQSTEST.open(__LIBSTEST).appendPre(document.body); break;
-        case 9  : reqs = await __REQS.open(__LIBSTESTBASE).appendPre(document.body).then(reqs => __REQSTEST.open(__LIBSTEST).appendPre(document.body)); break;
-        default : break;
-    }
-
-    return reqs;
 });
 
 const __MAIN = (async () => {
