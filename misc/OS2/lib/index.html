@@ -271,7 +271,7 @@ function Requirements(path, ext, libs) {
 
                                      __PRE.textContent = "/*** Modul " + this.libs[i] + this.libExt + " ***/\n\n"
                                                          + __DOC.replaceAll('\r\n', '\n') + '\n'
-                                                         + "/*** Ende " + this.libs[i] + this.libExt + " ***/\n\n";
+                                                         + "/*** Ende Modul " + this.libs[i] + this.libExt + " ***/\n\n";
 
                                      __ANCHOR.appendChild(__PRE);
                                  }
@@ -392,11 +392,13 @@ const __BUILDLIB = (async (libNumber) => {
         ];
     const __LIBSTESTBASE = [
             'test.assert',
-            'test.class.unittest'
+            'test.class.unittest',
+            'test.lib.option'
         ];
     const __LIBSTEST = [
             'util.log',
-            'util.store'
+            'util.store',
+            'util.option.api'
         ];
 
     const __LIBSDEF = {

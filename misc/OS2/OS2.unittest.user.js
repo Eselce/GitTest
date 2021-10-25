@@ -57,9 +57,11 @@
 // _require      https://eselce.github.io/GitTest/misc/OS2/lib/test.mock.gm.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/test.assert.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/test.class.unittest.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/test.lib.option.js
 // _require      https://eselce.github.io/GitTest/misc/OS2/test/test.bsp.test.js
 // _require      https://eselce.github.io/GitTest/misc/OS2/test/util.log.test.js
 // _require      https://eselce.github.io/GitTest/misc/OS2/test/util.store.test.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/test/util.option.api.test.js
 // ==/UserScript==
 
 // ECMAScript 6:
