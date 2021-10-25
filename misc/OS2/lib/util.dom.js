@@ -177,7 +177,7 @@ function appendCell(row, content, color = undefined, align = 'center') {
     const __ROW = (row || { });
     const __CELL = __ROW.insertCell(-1);
 
-    __CELL.textContent = content;
+    __CELL.innerHTML = content;
     __CELL.align = align;
     __CELL.style.color = color;
 
