@@ -310,7 +310,6 @@ async function resetOptions(optSet, reload = true) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Gesetzter Wert bzw. ein Promise darauf bei asyncLoad
 function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false) {
-
     if (asyncLoad) {
         if (! opt) {
             return Promise.reject("loadOptValue: Option ist undefined");
