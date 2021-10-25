@@ -139,7 +139,8 @@ function deserialize(name, defValue = undefined) {
                     return JSON.parse(stream);
                 } catch (ex) {
                     __LOG[1](__LOG.info(name, false) + " << " + __LOG.info(stream, true, true));
-                     throw ex;
+                    ex.message += ": " + name + " == " + stream;
+                    throw ex;
                 }
             } else {
                 return defValue;

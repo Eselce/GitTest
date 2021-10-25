@@ -228,7 +228,8 @@ function addZusatz(row, currZAT, anzZAT = 1, bilanz = false) {
             addBilanzLinkToCell(__CELLS[__COLUMNINDEX.Ber], currZAT.gameType, "(Bilanz)");
         }
         incZAT(currZAT, anzZAT);
-        appendCell(__ROW, "&nbsp;" + getZatLink(currZAT, __TEAMCLASS.team, true));
+        appendCell(__ROW, addTableLink(currZAT, __TEAMCLASS.team, "&nbsp;Tabelle", false)
+                        + "&nbsp;" + getZatLink(currZAT, __TEAMCLASS.team, true));
         __CELLS[__COLUMNINDEX.Zus].className = __CELLS[__COLUMNINDEX.Art].className;
     }
 }
