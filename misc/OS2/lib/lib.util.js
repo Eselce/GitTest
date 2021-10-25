@@ -1154,7 +1154,8 @@ function deserialize(name, defValue = undefined) {
                     return JSON.parse(stream);
                 } catch (ex) {
                     __LOG[1](__LOG.info(name, false) + " << " + __LOG.info(stream, true, true));
-                     throw ex;
+                    ex.message += ": " + name + " == " + stream;
+                    throw ex;
                 }
             } else {
                 return defValue;
@@ -1392,7 +1393,7 @@ function appendCell(row, content, color = undefined, align = 'center') {
     const __ROW = (row || { });
     const __CELL = __ROW.insertCell(-1);
 
-    __CELL.textContent = content;
+    __CELL.innerHTML = content;
     __CELL.align = align;
     __CELL.style.color = color;
 

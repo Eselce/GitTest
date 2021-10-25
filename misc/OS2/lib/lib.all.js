@@ -1180,7 +1180,8 @@ function deserialize(name, defValue = undefined) {
                     return JSON.parse(stream);
                 } catch (ex) {
                     __LOG[1](__LOG.info(name, false) + " << " + __LOG.info(stream, true, true));
-                     throw ex;
+                    ex.message += ": " + name + " == " + stream;
+                    throw ex;
                 }
             } else {
                 return defValue;
@@ -1418,7 +1419,7 @@ function appendCell(row, content, color = undefined, align = 'center') {
     const __ROW = (row || { });
     const __CELL = __ROW.insertCell(-1);
 
-    __CELL.textContent = content;
+    __CELL.innerHTML = content;
     __CELL.align = align;
     __CELL.style.color = color;
 
@@ -5493,10 +5494,12 @@ const __HINRUECK    = [ " Hin", " R\xFCck", "" ];
 function RundenLink(saison, team) {
     'use strict';
 
-    this.uri = new URI("http://os.ongapo.com/?erganzeigen=1&stataktion=Statistik+ausgeben");
+    this.uri = new URI("http://os.ongapo.com/");
     this.runde = 0;
     this.prop = "";
     this.label = "";
+
+    this.setAktion("Statistik+ausgeben");
 
     if (saison) {
         this.setSaison(saison);
@@ -5528,6 +5531,9 @@ Class.define(RundenLink, Object, {
                          },
         'setAnzeigen'  : function(show = true) {
                              this.uri.setQueryPar('erganzeigen', (show ? 1 : 0));
+                         },
+        'setAktion'    : function(aktion = "Statistik+ausgeben") {
+                             this.uri.setQueryPar('stataktion', aktion);
                          },
         'getLabel'     : function() {
                              return (this.label || "Link");
@@ -5704,8 +5710,34 @@ function getZatLink(currZAT, team, showLink = true) {
     } else {
         __LINK.setLabel();  // irgendwie besser lesbar! ("Friendly" bzw. "spielfrei"/"Frei"/"reserviert")
     }
+    __LINK.setAnzeigen(true);
 
     return (showLink ? __LINK.getHTML() : "");
+}
+
+// Fuegt einen Link auf die Ligatabelle hinzu, falls es ein Ligaspiel ist
+// currZAT: Enthaelt den Spielplanzeiger auf den aktuellen ZAT (inkl. Saison)
+// team: Enthaelt ein Team-Objekt fuer das betroffene Team
+// label: Text, der ggfs. mit dem Link angezeigt werden soll
+// showLabel: Angabe, ob das Label in jedem Fall angezeigt werden soll (normalerweise true)
+// return Uebergebenes Label mit Link, falls showLabel true ist, sonst ggfs. nur das Label
+function addTableLink(currZAT, team, label, showLabel = true) {
+    const __LINK = new RundenLink(currZAT.saison, team);
+
+    if (showLabel) {
+        __LINK.setLabel(label);
+    }
+
+    if (currZAT.gameType === 'Liga') {
+        if (currZAT.ZAT < 70) {
+            if (label) {
+                __LINK.setPage('lt', label);
+                __LINK.setRunde("", 1);
+            }
+        }
+    }
+
+    return __LINK.getHTML();
 }
 
 // ==================== Abschnitt fuer Statistiken des Spielplans ====================
