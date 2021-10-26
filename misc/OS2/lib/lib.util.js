@@ -204,7 +204,7 @@ function replaceArray(key, value) {
 
 // *** EOF ***
 
-/*** Ende util.log.js ***/
+/*** Ende Modul util.log.js ***/
 
 /*** Modul util.object.js ***/
 
@@ -378,7 +378,7 @@ function getValStr(obj, keyStrings, showType, showLen, stepIn) {
 
 // *** EOF ***
 
-/*** Ende util.object.js ***/
+/*** Ende Modul util.object.js ***/
 
 /*** Modul util.value.js ***/
 
@@ -627,7 +627,7 @@ function valueOf(data) {
 
 // *** EOF ***
 
-/*** Ende util.value.js ***/
+/*** Ende Modul util.value.js ***/
 
 /*** Modul util.proto.js ***/
 
@@ -737,7 +737,7 @@ String.prototype.format = function() {
 
 // *** EOF ***
 
-/*** Ende util.proto.js ***/
+/*** Ende Modul util.proto.js ***/
 
 /*** Modul util.prop.js ***/
 
@@ -832,7 +832,7 @@ function getProp(obj, item, defValue = undefined) {
 
 // *** EOF ***
 
-/*** Ende util.prop.js ***/
+/*** Ende Modul util.prop.js ***/
 
 /*** Modul util.mem.mod.js ***/
 
@@ -937,7 +937,7 @@ function substParam(text, par1) {
 
 // *** EOF ***
 
-/*** Ende util.mem.mod.js ***/
+/*** Ende Modul util.mem.mod.js ***/
 
 /*** Modul util.debug.js ***/
 
@@ -1009,7 +1009,7 @@ function defaultCatch(error) {
 
 // *** EOF ***
 
-/*** Ende util.debug.js ***/
+/*** Ende Modul util.debug.js ***/
 
 /*** Modul util.store.js ***/
 
@@ -1210,7 +1210,7 @@ function setNextStored(arr, name, value, reload = false, serial = false, onFulfi
 
 // *** EOF ***
 
-/*** Ende util.store.js ***/
+/*** Ende Modul util.store.js ***/
 
 /*** Modul util.dom.js ***/
 
@@ -1388,12 +1388,15 @@ function getRowsById(id, doc = document) {
 // content: Textinhalt oder HTML-Inhalt der neuen Zelle
 // color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
 //      Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
+// align: Horizontale Textausrichtung (Default: 'center')
+// showUndefined: Angabe, ob undefined als 'undefined' angezeigt wird (Default: false, also leer '')
 // return Die angehaengte Zelle
-function appendCell(row, content, color = undefined, align = 'center') {
+function appendCell(row, content, color = undefined, align = 'center', showUndefined = false) {
     const __ROW = (row || { });
     const __CELL = __ROW.insertCell(-1);
+    const __TARGET = ((showUndefined || (content !== undefined)) ? 'innerHTML' : 'textContent');
 
-    __CELL.innerHTML = content;
+    __CELL[__TARGET] = content;
     __CELL.align = align;
     __CELL.style.color = color;
 
@@ -1711,7 +1714,7 @@ function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sa
 
 // *** EOF ***
 
-/*** Ende util.dom.js ***/
+/*** Ende Modul util.dom.js ***/
 
 /*** Modul util.script.js ***/
 
@@ -1766,5 +1769,5 @@ function getScript(url, fun, ...params) {
 
 // *** EOF ***
 
-/*** Ende util.script.js ***/
+/*** Ende Modul util.script.js ***/
 

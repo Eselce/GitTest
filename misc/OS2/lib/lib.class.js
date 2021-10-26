@@ -171,7 +171,7 @@ function getClassName(obj) {
 
 // *** EOF ***
 
-/*** Ende util.class.js ***/
+/*** Ende Modul util.class.js ***/
 
 /*** Modul util.class.delim.js ***/
 
@@ -318,7 +318,7 @@ Class.define(UriDelims, Delims, {
 
 // *** EOF ***
 
-/*** Ende util.class.delim.js ***/
+/*** Ende Modul util.class.delim.js ***/
 
 /*** Modul util.class.path.js ***/
 
@@ -508,7 +508,7 @@ Class.define(ObjRef, Directory, {
 
 // *** EOF ***
 
-/*** Ende util.class.path.js ***/
+/*** Ende Modul util.class.path.js ***/
 
 /*** Modul util.class.uri.js ***/
 
@@ -742,5 +742,5 @@ Class.define(URI, Path, {
 
 // *** EOF ***
 
-/*** Ende util.class.uri.js ***/
+/*** Ende Modul util.class.uri.js ***/
 

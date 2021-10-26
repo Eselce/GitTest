@@ -139,11 +139,9 @@ function textbausteine(){
                 }
                 else if (folgezeile && ((/ - /).test(spielbericht.rows[j+1].cells[1].textContent) === false)) { //Erfolgsmeldung Folgesatz
                     ergebnis = false;
-                    var x = 0;
-                    var y = 0;
                     var temp = 'Erfolg_l_TB';
                     var suche = "";
-                    for (y = 0; y < gruppen[temp].length; y++) {
+                    for (var y = 0; y < gruppen[temp].length; y++) {
                         suche = gruppen[temp][y];
                         ergebnis = suche.test(spielbericht.rows[j+1].cells[1].textContent);
                         if (ergebnis === true) {
@@ -309,7 +307,7 @@ console.log("End of script");
 
 // ==================== Ende Code fuer Textbausteine ====================
 
-var borderString = "solid white 1px';
+var borderString = 'solid white 1px';
 var playerStatistics = document.getElementsByTagName('table')[4];
 var playerStatistics2 = document.getElementsByTagName('table')[5];
 var offsetsHorizontal = new Array(0, 0); // Linien in gesamter Breite zeichnen

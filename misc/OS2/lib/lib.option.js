@@ -54,7 +54,7 @@ const __OPTACTION = {
 
 // *** EOF ***
 
-/*** Ende util.option.type.js ***/
+/*** Ende Modul util.option.type.js ***/
 
 /*** Modul util.option.data.js ***/
 
@@ -419,7 +419,7 @@ function promptNextOptByName(optSet, item, value = undefined, reload = false, fr
 
 // *** EOF ***
 
-/*** Ende util.option.data.js ***/
+/*** Ende Modul util.option.data.js ***/
 
 /*** Modul util.option.class.options.js ***/
 
@@ -490,7 +490,7 @@ Class.define(Options, Object, {
 
 // *** EOF ***
 
-/*** Ende util.option.class.options.js ***/
+/*** Ende Modul util.option.class.options.js ***/
 
 /*** Modul util.option.api.js ***/
 
@@ -806,7 +806,6 @@ async function resetOptions(optSet, reload = true) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Gesetzter Wert bzw. ein Promise darauf bei asyncLoad
 function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false) {
-
     if (asyncLoad) {
         if (! opt) {
             return Promise.reject("loadOptValue: Option ist undefined");
@@ -832,7 +831,7 @@ function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false
 
 // *** EOF ***
 
-/*** Ende util.option.api.js ***/
+/*** Ende Modul util.option.api.js ***/
 
 /*** Modul util.mem.js ***/
 
@@ -1017,7 +1016,7 @@ function startMemoryByOpt(opt, saveOpt = undefined, onFulfilled = undefined, onR
 
 // *** EOF ***
 
-/*** Ende util.mem.js ***/
+/*** Ende Modul util.mem.js ***/
 
 /*** Modul util.mem.db.js ***/
 
@@ -1105,7 +1104,7 @@ function scriptDB(module, initValue = undefined) {
 
 // *** EOF ***
 
-/*** Ende util.mem.db.js ***/
+/*** Ende Modul util.mem.db.js ***/
 
 /*** Modul util.mem.cmd.js ***/
 
@@ -1231,7 +1230,7 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
 
 // *** EOF ***
 
-/*** Ende util.mem.cmd.js ***/
+/*** Ende Modul util.mem.cmd.js ***/
 
 /*** Modul util.option.menu.js ***/
 
@@ -1372,7 +1371,7 @@ async function buildOptionMenu(optSet) {
 
 // *** EOF ***
 
-/*** Ende util.option.menu.js ***/
+/*** Ende Modul util.option.menu.js ***/
 
 /*** Modul util.option.page.label.js ***/
 
@@ -1442,7 +1441,7 @@ function formatLabel(label, defLabel = undefined, isSelect = false, isForm = tru
 
 // *** EOF ***
 
-/*** Ende util.option.page.label.js ***/
+/*** Ende Modul util.option.page.label.js ***/
 
 /*** Modul util.option.page.action.js ***/
 
@@ -1531,7 +1530,7 @@ function getFormActionEvent(opt, isAlt = false, value = undefined, type = 'click
 
 // *** EOF ***
 
-/*** Ende util.option.page.action.js ***/
+/*** Ende Modul util.option.page.action.js ***/
 
 /*** Modul util.option.page.node.js ***/
 
@@ -1713,7 +1712,7 @@ function getOptionElement(opt) {
 
 // *** EOF ***
 
-/*** Ende util.option.page.node.js ***/
+/*** Ende Modul util.option.page.node.js ***/
 
 /*** Modul util.option.page.js ***/
 
@@ -1862,7 +1861,7 @@ function buildOptionForm(anchor, optSet, optParams = { }) {
 
 // *** EOF ***
 
-/*** Ende util.option.page.js ***/
+/*** Ende Modul util.option.page.js ***/
 
 /*** Modul util.option.run.js ***/
 
@@ -2239,5 +2238,5 @@ function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
 
 // *** EOF ***
 
-/*** Ende util.option.run.js ***/
+/*** Ende Modul util.option.run.js ***/
 

@@ -384,7 +384,7 @@ function getColor(pos) {
 
 // *** EOF ***
 
-/*** Ende OS2.list.js ***/
+/*** Ende Modul OS2.list.js ***/
 
 /*** Modul OS2.team.js ***/
 
@@ -526,7 +526,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
 
 // *** EOF ***
 
-/*** Ende OS2.team.js ***/
+/*** Ende Modul OS2.team.js ***/
 
 /*** Modul OS2.page.team.js ***/
 
@@ -614,7 +614,7 @@ function getTeamParamsFromTable(table, teamSearch = undefined) {
 
 // *** EOF ***
 
-/*** Ende OS2.page.team.js ***/
+/*** Ende Modul OS2.page.team.js ***/
 
 /*** Modul OS2.page.js ***/
 
@@ -718,7 +718,7 @@ function isGoalieFromHTML(cells, colIdxClass = 0) {
 
 // *** EOF ***
 
-/*** Ende OS2.page.js ***/
+/*** Ende Modul OS2.page.js ***/
 
 /*** Modul OS2.zat.js ***/
 
@@ -1163,7 +1163,7 @@ function getLigaSizeFromSpielplan(rows, startIdx, colArtIdx, saison) {
 
 // *** EOF ***
 
-/*** Ende OS2.zat.js ***/
+/*** Ende Modul OS2.zat.js ***/
 
 /*** Modul OS2.class.warndraw.js ***/
 
@@ -1480,7 +1480,7 @@ Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
 
 // *** EOF ***
 
-/*** Ende OS2.class.warndraw.js ***/
+/*** Ende Modul OS2.class.warndraw.js ***/
 
 /*** Modul OS2.class.player.js ***/
 
@@ -1978,7 +1978,7 @@ function sortPositionArray(array) {
 
 // *** EOF ***
 
-/*** Ende OS2.class.player.js ***/
+/*** Ende Modul OS2.class.player.js ***/
 
 /*** Modul OS2.class.column.js ***/
 
@@ -2386,7 +2386,7 @@ Class.define(ColumnManager, Object, {
 
 // *** EOF ***
 
-/*** Ende OS2.class.column.js ***/
+/*** Ende Modul OS2.class.column.js ***/
 
 /*** Modul OS2.class.table.js ***/
 
@@ -2637,5 +2637,5 @@ function getTeamIdFromCell(cell) {
 
 // *** EOF ***
 
-/*** Ende OS2.class.table.js ***/
+/*** Ende Modul OS2.class.table.js ***/
 

@@ -230,7 +230,7 @@ function replaceArray(key, value) {
 
 // *** EOF ***
 
-/*** Ende util.log.js ***/
+/*** Ende Modul util.log.js ***/
 
 /*** Modul util.object.js ***/
 
@@ -404,7 +404,7 @@ function getValStr(obj, keyStrings, showType, showLen, stepIn) {
 
 // *** EOF ***
 
-/*** Ende util.object.js ***/
+/*** Ende Modul util.object.js ***/
 
 /*** Modul util.value.js ***/
 
@@ -653,7 +653,7 @@ function valueOf(data) {
 
 // *** EOF ***
 
-/*** Ende util.value.js ***/
+/*** Ende Modul util.value.js ***/
 
 /*** Modul util.proto.js ***/
 
@@ -763,7 +763,7 @@ String.prototype.format = function() {
 
 // *** EOF ***
 
-/*** Ende util.proto.js ***/
+/*** Ende Modul util.proto.js ***/
 
 /*** Modul util.prop.js ***/
 
@@ -858,7 +858,7 @@ function getProp(obj, item, defValue = undefined) {
 
 // *** EOF ***
 
-/*** Ende util.prop.js ***/
+/*** Ende Modul util.prop.js ***/
 
 /*** Modul util.mem.mod.js ***/
 
@@ -963,7 +963,7 @@ function substParam(text, par1) {
 
 // *** EOF ***
 
-/*** Ende util.mem.mod.js ***/
+/*** Ende Modul util.mem.mod.js ***/
 
 /*** Modul util.debug.js ***/
 
@@ -1035,7 +1035,7 @@ function defaultCatch(error) {
 
 // *** EOF ***
 
-/*** Ende util.debug.js ***/
+/*** Ende Modul util.debug.js ***/
 
 /*** Modul util.store.js ***/
 
@@ -1236,7 +1236,7 @@ function setNextStored(arr, name, value, reload = false, serial = false, onFulfi
 
 // *** EOF ***
 
-/*** Ende util.store.js ***/
+/*** Ende Modul util.store.js ***/
 
 /*** Modul util.dom.js ***/
 
@@ -1414,12 +1414,15 @@ function getRowsById(id, doc = document) {
 // content: Textinhalt oder HTML-Inhalt der neuen Zelle
 // color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
 //      Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
+// align: Horizontale Textausrichtung (Default: 'center')
+// showUndefined: Angabe, ob undefined als 'undefined' angezeigt wird (Default: false, also leer '')
 // return Die angehaengte Zelle
-function appendCell(row, content, color = undefined, align = 'center') {
+function appendCell(row, content, color = undefined, align = 'center', showUndefined = false) {
     const __ROW = (row || { });
     const __CELL = __ROW.insertCell(-1);
+    const __TARGET = ((showUndefined || (content !== undefined)) ? 'innerHTML' : 'textContent');
 
-    __CELL.innerHTML = content;
+    __CELL[__TARGET] = content;
     __CELL.align = align;
     __CELL.style.color = color;
 
@@ -1737,7 +1740,7 @@ function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sa
 
 // *** EOF ***
 
-/*** Ende util.dom.js ***/
+/*** Ende Modul util.dom.js ***/
 
 /*** Modul util.script.js ***/
 
@@ -1792,7 +1795,7 @@ function getScript(url, fun, ...params) {
 
 // *** EOF ***
 
-/*** Ende util.script.js ***/
+/*** Ende Modul util.script.js ***/
 
 /*** Modul util.class.js ***/
 
@@ -1958,7 +1961,7 @@ function getClassName(obj) {
 
 // *** EOF ***
 
-/*** Ende util.class.js ***/
+/*** Ende Modul util.class.js ***/
 
 /*** Modul util.class.delim.js ***/
 
@@ -2105,7 +2108,7 @@ Class.define(UriDelims, Delims, {
 
 // *** EOF ***
 
-/*** Ende util.class.delim.js ***/
+/*** Ende Modul util.class.delim.js ***/
 
 /*** Modul util.class.path.js ***/
 
@@ -2295,7 +2298,7 @@ Class.define(ObjRef, Directory, {
 
 // *** EOF ***
 
-/*** Ende util.class.path.js ***/
+/*** Ende Modul util.class.path.js ***/
 
 /*** Modul util.class.uri.js ***/
 
@@ -2529,7 +2532,7 @@ Class.define(URI, Path, {
 
 // *** EOF ***
 
-/*** Ende util.class.uri.js ***/
+/*** Ende Modul util.class.uri.js ***/
 
 /*** Modul util.option.type.js ***/
 
@@ -2569,7 +2572,7 @@ const __OPTACTION = {
 
 // *** EOF ***
 
-/*** Ende util.option.type.js ***/
+/*** Ende Modul util.option.type.js ***/
 
 /*** Modul util.option.data.js ***/
 
@@ -2934,7 +2937,7 @@ function promptNextOptByName(optSet, item, value = undefined, reload = false, fr
 
 // *** EOF ***
 
-/*** Ende util.option.data.js ***/
+/*** Ende Modul util.option.data.js ***/
 
 /*** Modul util.option.class.options.js ***/
 
@@ -3005,7 +3008,7 @@ Class.define(Options, Object, {
 
 // *** EOF ***
 
-/*** Ende util.option.class.options.js ***/
+/*** Ende Modul util.option.class.options.js ***/
 
 /*** Modul util.option.api.js ***/
 
@@ -3321,7 +3324,6 @@ async function resetOptions(optSet, reload = true) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Gesetzter Wert bzw. ein Promise darauf bei asyncLoad
 function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false) {
-
     if (asyncLoad) {
         if (! opt) {
             return Promise.reject("loadOptValue: Option ist undefined");
@@ -3347,7 +3349,7 @@ function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false
 
 // *** EOF ***
 
-/*** Ende util.option.api.js ***/
+/*** Ende Modul util.option.api.js ***/
 
 /*** Modul util.mem.js ***/
 
@@ -3532,7 +3534,7 @@ function startMemoryByOpt(opt, saveOpt = undefined, onFulfilled = undefined, onR
 
 // *** EOF ***
 
-/*** Ende util.mem.js ***/
+/*** Ende Modul util.mem.js ***/
 
 /*** Modul util.mem.db.js ***/
 
@@ -3620,7 +3622,7 @@ function scriptDB(module, initValue = undefined) {
 
 // *** EOF ***
 
-/*** Ende util.mem.db.js ***/
+/*** Ende Modul util.mem.db.js ***/
 
 /*** Modul util.mem.cmd.js ***/
 
@@ -3746,7 +3748,7 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
 
 // *** EOF ***
 
-/*** Ende util.mem.cmd.js ***/
+/*** Ende Modul util.mem.cmd.js ***/
 
 /*** Modul util.option.menu.js ***/
 
@@ -3887,7 +3889,7 @@ async function buildOptionMenu(optSet) {
 
 // *** EOF ***
 
-/*** Ende util.option.menu.js ***/
+/*** Ende Modul util.option.menu.js ***/
 
 /*** Modul util.option.page.label.js ***/
 
@@ -3957,7 +3959,7 @@ function formatLabel(label, defLabel = undefined, isSelect = false, isForm = tru
 
 // *** EOF ***
 
-/*** Ende util.option.page.label.js ***/
+/*** Ende Modul util.option.page.label.js ***/
 
 /*** Modul util.option.page.action.js ***/
 
@@ -4046,7 +4048,7 @@ function getFormActionEvent(opt, isAlt = false, value = undefined, type = 'click
 
 // *** EOF ***
 
-/*** Ende util.option.page.action.js ***/
+/*** Ende Modul util.option.page.action.js ***/
 
 /*** Modul util.option.page.node.js ***/
 
@@ -4228,7 +4230,7 @@ function getOptionElement(opt) {
 
 // *** EOF ***
 
-/*** Ende util.option.page.node.js ***/
+/*** Ende Modul util.option.page.node.js ***/
 
 /*** Modul util.option.page.js ***/
 
@@ -4377,7 +4379,7 @@ function buildOptionForm(anchor, optSet, optParams = { }) {
 
 // *** EOF ***
 
-/*** Ende util.option.page.js ***/
+/*** Ende Modul util.option.page.js ***/
 
 /*** Modul util.option.run.js ***/
 
@@ -4754,7 +4756,7 @@ function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
 
 // *** EOF ***
 
-/*** Ende util.option.run.js ***/
+/*** Ende Modul util.option.run.js ***/
 
 /*** Modul OS2.list.js ***/
 
@@ -5128,7 +5130,7 @@ function getColor(pos) {
 
 // *** EOF ***
 
-/*** Ende OS2.list.js ***/
+/*** Ende Modul OS2.list.js ***/
 
 /*** Modul OS2.team.js ***/
 
@@ -5270,7 +5272,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
 
 // *** EOF ***
 
-/*** Ende OS2.team.js ***/
+/*** Ende Modul OS2.team.js ***/
 
 /*** Modul OS2.page.team.js ***/
 
@@ -5358,7 +5360,7 @@ function getTeamParamsFromTable(table, teamSearch = undefined) {
 
 // *** EOF ***
 
-/*** Ende OS2.page.team.js ***/
+/*** Ende Modul OS2.page.team.js ***/
 
 /*** Modul OS2.page.js ***/
 
@@ -5462,7 +5464,7 @@ function isGoalieFromHTML(cells, colIdxClass = 0) {
 
 // *** EOF ***
 
-/*** Ende OS2.page.js ***/
+/*** Ende Modul OS2.page.js ***/
 
 /*** Modul OS2.zat.js ***/
 
@@ -5907,7 +5909,7 @@ function getLigaSizeFromSpielplan(rows, startIdx, colArtIdx, saison) {
 
 // *** EOF ***
 
-/*** Ende OS2.zat.js ***/
+/*** Ende Modul OS2.zat.js ***/
 
 /*** Modul OS2.class.warndraw.js ***/
 
@@ -6224,7 +6226,7 @@ Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
 
 // *** EOF ***
 
-/*** Ende OS2.class.warndraw.js ***/
+/*** Ende Modul OS2.class.warndraw.js ***/
 
 /*** Modul OS2.class.player.js ***/
 
@@ -6722,7 +6724,7 @@ function sortPositionArray(array) {
 
 // *** EOF ***
 
-/*** Ende OS2.class.player.js ***/
+/*** Ende Modul OS2.class.player.js ***/
 
 /*** Modul OS2.class.column.js ***/
 
@@ -7130,7 +7132,7 @@ Class.define(ColumnManager, Object, {
 
 // *** EOF ***
 
-/*** Ende OS2.class.column.js ***/
+/*** Ende Modul OS2.class.column.js ***/
 
 /*** Modul OS2.class.table.js ***/
 
@@ -7381,5 +7383,5 @@ function getTeamIdFromCell(cell) {
 
 // *** EOF ***
 
-/*** Ende OS2.class.table.js ***/
+/*** Ende Modul OS2.class.table.js ***/
 

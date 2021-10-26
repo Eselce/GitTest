@@ -4,6 +4,7 @@
 // https://eselce.github.io/GitTest/misc/OS2/lib/<TESTBASE>: 
 //  test.assert.js
 //  test.class.unittest.js
+//  test.lib.option.js
 
 /*** Modul test.assert.js ***/
 
@@ -248,7 +249,7 @@ const __ASSERTEPSILON = Number.EPSILON;
 
 // *** EOF ***
 
-/*** Ende test.assert.js ***/
+/*** Ende Modul test.assert.js ***/
 
 /*** Modul test.class.unittest.js ***/
 
@@ -285,110 +286,141 @@ function UnitTest(name, desc, tests, load) {
 }
 
 Class.define(UnitTest, Object, {
-                  'register'       : function(name, desc, tests, load, thisArg) {
-                                         const __LIBNAME = (name || "");
-                                         const __LIBDESC = (desc || ("UnitTest " + __LIBNAME));
-                                         const __LIBTESTS = (tests || { });
-                                         const __THISLIB = (thisArg || this);
-                                         const __LIBTFUNS = Object.entries(__LIBTESTS);
-                                         const __LIBENTRY = {
-                                                             'name' : __LIBNAME,
-                                                             'desc' : __LIBDESC,
-                                                             'test' : __THISLIB
-                                                         };
+            'register'    : function(name, desc, tests, load, thisArg) {
+                                const __LIBNAME = (name || "");
+                                const __LIBDESC = (desc || ("UnitTest " + __LIBNAME));
+                                const __LIBTESTS = (tests || { });
+                                const __THISLIB = (thisArg || this);
+                                const __LIBTFUNS = Object.entries(__LIBTESTS);
+                                const __LIBENTRY = {
+                                                    'name' : __LIBNAME,
+                                                    'desc' : __LIBDESC,
+                                                    'test' : __THISLIB
+                                                };
 
-                                         this.name = __LIBNAME;
-                                         this.desc = __LIBDESC;
-                                         this.tDefs = [];
+                                this.name = __LIBNAME;
+                                this.desc = __LIBDESC;
+                                this.tDefs = [];
 
-                                         if (load !== false) {
-                                             if (__LIBTFUNS.length) {
-                                                 for (let entry of __LIBTFUNS) {
-                                                     const __NAME = entry[0];
-                                                     const __TFUN = entry[1];
+                                if (load !== false) {
+                                    if (__LIBTFUNS.length) {
+                                        for (let entry of __LIBTFUNS) {
+                                            const __NAME = entry[0];
+                                            const __TFUN = entry[1];
 
-                                                     this.addTest(__NAME, __TFUN);
-                                                 }
-                                             } else {
-                                                 this.addTest('MISSING_TESTS', function() {
-                                                                                       const __MSG = "No tests available for " + __LOG.info(__LIBNAME, false);
-                                                                                       __LOG[1](__MSG);
-                                                                                       throw __MSG;
-                                                                                   });
-                                             }
-                                         }
+                                            this.addTest(__NAME, __TFUN);
+                                        }
+                                    } else {
+                                        this.addTest('MISSING_TESTS', function() {
+                                                                              const __MSG = "No tests available for " + __LOG.info(__LIBNAME, false);
+                                                                              __LOG[1](__MSG);
+                                                                              throw __MSG;
+                                                                          });
+                                    }
+                                }
 
-                                         __ALLLIBS[__LIBNAME] = __LIBENTRY;
-                                     },
-                  'addTest'        : function(name, tFun, desc = undefined) {
-                                         const __NAME = name;
-                                         const __TFUN = (tFun || { });  // TODO: Dummy
-                                         const __TFUNDOBJ = __TFUN.description;
-                                         const __TFUNDESC = (__TFUNDOBJ ? String(((typeof __TFUNDOBJ) === 'function') ? __TFUNDOBJ() : __TFUNDOBJ) : undefined);
-                                         const __DESC = (desc || __TFUNDESC);
-                                         const __ENTRY = {
-                                                             'name' : __NAME,
-                                                             'desc' : __DESC,
-                                                             'tFun' : __TFUN
-                                                         };
+                                __ALLLIBS[__LIBNAME] = __LIBENTRY;
+                            },
+            'addTest'     : function(name, tFun, desc = undefined) {
+                                const __NAME = name;
+                                const __TFUN = (tFun || { });  // TODO: Dummy
+                                const __TFUNDOBJ = __TFUN.description;
+                                const __TFUNDESC = (__TFUNDOBJ ? String(((typeof __TFUNDOBJ) === 'function') ? __TFUNDOBJ() : __TFUNDOBJ) : undefined);
+                                const __DESC = (desc || __TFUNDESC);
+                                const __ENTRY = {
+                                                    'name' : __NAME,
+                                                    'desc' : __DESC,
+                                                    'tFun' : __TFUN
+                                                };
 
-                                         this.tDefs.push(__ENTRY);
-                                     },
-                  'run'            : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
-                                         const __RESULTS = (resultObj || (new UnitTestResults(name, desc, this)));
-                                         const __TDEFS = this.tDefs;
-                                         const __THIS = (thisArg || this);
-                                         const __RETVALS = [];
+                                this.tDefs.push(__ENTRY);
+                            },
+            'prepare'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                return true;
+                            },
+            'cleanup'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                return true;
+                            },
+            'setup'       : async function(name, desc, testFun, thisArg) {
+                                return true;
+                            },
+            'teardown'    : async function(name, desc, testFun, thisArg) {
+                                return true;
+                            },
+            'run'         : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                const __RESULTS = (resultObj || (new UnitTestResults(name, desc, this)));
+                                const __TDEFS = this.tDefs;
+                                const __THIS = (thisArg || this);
+                                const __RETVALS = [];
 
-                                         __LOG[2]("Running", __TDEFS.length, "tests for module", __LOG.info(name, false) + ':', desc);
+                                __LOG[2]("Running", __TDEFS.length, "tests for module", __LOG.info(name, false) + ':', desc);
 
-                                         try {
-                                             for (let entry of __TDEFS) {
-                                                 const __NAME = entry.name;
-                                                 const __DESC = entry.desc;
-                                                 const __TFUN = entry.tFun;
-                                                 const __RESULT = new UnitTestResults(__NAME, __DESC, __THIS);
+                                try {
+                                    for (let entry of __TDEFS) {
+                                        const __NAME = entry.name;
+                                        const __DESC = entry.desc;
+                                        const __TFUN = entry.tFun;
+                                        const __RESULT = new UnitTestResults(__NAME, __DESC, __THIS);
+                                        let result;
 
-                                                 __RESULT.running();  // Testzaehler erhoehen...
-                                                 __LOG[4]("Running test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + (__DESC ? " (" + __DESC + ')' : "") + "...");
+                                        __RESULT.running();  // Testzaehler erhoehen...
+                                        __LOG[4]("Running test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + (__DESC ? " (" + __DESC + ')' : "") + "...");
 
-                                                 try {
-                                                     const __RETVAL = await __TFUN.call(__THIS);
+                                        try {
+                                            result = await this.setup.call(__THIS, __NAME, __DESC, __TFUN, __THIS);
+                                        } catch (ex) {
+                                            // Fehler im setup()...
+                                            __RESULT.checkException(ex);
 
-                                                     __RESULT.checkResult(__RETVAL);  // entscheiden, ob erfolgreich oder nicht...
-                                                     __RETVALS.push(__RETVAL);
+                                            __LOG[1]("Exception", ex, "in preparation of test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false));
+                                        }
 
-                                                     __LOG[5]("Test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "returned:", __RETVAL);
-                                                 } catch (ex) {
-                                                     // Fehler im Einzeltest...
-                                                     __RESULT.checkException(ex);
+                                        try {
+                                            const __RETVAL = await __TFUN.call(__THIS);
 
-                                                    if (ex instanceof AssertionFailed) {
-                                                        __LOG[4]("Test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "failed:", __RESULT.sum());
-                                                    } else {
-                                                        __LOG[1]("Exception", ex, "in test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + ':', __RESULT.sum());
-                                                    }
-                                                 }
+                                            __RESULT.checkResult(__RETVAL);  // entscheiden, ob erfolgreich oder nicht...
+                                            __RETVALS.push(__RETVAL);
 
-                                                 __RESULTS.merge(__RESULT);  // aufaddieren...
+                                            __LOG[5]("Test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "returned:", __RETVAL);
+                                        } catch (ex) {
+                                            // Fehler im Einzeltest...
+                                            __RESULT.checkException(ex);
 
-                                                 // Einzelergebnis eintragen...
-                                                 resultFun.call(__THIS, __RESULT, tableId, document);
-                                             }
-                                         } catch (ex) {
-                                             // Fehler im Framework der Klasse...
-                                             __RESULTS.checkException(ex);
+                                            if (ex instanceof AssertionFailed) {
+                                                __LOG[4]("Test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "failed:", __RESULT.sum());
+                                            } else {
+                                                __LOG[1]("Exception", ex, "in test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + ':', __RESULT.sum());
+                                            }
+                                        }
 
-                                            __LOG[1]("Exception", ex, "in module", __LOG.info(name, false) + ':', __RESULTS.sum());
+                                        try {
+                                            result = await this.teardown.call(__THIS, __NAME, __DESC, __TFUN, __THIS);
+                                        } catch (ex) {
+                                            // Fehler im teardown()...
+                                            __RESULT.checkException(ex);
 
-                                             //throw ex;  // weiterleiten an runAll() ???
-                                         } finally {
-                                             __RESULTS.results = __RETVALS;  // detailierte Rueckgabewerte koennen ggfs. interessant sein...
-                                         }
+                                            __LOG[1]("Exception", ex, "in cleanup of test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false));
+                                        }
 
-                                         return __RESULTS;
-                                     }
-                });
+                                        __RESULTS.merge(__RESULT);  // aufaddieren...
+
+                                        // Einzelergebnis eintragen...
+                                        resultFun.call(__THIS, __RESULT, tableId, document);
+                                    }
+                                } catch (ex) {
+                                    // Fehler im Framework der Klasse...
+                                    __RESULTS.checkException(ex);
+
+                                    __LOG[1]("Exception", ex, "in module", __LOG.info(name, false) + ':', __RESULTS.sum());
+
+                                    //throw ex;  // weiterleiten an runAll() ???
+                                } finally {
+                                    __RESULTS.results = __RETVALS;  // detailierte Rueckgabewerte koennen ggfs. interessant sein...
+                                }
+
+                                return __RESULTS;
+                           }
+        });
 
 UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResultFun, tableId, resultObj, thisArg) {
     const __LIBCOUNT = Object.keys(__ALLLIBS).length;
@@ -406,14 +438,26 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
         const __TEST = __TESTLIB.test;
 
         try {
-            const __TFUN = __TEST['run'];  // TODO: __TEST.run, aber variabel gehalten!
+            const __PFUN = __TEST['prepare'];  // TODO: __TEST.prepare, aber variabel gehalten!
+            const __TFUN = __TEST['run'];      // TODO: __TEST.run, aber variabel gehalten!
+            const __CFUN = __TEST['cleanup'];  // TODO: __TEST.cleanup, aber variabel gehalten!
             const __THIS = (thisArg || __TEST);
             const __RESULTS = new UnitTestResults("SUMME", __NAME, __TEST);
+            let result;
 
             // Ausgabefilter verankern...
             __THIS.minLevel =  minLevel;
 
             __LOG[2]("Starting tests for module", __LOG.info(__NAME, false) + ':', __DESC);
+
+            try {
+                result = await __PFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
+            } catch (ex) {
+                // Fehler im Framework zur Vorbereitung der Testklasse...
+                __RESULTS.checkException(ex);
+
+                __LOG[1]("Exception", ex, "in preparation of module", __LOG.info(__NAME, false));
+            }
 
             try {
                 __LIBRESULTS[__NAME] = await __TFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
@@ -423,21 +467,30 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
 
                 __LOG[1]("Exception", ex, "in module", __LOG.info(__NAME, false) + ':', __RESULTS.sum());
             } finally {
-                __ALLRESULTS.merge(__RESULTS);  // aufaddieren...
+                try {
+                    result = await __CFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
+                } catch (ex) {
+                    // Fehler im Framework der Testklasse...
+                    __RESULTS.checkException(ex);
 
-                __LOG[2]("Finished tests for module", __LOG.info(__NAME, false) + ':',  __RESULTS.sum());
-                __LOG[6]("Total results after module", __LOG.info(__NAME, false) + ':',  __ALLRESULTS.sum());
+                    __LOG[1]("Exception", ex, "in cleanup of module", __LOG.info(__NAME, false));
+                } finally {
+                    __ALLRESULTS.merge(__RESULTS);  // aufaddieren...
 
-                // Ergebnis eintragen...
-                resultFun.call(__THIS, null, tableId, document);  // Leerzeile
-                resultFun.call(__THIS, __RESULTS, tableId, document);
-                resultFun.call(__THIS, null, tableId, document);  // Leerzeile
+                    __LOG[2]("Finished tests for module", __LOG.info(__NAME, false) + ':',  __RESULTS.sum());
+                    __LOG[6]("Total results after module", __LOG.info(__NAME, false) + ':',  __ALLRESULTS.sum());
+
+                    // Ergebnis eintragen...
+                    resultFun.call(__THIS, null, tableId, document);  // Leerzeile
+                    resultFun.call(__THIS, __RESULTS, tableId, document);
+                    resultFun.call(__THIS, null, tableId, document);  // Leerzeile
+                }
             }
         } catch(ex) {
             // Fehler im Framework der UnitTests und Module...
             __ALLRESULTS.checkException(ex);
 
-            __LOG[1]("Exception", ex, "in module", __LOG.info(__NAME, false) + ':',  __ALLRESULTS.sum());
+            __LOG[1]("Exception", ex, "in framework of module", __LOG.info(__NAME, false) + ':',  __ALLRESULTS.sum());
         }
     }
 
@@ -679,5 +732,64 @@ const __LIBRESULTS = { };
 
 // *** EOF ***
 
-/*** Ende test.class.unittest.js ***/
+/*** Ende Modul test.class.unittest.js ***/
+
+/*** Modul test.lib.option.js ***/
+
+// ==UserScript==
+// _name         test.lib.option
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2021+
+// _author       Sven Loges (SLC)
+// _description  JS-lib mit Basisklasse fuer Unit-Tests fuer ein JS-Modul
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
+// _require      https://eselce.github.io/OS2.scripts/lib/lib.option.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.lib.option.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Klasse UnitTestOption ====================
+
+// Spezialisierte Klasse fuer die Ausfuehrung von Unit-Tests fuer Optionen
+// name: Name des JS-Moduls
+// desc: Beschreibung des Moduls
+// tests: Objekt mit den Testfunktionen
+// load: Angabe, ob die Tests geladen werden sollen (false: Test nicht laden)
+function UnitTestOption(name, desc, tests, load) {
+    'use strict';
+
+    this.register(name, desc, tests, load, this);
+}
+
+Class.define(UnitTestOption, UnitTest, {
+            'prepare'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                __LOG[1]("prepare()", name, desc);
+                                return true;
+                            },
+            'cleanup'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                __LOG[1]("cleanup()", name, desc);
+                                return true;
+                            },
+            'setup'       : async function(name, desc, testFun, thisArg) {
+                                __LOG[1]("setup()", name, desc, testFun, thisArg);
+                                return true;
+                            },
+            'teardown'    : async function(name, desc, testFun, thisArg) {
+                                __LOG[1]("teardown()", name, desc, testFun, thisArg);
+                                return true;
+                            }
+        });
+
+// ==================== Ende Abschnitt fuer Klasse UnitTestOption ====================
+
+// *** EOF ***
+
+/*** Ende Modul test.lib.option.js ***/
 

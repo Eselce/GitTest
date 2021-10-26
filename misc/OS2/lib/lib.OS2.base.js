@@ -380,7 +380,7 @@ function getColor(pos) {
 
 // *** EOF ***
 
-/*** Ende OS2.list.js ***/
+/*** Ende Modul OS2.list.js ***/
 
 /*** Modul OS2.team.js ***/
 
@@ -522,7 +522,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
 
 // *** EOF ***
 
-/*** Ende OS2.team.js ***/
+/*** Ende Modul OS2.team.js ***/
 
 /*** Modul OS2.page.team.js ***/
 
@@ -610,7 +610,7 @@ function getTeamParamsFromTable(table, teamSearch = undefined) {
 
 // *** EOF ***
 
-/*** Ende OS2.page.team.js ***/
+/*** Ende Modul OS2.page.team.js ***/
 
 /*** Modul OS2.page.js ***/
 
@@ -714,7 +714,7 @@ function isGoalieFromHTML(cells, colIdxClass = 0) {
 
 // *** EOF ***
 
-/*** Ende OS2.page.js ***/
+/*** Ende Modul OS2.page.js ***/
 
 /*** Modul OS2.zat.js ***/
 
@@ -1159,5 +1159,5 @@ function getLigaSizeFromSpielplan(rows, startIdx, colArtIdx, saison) {
 
 // *** EOF ***
 
-/*** Ende OS2.zat.js ***/
+/*** Ende Modul OS2.zat.js ***/
 
