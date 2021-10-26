@@ -55,17 +55,17 @@ if (__GMWRITE) {
 // value: Zu speichernder String/Integer/Boolean-Wert
 // return Promise auf ein Objekt, das 'name' und 'value' der Operation enthaelt
 function storeValue(name, value) {
-    __LOG[5](name + " >> " + value);
+    __LOG[5](name + " >> " + __LOG.info(value, true, true));
 
     return __SETVALUE(name, value).then(voidValue => {
-            __LOG[6]("OK " + name + " >> " + value);
+            __LOG[6]('OK', name, '>>', __LOG.info(value, true, true));
 
             return Promise.resolve({
                     'name'  : name,
                     'value' : value
                 });
         }, ex => {
-            __LOG[1](name + ": " + ex.message);
+            __LOG[1](name + ':', ex.message);
 
             return Promise.reject(ex);
         });
@@ -77,11 +77,11 @@ function storeValue(name, value) {
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
 function summonValue(name, defValue = undefined) {
     return __GETVALUE(name, defValue).then(value => {
-            __LOG[5](name + " << " + value);
+            __LOG[5](name, '<<', __LOG.info(value, true, true));
 
             return Promise.resolve(value);
         }, ex => {
-            __LOG[1](name + ": " + ex.message);
+            __LOG[1](name + ':', ex.message);
 
             return Promise.reject(ex);
         });
@@ -94,11 +94,11 @@ function discardValue(name) {
     __LOG[5]("DELETE " + __LOG.info(name, false));
 
     return __DELETEVALUE(name).then(value => {
-            __LOG[5]("OK DELETE " + name);
+            __LOG[5]('OK', 'DELETE', name);
 
             return Promise.resolve(value);
         }, ex => {
-            __LOG[1](name + ": " + ex.message);
+            __LOG[1](name + ':', ex.message);
 
             return Promise.reject(ex);
         });
@@ -112,7 +112,7 @@ function keyValues() {
 
             return Promise.resolve(keys);
         }, ex => {
-            __LOG[1]("KEYS: " + ex.message);
+            __LOG[1]("KEYS:", ex.message);
 
             return Promise.reject(ex);
         });
@@ -138,8 +138,8 @@ function deserialize(name, defValue = undefined) {
                 try {
                     return JSON.parse(stream);
                 } catch (ex) {
-                    __LOG[1](__LOG.info(name, false) + " << " + __LOG.info(stream, true, true));
-                    ex.message += ": " + name + " == " + stream;
+                    __LOG[1](__LOG.info(name, false), '<<', __LOG.info(stream, true, true));
+                    ex.message += ": " + __LOG.info(name, false) + " : " + __LOG.info(stream);
                     throw ex;
                 }
             } else {
