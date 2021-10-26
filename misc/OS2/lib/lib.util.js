@@ -294,8 +294,10 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
     const __LENGTH = ((obj != undefined) ? ((__TYPEOF === 'object') ? Object.entries(obj) : obj).length : obj);
     const __STRDELIM1 = (keyStrings ? "'" : '"');
     const __STRDELIM2 = (keyStrings ? "'" : '"');
-    const __NUMDELIM1 = (keyStrings ? "" : '<');
-    const __NUMDELIM2 = (keyStrings ? "" : '>');
+    const __NUMDELIM1 = (keyStrings ? "" : '‹');
+    const __NUMDELIM2 = (keyStrings ? "" : '›');
+    const __SYMDELIM1 = (keyStrings ? "" : '(');
+    const __SYMDELIM2 = (keyStrings ? "" : ')');
     const __SPACE = (keyStrings ? "" : ' ');
     const __ARRDELIM = ',' + __SPACE;
     const __ARRDELIM1 = '[';
@@ -304,42 +306,48 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
     const __OBJDELIM = ',' + __SPACE;
     const __OBJDELIM1 = '{';
     const __OBJDELIM2 = '}';
-    const __LENSTR = ((__LENGTH !== undefined) ? __ARRDELIM1 + __LENGTH + __ARRDELIM2 : "")
-    const __VALUESTR = String(obj);
+    const __LENSTR = (__LENGTH ? __ARRDELIM1 + __LENGTH + __ARRDELIM2 : "");
+    const __VALUESTR = ((__TYPEOF === 'symbol') ? __LOG.info(getValue(Symbol.keyFor(obj), ""), false) : String(obj));
     let typeStr = __TYPEOF;
     let valueStr = __VALUESTR;
 
     switch (__TYPEOF) {
-    case 'undefined' : break;
-    case 'string'    : typeStr = 'String';
-                       valueStr = __STRDELIM1 + valueStr + __STRDELIM2;
-                       break;
-    case 'boolean'   : typeStr = 'Boolean';
-                       break;
-    case 'number'    : if (Number.isInteger(obj)) {
-                           typeStr = 'Integer';
-                       } else {
-                           typeStr = 'Number';
-                           valueStr = __NUMDELIM1 + valueStr + __NUMDELIM2;
-                       }
-                       break;
-    case 'function'  : break;
-    case 'object'    : if (Array.isArray(obj)) {
-                           const __VALSTR = (__LENGTH ? obj.map(item => getValStr(item, false, stepIn, longForm, stepIn)).join(__ARRDELIM) : "");
+    case 'undefined'  : break;
+    case 'string'     : typeStr = 'String';
+                        valueStr = __STRDELIM1 + valueStr + __STRDELIM2;
+                        break;
+    case 'boolean'    : typeStr = 'Boolean';
+                        break;
+    case 'number'     : if (Number.isInteger(obj)) {
+                            typeStr = 'Integer';
+                        } else {
+                            typeStr = 'Number';
+                            valueStr = __NUMDELIM1 + valueStr + __NUMDELIM2;
+                        }
+                        break;
+    case 'function'   : longForm = false;
+                        valueStr = valueStr.substr(typeStr.length);
+                        break;
+    case 'symbol'     : typeStr = 'Symbol';
+                        longForm = false;
+                        valueStr = __SYMDELIM1 + valueStr + __SYMDELIM2;
+                        break;
+    case 'object'     : if (Array.isArray(obj)) {
+                            const __VALSTR = (__LENGTH ? obj.map(item => getValStr(item, false, stepIn, longForm, stepIn)).join(__ARRDELIM) : "");
 
-                           typeStr = 'Array';
-                           valueStr = __ARRDELIM1 + (__LENGTH ? __SPACE + __VALSTR + __SPACE : "") + __ARRDELIM2;
-                       } else {
-                           const __CLASS = getClass(obj);
-                           const __CLASSNAME = (__CLASS ? getClassName(obj) : "");
-                           const __VALSTR = (__LENGTH ? Object.values(Object.map(obj, (value, key) => (getValStr(key, true) + __OBJSETTER
+                            typeStr = 'Array';
+                            valueStr = __ARRDELIM1 + (__LENGTH ? __SPACE + __VALSTR + __SPACE : "") + __ARRDELIM2;
+                        } else {
+                            const __CLASS = getClass(obj);
+                            const __CLASSNAME = (__CLASS ? getClassName(obj) : "");
+                            const __VALSTR = (__LENGTH ? Object.values(Object.map(obj, (value, key) => (getValStr(key, true) + __OBJSETTER
                                             + getValStr(value, false, stepIn, longForm, stepIn)))).join(__OBJDELIM) : "");
 
-                           typeStr = (__CLASSNAME ? __CLASSNAME : typeStr);
-                           valueStr = (__CLASSNAME ? __CLASSNAME + __SPACE : "") + __OBJDELIM1 + (__LENGTH ? __SPACE + __VALSTR + __SPACE : "") + __OBJDELIM2;
-                       }
-                       break;
-    default :          break;
+                            typeStr = (__CLASSNAME ? __CLASSNAME : typeStr);
+                            valueStr = __OBJDELIM1 + (__LENGTH ? __SPACE + __VALSTR + __SPACE : "") + __OBJDELIM2;
+                        }
+                        break;
+    default :           break;
     }
 
     if (obj == undefined) {
@@ -351,12 +359,12 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
     }
 
     return [
-               typeStr + (longForm ? __LENSTR : ""),
-               valueStr,
-               __TYPEOF,
-               __VALUEOF,
-               __LENGTH
-           ];
+                typeStr + (longForm ? __LENSTR : ""),
+                valueStr,
+                __TYPEOF,
+                __VALUEOF,
+                __LENGTH
+            ];
 }
 
 // Liefert detaillierte Angaben zu einem Objekt aller Art, also Object, Array, Function, String, etc.
@@ -1070,17 +1078,17 @@ if (__GMWRITE) {
 // value: Zu speichernder String/Integer/Boolean-Wert
 // return Promise auf ein Objekt, das 'name' und 'value' der Operation enthaelt
 function storeValue(name, value) {
-    __LOG[5](name + " >> " + value);
+    __LOG[5](name + " >> " + __LOG.info(value, true, true));
 
     return __SETVALUE(name, value).then(voidValue => {
-            __LOG[6]("OK " + name + " >> " + value);
+            __LOG[6]('OK', name, '>>', __LOG.info(value, true, true));
 
             return Promise.resolve({
                     'name'  : name,
                     'value' : value
                 });
         }, ex => {
-            __LOG[1](name + ": " + ex.message);
+            __LOG[1](name + ':', ex.message);
 
             return Promise.reject(ex);
         });
@@ -1092,11 +1100,11 @@ function storeValue(name, value) {
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
 function summonValue(name, defValue = undefined) {
     return __GETVALUE(name, defValue).then(value => {
-            __LOG[5](name + " << " + value);
+            __LOG[5](name, '<<', __LOG.info(value, true, true));
 
             return Promise.resolve(value);
         }, ex => {
-            __LOG[1](name + ": " + ex.message);
+            __LOG[1](name + ':', ex.message);
 
             return Promise.reject(ex);
         });
@@ -1109,11 +1117,11 @@ function discardValue(name) {
     __LOG[5]("DELETE " + __LOG.info(name, false));
 
     return __DELETEVALUE(name).then(value => {
-            __LOG[5]("OK DELETE " + name);
+            __LOG[5]('OK', 'DELETE', name);
 
             return Promise.resolve(value);
         }, ex => {
-            __LOG[1](name + ": " + ex.message);
+            __LOG[1](name + ':', ex.message);
 
             return Promise.reject(ex);
         });
@@ -1127,7 +1135,7 @@ function keyValues() {
 
             return Promise.resolve(keys);
         }, ex => {
-            __LOG[1]("KEYS: " + ex.message);
+            __LOG[1]("KEYS:", ex.message);
 
             return Promise.reject(ex);
         });
@@ -1153,8 +1161,8 @@ function deserialize(name, defValue = undefined) {
                 try {
                     return JSON.parse(stream);
                 } catch (ex) {
-                    __LOG[1](__LOG.info(name, false) + " << " + __LOG.info(stream, true, true));
-                    ex.message += ": " + name + " == " + stream;
+                    __LOG[1](__LOG.info(name, false), '<<', __LOG.info(stream, true, true));
+                    ex.message += ": " + __LOG.info(name, false) + " : " + __LOG.info(stream);
                     throw ex;
                 }
             } else {

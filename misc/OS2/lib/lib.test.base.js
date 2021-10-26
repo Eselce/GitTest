@@ -41,9 +41,9 @@ function AssertionFailed(whatFailed, msg, thisArg, ...params) {
     } else if ((typeof msg) === 'function') {
         const __TEXT = msg.call(__THIS, ...params);
 
-        this.message = ((__TEXT === undefined) ? __TEXT : __LOG.info(__TEXT, false, true));
+        this.message = String(__TEXT);
     } else {
-        this.message = __LOG.info(msg, ((typeof msg) !== 'string'), true);
+        this.message = String(msg);
     }
 
     if (whatFailed) {
