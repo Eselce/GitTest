@@ -112,7 +112,7 @@ Class.define(UnitTest, Object, {
                                         __LOG[4]("Running test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + (__DESC ? " (" + __DESC + ')' : "") + "...");
 
                                         try {
-                                            result = await this.setup.call(__THIS, __TFUN);
+                                            result = await this.setup.call(__THIS, __NAME, __DESC, __TFUN, __THIS);
                                         } catch (ex) {
                                             // Fehler im setup()...
                                             __RESULT.checkException(ex);
@@ -139,7 +139,7 @@ Class.define(UnitTest, Object, {
                                         }
 
                                         try {
-                                            result = await this.teardown.call(__THIS, __TFUN);
+                                            result = await this.teardown.call(__THIS, __NAME, __DESC, __TFUN, __THIS);
                                         } catch (ex) {
                                             // Fehler im teardown()...
                                             __RESULT.checkException(ex);
@@ -185,7 +185,7 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
         try {
             const __PFUN = __TEST['prepare'];  // TODO: __TEST.prepare, aber variabel gehalten!
             const __TFUN = __TEST['run'];      // TODO: __TEST.run, aber variabel gehalten!
-            const __PFUN = __TEST['cleanup'];  // TODO: __TEST.cleanup, aber variabel gehalten!
+            const __CFUN = __TEST['cleanup'];  // TODO: __TEST.cleanup, aber variabel gehalten!
             const __THIS = (thisArg || __TEST);
             const __RESULTS = new UnitTestResults("SUMME", __NAME, __TEST);
             let result;

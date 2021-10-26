@@ -172,12 +172,15 @@ function getRowsById(id, doc = document) {
 // content: Textinhalt oder HTML-Inhalt der neuen Zelle
 // color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
 //      Bei Aufruf ohne Farbe wird die Standardfarbe benutzt
+// align: Horizontale Textausrichtung (Default: 'center')
+// showUndefined: Angabe, ob undefined als 'undefined' angezeigt wird (Default: false, also leer '')
 // return Die angehaengte Zelle
-function appendCell(row, content, color = undefined, align = 'center') {
+function appendCell(row, content, color = undefined, align = 'center', showUndefined = false) {
     const __ROW = (row || { });
     const __CELL = __ROW.insertCell(-1);
+    const __TARGET = ((showUndefined || (content !== undefined)) ? 'innerHTML' : 'textContent');
 
-    __CELL.innerHTML = content;
+    __CELL[__TARGET] = content;
     __CELL.align = align;
     __CELL.style.color = color;
 
