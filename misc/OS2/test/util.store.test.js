@@ -34,9 +34,9 @@
             'Array3'    : [ 'UnitTestA',    [ String(1), undefined, new Boolean(true) ],                        '["1",null,true]' ],
             'Object'    : [ 'UnitTestO',    { eins : 1, zwei : 2, fuenf : 5 },                                  '{"eins":1,"zwei":2,"fuenf":5}' ],
             'Object2'   : [ 'UnitTestO',    { 'c': { i : true, a : null }, a : { b : { c : [ 2, 47.11 ] } } },  '{"c":{"i":true,"a":null},"a":{"b":{"c":[2,47.11]}}}' ],
-            'Object3'   : [ 'UnitTestO',    new AssertionFailed(new Boolean(true), "Fehler"),                   '{"message":"\'Fehler\' (true)"}' ],
-            'Undef'     : [ 'UnitTestU',    undefined,                                                          undefined ],
-            'Null'      : [ 'UnitTestN',    null,                                                               'null' ],
+            'Object3'   : [ 'UnitTestO',    new AssertionFailed(new Boolean(true), "Fehler"),                   '{"message":"Fehler (true)"}' ],
+            'Undef'     : [ 'UnitTestUnd',  undefined,                                                          undefined ],
+            'Null'      : [ 'UnitTestNul',  null,                                                               'null' ],
             'NaN'       : [ 'UnitTestNaN',  Number.NaN,                                                         String(Number.NaN) ],  // TODO: 'null'?
             'PosInf'    : [ 'UnitTestInf',  Number.POSITIVE_INFINITY,                                           String(Number.POSITIVE_INFINITY) ],
             'NegInf'    : [ 'UnitTestInf',  Number.NEGATIVE_INFINITY,                                           String(Number.NEGATIVE_INFINITY) ],
@@ -45,10 +45,14 @@
             'MinInt'    : [ 'UnitTestMin',  Number.MIN_SAFE_INTEGER,                                            String(Number.MIN_SAFE_INTEGER) ],
             'MaxInt'    : [ 'UnitTestMax',  Number.MAX_SAFE_INTEGER,                                            String(Number.MAX_SAFE_INTEGER) ],
             'Epsilon'   : [ 'UnitTestInf',  Number.EPSILON,                                                     String(Number.EPSILON) ],
-            'Function'  : [ 'UnitTestP',    function(x) { return x * x; },                                      undefined ],
-            'Default'   : [ 'UnitTestD',    undefined,                                                          undefined,              __ERROR ],
-            'Default2'  : [ 'UnitTestD',    null,                                                               'null',                 __ERROR ],
-            'Default3'  : [ 'UnitTestD',    "",                                                                 '""',                   __ERROR ]
+            'Uint32Arr' : [ 'UnitTestU',    new Uint32Array([42]),                                              '{"0":42}' ],
+            'Date'      : [ 'UnitTestD',    new Date(Date.UTC(2006, 0, 2, 15, 4, 5)),                           '"2006-01-02T15:04:05.000Z"' ],
+            'Symbol'    : [ 'UnitTestY',    Symbol(),                                                           undefined,              __ERROR ],
+            'Symbol2'   : [ 'UnitTestY',    Symbol.for('key'),                                                  undefined,              __ERROR ],
+            'Function'  : [ 'UnitTestP',    function(x) { return x * x; },                                      undefined,              __ERROR ],
+            'Default'   : [ 'UnitTestDef',  undefined,                                                          undefined,              __ERROR ],
+            'Default2'  : [ 'UnitTestDef',  null,                                                               'null',                 __ERROR ],
+            'Default3'  : [ 'UnitTestDef',  "",                                                                 '""',                   __ERROR ]
         };
 
     // Komponenten der Testreihen (sto/ser x ent/sum/des):
@@ -279,6 +283,50 @@
                                                 return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch gespeichert");
                                             });
                                     },
+            'storeValueUint32Arr' : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Uint32Arr'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Uint32Array falsch gespeichert");
+                                            });
+                                    },
+            'storeValueDate'      : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Date'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Date falsch gespeichert");
+                                            });
+                                    },
+            'storeValueSymbol'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Symbol'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Symbol falsch gespeichert");
+                                            });
+                                    },
+            'storeValueSymbol2'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Symbol2'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Symbol falsch gespeichert");
+                                            });
+                                    },
             'storeValueFunction'  : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
@@ -468,6 +516,42 @@
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch geladen");
+                                            });
+                                    },
+            'summonValueUint32Arr': function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Uint32Arr'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Uint32Array falsch geladen");
+                                            });
+                                    },
+            'summonValueDate'     : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Date'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Date falsch geladen");
+                                            });
+                                    },
+            'summonValueSymbol'   : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
+                                            });
+                                    },
+            'summonValueSymbol2'  : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol2'];
+
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
                                             });
                                     },
             'summonValueFunction' : function() {  // NOTE Keine Speicherung von Function
@@ -686,8 +770,44 @@
                                                 return ASSERT_EQUAL(__RET, __EXP, "Epsilon falsch gespeichert");
                                             });
                                     },
+            'serializeUint32Arr'  : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Uint32Arr'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "Uint32Array falsch gespeichert");
+                                            });
+                                    },
+            'serializeDate'       : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Date'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "Date falsch gespeichert");
+                                            });
+                                    },
+            'serializeSymbol'     : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch gespeichert");
+                                            });
+                                    },
+            'serializeSymbol2'    : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol2'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch gespeichert");
+                                            });
+                                    },
             'serializeFunction'   : function() {  // NOTE Keine Speicherung von Function
-                                        const [ __NAME, __VAL, __EXP, __ERR ] = __TESTDATA['Function'];
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -942,6 +1062,50 @@
                                                 return ASSERT_EQUAL(__RET, __EXP, "Epsilon falsch gespeichert");
                                             });
                                     },
+            'serialize2Uint32Arr' : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Uint32Arr'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "Uint32Array falsch gespeichert");
+                                            });
+                                    },
+            'serialize2Date'      : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Date'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "Date falsch gespeichert");
+                                            });
+                                    },
+            'serialize2Symbol'    : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Symbol'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "Symbol falsch gespeichert");
+                                            });
+                                    },
+            'serialize2Symbol2'   : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Symbol2'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => {
+                                                const __NAM = entry.name;
+                                                const __RET = entry.value;
+
+                                                ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
+                                                return ASSERT_EQUAL(__RET, __EXP, "Symbol falsch gespeichert");
+                                            });
+                                    },
             'serialize2Function'  : function() {  // NOTE Keine Speicherung von Function
                                         const [ __NAME, __VAL, __EXP ] = __TESTDATA['Function'];
 
@@ -1133,8 +1297,44 @@
                                                 return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch geladen");
                                             });
                                     },
+            'deserializeUint32Arr': function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Uint32Arr'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Uint32Array falsch geladen");
+                                            });
+                                    },
+            'deserializeDate'     : function() {
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Date'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Date falsch geladen");
+                                            });
+                                    },
+            'deserializeSymbol'  : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, , __EXP, __ERR ] = __TESTDATA['Symbol'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
+                                            });
+                                    },
+            'deserializeSymbol2'  : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, , __EXP, __ERR ] = __TESTDATA['Symbol2'];
+
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
+                                            });
+                                    },
             'deserializeFunction' : function() {  // NOTE Keine Speicherung von Function
-                                        const [ __NAME, __VAL, __EXP, __ERR ] = __TESTDATA['Function'];
+                                        const [ __NAME, , __EXP, __ERR ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -1347,6 +1547,42 @@
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch geladen");
+                                            });
+                                    },
+            'deserialize2Uint32Arr':function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Uint32Arr'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Uint32Array falsch geladen");
+                                            });
+                                    },
+            'deserialize2Date'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Date'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Date falsch geladen");
+                                            });
+                                    },
+            'deserialize2Symbol'  : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
+                                            });
+                                    },
+            'deserialize2Symbol2' : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol2'];
+
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
                                             });
                                     },
             'deserialize2Function': function() {  // NOTE Keine Speicherung von Function
