@@ -940,13 +940,13 @@ function procFairplay() {
                                            },
                             'formWidth'  : 1
                         }).then(optSet => {
-            const __CURRSAISON = getOptValue(__OPTSET.aktuelleSaison);
-            const __EINFAERBUNG = getOptValue(__OPTSET.zeigeQuali, true);
-            const __SHOWTITLES = getOptValue(__OPTSET.zeigeTitel, true);
-            const __LAENDER = getOptValue(__OPTSET.laender, []);
-            const __DATA = getOptValue(__OPTSET.data, []);
+            const __CURRSAISON = getOptValue(optSet.aktuelleSaison);
+            const __EINFAERBUNG = getOptValue(optSet.zeigeQuali, true);
+            const __SHOWTITLES = getOptValue(optSet.zeigeTitel, true);
+            const __LAENDER = getOptValue(optSet.laender, []);
+            const __DATA = getOptValue(optSet.data, []);
 
-            const __TABLEMAN = new TableManager(__OPTSET, __COLUMNINDEX, getRowsById('fairplay'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
+            const __TABLEMAN = new TableManager(optSet, __COLUMNINDEX, getRowsById('fairplay'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
 
             __TABLEMAN.isAbschluss = true;  // Vorschau der Fairplay-Tabelle auf Saisonende!
             __TABLEMAN.saison = __CURRSAISON;  // Fairplay-Tabelle gilt fuer die aktuelle Saison!
@@ -1030,7 +1030,7 @@ console.log(__TITEL);
                 }
             }
 
-            saveQualiData(__OPTSET, __DATA, __CURRSAISON);
+            saveQualiData(optSet, __DATA, __CURRSAISON);
         });
 }
 
@@ -1078,16 +1078,16 @@ function procEuropa(typ, finale) {
                                            },
                             'formWidth'  : 1
                         }).then(optSet => {
-            const __RUNDE = getOptValue(__OPTSET[typ + 'rundenNr']);
+            const __RUNDE = getOptValue(optSet[typ + 'rundenNr']);
             const __FINALE = (__RUNDE === finale);
             const __ROWS = getRows(0);
 
             if (__FINALE && __ROWS.length) {
                 const __CELLS = __ROWS[0].cells;  // Finalspiel
-                const __SAISON = getOptValue(__OPTSET.saison);
-                const __VEREINE = getOptValue(__OPTSET.vereine, []);
-                const __LAENDER = getOptValue(__OPTSET.laender, []);
-                const __DATA = getOptValue(__OPTSET.data, []);
+                const __SAISON = getOptValue(optSet.saison);
+                const __VEREINE = getOptValue(optSet.vereine, []);
+                const __LAENDER = getOptValue(optSet.laender, []);
+                const __DATA = getOptValue(optSet.data, []);
                 const __HEIMLAND = getLandNameFromCell(__CELLS[__COLUMNINDEX.LandH]);
                 const __TEAMHEIMCELL = __CELLS[__COLUMNINDEX.TeamH];
                 const __HEIMNAME = getTeamNameFromCell(__TEAMHEIMCELL);
@@ -1119,11 +1119,11 @@ function procEuropa(typ, finale) {
                     __LDATA[typ] = [ __WID, getGameTypeID(typ) ];
                     __LDATA2[typ + '2'] = [ __LID ];
 
-                    saveQualiData(__OPTSET, __DATA, __SAISON);
+                    saveQualiData(optSet, __DATA, __SAISON);
                 }
 
-                setOpt(__OPTSET.vereine, __VEREINE, false);
-                setOpt(__OPTSET.laender, __LAENDER, false);
+                setOpt(optSet.vereine, __VEREINE, false);
+                setOpt(optSet.laender, __LAENDER, false);
             }
         });
 }
@@ -1160,17 +1160,17 @@ function procPokal(finale) {
                                            },
                             'formWidth'  : 1
                         }).then(optSet => {
-            const __RUNDE = getOptValue(__OPTSET.PrundenNr);
+            const __RUNDE = getOptValue(optSet.PrundenNr);
             const __FINALE = (__RUNDE === finale);
             const __ROWS = getRows(0);
 
             if (__FINALE && __ROWS.length) {
                 const __CELLS = __ROWS[0].cells;  // Finalspiel
-                const __SAISON = getOptValue(__OPTSET.saison);
-                const __LAND = getOptValue(__OPTSET.land);
-                const __VEREINE = getOptValue(__OPTSET.vereine, []);
-                const __LAENDER = getOptValue(__OPTSET.laender, []);
-                const __DATA = getOptValue(__OPTSET.data, []);
+                const __SAISON = getOptValue(optSet.saison);
+                const __LAND = getOptValue(optSet.land);
+                const __VEREINE = getOptValue(optSet.vereine, []);
+                const __LAENDER = getOptValue(optSet.laender, []);
+                const __DATA = getOptValue(optSet.data, []);
                 const __HEIMTEAMCELL = __CELLS[__COLUMNINDEX.TeamH];
                 const __HEIMNAME = getTeamNameFromCell(__HEIMTEAMCELL);
                 const __HEIMID = getTeamIdFromCell(__HEIMTEAMCELL);
@@ -1203,11 +1203,11 @@ console.log(__ERGEBNIS);
                     __LDATA.P = [ __WID, getGameTypeID('OSE') ];
                     __LDATA.P2 = [ __LID ];
 
-                    saveQualiData(__OPTSET, __DATA, __SAISON);
+                    saveQualiData(optSet, __DATA, __SAISON);
                 }
 
-                setOpt(__OPTSET.vereine, __VEREINE, false);
-                setOpt(__OPTSET.laender, __LAENDER, false);
+                setOpt(optSet.vereine, __VEREINE, false);
+                setOpt(optSet.laender, __LAENDER, false);
             }
         });
 }
@@ -1243,26 +1243,26 @@ function procTabelle() {
                                            },
                             'formWidth'  : 1
                         }).then(optSet => {
-            const __TABLEMAN = new TableManager(__OPTSET, __COLUMNINDEX, getRowsById('kader1'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
+            const __TABLEMAN = new TableManager(optSet, __COLUMNINDEX, getRowsById('kader1'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
 
             const __SAISON = __TABLEMAN.saison;
             const __LAND = __TABLEMAN.land;
-            const __EINFAERBUNG = getOptValue(__OPTSET.zeigeQuali, true);
-            const __SHOWTITLES = getOptValue(__OPTSET.zeigeTitel, true);
-            const __SHOWCURRTITLES = getOptValue(__OPTSET.zeigeAktuelleTitel, true);
-            const __SHOWQUALITITLES = getOptValue(__OPTSET.zeigeQualiTitel, true);
-            const __VEREINE = getOptValue(__OPTSET.vereine, []);
-            const __LAENDER = getOptValue(__OPTSET.laender, []);
-            //const __MANAGER = getOptValue(__OPTSET.manager, []);
-            const __LIGEN = getOptValue(__OPTSET.ligen, []);
-            const __DATA = getOptValue(__OPTSET.data, []);
+            const __EINFAERBUNG = getOptValue(optSet.zeigeQuali, true);
+            const __SHOWTITLES = getOptValue(optSet.zeigeTitel, true);
+            const __SHOWCURRTITLES = getOptValue(optSet.zeigeAktuelleTitel, true);
+            const __SHOWQUALITITLES = getOptValue(optSet.zeigeQualiTitel, true);
+            const __VEREINE = getOptValue(optSet.vereine, []);
+            const __LAENDER = getOptValue(optSet.laender, []);
+            //const __MANAGER = getOptValue(optSet.manager, []);
+            const __LIGEN = getOptValue(optSet.ligen, []);
+            const __DATA = getOptValue(optSet.data, []);
             const __SDATA = getProp(__DATA, __SAISON, { });
             const __LDATA = getProp(__SDATA, __LAND, { });
 
-            if (getOptValue(__OPTSET.setFPdata, false)) {
+            if (getOptValue(optSet.setFPdata, false)) {
                 initFairplayData(__DATA, __LAENDER);
 
-                setOpt(__OPTSET.setFPdata, false, false);
+                setOpt(optSet.setFPdata, false, false);
             }
 
             for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
@@ -1310,15 +1310,15 @@ function procTabelle() {
                                          ]
                                      ]);
 
-            setOpt(__OPTSET.vereine, __VEREINE, false);
-            setOpt(__OPTSET.laender, __LAENDER, false);
-            //setOpt(__OPTSET.manager, __MANAGER, false);
-            setOpt(__OPTSET.ligen, __LIGEN, false);
+            setOpt(optSet.vereine, __VEREINE, false);
+            setOpt(optSet.laender, __LAENDER, false);
+            //setOpt(optSet.manager, __MANAGER, false);
+            setOpt(optSet.ligen, __LIGEN, false);
 
             if (__TABLEMAN.isErsteLiga) {
                 calcEuropaPlaetze(__LDATA);
 
-                saveQualiData(__OPTSET, __DATA, __SAISON);
+                saveQualiData(optSet, __DATA, __SAISON);
 
                 if (__EINFAERBUNG) {
                     for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
@@ -1501,6 +1501,7 @@ console.log(__LTITEL);
         }
     })().then(rc => {
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
+            __LOG[3](String(__OPTSET));
         })
 })();
 

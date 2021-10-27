@@ -311,9 +311,9 @@ function procScript() {
             const __TABLE = getTable(1);  // um 1 verschoben wegen Options-Form
             const __SCRIPT = getScriptFromHTML('path', __TABLE);
             const __LIB = __SCRIPT.libname;
-            const __LIBS = getOptValue(__OPTSET.libs, { });
-            const __FUNS = getOptValue(__OPTSET.funs, { });
-            const __DEPS = getOptValue(__OPTSET.deps, { });
+            const __LIBS = getOptValue(optSet.libs, { });
+            const __FUNS = getOptValue(optSet.funs, { });
+            const __DEPS = getOptValue(optSet.deps, { });
 
             if (__SCRIPT.filename && ! __SCRIPT.filename.endsWith(".user.js")) {
                 __LIBS[__LIB] = __SCRIPT.funs;
@@ -330,10 +330,10 @@ function procScript() {
             console.error(__CALLS);
             console.error(__DEPS);
 
-            setOpt(__OPTSET.libs, __LIBS, false);
-            setOpt(__OPTSET.funs, __FUNS, false);
-            setOpt(__OPTSET.calls, __CALLS, false);
-            setOpt(__OPTSET.deps, __DEPS, false);
+            setOpt(optSet.libs, __LIBS, false);
+            setOpt(optSet.funs, __FUNS, false);
+            setOpt(optSet.calls, __CALLS, false);
+            setOpt(optSet.deps, __DEPS, false);
         });
 }
 
@@ -348,6 +348,7 @@ function procScript() {
         }
     })().then(rc => {
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
+            __LOG[3](String(__OPTSET));
         });
 })();
 

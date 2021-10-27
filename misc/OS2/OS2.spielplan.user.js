@@ -309,7 +309,7 @@ function procSpielplan() {
                             'formWidth'  : 3,
                             'formBreak'  : 4
                         }).then(optSet => {
-            const __ZAT = firstZAT(getOptValue(__OPTSET.saison), getOptValue(__OPTSET.ligaSize));
+            const __ZAT = firstZAT(getOptValue(optSet.saison), getOptValue(optSet.ligaSize));
 
             const __ROWS = getRows(2);
 
@@ -331,7 +331,7 @@ function procSpielplan() {
                 setSpielArtFromCell(__ZAT, __CELLS[__COLUMNINDEX.Art]);
                 setErgebnisFromCell(__ZAT, __CELLS[__COLUMNINDEX.Erg]);
 
-                if (getOptValue(__OPTSET.shortKom)) {
+                if (getOptValue(optSet.shortKom)) {
                     const __CELLKOM = __CELLS[__COLUMNINDEX.Kom];
                     const __CELLART = __CELLS[__COLUMNINDEX.Art];
 
@@ -352,27 +352,27 @@ function procSpielplan() {
 
                     addBilanzLinkToCell(__CELLBER, __ZAT.gameType, "Bilanz");
 
-                    if (getOptValue(__OPTSET.shortKom)) {
+                    if (getOptValue(optSet.shortKom)) {
                         __CELLBER.innerHTML = __CELLBER.innerHTML.replace("Klick", "(*)").replace("Bilanz", 'V').replace("Vorschau", 'V');
                     }
 
                     if (__ZAT.gameType === 'Liga') {
                         if (__ZAT.ZAT < 70) {
-                            stats = addResultToStats(ligaStats, getOptValue(__OPTSET.longStats), __ZAT);
+                            stats = addResultToStats(ligaStats, getOptValue(optSet.longStats), __ZAT);
                         }
                     } else if ((__ZAT.gameType === 'OSCQ') || (__ZAT.gameType === 'OSEQ') || (__ZAT.gameType === 'OSE')) {
                         if (__ZAT.hinRueck !== 1) {
                             euroStats = emptyStats();
                         }
-                        stats = addResultToStats(euroStats, getOptValue(__OPTSET.longStats), __ZAT);
+                        stats = addResultToStats(euroStats, getOptValue(optSet.longStats), __ZAT);
                     } else if (__ZAT.gameType === 'OSC') {
                         if ((__ZAT.hinRueck !== 1) && ((__ZAT.euroRunde >= 9) || ((__ZAT.euroRunde % 3) === 0))) {
                             euroStats = emptyStats();
                         }
-                        stats = addResultToStats(euroStats, getOptValue(__OPTSET.longStats), __ZAT);
+                        stats = addResultToStats(euroStats, getOptValue(optSet.longStats), __ZAT);
                     }
 
-                    if (getOptValue(__OPTSET.showStats)) {
+                    if (getOptValue(optSet.showStats)) {
                         if (stats !== "") {
                             stats = ' ' + stats;
                         }
@@ -382,9 +382,9 @@ function procSpielplan() {
                     __CELLS[__COLUMNINDEX.Zus].innerHTML = getZatLink(__ZAT, __TEAMCLASS.team, true) + addTableLink(__ZAT, __TEAMCLASS.team, stats, true);
                 }
 
-                if (getOptValue(__OPTSET.sepMonths) && (__ZAT.ZAT % __ZAT.anzZATpMonth === 0) && (i < __ROWS.length - __ROWOFFSETLOWER - 1)) {
+                if (getOptValue(optSet.sepMonths) && (__ZAT.ZAT % __ZAT.anzZATpMonth === 0) && (i < __ROWS.length - __ROWOFFSETLOWER - 1)) {
                     // Format der Trennlinie zwischen den Monaten...
-                    const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
+                    const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
 
 /*
                     for (let entry of __CELLS) {
@@ -429,6 +429,7 @@ function procSpielplan() {
         }
     })().then(rc => {
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
+            __LOG[3](String(__OPTSET));
         })
 })();
 

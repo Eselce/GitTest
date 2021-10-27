@@ -113,6 +113,8 @@ Class.define(UnitTest, Object, {
 
                                         try {
                                             result = await this.setup.call(__THIS, __NAME, __DESC, __TFUN, __THIS);
+
+                                            __LOG[9]("Preparation of test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "returned:", result);
                                         } catch (ex) {
                                             // Fehler im setup()...
                                             __RESULT.checkException(ex);
@@ -140,6 +142,8 @@ Class.define(UnitTest, Object, {
 
                                         try {
                                             result = await this.teardown.call(__THIS, __NAME, __DESC, __TFUN, __THIS);
+
+                                            __LOG[9]("Cleanup of test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "returned:", result);
                                         } catch (ex) {
                                             // Fehler im teardown()...
                                             __RESULT.checkException(ex);
@@ -197,6 +201,8 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
 
             try {
                 result = await __PFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
+
+                __LOG[9]("Preparation of module",__LOG.info(__NAME, false), "returned:", result);
             } catch (ex) {
                 // Fehler im Framework zur Vorbereitung der Testklasse...
                 __RESULTS.checkException(ex);
@@ -214,6 +220,8 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
             } finally {
                 try {
                     result = await __CFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
+
+                __LOG[9]("Cleanup of module",__LOG.info(__NAME, false), "returned:", result);
                 } catch (ex) {
                     // Fehler im Framework der Testklasse...
                     __RESULTS.checkException(ex);

@@ -2123,18 +2123,18 @@ function procHaupt() {
             const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
             const __CURRZAT = __NEXTZAT - 1;
-            const __DATAZAT = getOptValue(__OPTSET.datenZat);
+            const __DATAZAT = getOptValue(optSet.datenZat);
 
             if (__CURRZAT >= 0) {
                 __LOG[2]("Aktueller ZAT: " + __CURRZAT);
 
                 // Neuen aktuellen ZAT speichern...
-                setOpt(__OPTSET.aktuellerZat, __CURRZAT, false);
+                setOpt(optSet.aktuellerZat, __CURRZAT, false);
 
                 if (__CURRZAT !== __DATAZAT) {
                     __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
 
-                    __LOG[1]("vor DELETE:" + __OPTSET);
+                    __LOG[1]("vor DELETE:" + optSet);
 
                     // ... und ZAT-bezogene Daten als veraltet markieren (NIE die Optionen, die nach 'old' gehen!)
                     const __IGNLIST = Object.assign({
@@ -2146,24 +2146,24 @@ function procHaupt() {
 
                     const __CLASSIFICATION = new Classification('old');
 
-                    __LOG[1]("vor RENAME:" + __OPTSET);
+                    __LOG[1]("vor RENAME:" + optSet);
 
                     // Daten in 'old'-Daten ueberfuehren...
-                    __CLASSIFICATION.optSelect = Object.map(__LASTZATCLASS.optSelect, value => false);  // false: Kein reload
+                    __CLASSIFICATION.optSelect = Object.map(__LASTZATCLASS.optSelect, () => false);  // false: Kein reload
                     __CLASSIFICATION.optSet = optSet;
                     await __CLASSIFICATION.renameOptions();
 
-                    __LOG[1]("vor SAVE:" + __OPTSET);
+                    __LOG[1]("vor SAVE:" + optSet);
 
                     // Daten in 'old' speichern...
-                    __CLASSIFICATION.optSelect = Object.map(__LASTZATCLASS.optSelect, value => true);  // true: Speichern
+                    __CLASSIFICATION.optSelect = Object.map(__LASTZATCLASS.optSelect, () => true);  // true: Speichern
                     await __CLASSIFICATION.saveOptions();
 
                     // Stand der alten Daten merken...
-                    setOpt(__OPTSET.oldDatenZat, __DATAZAT, false);
+                    setOpt(optSet.oldDatenZat, __DATAZAT, false);
 
                     // Neuen Daten-ZAT speichern...
-                    setOpt(__OPTSET.datenZat, __CURRZAT, false);
+                    setOpt(optSet.datenZat, __CURRZAT, false);
                 }
             }
         });
@@ -2704,8 +2704,8 @@ function procZatReport() {
                 const __ERFOLGE = [];  // neu aufbauen! getOptValue(optSet.erfolge, []);
                 const __BLESSUREN = [];  // neu aufbauen! getOptValue(optSet.blessuren, []);
 
-                const __PLAYERS = [];  // init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 1);
-                const __COLMAN = new ColumnManagerZatReport(__OPTSET, __COLUMNINDEX, {
+                const __PLAYERS = [];  // init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 1);
+                const __COLMAN = new ColumnManagerZatReport(optSet, __COLUMNINDEX, {
                                                     'Default'            : true,
                                                     'zeigeErfahrung'     : false
                                                 });

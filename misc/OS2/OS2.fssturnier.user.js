@@ -3649,16 +3649,16 @@ function procHaupt() {
             const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
             const __CURRZAT = __NEXTZAT - 1;
-            const __DATAZAT = getOptValue(__OPTSET.datenZat);
+            const __DATAZAT = getOptValue(optSet.datenZat);
 
             // Stand der alten Daten merken...
-            setOpt(__OPTSET.oldDatenZat, __DATAZAT, false);
+            setOpt(optSet.oldDatenZat, __DATAZAT, false);
 
             if (__CURRZAT >= 0) {
                 __LOG[2]("Aktueller ZAT: " + __CURRZAT);
 
                 // Neuen aktuellen ZAT speichern...
-                setOpt(__OPTSET.aktuellerZat, __CURRZAT, false);
+                setOpt(optSet.aktuellerZat, __CURRZAT, false);
 
                 if (__CURRZAT !== __DATAZAT) {
                     __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
@@ -3670,7 +3670,7 @@ function procHaupt() {
                                               }).catch(defaultCatch);
 
                     // Neuen Daten-ZAT speichern...
-                    setOpt(__OPTSET.datenZat, __CURRZAT, false);
+                    setOpt(optSet.datenZat, __CURRZAT, false);
                 }
             }
         });
@@ -3692,27 +3692,27 @@ function procOSFSSTurnier() {
                             }).then(optSet => {
                 const __TABLE = getTable(0, 'table', __TAB4);
                 const __GAMELIST = getTable(0, 'ul', __TAB4);
-                const __MYTEAM = getOptValue(__OPTSET.team);
-                const __GEGNER = getOptValue(__OPTSET.gegner);
-                const __TEAMIDS = getOptValue(__OPTSET.teamIds);
-                const __TEAMNAMES = getOptValue(__OPTSET.teamNames);
+                const __MYTEAM = getOptValue(optSet.team);
+                const __GEGNER = getOptValue(optSet.gegner);
+                const __TEAMIDS = getOptValue(optSet.teamIds);
+                const __TEAMNAMES = getOptValue(optSet.teamNames);
 
-                calcRanksFromTable(__TABLE, __OPTSET);
-                calcChallengesFromHTML(__TAB4, __OPTSET);
+                calcRanksFromTable(__TABLE, optSet);
+                calcChallengesFromHTML(__TAB4, optSet);
 
-                markChanges(__TABLE, __OPTSET);
+                markChanges(__TABLE, optSet);
 
                 if (__GAMELIST !== undefined) {
                     const __GAMES = __GAMELIST.getElementsByTagName('li');
 
-                    calcGegner(__GAMES, __OPTSET);
+                    calcGegner(__GAMES, optSet);
                 }
 
                 const __TEAMID = __TEAMIDS[__MYTEAM.Team];
                 const __GEGNERID = __GEGNER[__TEAMID];
                 const __GEGNERNAME = __TEAMNAMES[__GEGNERID];
 
-                markTeam(__TABLE, __OPTSET, __MYTEAM.Team, __GEGNERNAME);
+                markTeam(__TABLE, optSet, __MYTEAM.Team, __GEGNERNAME);
             });
     }
 
@@ -3743,6 +3743,7 @@ function procOSFSSTurnier() {
         }
     })().then(rc => {
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
+            __LOG[3](String(__OPTSET));
         })
 })();
 

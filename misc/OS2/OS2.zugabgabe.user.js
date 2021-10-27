@@ -251,16 +251,16 @@ function procHaupt() {
             const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
             const __CURRZAT = __NEXTZAT - 1;
-            const __DATAZAT = getOptValue(__OPTSET.datenZat);
+            const __DATAZAT = getOptValue(optSet.datenZat);
 
             // Stand der alten Daten merken...
-            setOpt(__OPTSET.oldDatenZat, __DATAZAT, false);
+            setOpt(optSet.oldDatenZat, __DATAZAT, false);
 
             if (__CURRZAT >= 0) {
                 __LOG[2]("Aktueller ZAT: " + __CURRZAT);
 
                 // Neuen aktuellen ZAT speichern...
-                setOpt(__OPTSET.aktuellerZat, __CURRZAT, false);
+                setOpt(optSet.aktuellerZat, __CURRZAT, false);
 
                 if (__CURRZAT !== __DATAZAT) {
                     __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
@@ -272,7 +272,7 @@ function procHaupt() {
                                               }).catch(defaultCatch);
 
                     // Neuen Daten-ZAT speichern...
-                    setOpt(__OPTSET.datenZat, __CURRZAT, false);
+                    setOpt(optSet.datenZat, __CURRZAT, false);
                 }
             }
         });
@@ -332,6 +332,7 @@ function procEinstellungen() {
         }
     })().then(rc => {
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
+            __LOG[3](String(__OPTSET));
         })
 })();
 

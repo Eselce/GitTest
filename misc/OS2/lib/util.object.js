@@ -51,12 +51,12 @@ Object.map = function(obj, mapFun, thisArg, filterFun, sortFun) {
         const __THIS = (thisArg || obj);
         const __MAPFUN = (((typeof mapFun) === 'function')
                           ? (([key, value], index) => [key, mapFun.call(__THIS, value, key, index, __FILTERARR)])
-                          : (([key, value]) => [key, mapFun]));
+                          : (([key, ]) => [key, mapFun]));
         const __FILTERFUN = ((filterFun == undefined)
-                             ? (element => true)
+                             ? (() => true)
                              : (((typeof filterFun) === 'function')
                                 ? (([key, value], index) => [key, filterFun.call(__THIS, value, key, index, __ARR)])
-                                : (([key, value]) => (value == filterFun))));
+                                : (([ , value]) => (value == filterFun))));
         const __SORTFUN = ((sortFun === true)
                            ? undefined
                            : (([key1, value1], [key2, value2]) => sortFun.call(__THIS, value1, value2, key1, key2)));
