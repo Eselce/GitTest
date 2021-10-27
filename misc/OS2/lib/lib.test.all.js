@@ -967,6 +967,7 @@ Class.define(UnitTestOption, UnitTest, {
 // ==================== Abschnitt fuer die Sicherung und das Laden von Daten ====================
 
     const __ERROR = 'ERROR';
+    const __ERR = __ERROR;
 
     const __TESTDATA = {
             'String'    : [ 'UnitTestS',    "Teststring",                                                       '"Teststring"' ],
@@ -975,28 +976,28 @@ Class.define(UnitTestOption, UnitTest, {
             'Float'     : [ 'UnitTestI',    47.11,                                                              '47.11' ],
             'Array'     : [ 'UnitTestA',    [ 1, 2, 4, 8 ],                                                     '[1,2,4,8]' ],
             'Array2'    : [ 'UnitTestA',    [ '1', null, false, 815 ],                                          '["1",null,false,815]' ],
-            'Array3'    : [ 'UnitTestA',    [ String(1), undefined, new Boolean(true) ],                        '["1",null,true]' ],
+            'Array3'    : [ 'UnitTestA',    [ String(1), undefined, new Boolean(true) ],                        '["1",null,true]',                  [ "1", null, true ],                 '["1",null,true]' ],
             'Object'    : [ 'UnitTestO',    { eins : 1, zwei : 2, fuenf : 5 },                                  '{"eins":1,"zwei":2,"fuenf":5}' ],
             'Object2'   : [ 'UnitTestO',    { 'c': { i : true, a : null }, a : { b : { c : [ 2, 47.11 ] } } },  '{"c":{"i":true,"a":null},"a":{"b":{"c":[2,47.11]}}}' ],
-            'Object3'   : [ 'UnitTestO',    new AssertionFailed(new Boolean(true), "Fehler"),                   '{"message":"Fehler (true)"}' ],
-            'Undef'     : [ 'UnitTestUnd',  undefined,                                                          undefined,              __ERROR ],
+            'Object3'   : [ 'UnitTestO',    new AssertionFailed(new Boolean(true), "Fehler"),                   '{"message":"Fehler (true)"}',      { 'message' : "Fehler (true)" },    '{"message":"Fehler (true)"}' ],
+            'Undef'     : [ 'UnitTestUnd',  undefined,                                                          undefined,                          undefined,                          undefined ],
             'Null'      : [ 'UnitTestNul',  null,                                                               'null' ],
-            'NaN'       : [ 'UnitTestNaN',  Number.NaN,                                                         String(Number.NaN) ],  // TODO: 'null'?
-            'PosInf'    : [ 'UnitTestInf',  Number.POSITIVE_INFINITY,                                           String(Number.POSITIVE_INFINITY) ],
-            'NegInf'    : [ 'UnitTestInf',  Number.NEGATIVE_INFINITY,                                           String(Number.NEGATIVE_INFINITY) ],
+            'NaN'       : [ 'UnitTestNaN',  Number.NaN,                                                         String(Number.NaN),                 null,                               "null" ],
+            'PosInf'    : [ 'UnitTestInf',  Number.POSITIVE_INFINITY,                                           String(Number.POSITIVE_INFINITY),   null,                               "null" ],
+            'NegInf'    : [ 'UnitTestInf',  Number.NEGATIVE_INFINITY,                                           String(Number.NEGATIVE_INFINITY),   null,                               "null" ],
             'MinVal'    : [ 'UnitTestMin',  Number.MIN_VALUE,                                                   String(Number.MIN_VALUE) ],
             'MaxVal'    : [ 'UnitTestMax',  Number.MAX_VALUE,                                                   String(Number.MAX_VALUE) ],
             'MinInt'    : [ 'UnitTestMin',  Number.MIN_SAFE_INTEGER,                                            String(Number.MIN_SAFE_INTEGER) ],
             'MaxInt'    : [ 'UnitTestMax',  Number.MAX_SAFE_INTEGER,                                            String(Number.MAX_SAFE_INTEGER) ],
             'Epsilon'   : [ 'UnitTestInf',  Number.EPSILON,                                                     String(Number.EPSILON) ],
             'Uint32Arr' : [ 'UnitTestU',    new Uint32Array([42]),                                              '{"0":42}' ],
-            'Date'      : [ 'UnitTestD',    new Date(Date.UTC(2006, 0, 2, 15, 4, 5)),                           '"2006-01-02T15:04:05.000Z"' ],
-            'Symbol'    : [ 'UnitTestY',    Symbol(),                                                           undefined,              __ERROR ],
-            'Symbol2'   : [ 'UnitTestY',    Symbol.for('key'),                                                  undefined,              __ERROR ],
-            'Function'  : [ 'UnitTestP',    function(x) { return x * x; },                                      undefined,              __ERROR ],
-            'Default'   : [ 'UnitTestDef',  undefined,                                                          undefined,              __ERROR ],
-            'Default2'  : [ 'UnitTestDef',  null,                                                               'null',                 __ERROR ],
-            'Default3'  : [ 'UnitTestDef',  "",                                                                 '""',                   __ERROR ]
+            'Date'      : [ 'UnitTestD',    new Date(Date.UTC(2006, 0, 2, 15, 4, 5)),                           '"2006-01-02T15:04:05.000Z"',       '2006-01-02T15:04:05.000Z',         '"2006-01-02T15:04:05.000Z"' ],
+            'Symbol'    : [ 'UnitTestY',    Symbol(),                                                           undefined,                          undefined,                          undefined ],
+            'Symbol2'   : [ 'UnitTestY',    Symbol.for('key'),                                                  undefined,                          undefined,                          undefined ],
+            'Function'  : [ 'UnitTestP',    function(x) { return x * x; },                                      undefined,                          undefined,                          undefined ],
+            'Default'   : [ 'UnitTestDef',  undefined,                                                          undefined,                          undefined,                          undefined ],
+            'Default2'  : [ 'UnitTestDef',  null,                                                               'null' ],
+            'Default3'  : [ 'UnitTestDef',  "",                                                                 '""' ]
         };
 
     // Primitive Speichermethoden __GETVALUE() und __SETVALUE():
@@ -1093,7 +1094,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'getSetValueUndef'    : function() {
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Undef'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
@@ -1201,7 +1202,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'getSetValueSymbol'   : function() {  // NOTE Keine Speicherung von Symbol
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Symbol'];
 
                                         return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
@@ -1210,7 +1211,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'getSetValueSymbol2'  : function() {  // NOTE Keine Speicherung von Symbol
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol2'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Symbol2'];
 
                                         return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
@@ -1219,7 +1220,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'getSetValueFunction' : function() {  // NOTE Keine Speicherung von Function
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Function'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
@@ -1228,7 +1229,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'getSetValueDefault'  : function() {
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default'];
 
                                         return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
@@ -1237,18 +1238,18 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'getSetValueDefault2' : function() {  // NOTE Kein Default-Wert bei null
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default2'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Summon-Wert bei null ignoriert");
                                             });
                                     },
             'getSetValueDefault3' : function() {  // NOTE Kein Default-Wert bei ""
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default3'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Summon-Wert bei \"\" ignoriert");
@@ -1630,7 +1631,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'summonValueUndef'    : function() {
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Undef'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -1738,7 +1739,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'summonValueSymbol'   : function() {  // NOTE Keine Speicherung von Symbol
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Symbol'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -1747,7 +1748,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'summonValueSymbol2'  : function() {  // NOTE Keine Speicherung von Symbol
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol2'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Symbol2'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -1756,7 +1757,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'summonValueFunction' : function() {  // NOTE Keine Speicherung von Function
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Function'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -1765,7 +1766,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'summonValueDefault'  : function() {
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -1774,18 +1775,18 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'summonValueDefault2' : function() {  // NOTE Kein Default-Wert bei null
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default2'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Summon-Wert bei null ignoriert");
                                             });
                                     },
             'summonValueDefault3' : function() {  // NOTE Kein Default-Wert bei ""
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default3'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Summon-Wert bei \"\" ignoriert");
@@ -1882,9 +1883,9 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'serializeUndef'      : function() {
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Undef'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name__ERR), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __ERR, "Undefined falsch gespeichert");
@@ -1899,31 +1900,31 @@ Class.define(UnitTestOption, UnitTest, {
                                                 return ASSERT_EQUAL(__RET, __EXP, "Null falsch gespeichert");
                                             });
                                     },
-            'serializeNaN'        : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NaN'];
+            'serializeNaN'        : function() {  // NOTE NaN wird von JSON als null gespeichet
+                                        const [ __NAME, __VAL, , , __ALTEXP ] = __TESTDATA['NaN'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "NaN falsch gespeichert");
+                                                return ASSERT_EQUAL(__RET, __ALTEXP, "NaN falsch gespeichert");
                                             });
                                     },
-            'serializePosInf'     : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['PosInf'];
+            'serializePosInf'     : function() {  // NOTE Infinity wird von JSON als null gespeichet
+                                        const [ __NAME, __VAL, , , __ALTEXP ] = __TESTDATA['PosInf'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "+Infinity falsch gespeichert");
+                                                return ASSERT_EQUAL(__RET, __ALTEXP, "+Infinity falsch gespeichert");
                                             });
                                     },
-            'serializeNegInf'     : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NegInf'];
+            'serializeNegInf'     : function() {  // NOTE -Infinity wird von JSON als null gespeichet
+                                        const [ __NAME, __VAL, , , __ALTEXP ] = __TESTDATA['NegInf'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "-Infinity falsch gespeichert");
+                                                return ASSERT_EQUAL(__RET, __ALTEXP, "-Infinity falsch gespeichert");
                                             });
                                     },
             'serializeMinVal'     : function() {
@@ -1990,7 +1991,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'serializeSymbol'     : function() {  // NOTE Keine Speicherung von Symbol
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Symbol'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -1999,7 +2000,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'serializeSymbol2'    : function() {  // NOTE Keine Speicherung von Symbol
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol2'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Symbol2'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2008,7 +2009,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'serializeFunction'   : function() {  // NOTE Keine Speicherung von Function
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Function'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2017,7 +2018,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'serializeDefault'    : function() {
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2026,18 +2027,18 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'serializeDefault2'   : function() {  // NOTE Kein Default-Wert bei null
-                                        const [ __NAME, __VAL, __EXP, __ERR ] = __TESTDATA['Default2'];
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __EXP, "Serialize-Wert bei null ignoriert");
                                             });
                                     },
             'serializeDefault3'   : function() {  // NOTE Kein Default-Wert bei ""
-                                        const [ __NAME, __VAL, __EXP, __ERR ] = __TESTDATA['Default3'];
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __EXP, "Serialize-Wert bei \"\" ignoriert");
@@ -2175,37 +2176,37 @@ Class.define(UnitTestOption, UnitTest, {
                                                 return ASSERT_EQUAL(__RET, __EXP, "Null falsch gespeichert");
                                             });
                                     },
-            'serialize2NaN'       : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NaN'];
+            'serialize2NaN'       : function() {  // NOTE NaN wird von JSON als null gespeichet
+                                        const [ __NAME, __VAL, , , __ALTEXP ] = __TESTDATA['NaN'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
                                                 const __RET = entry.value;
 
                                                 ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
-                                                return ASSERT_EQUAL(__RET, __EXP, "NaN falsch gespeichert");
+                                                return ASSERT_EQUAL(__RET, __ALTEXP, "NaN falsch gespeichert");
                                             });
                                     },
-            'serialize2PosInf'    : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['PosInf'];
+            'serialize2PosInf'    : function() {  // NOTE Infinity wird von JSON als null gespeichet
+                                        const [ __NAME, __VAL, , ,  __ALTEXP ] = __TESTDATA['PosInf'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
                                                 const __RET = entry.value;
 
                                                 ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
-                                                return ASSERT_EQUAL(__RET, __EXP, "+Infinity falsch gespeichert");
+                                                return ASSERT_EQUAL(__RET, __ALTEXP, "+Infinity falsch gespeichert");
                                             });
                                     },
-            'serialize2NegInf'    : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NegInf'];
+            'serialize2NegInf'    : function() {  // NOTE -Infinity wird von JSON als null gespeichet
+                                        const [ __NAME, __VAL, , , __ALTEXP ] = __TESTDATA['NegInf'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
                                                 const __RET = entry.value;
 
                                                 ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
-                                                return ASSERT_EQUAL(__RET, __EXP, "-Infinity falsch gespeichert");
+                                                return ASSERT_EQUAL(__RET, __ALTEXP, "-Infinity falsch gespeichert");
                                             });
                                     },
             'serialize2MinVal'    : function() {
@@ -2372,13 +2373,13 @@ Class.define(UnitTestOption, UnitTest, {
                                                 return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
                                             });
                                     },
-            'deserializeArray3'   : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Array3'];
+            'deserializeArray3'   : function() {  // NOTE Boolean wird von JSON untypisiert gespeichet
+                                        const [ __NAME, , __EXP, __ALT ] = __TESTDATA['Array3'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "Array falsch geladen");
                                             });
                                     },
             'deserializeObject'   : function() {
@@ -2399,17 +2400,17 @@ Class.define(UnitTestOption, UnitTest, {
                                                 return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
                                             });
                                     },
-            'deserializeObject3'  : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Object3'];
+            'deserializeObject3'  : function() {  // NOTE AssertionFailed wird von JSON untypisiert gespeichet
+                                        const [ __NAME, , __EXP, __ALT ] = __TESTDATA['Object3'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "Object falsch geladen");
                                             });
                                     },
             'deserializeUndef'    : function() {
-                                        const [ __NAME, , __EXP, __ERR ] = __TESTDATA['Undef'];
+                                        const [ __NAME, , __EXP ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2426,31 +2427,31 @@ Class.define(UnitTestOption, UnitTest, {
                                                 return ASSERT_EQUAL(__RET, __VAL, "Null falsch geladen");
                                             });
                                     },
-            'deserializeNaN'      : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NaN'];
+            'deserializeNaN'      : function() {  // NOTE NaN wird von JSON als null gespeichet
+                                        const [ __NAME, , , __ALT, __ALTEXP ] = __TESTDATA['NaN'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __ALTEXP), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "NaN falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "NaN falsch geladen");
                                             });
                                     },
-            'deserializePosInf'   : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['PosInf'];
+            'deserializePosInf'   : function() {  // NOTE Infinity wird von JSON als null gespeichet
+                                        const [ __NAME, , , __ALT, __ALTEXP ] = __TESTDATA['PosInf'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __ALTEXP), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "+Infinity falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "+Infinity falsch geladen");
                                             });
                                     },
-            'deserializeNegInf'   : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['NegInf'];
+            'deserializeNegInf'   : function() {  // NOTE -Infinity wird von JSON als null gespeichet
+                                        const [ __NAME, , , __ALT, __ALTEXP ] = __TESTDATA['NegInf'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __ALTEXP), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "-Infinity falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "-Infinity falsch geladen");
                                             });
                                     },
             'deserializeMinVal'   : function() {
@@ -2507,17 +2508,17 @@ Class.define(UnitTestOption, UnitTest, {
                                                 return ASSERT_EQUAL(__RET, __VAL, "Uint32Array falsch geladen");
                                             });
                                     },
-            'deserializeDate'     : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Date'];
+            'deserializeDate'     : function() {  // NOTE Date wird von JSON untypisiert gespeichet
+                                        const [ __NAME, , __EXP, __ALT ] = __TESTDATA['Date'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Date falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "Date falsch geladen");
                                             });
                                     },
             'deserializeSymbol'  : function() {  // NOTE Keine Speicherung von Symbol
-                                        const [ __NAME, , __EXP, __ERR ] = __TESTDATA['Symbol'];
+                                        const [ __NAME, , __EXP ] = __TESTDATA['Symbol'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2526,7 +2527,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserializeSymbol2'  : function() {  // NOTE Keine Speicherung von Symbol
-                                        const [ __NAME, , __EXP, __ERR ] = __TESTDATA['Symbol2'];
+                                        const [ __NAME, , __EXP ] = __TESTDATA['Symbol2'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2535,7 +2536,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserializeFunction' : function() {  // NOTE Keine Speicherung von Function
-                                        const [ __NAME, , __EXP, __ERR ] = __TESTDATA['Function'];
+                                        const [ __NAME, , __EXP ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2544,7 +2545,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserializeDefault'  : function() {
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default'];
 
                                         return callPromiseChain(storeValue(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2553,18 +2554,18 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserializeDefault2' : function() {  // NOTE Kein Default-Wert bei null
-                                        const [ __NAME, __VAL, __EXP, __ERR ] = __TESTDATA['Default2'];
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Serialize-Wert bei null ignoriert");
                                             });
                                     },
             'deserializeDefault3' : function() {  // NOTE Kein Default-Wert bei ""
-                                        const [ __NAME, __VAL, __EXP, __ERR ] = __TESTDATA['Default3'];
+                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Serialize-Wert bei \"\" ignoriert");
@@ -2624,13 +2625,13 @@ Class.define(UnitTestOption, UnitTest, {
                                                 return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
                                             });
                                     },
-            'deserialize2Array3'  : function() {
-                                        const [ __NAME, __VAL ] = __TESTDATA['Array3'];
+            'deserialize2Array3'  : function() {  // NOTE Boolean wird von JSON untypisiert gespeichet
+                                        const [ __NAME, __VAL, , __ALT ] = __TESTDATA['Array3'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "Array falsch geladen");
                                             });
                                     },
             'deserialize2Object'  : function() {
@@ -2651,17 +2652,17 @@ Class.define(UnitTestOption, UnitTest, {
                                                 return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
                                             });
                                     },
-            'deserialize2Object3' : function() {
-                                        const [ __NAME, __VAL ] = __TESTDATA['Object3'];
+            'deserialize2Object3' : function() {  // NOTE AssertionFailed wird von JSON untypisiert gespeichet
+                                        const [ __NAME, __VAL, , __ALT ] = __TESTDATA['Object3'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "Object falsch geladen");
                                             });
                                     },
             'deserialize2Undef'   : function() {
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Undef'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2678,31 +2679,31 @@ Class.define(UnitTestOption, UnitTest, {
                                                 return ASSERT_EQUAL(__RET, __VAL, "Null falsch geladen");
                                             });
                                     },
-            'deserialize2NaN'     : function() {
-                                        const [ __NAME, __VAL ] = __TESTDATA['NaN'];
+            'deserialize2NaN'     : function() {  // NOTE NaN wird von JSON als null gespeichet
+                                        const [ __NAME, __VAL, , __ALT ] = __TESTDATA['NaN'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "NaN falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "NaN falsch geladen");
                                             });
                                     },
-            'deserialize2PosInf'  : function() {
-                                        const [ __NAME, __VAL ] = __TESTDATA['PosInf'];
+            'deserialize2PosInf'  : function() {  // NOTE Infinity wird von JSON als null gespeichet
+                                        const [ __NAME, __VAL, , __ALT ] = __TESTDATA['PosInf'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "+Infinity falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "+Infinity falsch geladen");
                                             });
                                     },
-            'deserialize2NegInf'  : function() {
-                                        const [ __NAME, __VAL ] = __TESTDATA['NegInf'];
+            'deserialize2NegInf'  : function() {  // NOTE -Infinity wird von JSON als null gespeichet
+                                        const [ __NAME, __VAL, , __ALT ] = __TESTDATA['NegInf'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "-Infinity falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "-Infinity falsch geladen");
                                             });
                                     },
             'deserialize2MinVal'  : function() {
@@ -2759,17 +2760,17 @@ Class.define(UnitTestOption, UnitTest, {
                                                 return ASSERT_EQUAL(__RET, __VAL, "Uint32Array falsch geladen");
                                             });
                                     },
-            'deserialize2Date'    : function() {
-                                        const [ __NAME, __VAL ] = __TESTDATA['Date'];
+            'deserialize2Date'    : function() {  // NOTE Date wird von JSON untypisiert gespeichet
+                                        const [ __NAME, __VAL, , __ALT ] = __TESTDATA['Date'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Date falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ALT, "Date falsch geladen");
                                             });
                                     },
             'deserialize2Symbol'  : function() {  // NOTE Keine Speicherung von Symbol
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Symbol'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2778,7 +2779,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserialize2Symbol2' : function() {  // NOTE Keine Speicherung von Symbol
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol2'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Symbol2'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2787,7 +2788,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserialize2Function': function() {  // NOTE Keine Speicherung von Function
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Function'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2796,7 +2797,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserialize2Default' : function() {
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
@@ -2805,18 +2806,18 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserialize2Default2': function() {  // NOTE Kein Default-Wert bei null
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default2'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Serialize-Wert bei null ignoriert");
                                             });
                                     },
             'deserialize2Default3': function() {  // NOTE Kein Default-Wert bei ""
-                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default3'];
+                                        const [ __NAME, __VAL ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Serialize-Wert bei \"\" ignoriert");
