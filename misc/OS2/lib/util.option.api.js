@@ -26,7 +26,7 @@
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf resultierenden Wert
 function invalidateOpt(opt, force = false, reload = true) {
-    return Promise.resolve(opt.Promise).then(value => {
+    return Promise.resolve(opt.Promise).then(() => {
             if (opt.Loaded && reload && ! opt.ReadOnly) {
                 const __CONFIG = getOptConfig(opt);
 
@@ -148,7 +148,7 @@ function deleteOption(opt, force = false, reset = true) {
         const __VALUE = getOptValue(opt, undefined, false);
         let newValue;
 
-        return discardValue(__NAME).then(voidValue => {
+        return discardValue(__NAME).then(() => {
                 if (reset || __CONFIG.AutoReset) {
                     newValue = setOptValue(opt, initOptValue(__CONFIG));
                 }

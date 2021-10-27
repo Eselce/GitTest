@@ -57,7 +57,7 @@ if (__GMWRITE) {
 function storeValue(name, value) {
     __LOG[5](name + " >> " + __LOG.info(value, true, true));
 
-    return __SETVALUE(name, value).then(voidValue => {
+    return __SETVALUE(name, value).then(() => {
             __LOG[6]('OK', name, '>>', __LOG.info(value, true, true));
 
             return Promise.resolve({

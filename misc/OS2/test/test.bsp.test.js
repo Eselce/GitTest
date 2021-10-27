@@ -22,7 +22,7 @@
 
 // ==================== Abschnitt fuer Beispiel-Tests ====================
 
-    const __BSPTESTS = new UnitTest('util.log.js', "Alles rund um das Logging", {
+    new UnitTest('util.log.js', "Alles rund um das Logging", {
             'log0'                : function() {
                                         __LOG[4]("Testausgabe!");
 
@@ -48,9 +48,9 @@
                                     }
         });
 
-    const __BSPTESTSLEER = new UnitTest('empty.js', "Leere UnitTest-Klasse", { });
+    new UnitTest('empty.js', "Leere UnitTest-Klasse", { });
 
-    const __BSPTESTSUNDEFINED = new UnitTest('undefined.js', "Fehlende Tests", null);
+    new UnitTest('undefined.js', "Fehlende Tests", null);
 
 // ==================== Ende Abschnitt fuer Beispiel-Tests ====================
 

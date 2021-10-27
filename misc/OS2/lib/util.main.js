@@ -39,7 +39,7 @@ TeamClassification.assign(optSet, optParam) {
 // page: ID fuer die aktuelle Seite
 // return Promise auf die Durchfuehrung der Bearbeitung
 function handlePage(optConfig, optSet, page) {
-    const __SETUPOPTPARAMS = (this.setupOptParams[page] || (optSet => ({ 'hideMenu' : false })));
+    const __SETUPOPTPARAMS = (this.setupOptParams[page] || (() => ({ 'hideMenu' : false })));
     const __CLASSIFICATION = this.classification[page];
     const __PREPAREOPTIONS = this.prepareOptions;
     const __HANDLER = this.handler[page];
@@ -73,7 +73,8 @@ function run() {
             return defaultCatch(ex);
         }
     })().then(rc => {
-            __LOG[1]('SCRIPT END', __DBMOD.Name, rc);
+            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
+            __LOG[3](String(__OPTSET));
         });
 };
 

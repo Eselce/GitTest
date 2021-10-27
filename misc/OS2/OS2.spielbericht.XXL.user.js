@@ -555,7 +555,7 @@ function addIcon(node, iconName, altText = iconName, height = 32, width = height
             __IMG.width = width;
             node.appendChild(__IMG);
         }).catch(error => {
-            //console.error(`Failed to load icon ${iconName}:`, error);
+            console.error(`Failed to load icon ${iconName}:`, error);
 
             node.innerHTML = node.innerHTML + altText;
         });

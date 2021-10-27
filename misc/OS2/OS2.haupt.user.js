@@ -247,7 +247,7 @@ function procHaupt() {
                                                'team'         : true
                                            }
                         }).then(optSet => {
-            const __ZAT = firstZAT(getOptValue(__OPTSET.saison), getOptValue(__OPTSET.ligaSize));
+            const __ZAT = firstZAT(getOptValue(optSet.saison), getOptValue(optSet.ligaSize));
             const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
             const __CURRZAT = __NEXTZAT - 1;
@@ -268,6 +268,7 @@ function procHaupt() {
         }
     })().then(rc => {
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
+            __LOG[3](String(__OPTSET));
         })
 })();
 

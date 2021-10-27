@@ -28,7 +28,7 @@
             'postfixName'   : [ "Name", "Postfix",  "NamePostfix"   ]
         };
 
-    const __UNITTESTOPTIONAPI = new UnitTestOption('util.option.api', "Schnittstelle zur Behandlung von Optionen", {
+    new UnitTestOption('util.option.api', "Schnittstelle zur Behandlung von Optionen", {
             'prefixName'          : function() {
                                         const [ __NAME, __PREFIX, __EXP ] = __TESTDATA['prefixName'];
 

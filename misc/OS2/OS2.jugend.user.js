@@ -1274,16 +1274,16 @@ function procHaupt() {
             const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
             const __CURRZAT = __NEXTZAT - 1;
-            const __DATAZAT = getOptValue(__OPTSET.datenZat);
+            const __DATAZAT = getOptValue(optSet.datenZat);
 
             // Stand der alten Daten merken...
-            setOpt(__OPTSET.oldDatenZat, __DATAZAT, false);
+            setOpt(optSet.oldDatenZat, __DATAZAT, false);
 
             if (__CURRZAT >= 0) {
                 __LOG[2]("Aktueller ZAT: " + __CURRZAT);
 
                 // Neuen aktuellen ZAT speichern...
-                setOpt(__OPTSET.aktuellerZat, __CURRZAT, false);
+                setOpt(optSet.aktuellerZat, __CURRZAT, false);
 
                 if (__CURRZAT !== __DATAZAT) {
                     __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
@@ -1298,7 +1298,7 @@ function procHaupt() {
                                                 }).catch(defaultCatch);
 
                     // Neuen Daten-ZAT speichern...
-                    setOpt(__OPTSET.datenZat, __CURRZAT, false);
+                    setOpt(optSet.datenZat, __CURRZAT, false);
                 }
             }
 
@@ -1412,8 +1412,8 @@ function procTeamuebersicht() {
                 const __HEADERS = __ROWS[0];
                 const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
-                const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 1);
-                const __COLMAN = new ColumnManager(__OPTSET, __COLUMNINDEX, {
+                const __PLAYERS = init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 1);
+                const __COLMAN = new ColumnManager(optSet, __COLUMNINDEX, {
                                                     'Default'            : true,
                                                     'ersetzeSkills'      : false,
                                                     'zeigeGeb'           : false,
@@ -1434,14 +1434,14 @@ function procTeamuebersicht() {
 
                 // Format der Trennlinie zwischen den Jahrgaengen...
                 if (! __COLMAN.gt) {
-                    const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
+                    const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
 
                     separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
                 }
 
-                const __CURRZAT = getOptValue(__OPTSET.datenZat);
-                const __MSG = new WarnDrawMessage(__OPTSET, __CURRZAT);
-                const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(__OPTSET, __CURRZAT);
+                const __CURRZAT = getOptValue(optSet.datenZat);
+                const __MSG = new WarnDrawMessage(optSet, __CURRZAT);
+                const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(optSet, __CURRZAT);
                 const __ANCHOR = getTable(0, 'div');
                 const __SEARCH = '<form method="POST">';
 
@@ -1529,8 +1529,8 @@ function procSpielereinzelwerte() {
                 const __HEADERS = __ROWS[0];
                 const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
-                const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 2);
-                const __COLMAN = new ColumnManager(__OPTSET, __COLUMNINDEX, true);
+                const __PLAYERS = init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 2);
+                const __COLMAN = new ColumnManager(optSet, __COLUMNINDEX, true);
 
                 __COLMAN.addTitles(__HEADERS, __TITLECOLOR);
 
@@ -1544,7 +1544,7 @@ function procSpielereinzelwerte() {
 
                 // Format der Trennlinie zwischen den Jahrgaengen...
                 if (! __COLMAN.gt) {
-                    const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
+                    const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
 
                     separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
                 }
@@ -1636,8 +1636,8 @@ function procOptSkill() {
                 const __HEADERS = __ROWS[0];
                 const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
-                const __PLAYERS = init(__ROWS, __OPTSET, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 3);
-                const __COLMAN = new ColumnManager(__OPTSET, __COLUMNINDEX, {
+                const __PLAYERS = init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 3);
+                const __COLMAN = new ColumnManager(optSet, __COLUMNINDEX, {
                                                     'Default'            : true,
                                                     'ersetzeSkills'      : false,
                                                     'zeigeSkill'         : false
@@ -1655,7 +1655,7 @@ function procOptSkill() {
 
                 // Format der Trennlinie zwischen den Jahrgaengen...
                 if (! __COLMAN.gt) {
-                    const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
+                    const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
 
                     separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
                 }
@@ -1695,6 +1695,7 @@ function procOptSkill() {
         }
     })().then(rc => {
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
+            __LOG[3](String(__OPTSET));
         })
 })();
 

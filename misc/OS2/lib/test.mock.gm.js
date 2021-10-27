@@ -42,7 +42,7 @@ if ((typeof GM_deleteValue) == 'undefined') {
 }
 
 if ((typeof GM_listValues) == 'undefined') {
-    this.GM_listValues = function(name) {  // Mock GM_listValues function
+    this.GM_listValues = function() {  // Mock GM_listValues function
             return Object.keys(__MOCKSTORAGE);
         };
 }
