@@ -7,6 +7,7 @@
 // @description  Unittest-Script fuer Online Soccer 2.0
 // @include      /^https?://(www\.)?(eselce\.github\.io|raw\.githubusercontent\.com/Eselce)/(OS2\.scripts|GitTest(/master)?/misc/OS2)/test/\S+\.test\.js(\?\S+(&\S+)*)?$/
 // @include      /^https?://(www\.)?(eselce\.github\.io|raw\.githubusercontent\.com/Eselce)/(OS2\.scripts|GitTest(/master)?/misc/OS2)/test/lib\.\S+\.test\.js(\?\S+(&\S+)*)?$/
+// @include      /^file:///\w:(/\S+)*/GitHub/GitTest/misc/OS2/test/\S+\.test\.js(\?\S+(&\S+)*)?$/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue
@@ -54,7 +55,6 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.player.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.column.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.table.js
-// _require      https://eselce.github.io/GitTest/misc/OS2/lib/test.mock.gm.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/test.assert.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/test.class.unittest.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/test.lib.option.js
