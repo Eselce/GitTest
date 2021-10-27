@@ -16,11 +16,10 @@
 
 if ((typeof GM_getValue) == 'undefined') {
     this.GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
-            if (__MOCKSTORAGE.hasOwnProperty(name)) {
-                return __MOCKSTORAGE[name];
-            } else {
-                return defaultValue;
-            }
+            const __VAL = (__MOCKSTORAGE.hasOwnProperty(name)) ?__MOCKSTORAGE[name] : undefined;
+
+            // getValue() defaultet neben 'undefined' auch 'null'...
+            return ((__VAL === null) ? __VAL : getValue(__VAL, defaultValue));
         };
 }
 
