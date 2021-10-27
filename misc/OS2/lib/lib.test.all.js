@@ -2409,7 +2409,7 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserializeUndef'    : function() {
-                                        const [ __NAME, , , __ERR ] = __TESTDATA['Undef'];
+                                        const [ __NAME, , __EXP, __ERR ] = __TESTDATA['Undef'];
 
                                         return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
