@@ -2,6 +2,7 @@
 
 // Inhaltsverzeichnis:
 // https://eselce.github.io/GitTest/misc/OS2/lib/<TESTBASE>: 
+//  test.mock.gm.js
 //  test.assert.js
 //  test.class.unittest.js
 //  test.lib.option.js
@@ -9,6 +10,89 @@
 //  util.log.test.js
 //  util.store.test.js
 //  util.option.api.test.js
+
+/*** Modul test.mock.gm.js ***/
+
+// ==UserScript==
+// _name         test.mock.gm
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2021+
+// _author       Sven Loges (SLC)
+// _description  JS-lib mit Mock-Funktionen als Ersatz fuer Greasemonkey-Einbindung
+// _require      https://eselce.github.io/OS2.scripts/lib/test.mock.gm.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Mock GM3-Funktionen ====================
+
+if ((typeof GM_getValue) == 'undefined') {
+    this.GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
+            const __VAL = (__MOCKSTORAGE.hasOwnProperty(name)) ?__MOCKSTORAGE[name] : undefined;
+
+            // getValue() defaultet neben 'undefined' auch 'null'...
+            return ((__VAL === null) ? __VAL : getValue(__VAL, defaultValue));
+        };
+}
+
+if ((typeof GM_setValue) == 'undefined') {
+    this.GM_setValue = function(name, value) {  // Mock GM_setValue function
+            __MOCKSTORAGE[name] = value;
+
+            return value;
+        };
+}
+
+if ((typeof GM_deleteValue) == 'undefined') {
+    this.GM_deleteValue = function(name) {  // Mock GM_deleteValue function
+            const __VALUE = __MOCKSTORAGE[name];
+
+            delete __MOCKSTORAGE[name];
+
+            return __VALUE;
+        };
+}
+
+if ((typeof GM_listValues) == 'undefined') {
+    this.GM_listValues = function(name) {  // Mock GM_listValues function
+            return Object.keys(__MOCKSTORAGE);
+        };
+}
+
+// Interner Speicher zur Simulation eines localStorage...
+const __MOCKSTORAGE = { };
+
+// Zuordnung im GM-Objekt...
+Object.entries({
+        'GM_deleteValue' : 'deleteValue',
+        'GM_getValue'    : 'getValue',
+        'GM_listValues'  : 'listValues',
+        'GM_setValue'    : 'setValue'
+    }).forEach(([oldKey, newKey]) => {
+        let old = this[oldKey];
+        if (old && ((typeof GM[newKey]) == 'undefined')) {
+            GM[newKey] = function(...args) {
+                    return new Promise((resolve, reject) => {
+                            try {
+                                resolve(old.apply(this, args));
+                            } catch (e) {
+                                reject(e);
+                            }
+                        });
+                };
+        }
+    });
+
+__LOG[7](GM);
+
+// ==================== Ende Abschnitt fuer Mock GM3-Funktionen ====================
+
+// *** EOF ***
+
+/*** Ende Modul test.mock.gm.js ***/
 
 /*** Modul test.assert.js ***/
 
@@ -907,6 +991,263 @@ Class.define(UnitTestOption, UnitTest, {
             'Default3'  : [ 'UnitTestDef',  "",                                                                 '""',                   __ERROR ]
         };
 
+    // Primitive Speichermethoden __GETVALUE() und __SETVALUE():
+    // getSetValue*  = GET/SET
+    const __UNITTESTSTORE1 = new UnitTest('util.store.js Basis', "__GETVALUE() und __SETVALUE()", {
+            'getSetValueString'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['String'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "String falsch geladen");
+                                            });
+                                    },
+            'getSetValueInt'      : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Int'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Integer falsch geladen");
+                                            });
+                                    },
+            'getSetValueBool'     : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Bool'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Boolean falsch geladen");
+                                            });
+                                    },
+            'getSetValueFloat'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Float'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_IN_DELTA(__RET, __VAL, __ASSERTDELTA, "Float falsch geladen");
+                                            });
+                                    },
+            'getSetValueArray'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
+                                            });
+                                    },
+            'getSetValueArray2'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array2'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
+                                            });
+                                    },
+            'getSetValueArray3'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Array3'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
+                                            });
+                                    },
+            'getSetValueObject'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
+                                            });
+                                    },
+            'getSetValueObject2'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object2'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
+                                            });
+                                    },
+            'getSetValueObject3'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object3'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
+                                            });
+                                    },
+            'getSetValueUndef'    : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Undefined falsch geladen");
+                                            });
+                                    },
+            'getSetValueNull'     : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Null'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Null falsch geladen");
+                                            });
+                                    },
+            'getSetValueNaN'      : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['NaN'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "NaN falsch geladen");
+                                            });
+                                    },
+            'getSetValuePosInf'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['PosInf'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "+Infinity falsch geladen");
+                                            });
+                                    },
+            'getSetValueNegInf'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['NegInf'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "-Infinity falsch geladen");
+                                            });
+                                    },
+            'getSetValueMinVal'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MinVal'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MinVal falsch geladen");
+                                            });
+                                    },
+            'getSetValueMaxVal'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MaxVal'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MaxVal falsch geladen");
+                                            });
+                                    },
+            'getSetValueMinInt'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MinInt'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MinInt falsch geladen");
+                                            });
+                                    },
+            'getSetValueMaxInt'   : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['MaxInt'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "MaxInt falsch geladen");
+                                            });
+                                    },
+            'getSetValueEpsilon'  : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Epsilon'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch geladen");
+                                            });
+                                    },
+            'getSetValueUint32Arr': function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Uint32Arr'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Uint32Array falsch geladen");
+                                            });
+                                    },
+            'getSetValueDate'     : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Date'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Date falsch geladen");
+                                            });
+                                    },
+            'getSetValueSymbol'   : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
+                                            });
+                                    },
+            'getSetValueSymbol2'  : function() {  // NOTE Keine Speicherung von Symbol
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol2'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
+                                            });
+                                    },
+            'getSetValueFunction' : function() {  // NOTE Keine Speicherung von Function
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Function'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Function falsch geladen");
+                                            });
+                                    },
+            'getSetValueDefault'  : function() {
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei undefined ignoriert");
+                                            });
+                                    },
+            'getSetValueDefault2' : function() {  // NOTE Kein Default-Wert bei null
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default2'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Summon-Wert bei null ignoriert");
+                                            });
+                                    },
+            'getSetValueDefault3' : function() {  // NOTE Kein Default-Wert bei ""
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default3'];
+
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Summon-Wert bei \"\" ignoriert");
+                                            });
+                                    },
+        });
+
     // Komponenten der Testreihen (sto/ser x ent/sum/des):
     // storeValue*   = STO/ent
     // summonValue*  = sto/SUM * DEF
@@ -914,7 +1255,7 @@ Class.define(UnitTestOption, UnitTest, {
     // serialize2*   = SER/ent
     // deserialize*  = sto/DES * DEF
     // deserialize2* = ser/DES * DEF
-    const __UNITTESTSTORE1 = new UnitTest('util.store.js Daten', "Sicherung und das Laden von Daten", {
+    const __UNITTESTSTORE2 = new UnitTest('util.store.js Daten', "Sicherung und das Laden von Daten", {
             'storeValueString'    : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['String'];
 
@@ -2477,7 +2818,7 @@ Class.define(UnitTestOption, UnitTest, {
 
 // ==================== Abschnitt fuer die Folgen einer Speicherung ====================
 
-    const __UNITTESTSTORE2 = new UnitTest('util.store.js Reload', "Neuladen der Seite", {
+    const __UNITTESTSTORE3 = new UnitTest('util.store.js Reload', "Neuladen der Seite", {
             'refreshPageNoReload' : function() {
                                         const __RET = refreshPage(false);
                                         return ASSERT_NOT_SET(__RET, "Kein Returnwert erwartet");
@@ -2486,7 +2827,7 @@ Class.define(UnitTestOption, UnitTest, {
 
 // ==================== Abschnitt fuer die Sicherung von Daten mit Callback ====================
 
-    const __UNITTESTSTORE3 = new UnitTest('util.store.js Callback', "Sicherung von Daten mit Callback", {
+    const __UNITTESTSTORE4 = new UnitTest('util.store.js Callback', "Sicherung von Daten mit Callback", {
 //            'setStored'           : function() {
 //                                    }
         });
