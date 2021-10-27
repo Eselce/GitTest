@@ -522,7 +522,7 @@ Class.define(Options, Object, {
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf resultierenden Wert
 function invalidateOpt(opt, force = false, reload = true) {
-    return Promise.resolve(opt.Promise).then(value => {
+    return Promise.resolve(opt.Promise).then(() => {
             if (opt.Loaded && reload && ! opt.ReadOnly) {
                 const __CONFIG = getOptConfig(opt);
 
@@ -644,7 +644,7 @@ function deleteOption(opt, force = false, reset = true) {
         const __VALUE = getOptValue(opt, undefined, false);
         let newValue;
 
-        return discardValue(__NAME).then(voidValue => {
+        return discardValue(__NAME).then(() => {
                 if (reset || __CONFIG.AutoReset) {
                     newValue = setOptValue(opt, initOptValue(__CONFIG));
                 }
@@ -1266,16 +1266,16 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
 // funOff: Funktion zum Ausschalten
 // keyOff: Hotkey zum Ausschalten im Menu
 // return Promise von GM.registerMenuCommand()
-function registerMenuOption(val, menuOn, funOn, keyOn, menuOff, funOff, keyOff) {
+async function registerMenuOption(val, menuOn, funOn, keyOn, menuOff, funOff, keyOff) {
     const __ON  = (val ? '*' : "");
     const __OFF = (val ? "" : '*');
 
     __LOG[4]("OPTION " + __ON + menuOn + __ON + " / " + __OFF + menuOff + __OFF);
 
     if (val) {
-        return Promise.resolve(GM.registerMenuCommand(menuOff, funOff, keyOff)).then(result => menuOn);
+        return Promise.resolve(GM.registerMenuCommand(menuOff, funOff, keyOff)).then(() => menuOn);
     } else {
-        return Promise.resolve(GM.registerMenuCommand(menuOn, funOn, keyOn)).then(result => menuOff);
+        return Promise.resolve(GM.registerMenuCommand(menuOn, funOn, keyOn)).then(() => menuOff);
     }
 }
 
@@ -1286,7 +1286,7 @@ function registerMenuOption(val, menuOn, funOn, keyOn, menuOff, funOff, keyOff) 
 // fun: Funktion zum Setzen des naechsten Wertes
 // key: Hotkey zum Setzen des naechsten Wertes im Menu
 // return Promise von GM.registerMenuCommand()
-function registerNextMenuOption(val, arr, menu, fun, key) {
+async function registerNextMenuOption(val, arr, menu, fun, key) {
     const __MENU = substParam(menu, val);
     let options = "OPTION " + __MENU;
 
@@ -1299,7 +1299,7 @@ function registerNextMenuOption(val, arr, menu, fun, key) {
     }
     __LOG[4](options);
 
-    return Promise.resolve(GM.registerMenuCommand(__MENU, fun, key)).then(result => __MENU);
+    return Promise.resolve(GM.registerMenuCommand(__MENU, fun, key)).then(() => __MENU);
 }
 
 // Zeigt den Eintrag im Menu einer Option, falls nicht hidden
@@ -1310,7 +1310,7 @@ function registerNextMenuOption(val, arr, menu, fun, key) {
 // hidden: Angabe, ob Menupunkt nicht sichtbar sein soll (Default: sichtbar)
 // serial: Serialization fuer komplexe Daten
 // return Promise von GM.registerMenuCommand() (oder String-Version des Wertes)
-function registerDataOption(val, menu, fun, key, hidden = false, serial = true) {
+async function registerDataOption(val, menu, fun, key, hidden = false, serial = true) {
     const __VALUE = ((serial && (val !== undefined)) ? safeStringify(val) : val);
     const __MENU = substParam(menu, __VALUE);
     const __OPTIONS = (hidden ? "HIDDEN " : "") + "OPTION " + __MENU +
@@ -1321,7 +1321,7 @@ function registerDataOption(val, menu, fun, key, hidden = false, serial = true) 
     if (hidden) {
         return Promise.resolve(__VALUE);
     } else {
-        return Promise.resolve(GM.registerMenuCommand(__MENU, fun, key)).then(result => __MENU);
+        return Promise.resolve(GM.registerMenuCommand(__MENU, fun, key)).then(() => __MENU);
     }
 }
 
@@ -1753,7 +1753,7 @@ function groupData(data, byFun, filterFun, sortFun) {
     const __BYKEYSET = new Set(__BYKEYS);
     const __BYKEYARRAY = [...__BYKEYSET];
     const __SORTEDKEYS = __BYKEYARRAY.sort(sortFun);
-    const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index, arr) => __FILTERFUN(byVal, index, __BYKEYS)));
+    const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => __FILTERFUN(byVal, index, __BYKEYS)));
     const __ASSIGN = ((keyArr, valArr) => Object.assign({ }, ...keyArr.map((key, index) => ({ [key] : valArr[index] }))));
 
     return __ASSIGN(__SORTEDKEYS, __GROUPEDKEYS);

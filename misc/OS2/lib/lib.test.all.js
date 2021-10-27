@@ -57,7 +57,7 @@ if ((typeof GM_deleteValue) == 'undefined') {
 }
 
 if ((typeof GM_listValues) == 'undefined') {
-    this.GM_listValues = function(name) {  // Mock GM_listValues function
+    this.GM_listValues = function() {  // Mock GM_listValues function
             return Object.keys(__MOCKSTORAGE);
         };
 }
@@ -456,6 +456,8 @@ Class.define(UnitTest, Object, {
 
                                         try {
                                             result = await this.setup.call(__THIS, __NAME, __DESC, __TFUN, __THIS);
+
+                                            __LOG[9]("Preparation of test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "returned:", result);
                                         } catch (ex) {
                                             // Fehler im setup()...
                                             __RESULT.checkException(ex);
@@ -483,6 +485,8 @@ Class.define(UnitTest, Object, {
 
                                         try {
                                             result = await this.teardown.call(__THIS, __NAME, __DESC, __TFUN, __THIS);
+
+                                            __LOG[9]("Cleanup of test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "returned:", result);
                                         } catch (ex) {
                                             // Fehler im teardown()...
                                             __RESULT.checkException(ex);
@@ -540,6 +544,8 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
 
             try {
                 result = await __PFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
+
+                __LOG[9]("Preparation of module",__LOG.info(__NAME, false), "returned:", result);
             } catch (ex) {
                 // Fehler im Framework zur Vorbereitung der Testklasse...
                 __RESULTS.checkException(ex);
@@ -557,6 +563,8 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
             } finally {
                 try {
                     result = await __CFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
+
+                __LOG[9]("Cleanup of module",__LOG.info(__NAME, false), "returned:", result);
                 } catch (ex) {
                     // Fehler im Framework der Testklasse...
                     __RESULTS.checkException(ex);
@@ -971,7 +979,7 @@ Class.define(UnitTestOption, UnitTest, {
             'Object'    : [ 'UnitTestO',    { eins : 1, zwei : 2, fuenf : 5 },                                  '{"eins":1,"zwei":2,"fuenf":5}' ],
             'Object2'   : [ 'UnitTestO',    { 'c': { i : true, a : null }, a : { b : { c : [ 2, 47.11 ] } } },  '{"c":{"i":true,"a":null},"a":{"b":{"c":[2,47.11]}}}' ],
             'Object3'   : [ 'UnitTestO',    new AssertionFailed(new Boolean(true), "Fehler"),                   '{"message":"Fehler (true)"}' ],
-            'Undef'     : [ 'UnitTestUnd',  undefined,                                                          undefined ],
+            'Undef'     : [ 'UnitTestUnd',  undefined,                                                          undefined,              __ERROR ],
             'Null'      : [ 'UnitTestNul',  null,                                                               'null' ],
             'NaN'       : [ 'UnitTestNaN',  Number.NaN,                                                         String(Number.NaN) ],  // TODO: 'null'?
             'PosInf'    : [ 'UnitTestInf',  Number.POSITIVE_INFINITY,                                           String(Number.POSITIVE_INFINITY) ],
@@ -993,11 +1001,11 @@ Class.define(UnitTestOption, UnitTest, {
 
     // Primitive Speichermethoden __GETVALUE() und __SETVALUE():
     // getSetValue*  = GET/SET
-    const __UNITTESTSTORE1 = new UnitTest('util.store.js Basis', "__GETVALUE() und __SETVALUE()", {
+    new UnitTest('util.store.js Basis', "__GETVALUE() und __SETVALUE()", {
             'getSetValueString'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['String'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "String falsch geladen");
@@ -1006,7 +1014,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueInt'      : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Int'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Integer falsch geladen");
@@ -1015,7 +1023,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueBool'     : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Bool'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Boolean falsch geladen");
@@ -1024,7 +1032,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueFloat'    : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Float'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_IN_DELTA(__RET, __VAL, __ASSERTDELTA, "Float falsch geladen");
@@ -1033,7 +1041,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueArray'    : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Array'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
@@ -1042,7 +1050,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueArray2'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Array2'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
@@ -1051,7 +1059,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueArray3'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Array3'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
@@ -1060,7 +1068,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueObject'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Object'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
@@ -1069,7 +1077,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueObject2'  : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Object2'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
@@ -1078,25 +1086,25 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueObject3'  : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Object3'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
                                             });
                                     },
             'getSetValueUndef'    : function() {
-                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Undef'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Undefined falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Undefined falsch geladen");
                                             });
                                     },
             'getSetValueNull'     : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Null'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Null falsch geladen");
@@ -1105,7 +1113,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueNaN'      : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['NaN'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "NaN falsch geladen");
@@ -1114,7 +1122,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValuePosInf'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['PosInf'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "+Infinity falsch geladen");
@@ -1123,7 +1131,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueNegInf'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['NegInf'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "-Infinity falsch geladen");
@@ -1132,7 +1140,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueMinVal'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['MinVal'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "MinVal falsch geladen");
@@ -1141,7 +1149,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueMaxVal'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['MaxVal'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "MaxVal falsch geladen");
@@ -1150,7 +1158,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueMinInt'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['MinInt'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "MinInt falsch geladen");
@@ -1159,7 +1167,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueMaxInt'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['MaxInt'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "MaxInt falsch geladen");
@@ -1168,7 +1176,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueEpsilon'  : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Epsilon'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch geladen");
@@ -1177,7 +1185,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueUint32Arr': function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Uint32Arr'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Uint32Array falsch geladen");
@@ -1186,7 +1194,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueDate'     : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Date'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Date falsch geladen");
@@ -1195,7 +1203,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueSymbol'   : function() {  // NOTE Keine Speicherung von Symbol
                                         const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
@@ -1204,7 +1212,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueSymbol2'  : function() {  // NOTE Keine Speicherung von Symbol
                                         const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Symbol2'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
@@ -1213,7 +1221,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueFunction' : function() {  // NOTE Keine Speicherung von Function
                                         const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Function'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __ERR, "Function falsch geladen");
@@ -1222,7 +1230,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueDefault'  : function() {
                                         const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei undefined ignoriert");
@@ -1231,7 +1239,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueDefault2' : function() {  // NOTE Kein Default-Wert bei null
                                         const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Summon-Wert bei null ignoriert");
@@ -1240,7 +1248,7 @@ Class.define(UnitTestOption, UnitTest, {
             'getSetValueDefault3' : function() {  // NOTE Kein Default-Wert bei ""
                                         const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), voidValue => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Summon-Wert bei \"\" ignoriert");
@@ -1255,7 +1263,7 @@ Class.define(UnitTestOption, UnitTest, {
     // serialize2*   = SER/ent
     // deserialize*  = sto/DES * DEF
     // deserialize2* = ser/DES * DEF
-    const __UNITTESTSTORE2 = new UnitTest('util.store.js Daten', "Sicherung und das Laden von Daten", {
+    new UnitTest('util.store.js Daten', "Sicherung und das Laden von Daten", {
             'storeValueString'    : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['String'];
 
@@ -1622,18 +1630,18 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'summonValueUndef'    : function() {
-                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Undef'];
 
-                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Undefined falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Undefined falsch geladen");
                                             });
                                     },
             'summonValueNull'     : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Null'];
 
-                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Null falsch geladen");
@@ -1874,18 +1882,18 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'serializeUndef'      : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Undef'];
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Undef'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name__ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "Undefined falsch gespeichert");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Undefined falsch gespeichert");
                                             });
                                     },
             'serializeNull'       : function() {
                                         const [ __NAME, __VAL, __EXP ] = __TESTDATA['Null'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __EXP, "Null falsch gespeichert");
@@ -2401,18 +2409,18 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserializeUndef'    : function() {
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Undef'];
+                                        const [ __NAME, , , __ERR ] = __TESTDATA['Undef'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name), value => {
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Undefined falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Undefined falsch geladen");
                                             });
                                     },
             'deserializeNull'     : function() {
                                         const [ __NAME, __VAL, __EXP ] = __TESTDATA['Null'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name), value => {
+                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Null falsch geladen");
@@ -2653,18 +2661,18 @@ Class.define(UnitTestOption, UnitTest, {
                                             });
                                     },
             'deserialize2Undef'   : function() {
-                                        const [ __NAME, __VAL ] = __TESTDATA['Undef'];
+                                        const [ __NAME, __VAL, , __ERR ] = __TESTDATA['Undef'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "Undefined falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __ERR, "Undefined falsch geladen");
                                             });
                                     },
             'deserialize2Null'    : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Null'];
 
-                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name), value => {
+                                        return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Null falsch geladen");
@@ -2818,7 +2826,7 @@ Class.define(UnitTestOption, UnitTest, {
 
 // ==================== Abschnitt fuer die Folgen einer Speicherung ====================
 
-    const __UNITTESTSTORE3 = new UnitTest('util.store.js Reload', "Neuladen der Seite", {
+    new UnitTest('util.store.js Reload', "Neuladen der Seite", {
             'refreshPageNoReload' : function() {
                                         const __RET = refreshPage(false);
                                         return ASSERT_NOT_SET(__RET, "Kein Returnwert erwartet");
@@ -2827,7 +2835,7 @@ Class.define(UnitTestOption, UnitTest, {
 
 // ==================== Abschnitt fuer die Sicherung von Daten mit Callback ====================
 
-    const __UNITTESTSTORE4 = new UnitTest('util.store.js Callback', "Sicherung von Daten mit Callback", {
+    new UnitTest('util.store.js Callback', "Sicherung von Daten mit Callback", {
 //            'setStored'           : function() {
 //                                    }
         });
@@ -2877,7 +2885,7 @@ Class.define(UnitTestOption, UnitTest, {
             'postfixName'   : [ "Name", "Postfix",  "NamePostfix"   ]
         };
 
-    const __UNITTESTOPTIONAPI = new UnitTestOption('util.option.api', "Schnittstelle zur Behandlung von Optionen", {
+    new UnitTestOption('util.option.api', "Schnittstelle zur Behandlung von Optionen", {
             'prefixName'          : function() {
                                         const [ __NAME, __PREFIX, __EXP ] = __TESTDATA['prefixName'];
 
