@@ -34,11 +34,10 @@ const __LOG = {
                                 ],                      // [""] Log:  Table
                                                         // [true]     {
                                                         // [false]    }
-                  'init'      : function(win, logLevel = 4) {  // TODO: Parameter 'win' als Referenz-Window
+                  'init'      : function(win, logLevel = 4) {
                                     for (let level = 0; level < this.logFun.length; level++) {
-                                        this[level] = ((level > logLevel) ? function() { } : function() {
-                                                    return this.logFun[level]('[' + level + ']', ...arguments);
-                                                });
+                                        this[level] = ((level > logLevel) ? function() { } :
+                                                        this.logFun[level].bind(win.console, '[' + level + ']'));
                                     }
                                     this[""]    = this.logFun[7];   // console.table
                                     this[true]  = console.group;    // console.group
