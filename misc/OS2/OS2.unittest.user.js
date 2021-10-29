@@ -236,14 +236,11 @@ function procHaupt() {
 }
 
 (() => {
-    (async () => {
+    startMain().then(async () => {
         try {
-            // URL-Legende:
-            // page=0: Hauptseite
-
             // Verzweige in unterschiedliche Verarbeitungen je nach Wert von page:
             switch (getPageIdFromURL(window.location.href, {
-                                                               'haupt.php' : 0  // Hauptseite
+                                                               'util.store.test.js' : 0  // Unit-Test-Datei
                                                            }, 'page')) {
                 case 0  : await procHaupt().catch(defaultCatch); break;
                 default : await procHaupt().catch(defaultCatch); break;
@@ -253,9 +250,9 @@ function procHaupt() {
         } catch (ex) {
             return defaultCatch(ex);
         }
-    })().then(rc => {
+    }).then(rc => {
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-            __LOG[3](String(__OPTSET));
+            __LOG[2](String(__OPTSET));
         })
 })();
 

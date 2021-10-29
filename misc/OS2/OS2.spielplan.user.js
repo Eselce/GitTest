@@ -400,7 +400,7 @@ function procSpielplan() {
 }
 
 (() => {
-    (async () => {
+    startMain().then(async () => {
         try {
             // URL-Legende:
             // s=0: Teamuebersicht
@@ -429,7 +429,7 @@ function procSpielplan() {
         }
     })().then(rc => {
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-            __LOG[3](String(__OPTSET));
+            __LOG[2](String(__OPTSET));
         })
 })();
 
