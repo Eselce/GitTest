@@ -1062,7 +1062,86 @@ function defaultCatch(error) {
 
 // ==================== Konfigurations-Abschnitt fuer Speicherung (GM.setValue, GM.deleteValue) ====================
 
+// Echte Schreibzugriffe (false = read only)
 const __GMWRITE = true;
+
+// ==================== Abschnitt Programmstart und zugehoerigen Hilfsfunktionen ====================
+
+// Gesammelte Routinen fuer den Start des Scriptes...
+const __SCRIPTINIT = [];
+
+// Registrierung eine Startfunktion
+// startFun: Auszufuehrende Funktion
+// return void
+async function registerStartFun(startFun) {
+    __SCRIPTINIT.push(startFun);
+}
+
+// Funktion zum sequentiellen Aufruf der Startroutinen in __SCRIPTINIT ueber Promises
+// return Ein Promise-Objekt fuer den Programmstart
+async function startMain() {
+    return __SCRIPTINIT.reduce((prom, fun) => prom.then(fun, defaultCatch),
+            Promise.resolve(true)).then(__SCRIPTINIT.length = 0);
+}
+
+// ==================== Abschnitt Lesefilter und zugehoerigen Hilfsfunktionen ====================
+
+// Modifikationen fuer Kompatibilitaet (z.B. "undefined" statt undefined bei Tampermonkey)
+const __GMREADFILTER = [];
+
+async function GM_checkForTampermonkeyBug() {
+    const __TESTNAME = 'GM_checkForTampermonkeyBug';
+    const __TESTVALUE = undefined;
+    const __TESTDEFAULT = "DEFAULT";
+    const __TESTFILTER = GM_TampermonkeyFilter;
+
+    return __SETVALUE(__TESTNAME, __TESTVALUE).then(
+        __GETVALUE(__TESTNAME, __TESTDEFAULT), defaultCatch).then(value => {
+                const __RET = (value !== __TESTDEFAULT);
+
+                if (__RET) {
+                    if (! __GMREADFILTER.push(__TESTFILTER)) {
+                        return false;
+                    }
+
+                    __LOG[8]("GM_TampermonkeyFilter AKTIVIERT!")
+                }
+
+                return __RET;
+            }, defaultCatch);
+}
+
+// Funktion zum sequentiellen Aufruf der Filter in __GMREADFILTER ueber Promises
+// startValue: Promise oder Wert, der/die den Startwert oder das Startobjekt beinhaltet
+// name: GM.getValue()-Name, unter dem die Daten gespeichert wurden (Zusatzinfo fuer den Filter)
+// defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist (Zusatzinfo fuer den Filter)
+// return Ein Promise-Objekt mit dem Endresultat
+async function useReadFilter(startValue, name, defValue) {
+    return __GMREADFILTER.reduce((prom, fun) => prom.then(
+            value => fun(value, name, defValue), defaultCatch),
+            Promise.resolve(startValue));
+}
+
+// Kompatibilitionsfunktion gegen den undefined-Bug von Tampermonkey
+// value: Gelesener Wert oder Promise darauf
+// name: GM.getValue()-Name, unter dem die Daten gespeichert wurden (Zusatzinfo fuer den Filter)
+// defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist (Zusatzinfo fuer den Filter)
+// return Promise mit korrigiertem Wert
+async function GM_TampermonkeyFilter(value, name, defValue) {
+    const __VALUE = await Promise.resolve(value);
+
+    __LOG[8]('GM_TampermonkeyFilter(' + __LOG.info(value, false) + "), "
+        + __LOG.info(name, false) + ", " + __LOG.info(defValue, false));
+
+    if (__VALUE === 'undefined') {
+        __LOG[4]("GM_TampermonkeyFilter: Fixing", __LOG.info(value, false),
+            "for", __LOG.info(name, false), "to", __LOG.info(defValue, false));
+
+        return defValue;
+    }
+
+    return value;
+}
 
 // ==================== Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
 
@@ -1074,10 +1153,15 @@ const __GMWRITE = true;
 // level: Ausgabe-Loglevel
 // return Ausgewaehlte GM-Funktion
 function GM_function(action, label, condition = true, altAction = undefined, level = 8) {
+    // Nur einmalig ermitteln...
+    const __LABEL = ((condition ? '+' : '-') + label);
+    const __FUN = GM[condition ? action : altAction];
+
     return function(...args) {
-        __LOG[level]((condition ? '+' : '-') + ' ' + label + ' ' + __LOG.info(args[0], false));
-        return GM[condition ? action : altAction](...args);
-    }
+            const __NAME = __LOG.info(args[0], false);
+            __LOG[level](__LABEL, __NAME);
+            return __FUN(...args);
+        };
 }
 
 // Umlenkung von Speicherung und Loeschung auf nicht-inversible 'getValue'-Funktion.
@@ -1088,11 +1172,16 @@ const __SETVALUE = GM_function('setValue', 'SET', __GMWRITE, 'getValue');
 const __DELETEVALUE = GM_function('deleteValue', 'DELETE', __GMWRITE, 'getValue');
 const __LISTVALUES = GM_function('listValues', 'KEYS');
 
-if (__GMWRITE) {
-    __LOG[8]("Schreiben von Optionen wurde AKTIVIERT!");
-} else {
-    __LOG[8]("Schreiben von Optionen wurde DEAKTIVIERT!");
-}
+registerStartFun(async () => {
+        if (__GMWRITE) {
+            __LOG[8]("Schreiben von Optionen wurde AKTIVIERT!");
+        } else {
+            __LOG[8]("Schreiben von Optionen wurde DEAKTIVIERT!");
+        }
+    });
+
+// GGfs. GM_TampermonkeyFilter aktivieren...
+registerStartFun(GM_checkForTampermonkeyBug);
 
 // ==================== Ende Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
 
@@ -1124,7 +1213,9 @@ function storeValue(name, value) {
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
 function summonValue(name, defValue = undefined) {
-    return __GETVALUE(name, defValue).then(value => {
+    const __VALPROMISE = __GETVALUE(name, defValue);
+
+    return useReadFilter(__VALPROMISE, name, defValue).then(value => {
             __LOG[5](name, '<<', __LOG.info(value, true, true));
 
             return Promise.resolve(value);
