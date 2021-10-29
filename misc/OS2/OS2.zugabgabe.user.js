@@ -312,7 +312,7 @@ function procEinstellungen() {
 }
 
 (() => {
-    (async () => {
+    startMain().then(async () => {
         try {
             // Verzweige in unterschiedliche Verarbeitungen je nach aufgerufener Seite:
             switch (getPageIdFromURL(window.location.href, {
@@ -332,7 +332,7 @@ function procEinstellungen() {
         }
     })().then(rc => {
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-            __LOG[3](String(__OPTSET));
+            __LOG[2](String(__OPTSET));
         })
 })();
 
