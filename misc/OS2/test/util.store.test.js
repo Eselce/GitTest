@@ -50,19 +50,19 @@
             'Date'      : [ 'UnitTestD',    new Date(Date.UTC(2006, 0, 2, 15, 4, 5)),                           '"2006-01-02T15:04:05.000Z"',       '2006-01-02T15:04:05.000Z',         '"2006-01-02T15:04:05.000Z"' ],
             'Symbol'    : [ 'UnitTestY',    Symbol(),                                                           undefined,                          undefined,                          undefined ],
             'Symbol2'   : [ 'UnitTestY',    Symbol.for('key'),                                                  undefined,                          undefined,                          undefined ],
-            'Function'  : [ 'UnitTestP',    function(x) { return x * x; },                                      undefined,                          undefined,                          undefined ],
+            'Function'  : [ 'UnitTestP',    function(x) { return x * x; },                                      'function (x) { return x * x; }',   undefined,                          undefined ],
             'Default'   : [ 'UnitTestDef',  undefined,                                                          undefined,                          undefined,                          undefined ],
             'Default2'  : [ 'UnitTestDef',  null,                                                               'null' ],
             'Default3'  : [ 'UnitTestDef',  "",                                                                 '""' ]
         };
 
     // Primitive Speichermethoden __GETVALUE() und __SETVALUE():
-    // getSetValue*  = GET/SET
+    // getSetValue*  = SET/sum (sum = GET mit Filter)
     new UnitTest('util.store.js Basis', "__GETVALUE() und __SETVALUE()", {
             'getSetValueString'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['String'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "String falsch geladen");
@@ -71,7 +71,7 @@
             'getSetValueInt'      : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Int'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Integer falsch geladen");
@@ -80,7 +80,7 @@
             'getSetValueBool'     : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Bool'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Boolean falsch geladen");
@@ -89,7 +89,7 @@
             'getSetValueFloat'    : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Float'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_IN_DELTA(__RET, __VAL, __ASSERTDELTA, "Float falsch geladen");
@@ -98,7 +98,7 @@
             'getSetValueArray'    : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Array'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
@@ -107,7 +107,7 @@
             'getSetValueArray2'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Array2'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
@@ -116,7 +116,7 @@
             'getSetValueArray3'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Array3'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Array falsch geladen");
@@ -125,7 +125,7 @@
             'getSetValueObject'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Object'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
@@ -134,7 +134,7 @@
             'getSetValueObject2'  : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Object2'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
@@ -143,7 +143,7 @@
             'getSetValueObject3'  : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Object3'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
@@ -152,7 +152,7 @@
             'getSetValueUndef'    : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Undef'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __ERR, "Undefined falsch geladen");
@@ -161,7 +161,7 @@
             'getSetValueNull'     : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Null'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Null falsch geladen");
@@ -170,7 +170,7 @@
             'getSetValueNaN'      : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['NaN'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "NaN falsch geladen");
@@ -179,7 +179,7 @@
             'getSetValuePosInf'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['PosInf'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "+Infinity falsch geladen");
@@ -188,7 +188,7 @@
             'getSetValueNegInf'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['NegInf'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "-Infinity falsch geladen");
@@ -197,7 +197,7 @@
             'getSetValueMinVal'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['MinVal'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "MinVal falsch geladen");
@@ -206,7 +206,7 @@
             'getSetValueMaxVal'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['MaxVal'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "MaxVal falsch geladen");
@@ -215,7 +215,7 @@
             'getSetValueMinInt'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['MinInt'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "MinInt falsch geladen");
@@ -224,7 +224,7 @@
             'getSetValueMaxInt'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['MaxInt'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "MaxInt falsch geladen");
@@ -233,7 +233,7 @@
             'getSetValueEpsilon'  : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Epsilon'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Epsilon falsch geladen");
@@ -242,7 +242,7 @@
             'getSetValueUint32Arr': function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Uint32Arr'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Uint32Array falsch geladen");
@@ -251,43 +251,43 @@
             'getSetValueDate'     : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Date'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Date falsch geladen");
                                             });
                                     },
-            'getSetValueSymbol'   : function() {  // NOTE Keine Speicherung von Symbol
+            'getSetValueSymbol'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Symbol'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Symbol falsch geladen");
                                             });
                                     },
-            'getSetValueSymbol2'  : function() {  // NOTE Keine Speicherung von Symbol
+            'getSetValueSymbol2'  : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Symbol2'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Symbol falsch geladen");
                                             });
                                     },
-            'getSetValueFunction' : function() {  // NOTE Keine Speicherung von Function
+            'getSetValueFunction' : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __ERR, "Function falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Function falsch geladen");
                                             });
                                     },
             'getSetValueDefault'  : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Default'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __ERR, "Defaultwert bei undefined ignoriert");
@@ -296,7 +296,7 @@
             'getSetValueDefault2' : function() {  // NOTE Kein Default-Wert bei null
                                         const [ __NAME, __VAL ] = __TESTDATA['Default2'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Summon-Wert bei null ignoriert");
@@ -305,7 +305,7 @@
             'getSetValueDefault3' : function() {  // NOTE Kein Default-Wert bei ""
                                         const [ __NAME, __VAL ] = __TESTDATA['Default3'];
 
-                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => __GETVALUE(__NAME, __ERROR), value => {
+                                        return callPromiseChain(__SETVALUE(__NAME, __VAL), () => summonValue(__NAME, __ERROR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __VAL, "Summon-Wert bei \"\" ignoriert");
@@ -794,31 +794,31 @@
                                                 return ASSERT_EQUAL(__RET, __VAL, "Date falsch geladen");
                                             });
                                     },
-            'summonValueSymbol'   : function() {  // NOTE Keine Speicherung von Symbol
+            'summonValueSymbol'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Symbol'];
 
-                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Symbol falsch geladen");
                                             });
                                     },
-            'summonValueSymbol2'  : function() {  // NOTE Keine Speicherung von Symbol
+            'summonValueSymbol2'  : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Symbol2'];
 
-                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Symbol falsch geladen");
                                             });
                                     },
-            'summonValueFunction' : function() {  // NOTE Keine Speicherung von Function
+            'summonValueFunction' : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
-                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __VAL), entry => summonValue(entry.name, __ERROR), value => {
                                                 const __RET = value;
 
-                                                return ASSERT_EQUAL(__RET, __ERR, "Function falsch geladen");
+                                                return ASSERT_EQUAL(__RET, __VAL, "Function falsch geladen");
                                             });
                                     },
             'summonValueDefault'  : function() {
@@ -1064,7 +1064,7 @@
                                                 return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch gespeichert");
                                             });
                                     },
-            'serializeFunction'   : function() {  // NOTE Keine Speicherung von Function
+            'serializeFunction'   : function() {  // NOTE Keine Speicherung von Function durch JSON
                                         const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => summonValue(entry.name, __ERR), value => {
@@ -1364,15 +1364,15 @@
                                                 return ASSERT_EQUAL(__RET, __EXP, "Symbol falsch gespeichert");
                                             });
                                     },
-            'serialize2Function'  : function() {  // NOTE Keine Speicherung von Function
-                                        const [ __NAME, __VAL, __EXP ] = __TESTDATA['Function'];
+            'serialize2Function'  : function() {  // NOTE Keine Speicherung von Function durch JSON
+                                        const [ __NAME, __VAL, , , __ALTEXP ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => {
                                                 const __NAM = entry.name;
                                                 const __RET = entry.value;
 
                                                 ASSERT_EQUAL(__NAM, __NAME, "Falscher Speicherort");
-                                                return ASSERT_EQUAL(__RET, __EXP, "Function falsch gespeichert");
+                                                return ASSERT_EQUAL(__RET, __ALTEXP, "Function falsch gespeichert");
                                             });
                                     },
             'deserializeString'   : function() {
@@ -1591,10 +1591,10 @@
                                                 return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
                                             });
                                     },
-            'deserializeFunction' : function() {  // NOTE Keine Speicherung von Function
-                                        const [ __NAME, , __EXP ] = __TESTDATA['Function'];
+            'deserializeFunction' : function() {  // NOTE Keine Speicherung von Function durch JSON
+                                        const [ __NAME, , , , __ALTEXP ] = __TESTDATA['Function'];
 
-                                        return callPromiseChain(storeValue(__NAME, __EXP), entry => deserialize(entry.name, __ERR), value => {
+                                        return callPromiseChain(storeValue(__NAME, __ALTEXP), entry => deserialize(entry.name, __ERR), value => {
                                                 const __RET = value;
 
                                                 return ASSERT_EQUAL(__RET, __ERR, "Function falsch geladen");
@@ -1843,7 +1843,7 @@
                                                 return ASSERT_EQUAL(__RET, __ERR, "Symbol falsch geladen");
                                             });
                                     },
-            'deserialize2Function': function() {  // NOTE Keine Speicherung von Function
+            'deserialize2Function': function() {  // NOTE Keine Speicherung von Function durch JSON
                                         const [ __NAME, __VAL ] = __TESTDATA['Function'];
 
                                         return callPromiseChain(serialize(__NAME, __VAL), entry => deserialize(entry.name, __ERR), value => {

@@ -143,7 +143,7 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
     if (obj == undefined) {
         if (obj === undefined) {  // sic!
             valueStr = "";
-        } else {  // null o.ä.
+        } else {  // null o.ae.
             valueStr = __VALUESTR;
         }
     }
@@ -165,6 +165,11 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
 // stepIn: Eingelagerte Objekte werden rekursiv aufgeloest
 // return Ausgabestring mit den Details
 function getValStr(obj, keyStrings, showType, showLen, stepIn) {
+    if (obj === undefined) {
+        // Bei undefined ergibt sich immer 'undefined', egal wie die Parameter gesetzt sind...
+        return String(obj);
+    }
+
     const [ __TYPESTR, __VALUESTR ] = getObjInfo(obj, keyStrings, showLen, stepIn);
 
     return (showType ? __TYPESTR + ' ' : "") + __VALUESTR;
