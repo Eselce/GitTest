@@ -107,7 +107,7 @@ async function GM_TampermonkeyFilter(value, name, defValue) {
 
 // ==================== Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
 
-// Generator-Funktion: Liefert eine ausgewählte GM-Funktion
+// Generator-Funktion: Liefert eine ausgewaehlte GM-Funktion
 // action: Name der Funktion im GM-Objekt
 // label: Ausgabe-Titel
 // condition: Bedingung fuer die Auswahl

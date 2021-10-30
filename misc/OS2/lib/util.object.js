@@ -26,7 +26,7 @@
 // - index: lfd. Nummer des Eintrags
 // - array: entries() des Objekts obj
 // | Alternativ Ein zu setzender Wert (keine Funktion)
-// thisArg: Wert, der als this verwendet wird, wenn mapFun, filterFun und sortFun ausgeführt werden (Default: obj)
+// thisArg: Wert, der als this verwendet wird, wenn mapFun, filterFun und sortFun ausgefuehrt werden (Default: obj)
 // filterFun: Eine Filter-Funktion auf (value [, key [, index [, array]]]) (Default: alle Elemente)
 // - value: Wert
 // - key: Schluessel
@@ -84,8 +84,8 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
     const __LENGTH = ((obj != undefined) ? ((__TYPEOF === 'object') ? Object.entries(obj) : obj).length : obj);
     const __STRDELIM1 = (keyStrings ? "'" : '"');
     const __STRDELIM2 = (keyStrings ? "'" : '"');
-    const __NUMDELIM1 = (keyStrings ? "" : '‹');
-    const __NUMDELIM2 = (keyStrings ? "" : '›');
+    const __NUMDELIM1 = (keyStrings ? "" : '\u2039');  // '<'
+    const __NUMDELIM2 = (keyStrings ? "" : '\u203A');  // '>'
     const __SYMDELIM1 = (keyStrings ? "" : '(');
     const __SYMDELIM2 = (keyStrings ? "" : ')');
     const __SPACE = (keyStrings ? "" : ' ');

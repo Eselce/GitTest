@@ -86,12 +86,12 @@ __LOG.init(window, 4);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window,
 // false  groupEnd
 
 // Filter (im Konsolenfenster):
-// E error  (i Kreis weiß rot gefüllt auf blassrot) error exception
-// W warn   (i Dreieck gelb gefüllt auf blassgelb)  warn
+// E error  (i Kreis weiss rot gefuellt auf blassrot)   error exception
+// W warn   (i Dreieck gelb gefuellt auf blassgelb)     warn
 // L log    (leer)  log dir dirxml table trace (count timeEnd timeLog -time)
-// I info   (i Kreis schwarz weiß gefüllt)          info
-// D debug  (leer)                                  debug
-// - -      (leer)                                  (group -groupEnd)
+// I info   (i Kreis schwarz weiss gefuellt)            info
+// D debug  (leer)                                      debug
+// - -      (leer)                                      (group -groupEnd)
 
 // Tabelle:
 // table    Tabelle mit name und value Spalte
