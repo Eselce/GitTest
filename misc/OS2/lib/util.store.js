@@ -45,17 +45,25 @@ async function GM_checkForTampermonkeyBug() {
     const __TESTNAME = 'GM_checkForTampermonkeyBug';
     const __TESTVALUE = undefined;
     const __TESTDEFAULT = "DEFAULT";
+    const __TESTBUGVALUE = 'undefined';
     const __TESTFILTER = GM_TampermonkeyFilter;
 
     return __SETVALUE(__TESTNAME, __TESTVALUE).then(
         __GETVALUE(__TESTNAME, __TESTDEFAULT), defaultCatch).then(value => {
                 const __RET = (value !== __TESTDEFAULT);
 
+                __LOG[8]("__GETVALUE() lieferte", __LOG.info(value, false), '-', __RET);
+
                 if (__RET) {
-                    if (! __GMREADFILTER.push(__TESTFILTER)) {
-                        return false;
+                    if ((value !== __TESTBUGVALUE) && (value !== __TESTVALUE)) {
+                        return false;  // Filter wuerde nichts aendern...
                     }
 
+                    if (! __GMREADFILTER.push(__TESTFILTER)) {
+                        return false;  // Hinzufuegen hat nicht geklappt...
+                    }
+
+                    // Erfolg! Filter wurde aktiviert...
                     __LOG[8]("GM_TampermonkeyFilter AKTIVIERT!")
                 }
 
@@ -85,11 +93,13 @@ async function GM_TampermonkeyFilter(value, name, defValue) {
     __LOG[8]('GM_TampermonkeyFilter(' + __LOG.info(value, false) + "), "
         + __LOG.info(name, false) + ", " + __LOG.info(defValue, false));
 
-    if (__VALUE === 'undefined') {
-        __LOG[4]("GM_TampermonkeyFilter: Fixing", __LOG.info(value, false),
-            "for", __LOG.info(name, false), "to", __LOG.info(defValue, false));
+    if (__VALUE !== defValue) {
+        if ((__VALUE === 'undefined') || (__VALUE === undefined)) {
+            __LOG[4]("GM_TampermonkeyFilter: Fixing", __LOG.info(value, false),
+                "for", __LOG.info(name, false), "to", __LOG.info(defValue, false));
 
-        return defValue;
+            return defValue;
+        }
     }
 
     return value;
@@ -107,12 +117,12 @@ async function GM_TampermonkeyFilter(value, name, defValue) {
 function GM_function(action, label, condition = true, altAction = undefined, level = 8) {
     // Nur einmalig ermitteln...
     const __LABEL = ((condition ? '+' : '-') + label);
-    const __FUN = GM[condition ? action : altAction];
+    const __FUNKEY = (condition ? action : altAction);
 
     return function(...args) {
             const __NAME = __LOG.info(args[0], false);
             __LOG[level](__LABEL, __NAME);
-            return __FUN(...args);
+            return GM[__FUNKEY](...args);
         };
 }
 
@@ -225,7 +235,9 @@ function serialize(name, value) {
 // return Promise fuer das Objekt, das unter dem Namen gespeichert war
 function deserialize(name, defValue = undefined) {
     return summonValue(name).then(stream => {
-            if (stream && stream.length) {
+            if (stream === undefined) {
+                return defValue;  // JSON-codiertes undefined, function, Symbol, etc. => defValue
+            } else {
                 try {
                     return JSON.parse(stream);
                 } catch (ex) {
@@ -233,8 +245,6 @@ function deserialize(name, defValue = undefined) {
                     ex.message += ": " + __LOG.info(name, false) + " : " + __LOG.info(stream);
                     throw ex;
                 }
-            } else {
-                return defValue;
             }
         });
 }
