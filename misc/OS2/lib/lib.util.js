@@ -103,12 +103,12 @@ __LOG.init(window, 4);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window,
 // false  groupEnd
 
 // Filter (im Konsolenfenster):
-// E error  (i Kreis weiß rot gefüllt auf blassrot) error exception
-// W warn   (i Dreieck gelb gefüllt auf blassgelb)  warn
+// E error  (i Kreis weiss rot gefuellt auf blassrot)   error exception
+// W warn   (i Dreieck gelb gefuellt auf blassgelb)     warn
 // L log    (leer)  log dir dirxml table trace (count timeEnd timeLog -time)
-// I info   (i Kreis schwarz weiß gefüllt)          info
-// D debug  (leer)                                  debug
-// - -      (leer)                                  (group -groupEnd)
+// I info   (i Kreis schwarz weiss gefuellt)            info
+// D debug  (leer)                                      debug
+// - -      (leer)                                      (group -groupEnd)
 
 // Tabelle:
 // table    Tabelle mit name und value Spalte
@@ -235,7 +235,7 @@ function replaceArray(key, value) {
 // - index: lfd. Nummer des Eintrags
 // - array: entries() des Objekts obj
 // | Alternativ Ein zu setzender Wert (keine Funktion)
-// thisArg: Wert, der als this verwendet wird, wenn mapFun, filterFun und sortFun ausgeführt werden (Default: obj)
+// thisArg: Wert, der als this verwendet wird, wenn mapFun, filterFun und sortFun ausgefuehrt werden (Default: obj)
 // filterFun: Eine Filter-Funktion auf (value [, key [, index [, array]]]) (Default: alle Elemente)
 // - value: Wert
 // - key: Schluessel
@@ -293,8 +293,8 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
     const __LENGTH = ((obj != undefined) ? ((__TYPEOF === 'object') ? Object.entries(obj) : obj).length : obj);
     const __STRDELIM1 = (keyStrings ? "'" : '"');
     const __STRDELIM2 = (keyStrings ? "'" : '"');
-    const __NUMDELIM1 = (keyStrings ? "" : '‹');
-    const __NUMDELIM2 = (keyStrings ? "" : '›');
+    const __NUMDELIM1 = (keyStrings ? "" : '\u2039');  // '<'
+    const __NUMDELIM2 = (keyStrings ? "" : '\u203A');  // '>'
     const __SYMDELIM1 = (keyStrings ? "" : '(');
     const __SYMDELIM2 = (keyStrings ? "" : ')');
     const __SPACE = (keyStrings ? "" : ' ');
@@ -352,7 +352,7 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
     if (obj == undefined) {
         if (obj === undefined) {  // sic!
             valueStr = "";
-        } else {  // null o.ä.
+        } else {  // null o.ae.
             valueStr = __VALUESTR;
         }
     }
@@ -374,6 +374,11 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
 // stepIn: Eingelagerte Objekte werden rekursiv aufgeloest
 // return Ausgabestring mit den Details
 function getValStr(obj, keyStrings, showType, showLen, stepIn) {
+    if (obj === undefined) {
+        // Bei undefined ergibt sich immer 'undefined', egal wie die Parameter gesetzt sind...
+        return String(obj);
+    }
+
     const [ __TYPESTR, __VALUESTR ] = getObjInfo(obj, keyStrings, showLen, stepIn);
 
     return (showType ? __TYPESTR + ' ' : "") + __VALUESTR;
@@ -534,7 +539,7 @@ function replaceArrayFun(formatFun, space = ' ') {
 }
 
 // Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise rechtsbuending formatiert,
-// indem er links mit den übergebenen Zeichen aufgefuellt wird. Laenge und Zeichen werden fest vorgegeben.
+// indem er links mit den uebergebenen Zeichen aufgefuellt wird. Laenge und Zeichen werden fest vorgegeben.
 // targetLength: Zielbreite, es wird allerdings nicht abgeschnitten (falls der Wert zu klein ist, bleibt das Original)
 // padString: Auffuell-Zeichen oder -String (Muster), das ggfs. auf die richtige Laenge zugeschnitten wird
 // return Generische Funktion mit fester Zielbreite und Fuellzeichen. Moegliche Nutzung: replaceArrayFun(padStartFun(4))
@@ -543,7 +548,7 @@ function padStartFun(targetLength = 4, padString = ' ') {
 }
 
 // Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise linksbuending formatiert,
-// indem er rechts mit den übergebenen Zeichen aufgefuellt wird. Laenge und Zeichen werden fest vorgegeben.
+// indem er rechts mit den uebergebenen Zeichen aufgefuellt wird. Laenge und Zeichen werden fest vorgegeben.
 // targetLength: Zielbreite, es wird allerdings nicht abgeschnitten (falls der Wert zu klein ist, bleibt das Original)
 // padString: Auffuell-Zeichen oder -String (Muster), das ggfs. auf die richtige Laenge zugeschnitten wird
 // return Generische Funktion mit fester Zielbreite und Fuellzeichen. Moegliche Nutzung: replaceArrayFun(padEndFun(4))
@@ -1067,17 +1072,25 @@ async function GM_checkForTampermonkeyBug() {
     const __TESTNAME = 'GM_checkForTampermonkeyBug';
     const __TESTVALUE = undefined;
     const __TESTDEFAULT = "DEFAULT";
+    const __TESTBUGVALUE = 'undefined';
     const __TESTFILTER = GM_TampermonkeyFilter;
 
     return __SETVALUE(__TESTNAME, __TESTVALUE).then(
         __GETVALUE(__TESTNAME, __TESTDEFAULT), defaultCatch).then(value => {
                 const __RET = (value !== __TESTDEFAULT);
 
+                __LOG[8]("__GETVALUE() lieferte", __LOG.info(value, false), '-', __RET);
+
                 if (__RET) {
-                    if (! __GMREADFILTER.push(__TESTFILTER)) {
-                        return false;
+                    if ((value !== __TESTBUGVALUE) && (value !== __TESTVALUE)) {
+                        return false;  // Filter wuerde nichts aendern...
                     }
 
+                    if (! __GMREADFILTER.push(__TESTFILTER)) {
+                        return false;  // Hinzufuegen hat nicht geklappt...
+                    }
+
+                    // Erfolg! Filter wurde aktiviert...
                     __LOG[8]("GM_TampermonkeyFilter AKTIVIERT!")
                 }
 
@@ -1107,11 +1120,13 @@ async function GM_TampermonkeyFilter(value, name, defValue) {
     __LOG[8]('GM_TampermonkeyFilter(' + __LOG.info(value, false) + "), "
         + __LOG.info(name, false) + ", " + __LOG.info(defValue, false));
 
-    if (__VALUE === 'undefined') {
-        __LOG[4]("GM_TampermonkeyFilter: Fixing", __LOG.info(value, false),
-            "for", __LOG.info(name, false), "to", __LOG.info(defValue, false));
+    if (__VALUE !== defValue) {
+        if ((__VALUE === 'undefined') || (__VALUE === undefined)) {
+            __LOG[4]("GM_TampermonkeyFilter: Fixing", __LOG.info(value, false),
+                "for", __LOG.info(name, false), "to", __LOG.info(defValue, false));
 
-        return defValue;
+            return defValue;
+        }
     }
 
     return value;
@@ -1119,7 +1134,7 @@ async function GM_TampermonkeyFilter(value, name, defValue) {
 
 // ==================== Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
 
-// Generator-Funktion: Liefert eine ausgewählte GM-Funktion
+// Generator-Funktion: Liefert eine ausgewaehlte GM-Funktion
 // action: Name der Funktion im GM-Objekt
 // label: Ausgabe-Titel
 // condition: Bedingung fuer die Auswahl
@@ -1129,12 +1144,12 @@ async function GM_TampermonkeyFilter(value, name, defValue) {
 function GM_function(action, label, condition = true, altAction = undefined, level = 8) {
     // Nur einmalig ermitteln...
     const __LABEL = ((condition ? '+' : '-') + label);
-    const __FUN = GM[condition ? action : altAction];
+    const __FUNKEY = (condition ? action : altAction);
 
     return function(...args) {
             const __NAME = __LOG.info(args[0], false);
             __LOG[level](__LABEL, __NAME);
-            return __FUN(...args);
+            return GM[__FUNKEY](...args);
         };
 }
 
@@ -1247,7 +1262,9 @@ function serialize(name, value) {
 // return Promise fuer das Objekt, das unter dem Namen gespeichert war
 function deserialize(name, defValue = undefined) {
     return summonValue(name).then(stream => {
-            if (stream && stream.length) {
+            if (stream === undefined) {
+                return defValue;  // JSON-codiertes undefined, function, Symbol, etc. => defValue
+            } else {
                 try {
                     return JSON.parse(stream);
                 } catch (ex) {
@@ -1255,8 +1272,6 @@ function deserialize(name, defValue = undefined) {
                     ex.message += ": " + __LOG.info(name, false) + " : " + __LOG.info(stream);
                     throw ex;
                 }
-            } else {
-                return defValue;
             }
         });
 }
