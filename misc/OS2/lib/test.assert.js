@@ -57,7 +57,7 @@ Class.define(AssertionFailed, Object, {
 // attribs: Weitere Attribute in Objekten, die im error vermerkt werden
 // return Liefert eine Assertion und die showAlert()-Parameter zurueck
 function assertionCatch(error, ...attribs) {
-    // Sichern, dass error belegt ist (etwa bei GMs 'reject();' in 'GM_setValue())'...
+    // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
     error = (error || new Error("Promise rejected!"));
 
     try {

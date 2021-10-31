@@ -54,6 +54,9 @@ function showException(label, ex, show = true) {
 // show: Angabe, dass neben Logs auch ein alert-Dialog aufpoppen soll (Default: true)
 // return Liefert die showAlert()-Parameter zurueck
 function defaultCatch(error, show) {
+    // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
+    error = (error || new Error("Promise rejected!"));
+
     try {
         const __LABEL = `[${error.lineNumber}] ${__DBMOD.Name}`;
 
