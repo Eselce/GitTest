@@ -164,9 +164,10 @@ function storeValue(name, value) {
                     'value' : value
                 });
         }, ex => {
-            __LOG[1](name + ':', ex.message);
+            const __MESSAGE = "Unable to storeValue() " + name + ((ex && ex.message) ? " (" + ex.message + ')' : "");
 
-            return Promise.reject(ex);
+            __LOG[1](__MESSAGE);
+            return Promise.reject(__MESSAGE);
         });
 }
 
@@ -182,9 +183,10 @@ function summonValue(name, defValue = undefined) {
 
             return Promise.resolve(value);
         }, ex => {
-            __LOG[1](name + ':', ex.message);
+            const __MESSAGE = "Unable to summonValue() " + name + ((ex && ex.message) ? " (" + ex.message + ')' : "");
 
-            return Promise.reject(ex);
+            __LOG[1](__MESSAGE);
+            return Promise.reject(__MESSAGE);
         });
 }
 
@@ -199,9 +201,10 @@ function discardValue(name) {
 
             return Promise.resolve(value);
         }, ex => {
-            __LOG[1](name + ':', ex.message);
+            const __MESSAGE = "Unable to discardValue() " + name + ((ex && ex.message) ? " (" + ex.message + ')' : "");
 
-            return Promise.reject(ex);
+            __LOG[1](__MESSAGE);
+            return Promise.reject(__MESSAGE);
         });
 }
 
@@ -213,9 +216,10 @@ function keyValues() {
 
             return Promise.resolve(keys);
         }, ex => {
-            __LOG[1]("KEYS:", ex.message);
+            const __MESSAGE = "Unable to list keyValues()" + ((ex && ex.message) ? " (" + ex.message + ')' : "");
 
-            return Promise.reject(ex);
+            __LOG[1](__MESSAGE);
+            return Promise.reject(__MESSAGE);
         });
 }
 
@@ -241,6 +245,7 @@ function deserialize(name, defValue = undefined) {
                 try {
                     return JSON.parse(stream);
                 } catch (ex) {
+                    ex = (ex || { 'message' : 'Unknown error' });
                     __LOG[1](__LOG.info(name, false), '<<', __LOG.info(stream, true, true));
                     ex.message += ": " + __LOG.info(name, false) + " : " + __LOG.info(stream);
                     throw ex;

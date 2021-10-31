@@ -293,7 +293,7 @@ function promptNextOpt(opt, value = undefined, reload = false, freeValue = false
             }
         }
     } catch (ex) {
-        __LOG[1]("promptNextOpt: " + ex.message);
+        showException('[' + (ex && ex.lineNumber) + "] promptNextOpt()", ex);
     }
 
     return __VALUE;
