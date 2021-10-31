@@ -51,14 +51,18 @@ function showException(label, ex, show = true) {
 // Standard-Callback-Funktion fuer onRejected, also abgefangener Fehler
 // in einer Promise bei Exceptions oder Fehler bzw. Rejections
 // error: Parameter von reject() im Promise-Objekt, der von Promise.catch() erhalten wurde
+// show: Angabe, dass neben Logs auch ein alert-Dialog aufpoppen soll (Default: true)
 // return Liefert die showAlert()-Parameter zurueck
-function defaultCatch(error) {
+function defaultCatch(error, show) {
+    // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
+    error = (error || new Error("Promise rejected!"));
+
     try {
         const __LABEL = `[${error.lineNumber}] ${__DBMOD.Name}`;
 
-        return showException(__LABEL, error);
+        return Promise.reject(showException(__LABEL, error, show));
     } catch (ex) {
-        return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex);
+        return Promise.reject(showException(`[${ex && ex.lineNumber}] ${__DBMOD.Name}`, ex, true));
     }
 }
 
