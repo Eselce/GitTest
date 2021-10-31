@@ -1006,14 +1006,18 @@ function showException(label, ex, show = true) {
 // Standard-Callback-Funktion fuer onRejected, also abgefangener Fehler
 // in einer Promise bei Exceptions oder Fehler bzw. Rejections
 // error: Parameter von reject() im Promise-Objekt, der von Promise.catch() erhalten wurde
+// show: Angabe, dass neben Logs auch ein alert-Dialog aufpoppen soll (Default: true)
 // return Liefert die showAlert()-Parameter zurueck
-function defaultCatch(error) {
+function defaultCatch(error, show) {
+    // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
+    error = (error || new Error("Promise rejected!"));
+
     try {
         const __LABEL = `[${error.lineNumber}] ${__DBMOD.Name}`;
 
-        return showException(__LABEL, error);
+        return Promise.reject(showException(__LABEL, error, show));
     } catch (ex) {
-        return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex);
+        return Promise.reject(showException(`[${ex && ex.lineNumber}] ${__DBMOD.Name}`, ex, true));
     }
 }
 
@@ -1191,9 +1195,10 @@ function storeValue(name, value) {
                     'value' : value
                 });
         }, ex => {
-            __LOG[1](name + ':', ex.message);
+            const __MESSAGE = "Unable to storeValue() " + name + ((ex && ex.message) ? " (" + ex.message + ')' : "");
 
-            return Promise.reject(ex);
+            __LOG[1](__MESSAGE);
+            return Promise.reject(__MESSAGE);
         });
 }
 
@@ -1209,9 +1214,10 @@ function summonValue(name, defValue = undefined) {
 
             return Promise.resolve(value);
         }, ex => {
-            __LOG[1](name + ':', ex.message);
+            const __MESSAGE = "Unable to summonValue() " + name + ((ex && ex.message) ? " (" + ex.message + ')' : "");
 
-            return Promise.reject(ex);
+            __LOG[1](__MESSAGE);
+            return Promise.reject(__MESSAGE);
         });
 }
 
@@ -1226,9 +1232,10 @@ function discardValue(name) {
 
             return Promise.resolve(value);
         }, ex => {
-            __LOG[1](name + ':', ex.message);
+            const __MESSAGE = "Unable to discardValue() " + name + ((ex && ex.message) ? " (" + ex.message + ')' : "");
 
-            return Promise.reject(ex);
+            __LOG[1](__MESSAGE);
+            return Promise.reject(__MESSAGE);
         });
 }
 
@@ -1240,9 +1247,10 @@ function keyValues() {
 
             return Promise.resolve(keys);
         }, ex => {
-            __LOG[1]("KEYS:", ex.message);
+            const __MESSAGE = "Unable to list keyValues()" + ((ex && ex.message) ? " (" + ex.message + ')' : "");
 
-            return Promise.reject(ex);
+            __LOG[1](__MESSAGE);
+            return Promise.reject(__MESSAGE);
         });
 }
 
@@ -1268,6 +1276,7 @@ function deserialize(name, defValue = undefined) {
                 try {
                     return JSON.parse(stream);
                 } catch (ex) {
+                    ex = (ex || { 'message' : 'Unknown error' });
                     __LOG[1](__LOG.info(name, false), '<<', __LOG.info(stream, true, true));
                     ex.message += ": " + __LOG.info(name, false) + " : " + __LOG.info(stream);
                     throw ex;

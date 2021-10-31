@@ -65,7 +65,7 @@ function Class(className, baseClass, initFun) {
 
         this.init = initFun;
     } catch (ex) {
-        showAlert('[' + ex.lineNumber + "] Error in Class " + className, ex.message, ex);
+        return showException('[' + (ex && ex.lineNumber) + "] Error in Class " + className, ex);
     }
 }
 
@@ -105,7 +105,7 @@ Object.setConst(Object.prototype, 'subclass', function(baseClass, members, initF
 
             return __PROTO;
         } catch (ex) {
-            showAlert('[' + ex.lineNumber + "] Error in subclassing", ex.message, ex);
+            return showException('[' + (ex && ex.lineNumber) + "] Error in subclassing", ex);
         }
     }, false);
 

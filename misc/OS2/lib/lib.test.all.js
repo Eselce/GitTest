@@ -71,22 +71,25 @@ Class.define(AssertionFailed, Object, {
 // attribs: Weitere Attribute in Objekten, die im error vermerkt werden
 // return Liefert eine Assertion und die showAlert()-Parameter zurueck
 function assertionCatch(error, ...attribs) {
+    // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
+    error = (error || new Error("Promise rejected!"));
+
     try {
         const __LABEL = `[${error.lineNumber}] ${__DBMOD.Name}`;
         const __ERROR = Object.assign(error, ...attribs);
         const __RET = showException(__LABEL, __ERROR, false);
 
-        ASSERT(! false, "Promise rejected!", __RET);  // TODO
+        //ASSERT(false, "Promise rejected!", __RET);  // TODO
 
-        return __ERROR;
+        return Promise.reject(__ERROR);
     } catch (ex) {
-        if (ex instanceof AssertionFailed) {
-            __LOG[1]("ASSERTIONCATCH!!!", ex);  // TODO!!!
+        const __SILENT = (ex instanceof AssertionFailed);
 
-            return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex, false);
-        } else {
-            return showException(`[${ex.lineNumber}] ${__DBMOD.Name}`, ex);
+        if (__SILENT) {
+            __LOG[1]("ASSERTIONCATCH!!!", ex);  // TODO!!!
         }
+
+        return defaultCatch(ex, ! __SILENT);
     }
 }
 
