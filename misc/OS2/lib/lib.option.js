@@ -68,6 +68,7 @@ const __OPTACTION = {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
@@ -433,6 +434,7 @@ function promptNextOptByName(optSet, item, value = undefined, reload = false, fr
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
@@ -1027,6 +1029,7 @@ function startMemoryByOpt(opt, saveOpt = undefined, onFulfilled = undefined, onR
 // _copyright    2017+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer die Script-Datenbank
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.db.js
@@ -1243,6 +1246,7 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
 // _description  JS-lib mit Funktionen und Utilities fuer Script-Optionen im Benutzermenue
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
@@ -1383,6 +1387,7 @@ async function buildOptionMenu(optSet) {
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Node-Tooltips auf der Seite
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.page.label.js
 // ==/UserScript==
@@ -1543,6 +1548,7 @@ function getFormActionEvent(opt, isAlt = false, value = undefined, type = 'click
 // _description  JS-lib mit Node-Elementen in HTML auf der Seite
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
