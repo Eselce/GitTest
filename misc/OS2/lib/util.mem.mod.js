@@ -8,6 +8,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
 // ==/UserScript==
 
@@ -34,6 +35,7 @@ const __DBDATA = { };
 function ScriptModule(meta) {
     'use strict';
 
+    const __DBMOD = { };
     const __META = getValue(meta, GM.info.script);
     const __PROPS = {
                 'name'        : true,
@@ -42,8 +44,6 @@ function ScriptModule(meta) {
                 'description' : true
             };
 
-    const __DBMOD = { };
-
     __LOG[6](__META);
 
     // Infos zu diesem Script...
@@ -51,11 +51,13 @@ function ScriptModule(meta) {
 
     // Voller Name fuer die Ausgabe...
     Object.defineProperty(__DBMOD, 'Name', {
-                    get : function() {
-                              return this.name + " (" + this.version + ')';
-                          },
-                    set : undefined
-                });
+            enumerable    : false,
+            configurable  : true,
+            get           : function() {
+                                return this.name + " (" + this.version + ')';
+                            },
+            set           : undefined
+        });
 
     __LOG[2](__DBMOD);
 

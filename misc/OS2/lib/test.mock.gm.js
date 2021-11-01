@@ -14,7 +14,7 @@
 
 // ==================== Abschnitt fuer Mock GM3-Funktionen ====================
 
-if ((typeof GM_getValue) == 'undefined') {
+if ((typeof GM_getValue) === 'undefined') {
     this.GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
             const __VAL = (__MOCKSTORAGE.hasOwnProperty(name)) ?__MOCKSTORAGE[name] : undefined;
 
@@ -23,7 +23,7 @@ if ((typeof GM_getValue) == 'undefined') {
         };
 }
 
-if ((typeof GM_setValue) == 'undefined') {
+if ((typeof GM_setValue) === 'undefined') {
     this.GM_setValue = function(name, value) {  // Mock GM_setValue function
             __MOCKSTORAGE[name] = value;
 
@@ -31,7 +31,7 @@ if ((typeof GM_setValue) == 'undefined') {
         };
 }
 
-if ((typeof GM_deleteValue) == 'undefined') {
+if ((typeof GM_deleteValue) === 'undefined') {
     this.GM_deleteValue = function(name) {  // Mock GM_deleteValue function
             const __VALUE = __MOCKSTORAGE[name];
 
@@ -41,7 +41,7 @@ if ((typeof GM_deleteValue) == 'undefined') {
         };
 }
 
-if ((typeof GM_listValues) == 'undefined') {
+if ((typeof GM_listValues) === 'undefined') {
     this.GM_listValues = function() {  // Mock GM_listValues function
             return Object.keys(__MOCKSTORAGE);
         };
@@ -49,6 +49,30 @@ if ((typeof GM_listValues) == 'undefined') {
 
 // Interner Speicher zur Simulation eines localStorage...
 const __MOCKSTORAGE = { };
+
+// ==================== Ende Abschnitt fuer Mock GM3-Funktionen ====================
+
+// ==================== Abschnitt fuer Mock GM4-Objekt ====================
+
+if ((typeof GM) === 'undefined') {
+    this.GM = { };
+}
+
+if ((typeof GM.info) === 'undefined') {
+    this.GM['info'] = { };
+}
+
+if ((typeof GM.info.scriptHandler) === 'undefined') {
+    const GM_INFO = this.GM.info;
+
+    GM_INFO['scriptHandler'] = "Mock Script Handler";
+    GM_INFO['version'] = "0.10";
+
+    // Ggfs. nachtraeglich Daten aktualisieren...
+    if ((typeof __DBMAN.scriptHandler) === 'undefined') {
+        __DBMAN.updateInfo(GM_INFO);
+    }
+}
 
 // Zuordnung im GM-Objekt...
 Object.entries({
@@ -58,7 +82,7 @@ Object.entries({
         'GM_setValue'    : 'setValue'
     }).forEach(([oldKey, newKey]) => {
         let old = this[oldKey];
-        if (old && ((typeof GM[newKey]) == 'undefined')) {
+        if (old && ((typeof GM[newKey]) === 'undefined')) {
             GM[newKey] = function(...args) {
                     return new Promise((resolve, reject) => {
                             try {
@@ -73,6 +97,6 @@ Object.entries({
 
 __LOG[7](GM);
 
-// ==================== Ende Abschnitt fuer Mock GM3-Funktionen ====================
+// ==================== Ende Abschnitt fuer Mock GM4-Objekt ====================
 
 // *** EOF ***
