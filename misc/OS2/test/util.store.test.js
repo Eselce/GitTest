@@ -20,6 +20,58 @@
 
 (() => {
 
+// ==================== Abschnitt fuer Startroutinen und Datenspeicherungs-Filter ====================
+
+    // Hilfsfunktionen und Hilfsdaten; Startroutinen und Datenspeicherungs-Filter
+    new UnitTest('util.store.js Basis', "Startroutinen und Datenspeicherungs-Filter", {
+            '__GMWRITE'           : function() {
+                                        return ASSERT_TRUE(__GMWRITE, "Schreiben von Daten nicht aktiviert");
+                                    },
+            '__SCRIPTINIT'        : function() {
+                                        return callPromiseChain(startMain(), value => {
+                                                const __RET = value;
+
+                                                ASSERT_ZERO(__RET, "startMain() lieferte falschen R\xFCckgabewert");
+
+                                                return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer! Eventuell startMain() nicht ausgef\xFChrt?");
+                                            }).catch(startMain);
+                                    },
+            'registerStartFun'    : function() {
+                                        return callPromiseChain(registerStartFun(() => undefined), value => {
+                                                const __RET = value;
+
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+
+                                                return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
+                                            }, startMain, value => {
+                                                const __RET = value;
+
+                                                ASSERT_ZERO(__RET, "startMain() lieferte falschen R\xFCckgabewert");
+
+                                                return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer!");
+                                            }).catch(startMain);
+                                    },
+            'startMain'           : function() {
+                                        return callPromiseChain(registerStartFun(value => {
+                                                const __RET = value;
+
+                                                ASSERT_TRUE(__RET, "startMain() muss mit true starten");
+
+                                                // TODO ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
+
+                                                return 42;
+                                            }), startMain, value => {
+                                                const __RET = value;
+
+                                                ASSERT_EQUAL(__RET, 42, "startMain() lieferte falschen R\xFCckgabewert");
+
+                                                return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer!");
+                                            });
+                                    }
+        });
+
+// ==================== Ende Abschnitt fuer Startroutinen und Datenspeicherungs-Filter ====================
+
 // ==================== Abschnitt fuer die Sicherung und das Laden von Daten ====================
 
     const __ERROR = 'ERROR';
@@ -58,7 +110,7 @@
 
     // Primitive Speichermethoden __GETVALUE() und __SETVALUE():
     // getSetValue*  = SET/sum (sum = GET mit Filter)
-    new UnitTest('util.store.js Basis', "__GETVALUE() und __SETVALUE()", {
+    new UnitTest('util.store.js GET/SET', "__GETVALUE() und __SETVALUE()", {
             'getSetValueString'   : function() {
                                         const [ __NAME, __VAL ] = __TESTDATA['String'];
 

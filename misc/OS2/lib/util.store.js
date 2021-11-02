@@ -26,7 +26,7 @@ const __SCRIPTINIT = [];
 // startFun: Auszufuehrende Funktion
 // return void
 async function registerStartFun(startFun) {
-    __SCRIPTINIT.push(startFun);
+    return __SCRIPTINIT.push(startFun);
 }
 
 // Funktion zum sequentiellen Aufruf der Startroutinen in __SCRIPTINIT ueber Promises
