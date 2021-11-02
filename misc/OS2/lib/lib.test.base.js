@@ -25,6 +25,36 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
+// ==================== Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen ====================
+
+// Funktion zum sequentiellen Aufruf eines Arrays von Funktionen ueber Promises
+// startValue: Promise oder Wert, der/die den Startwert oder das Startobjekt beinhaltet
+// funs: Liste oder Array von Funktionen, die jeweils das Zwischenergebnis umwandeln
+// throw Wirft im Fehlerfall eine AssertionFailed-Exception
+// return Ein Promise-Objekt mit dem Endresultat
+async function callPromiseChain(startValue, ...funs) {
+    return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun, ex => assertionCatch(ex, {
+            'function'  : fun,
+            'param'     : prom,
+            'array'     : arr,
+            'index'     : idx
+        })), Promise.resolve(startValue));
+}
+
+// Funktion zum parallelen Aufruf eines Arrays von Promises bzw. Promise-basierten Funktionen
+// promises: Liste oder Array von Promises oder Werten
+// throw Wirft im Fehlerfall eine AssertionFailed-Exception
+// return Ein Promise-Objekt mit einem Array von Einzelergebnissen als Endresultat
+async function callPromiseArray(...promises) {
+    return Promise.all(promises.flat(1).map((val, idx, arr) => Promise.resolve(val).catch(ex => assertionCatch(ex, {
+            'promise'   : value,
+            'array'     : arr,
+            'index'     : idx
+        }))));
+}
+
+// ==================== Ende Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen  ====================
+
 // ==================== Abschnitt fuer Klasse AssertionFailed ====================
 
 // Basisklasse fuer eine spezielle Exception fuer Assertions
@@ -91,36 +121,6 @@ function assertionCatch(error, ...attribs) {
 
 // ==================== Ende Abschnitt fuer Error-Handling ====================
 
-// ==================== Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen ====================
-
-// Funktion zum sequentiellen Aufruf eines Arrays von Funktionen ueber Promises
-// startValue: Promise oder Wert, der/die den Startwert oder das Startobjekt beinhaltet
-// funs: Liste oder Array von Funktionen, die jeweils das Zwischenergebnis umwandeln
-// throw Wirft im Fehlerfall eine AssertionFailed-Exception
-// return Ein Promise-Objekt mit dem Endresultat
-async function callPromiseChain(startValue, ...funs) {
-    return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun, ex => assertionCatch(ex, {
-            'function'  : fun,
-            'param'     : prom,
-            'array'     : arr,
-            'index'     : idx
-        })), Promise.resolve(startValue));
-}
-
-// Funktion zum parallelen Aufruf eines Arrays von Promises bzw. Promise-basierten Funktionen
-// promises: Liste oder Array von Promises oder Werten
-// throw Wirft im Fehlerfall eine AssertionFailed-Exception
-// return Ein Promise-Objekt mit einem Array von Einzelergebnissen als Endresultat
-async function callPromiseArray(...promises) {
-    return Promise.all(promises.flat(1).map((val, idx, arr) => Promise.resolve(val).catch(ex => assertionCatch(ex, {
-            'promise'   : value,
-            'array'     : arr,
-            'index'     : idx
-        }))));
-}
-
-// ==================== Ende Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen  ====================
-
 // ==================== Abschnitt fuer ASSERT-Testfunktion ====================
 
 // Basisfunktion fuer die Durchfuehrung einer Ueberpruefung einer Bedingung
@@ -166,7 +166,7 @@ const ASSERT_TRUE = function(test, msg, thisArg, ...params) {
     return ASSERT(test, "false", msg, thisArg, ...params);
 }
 
-const ASSERT_NOT_TRUE = function(test, msg, thisArg, ...params) {
+const ASSERT_FALSE = function(test, msg, thisArg, ...params) {
     return ASSERT(! test, "true", msg, thisArg, ...params);
 }
 
@@ -176,6 +176,22 @@ const ASSERT_NULL = function(test, msg, thisArg, ...params) {
 
 const ASSERT_NOT_NULL = function(test, msg, thisArg, ...params) {
     return ASSERT(test !== null, __LOG.info(test, true, true) + " === null", msg, thisArg, ...params);
+}
+
+const ASSERT_ZERO = function(test, msg, thisArg, ...params) {
+    return ASSERT(test === 0, __LOG.info(test, true, true) + " !== 0", msg, thisArg, ...params);
+}
+
+const ASSERT_NOT_ZERO = function(test, msg, thisArg, ...params) {
+    return ASSERT(test !== 0, __LOG.info(test, true, true) + " === 0", msg, thisArg, ...params);
+}
+
+const ASSERT_ONE = function(test, msg, thisArg, ...params) {
+    return ASSERT(test === 1, __LOG.info(test, true, true) + " !== 1", msg, thisArg, ...params);
+}
+
+const ASSERT_NOT_ONE = function(test, msg, thisArg, ...params) {
+    return ASSERT(test !== 1, __LOG.info(test, true, true) + " === 1", msg, thisArg, ...params);
 }
 
 const ASSERT_SET = function(test, msg, thisArg, ...params) {
@@ -202,6 +218,22 @@ const ASSERT_NOT_ALIKE = function(erg, exp, msg, thisArg, ...params) {
     return ASSERT(erg != exp, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true), msg, thisArg, ...params);
 }
 
+const ASSERT_LESS = function(erg, exp, msg, thisArg, ...params) {
+    return ASSERT(erg < exp, __LOG.info(erg, true, true) + " >= " + __LOG.info(exp, true, true), msg, thisArg, ...params);
+}
+
+const ASSERT_NOT_LESS = function(erg, exp, msg, thisArg, ...params) {
+    return ASSERT(erg >= exp, __LOG.info(erg, true, true) + " < " + __LOG.info(exp, true, true), msg, thisArg, ...params);
+}
+
+const ASSERT_GREATER = function(erg, exp, msg, thisArg, ...params) {
+    return ASSERT(erg > exp, __LOG.info(erg, true, true) + " <= " + __LOG.info(exp, true, true), msg, thisArg, ...params);
+}
+
+const ASSERT_NOT_GREATER = function(erg, exp, msg, thisArg, ...params) {
+    return ASSERT(erg <= exp, __LOG.info(erg, true, true) + " > " + __LOG.info(exp, true, true), msg, thisArg, ...params);
+}
+
 const ASSERT_IN_DELTA = function(erg, exp, delta, msg, thisArg, ...params) {
     return ASSERT(Math.abs(erg - exp) <= delta, __LOG.info(erg, true, true) + " != " + __LOG.info(exp, true, true) + " +/- " + delta, msg, thisArg, ...params);
 }
@@ -212,24 +244,38 @@ const ASSERT_NOT_IN_DELTA = function(erg, exp, delta, msg, thisArg, ...params) {
 
 const ASSERT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILON, msg, thisArg, ...params) {
     const __EPSILON = scale * epsilon;
+    const __PROZENT = 100 * __EPSILON;
     const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
 
-    return ASSERT(Math.abs(erg - exp) <= __DELTA, __LOG.info(erg, true, true) + " != " + __LOG.info(exp, true, true) + " +/- rel. " + __EPSILON, msg, thisArg, ...params);
+    return ASSERT(Math.abs(erg - exp) <= __DELTA, __LOG.info(erg, true, true) + " != " + __LOG.info(exp, true, true) + " +/- " + __PROZENT + '%', msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILON, msg, thisArg, ...params) {
     const __EPSILON = scale * epsilon;
+    const __PROZENT = 100 * __EPSILON;
     const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
 
-    return ASSERT(Math.abs(erg - exp) > __DELTA, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- rel. " + __EPSILON, msg, thisArg, ...params);
+    return ASSERT(Math.abs(erg - exp) > __DELTA, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- " + __PROZENT + '%', msg, thisArg, ...params);
+}
+
+const ASSERT_TYPEOF = function(obj, type, msg, thisArg, ...params) {
+    return ASSERT(((typeof obj) === type), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(type, false), msg, thisArg, ...params);
+}
+
+const ASSERT_NOT_TYPEOF = function(obj, type, msg, thisArg, ...params) {
+    return ASSERT_NOT(((typeof obj) === type), __LOG.info(obj, true, true) + " ist " + __LOG.info(type, false), msg, thisArg, ...params);
 }
 
 const ASSERT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
-    return ASSERT((obj instanceof cls), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(cls, true, true), msg, thisArg, ...params);
+    const __CLASSNAME = (cls || { }).name;
+
+    return ASSERT((obj instanceof cls), __LOG.info(obj, true, true) + " ist kein " + __CLASSNAME, msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
-    return ASSERT_NOT((obj instanceof cls), __LOG.info(obj, true, true) + " ist " + __LOG.info(cls, true, true), msg, thisArg, ...params);
+    const __CLASSNAME = (cls || { }).name;
+
+    return ASSERT_NOT((obj instanceof cls), __LOG.info(obj, true, true) + " ist " + __CLASSNAME, msg, thisArg, ...params);
 }
 
 const ASSERT_MATCH = function(str, pattern, msg, thisArg, ...params) {
