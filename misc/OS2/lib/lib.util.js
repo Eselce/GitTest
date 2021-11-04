@@ -627,6 +627,16 @@ function compareNumber(valueA, valueB) {
     return +(valueA > valueB) || (+(valueA === valueB) - 1);
 }
 
+// Gemeinsame Funktion fuer 'typeof' und 'instanceof', die sowohl fuer
+//  Primitives als auch fuer Objekte funktioniert
+// value: Objekt (Object, Array) oder primitiver Wert (Number, String, Boolean)
+// return Bei Objekten aehnlich 'instanceof', bei Primitives aehnlich 'typeof'
+//  Moegliche Ergebnisse: 'Undefined', 'Null', 'Number' (auch NaN), 'String',
+//  'Boolean', 'Symbol', 'Function', 'Array', 'Object'
+function typeOf(value) {
+    return Object.prototype.toString.call(value).slice(8, -1);
+}
+
 // Sicheres obj.valueOf() fuer alle Daten
 // data: Objekt oder Wert
 // return Bei Objekten valueOf() oder das Objekt selber, bei Werten der Wert

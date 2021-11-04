@@ -263,6 +263,14 @@ const ASSERT_NOT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEP
     return ASSERT(Math.abs(erg - exp) > __DELTA, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- " + __PROZENT + '%', msg, thisArg, ...params);
 }
 
+const ASSERT_OFTYPE = function(obj, type, msg, thisArg, ...params) {
+    return ASSERT((typeOf(obj) === type), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(type, false), msg, thisArg, ...params);
+}
+
+const ASSERT_NOT_OFTYPE = function(obj, type, msg, thisArg, ...params) {
+    return ASSERT_NOT((typeOf(obj) === type), __LOG.info(obj, true, true) + " ist " + __LOG.info(type, false), msg, thisArg, ...params);
+}
+
 const ASSERT_TYPEOF = function(obj, type, msg, thisArg, ...params) {
     return ASSERT(((typeof obj) === type), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(type, false), msg, thisArg, ...params);
 }
@@ -274,21 +282,21 @@ const ASSERT_NOT_TYPEOF = function(obj, type, msg, thisArg, ...params) {
 const ASSERT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
     const __CLASSNAME = (cls || { }).name;
 
-    return ASSERT((obj instanceof cls), __LOG.info(obj, true, true) + " ist kein " + __CLASSNAME, msg, thisArg, ...params);
+    return ASSERT((obj instanceof cls), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(__CLASSNAME, false), msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
     const __CLASSNAME = (cls || { }).name;
 
-    return ASSERT_NOT((obj instanceof cls), __LOG.info(obj, true, true) + " ist " + __CLASSNAME, msg, thisArg, ...params);
+    return ASSERT_NOT((obj instanceof cls), __LOG.info(obj, true, true) + " ist " + __LOG.info(__CLASSNAME, false), msg, thisArg, ...params);
 }
 
 const ASSERT_MATCH = function(str, pattern, msg, thisArg, ...params) {
-    return ASSERT((str || "").match(pattern), __LOG.info(str, true, true) + " match-t " + __LOG.info(pattern, true, true), msg, thisArg, ...params);
+    return ASSERT((str || "").match(pattern), __LOG.info(str, true, true) + " hat nicht das Muster " + String(pattern), msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_MATCH = function(str, pattern, msg, thisArg, ...params) {
-    return ASSERT_NOT((str || "").match(pattern), __LOG.info(str, true, true) + " match-t nicht " + __LOG.info(pattern, true, true), msg, thisArg, ...params);
+    return ASSERT_NOT((str || "").match(pattern), __LOG.info(str, true, true) + " hat das Muster " + String(pattern), msg, thisArg, ...params);
 }
 
 // ==================== Ende Abschnitt fuer sonstige ASSERT-Funktionen ====================
@@ -1891,10 +1899,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_LESS'                    : function() {
+            'ASSERT_LESS'                     : function() {
                                                     return ASSERT_LESS(41, 42, "ASSERT_LESS failed");
                                                 },
-            'ASSERT_LESS FAIL'               : function() {
+            'ASSERT_LESS FAIL'                : function() {
                                                     try {
                                                         ASSERT_LESS(42, 42, "ASSERT_LESS failed");
                                                     } catch (ex) {
@@ -1909,7 +1917,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_LESS function'           : function() {
+            'ASSERT_LESS function'            : function() {
                                                     try {
                                                         ASSERT_LESS(42, 42, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -1927,7 +1935,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_LESS arrow'              : function() {
+            'ASSERT_LESS arrow'               : function() {
                                                     try {
                                                         ASSERT_LESS(42, 42, (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -1947,10 +1955,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_LESS'                : function() {
+            'ASSERT_NOT_LESS'                 : function() {
                                                     return ASSERT_NOT_LESS(42, 42, "ASSERT_NOT_LESS failed");
                                                 },
-            'ASSERT_NOT_LESS FAIL'           : function() {
+            'ASSERT_NOT_LESS FAIL'            : function() {
                                                     try {
                                                         ASSERT_NOT_LESS(41, 42, "ASSERT_NOT_LESS failed");
                                                     } catch (ex) {
@@ -1965,7 +1973,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_LESS function'       : function() {
+            'ASSERT_NOT_LESS function'        : function() {
                                                     try {
                                                         ASSERT_NOT_LESS(41, 42, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -1983,7 +1991,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_LESS arrow'          : function() {
+            'ASSERT_NOT_LESS arrow'           : function() {
                                                     try {
                                                         ASSERT_NOT_LESS(41, 42, (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2115,10 +2123,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_GREATER'                    : function() {
+            'ASSERT_GREATER'                  : function() {
                                                     return ASSERT_GREATER(43, 42, "ASSERT_GREATER failed");
                                                 },
-            'ASSERT_GREATER FAIL'               : function() {
+            'ASSERT_GREATER FAIL'             : function() {
                                                     try {
                                                         ASSERT_GREATER(42, 42, "ASSERT_GREATER failed");
                                                     } catch (ex) {
@@ -2133,7 +2141,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_GREATER function'           : function() {
+            'ASSERT_GREATER function'         : function() {
                                                     try {
                                                         ASSERT_GREATER(42, 42, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2151,7 +2159,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_GREATER arrow'              : function() {
+            'ASSERT_GREATER arrow'            : function() {
                                                     try {
                                                         ASSERT_GREATER(42, 42, (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2171,10 +2179,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_GREATER'                : function() {
+            'ASSERT_NOT_GREATER'              : function() {
                                                     return ASSERT_NOT_GREATER(42, 42, "ASSERT_NOT_GREATER failed");
                                                 },
-            'ASSERT_NOT_GREATER FAIL'           : function() {
+            'ASSERT_NOT_GREATER FAIL'         : function() {
                                                     try {
                                                         ASSERT_NOT_GREATER(43, 42, "ASSERT_NOT_GREATER failed");
                                                     } catch (ex) {
@@ -2189,7 +2197,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_GREATER function'       : function() {
+            'ASSERT_NOT_GREATER function'     : function() {
                                                     try {
                                                         ASSERT_NOT_GREATER(43, 42, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2207,7 +2215,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_GREATER arrow'          : function() {
+            'ASSERT_NOT_GREATER arrow'        : function() {
                                                     try {
                                                         ASSERT_NOT_GREATER(43, 42, (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2227,10 +2235,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_GREATER2'                    : function() {
+            'ASSERT_GREATER2'                 : function() {
                                                     return ASSERT_GREATER("43", "42", "ASSERT_GREATER failed");
                                                 },
-            'ASSERT_GREATER2 FAIL'               : function() {
+            'ASSERT_GREATER2 FAIL'            : function() {
                                                     try {
                                                         ASSERT_GREATER("42", "42", "ASSERT_GREATER failed");
                                                     } catch (ex) {
@@ -2245,7 +2253,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_GREATER2 function'           : function() {
+            'ASSERT_GREATER2 function'        : function() {
                                                     try {
                                                         ASSERT_GREATER("42", "42", (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2263,7 +2271,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_GREATER2 arrow'              : function() {
+            'ASSERT_GREATER2 arrow'           : function() {
                                                     try {
                                                         ASSERT_GREATER("42", "42", (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2283,10 +2291,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_GREATER2'                : function() {
+            'ASSERT_NOT_GREATER2'             : function() {
                                                     return ASSERT_NOT_GREATER("42", "42", "ASSERT_NOT_GREATER failed");
                                                 },
-            'ASSERT_NOT_GREATER2 FAIL'           : function() {
+            'ASSERT_NOT_GREATER2 FAIL'        : function() {
                                                     try {
                                                         ASSERT_NOT_GREATER("43", "42", "ASSERT_NOT_GREATER failed");
                                                     } catch (ex) {
@@ -2301,7 +2309,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_GREATER2 function'       : function() {
+            'ASSERT_NOT_GREATER2 function'    : function() {
                                                     try {
                                                         ASSERT_NOT_GREATER("43", "42", (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2319,7 +2327,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_GREATER2 arrow'          : function() {
+            'ASSERT_NOT_GREATER2 arrow'       : function() {
                                                     try {
                                                         ASSERT_NOT_GREATER("43", "42", (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2339,10 +2347,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_IN_DELTA'                    : function() {
+            'ASSERT_IN_DELTA'                 : function() {
                                                     return ASSERT_IN_DELTA(42 + __ASSERTDELTA, 42, __ASSERTDELTA, "ASSERT_IN_DELTA failed");
                                                 },
-            'ASSERT_IN_DELTA FAIL'               : function() {
+            'ASSERT_IN_DELTA FAIL'            : function() {
                                                     try {
                                                         ASSERT_IN_DELTA(42 + 1.1 * __ASSERTDELTA, 42, __ASSERTDELTA, "ASSERT_IN_DELTA failed");
                                                     } catch (ex) {
@@ -2357,7 +2365,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_IN_DELTA function'           : function() {
+            'ASSERT_IN_DELTA function'        : function() {
                                                     try {
                                                         ASSERT_IN_DELTA(42 + 1.1 * __ASSERTDELTA, 42, __ASSERTDELTA, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2375,7 +2383,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_IN_DELTA arrow'              : function() {
+            'ASSERT_IN_DELTA arrow'           : function() {
                                                     try {
                                                         ASSERT_IN_DELTA(42 + 1.1 * __ASSERTDELTA, 42, __ASSERTDELTA, (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2395,10 +2403,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_IN_DELTA'                : function() {
+            'ASSERT_NOT_IN_DELTA'             : function() {
                                                     return ASSERT_NOT_IN_DELTA(42 + 1.1 * __ASSERTDELTA, 42, __ASSERTDELTA, "ASSERT_NOT_IN_DELTA failed");
                                                 },
-            'ASSERT_NOT_IN_DELTA FAIL'           : function() {
+            'ASSERT_NOT_IN_DELTA FAIL'        : function() {
                                                     try {
                                                         ASSERT_NOT_IN_DELTA(42 + __ASSERTDELTA, 42, __ASSERTDELTA, "ASSERT_NOT_IN_DELTA failed");
                                                     } catch (ex) {
@@ -2413,7 +2421,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_IN_DELTA function'       : function() {
+            'ASSERT_NOT_IN_DELTA function'    : function() {
                                                     try {
                                                         ASSERT_NOT_IN_DELTA(42 + __ASSERTDELTA, 42, __ASSERTDELTA, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2431,7 +2439,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_IN_DELTA arrow'          : function() {
+            'ASSERT_NOT_IN_DELTA arrow'       : function() {
                                                     try {
                                                         ASSERT_NOT_IN_DELTA(42 + __ASSERTDELTA, 42, __ASSERTDELTA, (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2451,10 +2459,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_IN_EPSILON'                    : function() {
+            'ASSERT_IN_EPSILON'               : function() {
                                                     return ASSERT_IN_EPSILON(42 + __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, "ASSERT_IN_EPSILON failed");
                                                 },
-            'ASSERT_IN_EPSILON FAIL'               : function() {
+            'ASSERT_IN_EPSILON FAIL'          : function() {
                                                     try {
                                                         ASSERT_IN_EPSILON(42 + 1.1 * __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, "ASSERT_IN_EPSILON failed");
                                                     } catch (ex) {
@@ -2469,7 +2477,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_IN_EPSILON function'           : function() {
+            'ASSERT_IN_EPSILON function'      : function() {
                                                     try {
                                                         ASSERT_IN_EPSILON(42 + 1.1 * __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2487,7 +2495,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_IN_EPSILON arrow'              : function() {
+            'ASSERT_IN_EPSILON arrow'         : function() {
                                                     try {
                                                         ASSERT_IN_EPSILON(42 + 1.1 * __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2507,10 +2515,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_IN_EPSILON'                : function() {
+            'ASSERT_NOT_IN_EPSILON'           : function() {
                                                     return ASSERT_NOT_IN_EPSILON(42 + 1.1 * __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, "ASSERT_NOT_IN_EPSILON failed");
                                                 },
-            'ASSERT_NOT_IN_EPSILON FAIL'           : function() {
+            'ASSERT_NOT_IN_EPSILON FAIL'      : function() {
                                                     try {
                                                         ASSERT_NOT_IN_EPSILON(42 + __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, "ASSERT_NOT_IN_EPSILON failed");
                                                     } catch (ex) {
@@ -2525,7 +2533,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_IN_EPSILON function'       : function() {
+            'ASSERT_NOT_IN_EPSILON function'  : function() {
                                                     try {
                                                         ASSERT_NOT_IN_EPSILON(42 + __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2543,7 +2551,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_IN_EPSILON arrow'          : function() {
+            'ASSERT_NOT_IN_EPSILON arrow'     : function() {
                                                     try {
                                                         ASSERT_NOT_IN_EPSILON(42 + __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2563,10 +2571,122 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_TYPEOF'                    : function() {
+            'ASSERT_OFTYPE'                   : function() {
+                                                    return ASSERT_OFTYPE(42, 'Number', "ASSERT_OFTYPE failed");
+                                                },
+            'ASSERT_OFTYPE FAIL'              : function() {
+                                                    try {
+                                                        ASSERT_OFTYPE(42, 'Boolean', "ASSERT_OFTYPE failed");
+                                                    } catch (ex) {
+                                                        ASSERT_SET(ex, "Exception ist leer");
+                                                        ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
+                                                        ASSERT_SET(ex.message, "Exception message fehlt");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT_OFTYPE failed (Integer 42 ist kein 'Boolean')", "Fehler bei der Fehlermeldung");
+
+                                                        // Fehler wurde erkannt...
+                                                        return true;
+                                                    }
+
+                                                    return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
+                                                },
+            'ASSERT_OFTYPE function'          : function() {
+                                                    try {
+                                                        ASSERT_OFTYPE(42, 'Boolean', (function(param) {
+                                                                const __RET = this.desc + ' ' + param;
+                                                                return __RET;
+                                                            }), { 'desc' : 42 }, "ist die Wahrheit");
+                                                    } catch (ex) {
+                                                        ASSERT_SET(ex, "Exception ist leer");
+                                                        ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
+                                                        ASSERT_SET(ex.message, "Exception message fehlt");
+                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Integer 42 ist kein 'Boolean')", "Fehler beim Zusammensetzen der Fehlermeldung");
+
+                                                        // Fehler wurde erkannt...
+                                                        return true;
+                                                    }
+
+                                                    return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
+                                                },
+            'ASSERT_OFTYPE arrow'             : function() {
+                                                    try {
+                                                        ASSERT_OFTYPE(42, 'Boolean', (param => {
+                                                                const __RET = this.desc + ' ' + param;
+                                                                return __RET;
+                                                            }), { 'desc' : 42 }, "ist die Wahrheit");
+                                                    } catch (ex) {
+                                                        ASSERT_SET(ex, "Exception ist leer");
+                                                        ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
+                                                        ASSERT_SET(ex.message, "Exception message fehlt");
+
+                                                        // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
+                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Integer 42 ist kein 'Boolean')", "Fehler beim Zusammensetzen der Fehlermeldung");
+
+                                                        // Fehler wurde erkannt...
+                                                        return true;
+                                                    }
+
+                                                    return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
+                                                },
+            'ASSERT_NOT_OFTYPE'               : function() {
+                                                    return ASSERT_NOT_OFTYPE(42, 'Boolean', "ASSERT_NOT_OFTYPE failed");
+                                                },
+            'ASSERT_NOT_OFTYPE FAIL'          : function() {
+                                                    try {
+                                                        ASSERT_NOT_OFTYPE(42, 'Number', "ASSERT_NOT_OFTYPE failed");
+                                                    } catch (ex) {
+                                                        ASSERT_SET(ex, "Exception ist leer");
+                                                        ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
+                                                        ASSERT_SET(ex.message, "Exception message fehlt");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT_NOT_OFTYPE failed (Integer 42 ist 'Number')", "Fehler bei der Fehlermeldung");
+
+                                                        // Fehler wurde erkannt...
+                                                        return true;
+                                                    }
+
+                                                    return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
+                                                },
+            'ASSERT_NOT_OFTYPE function'      : function() {
+                                                    try {
+                                                        ASSERT_NOT_OFTYPE(42, 'Number', (function(param) {
+                                                                const __RET = this.desc + ' ' + param;
+                                                                return __RET;
+                                                            }), { 'desc' : 42 }, "ist die Wahrheit");
+                                                    } catch (ex) {
+                                                        ASSERT_SET(ex, "Exception ist leer");
+                                                        ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
+                                                        ASSERT_SET(ex.message, "Exception message fehlt");
+                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Integer 42 ist 'Number')", "Fehler beim Zusammensetzen der Fehlermeldung");
+
+                                                        // Fehler wurde erkannt...
+                                                        return true;
+                                                    }
+
+                                                    return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
+                                                },
+            'ASSERT_NOT_OFTYPE arrow'         : function() {
+                                                    try {
+                                                        ASSERT_NOT_OFTYPE(42, 'Number', (param => {
+                                                                const __RET = this.desc + ' ' + param;
+                                                                return __RET;
+                                                            }), { 'desc' : 42 }, "ist die Wahrheit");
+                                                    } catch (ex) {
+                                                        ASSERT_SET(ex, "Exception ist leer");
+                                                        ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
+                                                        ASSERT_SET(ex.message, "Exception message fehlt");
+ 
+                                                        // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
+                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Integer 42 ist 'Number')", "Fehler beim Zusammensetzen der Fehlermeldung");
+
+                                                        // Fehler wurde erkannt...
+                                                        return true;
+                                                    }
+
+                                                    return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
+                                                },
+            'ASSERT_TYPEOF'                   : function() {
                                                     return ASSERT_TYPEOF(42, 'number', "ASSERT_TYPEOF failed");
                                                 },
-            'ASSERT_TYPEOF FAIL'               : function() {
+            'ASSERT_TYPEOF FAIL'              : function() {
                                                     try {
                                                         ASSERT_TYPEOF(42, 'object', "ASSERT_TYPEOF failed");
                                                     } catch (ex) {
@@ -2581,7 +2701,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_TYPEOF function'           : function() {
+            'ASSERT_TYPEOF function'          : function() {
                                                     try {
                                                         ASSERT_TYPEOF(42, 'object', (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2599,7 +2719,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_TYPEOF arrow'              : function() {
+            'ASSERT_TYPEOF arrow'             : function() {
                                                     try {
                                                         ASSERT_TYPEOF(42, 'object', (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2619,10 +2739,10 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_TYPEOF'                : function() {
+            'ASSERT_NOT_TYPEOF'               : function() {
                                                     return ASSERT_NOT_TYPEOF(42, 'object', "ASSERT_NOT_TYPEOF failed");
                                                 },
-            'ASSERT_NOT_TYPEOF FAIL'           : function() {
+            'ASSERT_NOT_TYPEOF FAIL'          : function() {
                                                     try {
                                                         ASSERT_NOT_TYPEOF(42, 'number', "ASSERT_NOT_TYPEOF failed");
                                                     } catch (ex) {
@@ -2637,7 +2757,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_TYPEOF function'       : function() {
+            'ASSERT_NOT_TYPEOF function'      : function() {
                                                     try {
                                                         ASSERT_NOT_TYPEOF(42, 'number', (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2655,7 +2775,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_TYPEOF arrow'          : function() {
+            'ASSERT_NOT_TYPEOF arrow'         : function() {
                                                     try {
                                                         ASSERT_NOT_TYPEOF(42, 'number', (param => {
                                                                 const __RET = this.desc + ' ' + param;
@@ -2675,17 +2795,17 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_INSTANCEOF'                    : function() {
-                                                    return ASSERT_INSTANCEOF(42, Number, "ASSERT_INSTANCEOF failed");
+            'ASSERT_INSTANCEOF'               : function() {
+                                                    return ASSERT_INSTANCEOF(new AssertionFailed('Fehler', "message"), Object, "ASSERT_INSTANCEOF failed");
                                                 },
-            'ASSERT_INSTANCEOF FAIL'               : function() {
+            'ASSERT_INSTANCEOF FAIL'          : function() {
                                                     try {
-                                                        ASSERT_INSTANCEOF(42, Boolean, "ASSERT_INSTANCEOF failed");
+                                                        ASSERT_INSTANCEOF(new AssertionFailed('Fehler', "message"), Class, "ASSERT_INSTANCEOF failed");
                                                     } catch (ex) {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "ASSERT_INSTANCEOF failed (Integer 42 ist kein Boolean)", "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT_INSTANCEOF failed (AssertionFailed[1] { 'message' : String[16] \"message (Fehler)\" } ist kein 'Class')", "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2693,9 +2813,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_INSTANCEOF function'           : function() {
+            'ASSERT_INSTANCEOF function'      : function() {
                                                     try {
-                                                        ASSERT_INSTANCEOF(42, Boolean, (function(param) {
+                                                        ASSERT_INSTANCEOF(new AssertionFailed('Fehler', "message"), Class, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2703,7 +2823,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Integer 42 ist kein Boolean)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (AssertionFailed[1] { 'message' : String[16] \"message (Fehler)\" } ist kein 'Class')", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2711,9 +2831,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_INSTANCEOF arrow'              : function() {
+            'ASSERT_INSTANCEOF arrow'         : function() {
                                                     try {
-                                                        ASSERT_INSTANCEOF(42, Boolean, (param => {
+                                                        ASSERT_INSTANCEOF(new AssertionFailed('Fehler', "message"), Class, (param => {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2723,7 +2843,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Integer 42 ist kein Boolean)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (AssertionFailed[1] { 'message' : String[16] \"message (Fehler)\" } ist kein 'Class')", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2731,17 +2851,17 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_INSTANCEOF'                : function() {
-                                                    return ASSERT_NOT_INSTANCEOF(42, Boolean, "ASSERT_NOT_INSTANCEOF failed");
+            'ASSERT_NOT_INSTANCEOF'           : function() {
+                                                    return ASSERT_NOT_INSTANCEOF(new AssertionFailed('Fehler', "message"), Class, "ASSERT_NOT_INSTANCEOF failed");
                                                 },
-            'ASSERT_NOT_INSTANCEOF FAIL'           : function() {
+            'ASSERT_NOT_INSTANCEOF FAIL'      : function() {
                                                     try {
-                                                        ASSERT_NOT_INSTANCEOF(42, Number, "ASSERT_NOT_INSTANCEOF failed");
+                                                        ASSERT_NOT_INSTANCEOF(new AssertionFailed('Fehler', "message"), Object, "ASSERT_NOT_INSTANCEOF failed");
                                                     } catch (ex) {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "ASSERT_NOT_INSTANCEOF failed (Integer 42 ist Number)", "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT_NOT_INSTANCEOF failed (AssertionFailed[1] { 'message' : String[16] \"message (Fehler)\" } ist 'Object')", "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2749,9 +2869,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_INSTANCEOF function'       : function() {
+            'ASSERT_NOT_INSTANCEOF function'  : function() {
                                                     try {
-                                                        ASSERT_NOT_INSTANCEOF(42, Number, (function(param) {
+                                                        ASSERT_NOT_INSTANCEOF(new AssertionFailed('Fehler', "message"), Object, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2759,7 +2879,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Integer 42 ist Number)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (AssertionFailed[1] { 'message' : String[16] \"message (Fehler)\" } ist 'Object')", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2767,9 +2887,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_INSTANCEOF arrow'          : function() {
+            'ASSERT_NOT_INSTANCEOF arrow'     : function() {
                                                     try {
-                                                        ASSERT_NOT_INSTANCEOF(42, Number, (param => {
+                                                        ASSERT_NOT_INSTANCEOF(new AssertionFailed('Fehler', "message"), Object, (param => {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2779,7 +2899,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
  
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Integer 42 ist Number)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (AssertionFailed[1] { 'message' : String[16] \"message (Fehler)\" } ist 'Object')", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2787,17 +2907,17 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_INSTANCEOF2'                    : function() {
-                                                    return ASSERT_INSTANCEOF("42", String, "ASSERT_INSTANCEOF failed");
+            'ASSERT_INSTANCEOF2'              : function() {
+                                                    return ASSERT_INSTANCEOF(new Number(42), Number, "ASSERT_INSTANCEOF failed");
                                                 },
-            'ASSERT_INSTANCEOF2 FAIL'               : function() {
+            'ASSERT_INSTANCEOF2 FAIL'         : function() {  // Number() liefert nur Primitive...
                                                     try {
-                                                        ASSERT_INSTANCEOF("42", Boolean, "ASSERT_INSTANCEOF failed");
+                                                        ASSERT_INSTANCEOF(Number(42), Number, "ASSERT_INSTANCEOF failed");
                                                     } catch (ex) {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT_INSTANCEOF failed (String[2] "42" ist kein Boolean)', "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT_INSTANCEOF failed (Integer 42 ist kein 'Number')", "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2805,9 +2925,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_INSTANCEOF2 function'           : function() {
+            'ASSERT_INSTANCEOF2 function'     : function() {  // Number() liefert nur Primitive...
                                                     try {
-                                                        ASSERT_INSTANCEOF("42", Boolean, (function(param) {
+                                                        ASSERT_INSTANCEOF(Number(42), Number, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2815,7 +2935,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[2] "42" ist kein Boolean)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Integer 42 ist kein 'Number')", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2823,9 +2943,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_INSTANCEOF2 arrow'              : function() {
+            'ASSERT_INSTANCEOF2 arrow'        : function() {  // Number() liefert nur Primitive...
                                                     try {
-                                                        ASSERT_INSTANCEOF("42", Boolean, (param => {
+                                                        ASSERT_INSTANCEOF(Number(42), Number, (param => {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2835,7 +2955,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[2] "42" ist kein Boolean)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Integer 42 ist kein 'Number')", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2843,17 +2963,17 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_INSTANCEOF2'                : function() {
-                                                    return ASSERT_NOT_INSTANCEOF("42", Boolean, "ASSERT_NOT_INSTANCEOF failed");
+            'ASSERT_NOT_INSTANCEOF2'          : function() {  // Number() liefert nur Primitive...
+                                                    return ASSERT_NOT_INSTANCEOF(Number(42), Number, "ASSERT_NOT_INSTANCEOF failed");
                                                 },
-            'ASSERT_NOT_INSTANCEOF2 FAIL'           : function() {
+            'ASSERT_NOT_INSTANCEOF2 FAIL'     : function() {
                                                     try {
-                                                        ASSERT_NOT_INSTANCEOF("42", String, "ASSERT_NOT_INSTANCEOF failed");
+                                                        ASSERT_NOT_INSTANCEOF(new Number(42), Number, "ASSERT_NOT_INSTANCEOF failed");
                                                     } catch (ex) {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "ASSERT_NOT_INSTANCEOF failed (Integer 42 ist String)", "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT_NOT_INSTANCEOF failed (Object {} ist 'Number')", "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2861,9 +2981,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_INSTANCEOF2 function'       : function() {
+            'ASSERT_NOT_INSTANCEOF2 function' : function() {
                                                     try {
-                                                        ASSERT_NOT_INSTANCEOF("42", String, (function(param) {
+                                                        ASSERT_NOT_INSTANCEOF(new Number(42), Number, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2871,7 +2991,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Integer 42 ist String)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Object {} ist 'Number')", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2879,9 +2999,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_INSTANCEOF2 arrow'          : function() {
+            'ASSERT_NOT_INSTANCEOF2 arrow'    : function() {
                                                     try {
-                                                        ASSERT_NOT_INSTANCEOF("42", String, (param => {
+                                                        ASSERT_NOT_INSTANCEOF(new Number(42), Number, (param => {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2891,7 +3011,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
  
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Integer 42 ist String)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Object {} ist 'Number')", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2899,17 +3019,17 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_TYPEOF'                    : function() {
-                                                    return ASSERT_TYPEOF(42, 'number', "ASSERT_TYPEOF failed");
+            'ASSERT_MATCH'                    : function() {
+                                                    return ASSERT_MATCH("Burgers", /B.*u.*g.*s/, "ASSERT_MATCH failed");
                                                 },
-            'ASSERT_TYPEOF FAIL'               : function() {
+            'ASSERT_MATCH FAIL'               : function() {
                                                     try {
-                                                        ASSERT_TYPEOF(42, 'object', "ASSERT_TYPEOF failed");
+                                                        ASSERT_MATCH("Burgers", /B.+u.+g.+s/, "ASSERT_MATCH failed");
                                                     } catch (ex) {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "ASSERT_TYPEOF failed (Integer 42 ist kein 'object')", "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT_MATCH failed (String[7] "Burgers" hat nicht das Muster /B.+u.+g.+s/)', "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2917,9 +3037,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_TYPEOF function'           : function() {
+            'ASSERT_MATCH function'           : function() {
                                                     try {
-                                                        ASSERT_TYPEOF(42, 'object', (function(param) {
+                                                        ASSERT_MATCH("Burgers", /B.+u.+g.+s/, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2927,7 +3047,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Integer 42 ist kein 'object')", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[7] "Burgers" hat nicht das Muster /B.+u.+g.+s/)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2935,9 +3055,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_TYPEOF arrow'              : function() {
+            'ASSERT_MATCH arrow'              : function() {
                                                     try {
-                                                        ASSERT_TYPEOF(42, 'object', (param => {
+                                                        ASSERT_MATCH("Burgers", /B.+u.+g.+s/, (param => {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2947,7 +3067,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Integer 42 ist kein 'object')", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[7] "Burgers" hat nicht das Muster /B.+u.+g.+s/)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2955,17 +3075,17 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_TYPEOF'                : function() {
-                                                    return ASSERT_NOT_TYPEOF(42, 'object', "ASSERT_NOT_TYPEOF failed");
+            'ASSERT_NOT_MATCH'                : function() {
+                                                    return ASSERT_NOT_MATCH("Burgers", /B.+u.+g.+s/, "ASSERT_NOT_MATCH failed");
                                                 },
-            'ASSERT_NOT_TYPEOF FAIL'           : function() {
+            'ASSERT_NOT_MATCH FAIL'           : function() {
                                                     try {
-                                                        ASSERT_NOT_TYPEOF(42, 'number', "ASSERT_NOT_TYPEOF failed");
+                                                        ASSERT_NOT_MATCH("Burgers", /B.*u.*g.*s/, "ASSERT_NOT_MATCH failed");
                                                     } catch (ex) {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "ASSERT_NOT_TYPEOF failed (Integer 42 ist 'number')", "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT_NOT_MATCH failed (String[7] "Burgers" hat das Muster /B.*u.*g.*s/)', "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2973,9 +3093,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_TYPEOF function'       : function() {
+            'ASSERT_NOT_MATCH function'       : function() {
                                                     try {
-                                                        ASSERT_NOT_TYPEOF(42, 'number', (function(param) {
+                                                        ASSERT_NOT_MATCH("Burgers", /B.*u.*g.*s/, (function(param) {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -2983,7 +3103,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Integer 42 ist 'number')", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[7] "Burgers" hat das Muster /B.*u.*g.*s/)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2991,9 +3111,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                                     return ASSERT(false, "kein Fehler", "ASSERT hat Fehler nicht erkannt");
                                                 },
-            'ASSERT_NOT_TYPEOF arrow'          : function() {
+            'ASSERT_NOT_MATCH arrow'          : function() {
                                                     try {
-                                                        ASSERT_NOT_TYPEOF(42, 'number', (param => {
+                                                        ASSERT_NOT_MATCH("Burgers", /B.*u.*g.*s/, (param => {
                                                                 const __RET = this.desc + ' ' + param;
                                                                 return __RET;
                                                             }), { 'desc' : 42 }, "ist die Wahrheit");
@@ -3003,7 +3123,7 @@ Class.define(UnitTestOption, UnitTest, {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
  
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Integer 42 ist 'number')", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[7] "Burgers" hat das Muster /B.*u.*g.*s/)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
