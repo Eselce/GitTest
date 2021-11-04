@@ -60,6 +60,10 @@ class Class {
     }
 }
 
+Class.define = function(subClass, baseClass, members = undefined, initFun = undefined, createProto = true) {
+        return (subClass.prototype = subClass.subclass(baseClass, members, initFun, createProto));
+    };
+
 Object.setConst = function(obj, item, value, config) {
         return Object.defineProperty(obj, item, {
                         enumerable   : false,
