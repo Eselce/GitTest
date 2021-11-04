@@ -32,46 +32,44 @@ if ((typeof showAlert) === 'undefined') {
 
 // ==================== Abschnitt fuer Klasse Class ====================
 
-function Class(className, baseClass, initFun) {
-    'use strict';
+class Class {
+    constructor(className, baseClass, initFun) {
+        'use strict';
 
-    try {
-        const __BASE = ((baseClass !== undefined) ? baseClass : Object);
-        const __BASEPROTO = (__BASE ? __BASE.prototype : undefined);
-        const __BASECLASS = (__BASEPROTO ? __BASEPROTO.__class : undefined);
+        try {
+            const __BASE = ((baseClass !== undefined) ? baseClass : Object);
+            const __BASEPROTO = (__BASE ? __BASE.prototype : undefined);
+            const __BASECLASS = (__BASEPROTO ? __BASEPROTO.__class : undefined);
 
-        this.className = (className || '?');
-        this.baseClass = __BASECLASS;
-        Object.setConst(this, 'baseProto', __BASEPROTO, false);
+            this.className = (className || '?');
+            this.baseClass = __BASECLASS;
+            Object.setConst(this, 'baseProto', __BASEPROTO, false);
 
-        if (! initFun) {
-            const __BASEINIT = (__BASECLASS || { }).init;
+            if (! initFun) {
+                const __BASEINIT = (__BASECLASS || { }).init;
 
-            if (__BASEINIT) {
-                initFun = function() {
-                              // Basisklassen-Init aufrufen...
-                              return __BASEINIT.call(this, arguments);
-                          };
-            } else {
-                initFun = function() {
-                              // Basisklassen-Init fehlt (und Basisklasse ist nicht Object)...
-                              return false;
-                          };
+                if (__BASEINIT) {
+                    initFun = function() {
+                                  // Basisklassen-Init aufrufen...
+                                  return __BASEINIT.call(this, arguments);
+                              };
+                } else {
+                    initFun = function() {
+                                  // Basisklassen-Init fehlt (und Basisklasse ist nicht Object)...
+                                  return false;
+                              };
+                }
             }
+
+            console.assert((__BASE === null) || ((typeof __BASE) === 'function'), "No function:", __BASE);
+            console.assert((typeof initFun) === 'function', "Not a function:", initFun);
+
+            this.init = initFun;
+        } catch (ex) {
+            return showException('[' + (ex && ex.lineNumber) + "] Error in Class " + className, ex);
         }
-
-        console.assert((__BASE === null) || ((typeof __BASE) === 'function'), "No function:", __BASE);
-        console.assert((typeof initFun) === 'function', "Not a function:", initFun);
-
-        this.init = initFun;
-    } catch (ex) {
-        return showException('[' + (ex && ex.lineNumber) + "] Error in Class " + className, ex);
     }
 }
-
-Class.define = function(subClass, baseClass, members = undefined, initFun = undefined, createProto = true) {
-        return (subClass.prototype = subClass.subclass(baseClass, members, initFun, createProto));
-    };
 
 Object.setConst = function(obj, item, value, config) {
         return Object.defineProperty(obj, item, {
@@ -348,14 +346,16 @@ Class.define(UriDelims, Delims, {
 // 'back': Name des relativen Vaterverzeichnisses
 // 'root': Kennung vor dem ersten Trenner am Anfang eines absoluten Pfads
 // 'home': Kennung vor dem ersten Trenner am Anfang eines Pfads relativ zu Home
-function Path(homePath, delims) {
-    'use strict';
+class Path {
+    constructor(homePath, delims) {
+        'use strict';
 
-    this.dirs = [];
-    this.setDelims(delims);
-    this.homeDirs = this.getDirs(homePath, { 'home' : "" });
+        this.dirs = [];
+        this.setDelims(delims);
+        this.homeDirs = this.getDirs(homePath, { 'home' : "" });
 
-    this.home();
+        this.home();
+    }
 }
 
 Class.define(Path, Object, {
@@ -538,22 +538,26 @@ Class.define(ObjRef, Directory, {
 // 'back': Name des relativen Vaterverzeichnisses
 // 'root': Kennung vor dem ersten Trenner am Anfang eines absoluten Pfads
 // 'home': Kennung vor dem ersten Trenner am Anfang eines Pfads relativ zu Home
-function URI(homePath, delims) {
-    'use strict';
+class URI extends Path {
+    constructor(homePath, delims) {
+        'use strict';
 
-    Path.call(this);
+        UNUSED(delims);
 
-    const __HOSTPORT = this.getHostPort(homePath);
+        Path.call(this);
 
-    this.scheme = this.getSchemePrefix(homePath);
-    this.host = __HOSTPORT.host;
-    this.port = this.parseValue(__HOSTPORT.port);
-    this.query = this.parseQuery(this.getQueryString(homePath));
-    this.node = this.getNodeSuffix(homePath);
+        const __HOSTPORT = this.getHostPort(homePath);
 
-    this.homeDirs = this.getDirs(homePath, { 'home' : "" });
+        this.scheme = this.getSchemePrefix(homePath);
+        this.host = __HOSTPORT.host;
+        this.port = this.parseValue(__HOSTPORT.port);
+        this.query = this.parseQuery(this.getQueryString(homePath));
+        this.node = this.getNodeSuffix(homePath);
 
-    this.home();
+        this.homeDirs = this.getDirs(homePath, { 'home' : "" });
+
+        this.home();
+    }
 }
 
 Class.define(URI, Path, {
@@ -731,7 +735,9 @@ Class.define(URI, Path, {
 
                                          return __SCHEME + __HOST + __PORT + Path.prototype.getPath.call(this, dirs, delims) + __QUERY + __NODE;
                                      },
-               'getDirs'           : function(path = undefined, delims = undefined) {
+               'getDirs'           : function(path = undefined, delims) {
+                                         UNUSED(delims);
+
                                          const __PATH = this.getServerPath(path);
 
                                          return Path.prototype.getDirs.call(this, __PATH);

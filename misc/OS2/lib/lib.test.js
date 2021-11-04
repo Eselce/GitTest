@@ -2375,7 +2375,7 @@
             '__GMWRITE'           : function() {
                                         return ASSERT_TRUE(__GMWRITE, "Schreiben von Daten nicht aktiviert");
                                     },
-            '__SCRIPTINIT'        : function() {
+            '__SCRIPTINIT'        : async function() {
                                         return callPromiseChain(startMain(), value => {
                                                 const __RET = value;
 
@@ -2384,7 +2384,7 @@
                                                 return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer! Eventuell startMain() nicht ausgef\xFChrt?");
                                             }).catch(startMain);
                                     },
-            'registerStartFun'    : function() {
+            'registerStartFun'    : async function() {
                                         return callPromiseChain(registerStartFun(() => undefined), value => {
                                                 const __RET = value;
 

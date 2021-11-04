@@ -30,6 +30,7 @@
 //  util.option.page.node.js
 //  util.option.page.js
 //  util.option.run.js
+//  util.main.js
 //  OS2.list.js
 //  OS2.team.js
 //  OS2.page.team.js
@@ -147,6 +148,17 @@ __LOG.init(window, 4);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window,
 // count/countReset
 // assert
 
+// ==================== Abschnitt fuer UNUSED() ====================
+
+// Makro fuer die Markierung bewusst ungenutzter Variablen und Parametern
+// params: Beliebig viele Parameter, mit denen nichts gemacht wird
+// return Liefert formal die Parameter zurueck
+function UNUSED(...unused) {
+    return unused;
+}
+
+// ==================== Ende Abschnitt fuer UNUSED() ====================
+
 // ==================== Abschnitt fuer safeStringify() ====================
 
 // Sicheres JSON.stringify(), das auch mit Zyklen umgehen kann
@@ -169,9 +181,12 @@ function serializer(replacer = undefined, cycleReplacer = undefined) {
 
     if (! cycleReplacer) {
         cycleReplacer = function(key, value) {
+                UNUSED(key);
+
                 if (__STACK[0] === value) {
                     return "[~]";
                 }
+
                 return "[~." + __KEYS.slice(0, __STACK.indexOf(value)).join('.') + ']';
             };
     }
@@ -203,6 +218,8 @@ function serializer(replacer = undefined, cycleReplacer = undefined) {
 // value: Der uebergebene Wert
 // return Fuer Arrays eine kompakte Darstellung, sonst derselbe Wert
 function replaceArraySimple(key, value) {
+    UNUSED(key);
+
     if (Array.isArray(value)) {
         return "[ " + value.join(", ") + " ]";
     }
@@ -215,6 +232,8 @@ function replaceArraySimple(key, value) {
 // value: Der uebergebene Wert
 // return Fuer Arrays eine kompakte Darstellung, sonst derselbe Wert
 function replaceArray(key, value) {
+    UNUSED(key);
+
     if (Array.isArray(value)) {
         const __RET = value.map(function(element) {
                                     return safeStringify(element, replaceArray, 0);
@@ -553,16 +572,18 @@ function floorValue(value, dot = '.') {
 // return Generische Funktion, die an Array-Funktionen uebergeben werden kann, z.B. als Replacer fuer safeStringify()
 function replaceArrayFun(formatFun, space = ' ') {
     return function(key, value) {
-               const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
+            UNUSED(key);
 
-               if (Array.isArray(__VALUE)) {
-                   const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
+            const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
 
-                   return '[' + space + __RET.join(',' + space) + space + ']';
-               }
+            if (Array.isArray(__VALUE)) {
+                const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
 
-               return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
-           };
+                return '[' + space + __RET.join(',' + space) + space + ']';
+            }
+
+            return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
+        };
 }
 
 // Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise rechtsbuending formatiert,
@@ -1337,7 +1358,7 @@ registerStartFun(GM_checkForTampermonkeyBug);
 // name: GM.setValue()-Name, unter dem die Daten gespeichert werden
 // value: Zu speichernder String/Integer/Boolean-Wert
 // return Promise auf ein Objekt, das 'name' und 'value' der Operation enthaelt
-function storeValue(name, value) {
+async function storeValue(name, value) {
     __LOG[5](name + " >> " + __LOG.info(value, true, true));
 
     return __SETVALUE(name, value).then(() => {
@@ -1359,7 +1380,7 @@ function storeValue(name, value) {
 // name: GM.getValue()-Name, unter dem die Daten gespeichert wurden
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
-function summonValue(name, defValue = undefined) {
+async function summonValue(name, defValue = undefined) {
     const __VALPROMISE = __GETVALUE(name, defValue);
 
     return useReadFilter(__VALPROMISE, name, defValue).then(value => {
@@ -1377,7 +1398,7 @@ function summonValue(name, defValue = undefined) {
 // Entfernt einen String/Integer/Boolean-Wert, der unter einem Namen gespeichert ist
 // name: GM.deleteValue()-Name, unter dem die Daten gespeichert wurden
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
-function discardValue(name) {
+async function discardValue(name) {
     __LOG[5]("DELETE " + __LOG.info(name, false));
 
     return __DELETEVALUE(name).then(value => {
@@ -1394,7 +1415,7 @@ function discardValue(name) {
 
 // Listet die Namen aller Orte auf, unter der ein String/Integer/Boolean-Wert gespeichert ist
 // return Promise fuer ein Array von GM.listValues()-Namen, unter denen String/Integer/Boolean-Werte gespeichert sind
-function keyValues() {
+async function keyValues() {
     return __LISTVALUES().then(keys => {
             __LOG[5]("KEYS:", keys);
 
@@ -1411,7 +1432,7 @@ function keyValues() {
 // name: GM.setValue()-Name, unter dem die Daten gespeichert werden
 // value: Beliebiger (strukturierter) Wert
 // return Promise auf ein Objekt, das 'name' und 'value' in der String-Darstellung des Wertes enthaelt
-function serialize(name, value) {
+async function serialize(name, value) {
     const __STREAM = ((value !== undefined) ? safeStringify(value) : value);
 
     return storeValue(name, __STREAM);
@@ -1421,7 +1442,7 @@ function serialize(name, value) {
 // name: GM.getValue()-Name, unter dem die Daten gespeichert wurden
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist
 // return Promise fuer das Objekt, das unter dem Namen gespeichert war
-function deserialize(name, defValue = undefined) {
+async function deserialize(name, defValue = undefined) {
     return summonValue(name).then(stream => {
             if (stream === undefined) {
                 return defValue;  // JSON-codiertes undefined, function, Symbol, etc. => defValue
@@ -2071,46 +2092,44 @@ if ((typeof showAlert) === 'undefined') {
 
 // ==================== Abschnitt fuer Klasse Class ====================
 
-function Class(className, baseClass, initFun) {
-    'use strict';
+class Class {
+    constructor(className, baseClass, initFun) {
+        'use strict';
 
-    try {
-        const __BASE = ((baseClass !== undefined) ? baseClass : Object);
-        const __BASEPROTO = (__BASE ? __BASE.prototype : undefined);
-        const __BASECLASS = (__BASEPROTO ? __BASEPROTO.__class : undefined);
+        try {
+            const __BASE = ((baseClass !== undefined) ? baseClass : Object);
+            const __BASEPROTO = (__BASE ? __BASE.prototype : undefined);
+            const __BASECLASS = (__BASEPROTO ? __BASEPROTO.__class : undefined);
 
-        this.className = (className || '?');
-        this.baseClass = __BASECLASS;
-        Object.setConst(this, 'baseProto', __BASEPROTO, false);
+            this.className = (className || '?');
+            this.baseClass = __BASECLASS;
+            Object.setConst(this, 'baseProto', __BASEPROTO, false);
 
-        if (! initFun) {
-            const __BASEINIT = (__BASECLASS || { }).init;
+            if (! initFun) {
+                const __BASEINIT = (__BASECLASS || { }).init;
 
-            if (__BASEINIT) {
-                initFun = function() {
-                              // Basisklassen-Init aufrufen...
-                              return __BASEINIT.call(this, arguments);
-                          };
-            } else {
-                initFun = function() {
-                              // Basisklassen-Init fehlt (und Basisklasse ist nicht Object)...
-                              return false;
-                          };
+                if (__BASEINIT) {
+                    initFun = function() {
+                                  // Basisklassen-Init aufrufen...
+                                  return __BASEINIT.call(this, arguments);
+                              };
+                } else {
+                    initFun = function() {
+                                  // Basisklassen-Init fehlt (und Basisklasse ist nicht Object)...
+                                  return false;
+                              };
+                }
             }
+
+            console.assert((__BASE === null) || ((typeof __BASE) === 'function'), "No function:", __BASE);
+            console.assert((typeof initFun) === 'function', "Not a function:", initFun);
+
+            this.init = initFun;
+        } catch (ex) {
+            return showException('[' + (ex && ex.lineNumber) + "] Error in Class " + className, ex);
         }
-
-        console.assert((__BASE === null) || ((typeof __BASE) === 'function'), "No function:", __BASE);
-        console.assert((typeof initFun) === 'function', "Not a function:", initFun);
-
-        this.init = initFun;
-    } catch (ex) {
-        return showException('[' + (ex && ex.lineNumber) + "] Error in Class " + className, ex);
     }
 }
-
-Class.define = function(subClass, baseClass, members = undefined, initFun = undefined, createProto = true) {
-        return (subClass.prototype = subClass.subclass(baseClass, members, initFun, createProto));
-    };
 
 Object.setConst = function(obj, item, value, config) {
         return Object.defineProperty(obj, item, {
@@ -2387,14 +2406,16 @@ Class.define(UriDelims, Delims, {
 // 'back': Name des relativen Vaterverzeichnisses
 // 'root': Kennung vor dem ersten Trenner am Anfang eines absoluten Pfads
 // 'home': Kennung vor dem ersten Trenner am Anfang eines Pfads relativ zu Home
-function Path(homePath, delims) {
-    'use strict';
+class Path {
+    constructor(homePath, delims) {
+        'use strict';
 
-    this.dirs = [];
-    this.setDelims(delims);
-    this.homeDirs = this.getDirs(homePath, { 'home' : "" });
+        this.dirs = [];
+        this.setDelims(delims);
+        this.homeDirs = this.getDirs(homePath, { 'home' : "" });
 
-    this.home();
+        this.home();
+    }
 }
 
 Class.define(Path, Object, {
@@ -2577,22 +2598,26 @@ Class.define(ObjRef, Directory, {
 // 'back': Name des relativen Vaterverzeichnisses
 // 'root': Kennung vor dem ersten Trenner am Anfang eines absoluten Pfads
 // 'home': Kennung vor dem ersten Trenner am Anfang eines Pfads relativ zu Home
-function URI(homePath, delims) {
-    'use strict';
+class URI extends Path {
+    constructor(homePath, delims) {
+        'use strict';
 
-    Path.call(this);
+        UNUSED(delims);
 
-    const __HOSTPORT = this.getHostPort(homePath);
+        Path.call(this);
 
-    this.scheme = this.getSchemePrefix(homePath);
-    this.host = __HOSTPORT.host;
-    this.port = this.parseValue(__HOSTPORT.port);
-    this.query = this.parseQuery(this.getQueryString(homePath));
-    this.node = this.getNodeSuffix(homePath);
+        const __HOSTPORT = this.getHostPort(homePath);
 
-    this.homeDirs = this.getDirs(homePath, { 'home' : "" });
+        this.scheme = this.getSchemePrefix(homePath);
+        this.host = __HOSTPORT.host;
+        this.port = this.parseValue(__HOSTPORT.port);
+        this.query = this.parseQuery(this.getQueryString(homePath));
+        this.node = this.getNodeSuffix(homePath);
 
-    this.home();
+        this.homeDirs = this.getDirs(homePath, { 'home' : "" });
+
+        this.home();
+    }
 }
 
 Class.define(URI, Path, {
@@ -2770,7 +2795,9 @@ Class.define(URI, Path, {
 
                                          return __SCHEME + __HOST + __PORT + Path.prototype.getPath.call(this, dirs, delims) + __QUERY + __NODE;
                                      },
-               'getDirs'           : function(path = undefined, delims = undefined) {
+               'getDirs'           : function(path = undefined, delims) {
+                                         UNUSED(delims);
+
                                          const __PATH = this.getServerPath(path);
 
                                          return Path.prototype.getDirs.call(this, __PATH);
@@ -3226,6 +3253,7 @@ function Options(optConfig, optSetLabel) {
 
 Class.define(Options, Object, {
                     'checkKey' : function(key) {
+                        UNUSED(key);
                         // Hier kann man Keys 'unsichtbar' machen...
                         return true;
                     },
@@ -3811,6 +3839,8 @@ function startMemoryByOpt(opt, saveOpt = undefined, onFulfilled = undefined, onR
 // Initialisiert die Scriptdatenbank, die einen Datenaustausch zwischen den Scripten ermoeglicht
 // optSet: Gesetzte Optionen (und Config)
 function initScriptDB(optSet) {
+    UNUSED(optSet);
+
      // Speicher fuer die DB-Daten...
     const __DBMEM = myOptMem.Value;
 
@@ -3994,6 +4024,8 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
             }
         }
     }
+
+    __LOG[8]("runStoredCmds():", (invalidated ? "" : "not ") + "invalidated");
 
     return (__LOADEDCMDS.length ? __LOADEDCMDS : undefined);
 }
@@ -4526,7 +4558,7 @@ function groupData(data, byFun, filterFun, sortFun) {
     const __BYKEYSET = new Set(__BYKEYS);
     const __BYKEYARRAY = [...__BYKEYSET];
     const __SORTEDKEYS = __BYKEYARRAY.sort(sortFun);
-    const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => __FILTERFUN(byVal, index, __BYKEYS)));
+    const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => (UNUSED(key), __FILTERFUN(byVal, index, __BYKEYS))));
     const __ASSIGN = ((keyArr, valArr) => Object.assign({ }, ...keyArr.map((key, index) => ({ [key] : valArr[index] }))));
 
     return __ASSIGN(__SORTEDKEYS, __GROUPEDKEYS);
@@ -4583,9 +4615,12 @@ function getOptionForm(optSet, optParams = { }) {
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // return String mit dem HTML-Code fuer das Script
 function getOptionScript(optSet, optParams = { }) {
+    UNUSED(optSet, optParams);
+
     //const __SCRIPT = '<script type="text/javascript">function activateMenu() { console.log("TADAAA!"); }</script>';
     //const __SCRIPT = '<script type="text/javascript">\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionRst(key, value) { alert("RESET"); }\n</script>';
     //const __FORM = '<form method="POST"><input type="button" id="showOpts" name="showOpts" value="Optionen anzeigen" onclick="activateMenu()" /></form>';
+
     const __SCRIPT = "";
 
     //window.eval('function activateMenu() { console.log("TADAAA!"); }');
@@ -4786,13 +4821,15 @@ function initOptions(optConfig, optSet = undefined, preInit = undefined) {
 // ==================== Abschnitt fuer Klasse Classification ====================
 
 // Basisklasse fuer eine Klassifikation der Optionen nach Kriterium (z.B. Erst- und Zweitteam oder Fremdteam)
-function Classification(prefix) {
-    'use strict';
+class Classification {
+    constructor(prefix) {
+        'use strict';
 
-    this.renameFun = prefixName;
-    this.prefix = (prefix || 'old');
-    this.optSet = undefined;
-    this.optSelect = { };
+        this.renameFun = prefixName;
+        this.prefix = (prefix || 'old');
+        this.optSet = undefined;
+        this.optSelect = { };
+    }
 }
 
 Class.define(Classification, Object, {
@@ -4854,66 +4891,68 @@ function optSelect(selList, ignList) {
 // ==================== Abschnitt fuer Klasse ClassificationPair ====================
 
 // Klasse fuer die Klassifikation der Optionen nach Team (Erst- und Zweitteam oder Fremdteam)
-function ClassificationPair(classA, classB) {
-    'use strict';
+class ClassificationPair extends Classification {
+    constructor(classA, classB) {
+        'use strict';
 
-    Classification.call(this);
+        Classification.call(this);
 
-    this.prefix = undefined;
+        this.prefix = undefined;
 
-    this.A = classA;
-    this.B = classB;
+        this.A = classA;
+        this.B = classB;
 
-    // Zugriff auf optSelect synchronisieren...
-    Object.defineProperty(this, 'optSelect', {
-                    get : function() {
-                              const __A = getValue(this.A, { });
-                              const __B = getValue(this.B, { });
+        // Zugriff auf optSelect synchronisieren...
+        Object.defineProperty(this, 'optSelect', {
+                        get : function() {
+                                  const __A = getValue(this.A, { });
+                                  const __B = getValue(this.B, { });
 
-                              return (this.A ? __A.optSelect : __B.optSelect);
-                          },
-                    set : function(optSelect) {
-                              const __A = getValue(this.A, { });
-                              const __B = getValue(this.B, { });
+                                  return (this.A ? __A.optSelect : __B.optSelect);
+                              },
+                        set : function(optSelect) {
+                                  const __A = getValue(this.A, { });
+                                  const __B = getValue(this.B, { });
 
-                              __A.optSelect = optSelect;
-                              __B.optSelect = optSelect;
+                                  __A.optSelect = optSelect;
+                                  __B.optSelect = optSelect;
 
-                              return optSelect;
-                          }
-                });
+                                  return optSelect;
+                              }
+                    });
 
-    // Zugriff auf optSet synchronisieren...
-    Object.defineProperty(this, 'optSet', {
-                    get : function() {
-                              const __A = getValue(this.A, { });
-                              const __B = getValue(this.B, { });
+        // Zugriff auf optSet synchronisieren...
+        Object.defineProperty(this, 'optSet', {
+                        get : function() {
+                                  const __A = getValue(this.A, { });
+                                  const __B = getValue(this.B, { });
 
-                              return (this.A ? __A.optSet : __B.optSet);
-                          },
-                    set : function(optSet) {
-                              const __A = getValue(this.A, { });
-                              const __B = getValue(this.B, { });
+                                  return (this.A ? __A.optSet : __B.optSet);
+                              },
+                        set : function(optSet) {
+                                  const __A = getValue(this.A, { });
+                                  const __B = getValue(this.B, { });
 
-                              __A.optSet = optSet;
-                              __B.optSet = optSet;
+                                  __A.optSet = optSet;
+                                  __B.optSet = optSet;
 
-                              return optSet;
-                          }
-                });
+                                  return optSet;
+                              }
+                    });
+    }
 }
 
 Class.define(ClassificationPair, Classification, {
                     'renameOptions'  : function() {
-                                           return (this.A ? this.A.renameOptions() : Promise.resolve()).then(retValue =>
+                                           return (this.A ? this.A.renameOptions() : Promise.resolve()).then(() =>
                                                    (this.B ? this.B.renameOptions() : Promise.resolve()));
                                        },
                     'saveOptions'    : function(ignList) {
-                                           return (this.A ? this.A.saveOptions(ignList) : Promise.resolve()).then(retValue =>
+                                           return (this.A ? this.A.saveOptions(ignList) : Promise.resolve()).then(() =>
                                                    (this.B ? this.B.saveOptions(ignList) : Promise.resolve()));
                                        },
                     'deleteOptions'  : function(ignList) {
-                                           return (this.A ? this.A.deleteOptions(ignList) : Promise.resolve()).then(retValue =>
+                                           return (this.A ? this.A.deleteOptions(ignList) : Promise.resolve()).then(() =>
                                                    (this.B ? this.B.deleteOptions(ignList) : Promise.resolve()));
                                        }
                 });
@@ -5012,6 +5051,99 @@ function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
 // *** EOF ***
 
 /*** Ende Modul util.option.run.js ***/
+
+/*** Modul util.main.js ***/
+
+// ==UserScript==
+// _name         util.main
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2017/2021+
+// _author       Sven Loges (SLC)
+// _description  JS-lib mit Funktionen und Utilities fuer das Hauptprogramm zur jeweiligen Seite
+// _require      https://eselce.github.io/OS2.scripts/lib/util.main.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Aufbau und Start des Hauptprogramms ====================
+
+// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
+const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
+
+class Main {
+    constructor(optConfig, optSet, classification) {
+        UNUSED(optConfig, optSet, classification);
+    }
+}
+
+//const __MAIN = new Main(__OPTCONFIG, __OPTSET, __TEAMCLASS);
+
+/*
+Classification.assign(optSet, optParam) {
+    this.optSet = optSet;
+    this.optParam = optParam;
+}
+
+TeamClassification.assign(optSet, optParam) {
+    this.optSet = optSet;
+    this.optParam = optParam;
+    this.teamParam = optParam.teamParam;
+}
+*/
+
+// Fuehrt die Bearbeitung einer speziellen Seite durch
+// optConfig: Konfiguration der Optionen
+// optSet: Platz fuer die gesetzten Optionen (und Config)
+// page: ID fuer die aktuelle Seite
+// return Promise auf die Durchfuehrung der Bearbeitung
+function handlePage(optConfig, optSet, page) {
+    const __SETUPOPTPARAMS = (this.setupOptParams[page] || (() => ({ 'hideMenu' : false })));
+    const __CLASSIFICATION = this.classification[page];
+    const __PREPAREOPTIONS = this.prepareOptions;
+    const __HANDLER = this.handler[page];
+    const __OPTPARAMS = __SETUPOPTPARAMS(optSet);
+
+    if (__OPTPARAMS) {
+        // Klassifikation verknuepfen...
+        __CLASSIFICATION.assign(optSet, __OPTPARAMS);
+
+        startOptions(optConfig, optSet, classification).then(optSet => {
+                __PREPAREOPTIONS(optSet, __OPTPARAMS);
+
+                return showOptions(optSet, optParams);
+            }, defaultCatch).then(__HANDLER);
+    } else {
+        return Promise.reject(`Keine Options-Parameter f\xFCr Seite ${page} vorhanden!`);
+    }
+}
+
+function run() {
+    startMain().then(async () => {
+        try {
+            const __SELECTOR = this.selector;
+            const __SELECTORPARAMS = this.selectorParams;
+            const __PAGE = __SELECTOR(window.location.href, ...__SELECTORPARAMS);
+
+            await handlePage(this.optConfig, this.optSet, __PAGE).catch(defaultCatch);
+
+            return 'OK';
+        } catch (ex) {
+            return defaultCatch(ex);
+        }
+    }).then(rc => {
+            __LOG[2](String(__OPTSET));
+            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
+        });
+};
+
+// ==================== Ende Abschnitt fuer Aufbau und Start des Hauptprogramms ====================
+
+// *** EOF ***
+
+/*** Ende Modul util.main.js ***/
 
 /*** Modul OS2.list.js ***/
 
@@ -5413,15 +5545,18 @@ function getColor(pos) {
 // ==================== Abschnitt fuer Klasse TeamClassification ====================
 
 // Klasse fuer die Klassifikation der Optionen nach Team (Erst- und Zweitteam oder Fremdteam)
-function TeamClassification() {
-    'use strict';
 
-    Classification.call(this);
+class TeamClassification extends Classification {
+    constructor() {
+        'use strict';
 
-    this.prefix = undefined;
+        Classification.call(this);
 
-    this.team = undefined;
-    this.teamParams = undefined;
+        this.prefix = undefined;
+
+        this.team = undefined;
+        this.teamParams = undefined;
+    }
 }
 
 Class.define(TeamClassification, Classification, {
@@ -5444,14 +5579,17 @@ Class.define(TeamClassification, Classification, {
 // ==================== Abschnitt fuer Klasse Team ====================
 
 // Klasse fuer Teamdaten
-function Team(team, land, liga) {
-    'use strict';
 
-    this.Team = team;
-    this.Land = land;
-    this.Liga = liga;
-    this.LdNr = getLandNr(land);
-    this.LgNr = getLigaNr(liga);
+class Team {
+    constructor(team, land, liga) {
+        'use strict';
+
+        this.Team = team;
+        this.Land = land;
+        this.Liga = liga;
+        this.LdNr = getLandNr(land);
+        this.LgNr = getLigaNr(liga);
+    }
 }
 
 Class.define(Team, Object, {
@@ -5469,14 +5607,17 @@ Class.define(Team, Object, {
 // ==================== Abschnitt fuer Klasse Verein ====================
 
 // Klasse fuer Vereinsdaten
-function Verein(team, land, liga, id, manager, flags) {
-    'use strict';
 
-    Team.call(this, team, land, liga);
+class Verein extends Team {
+    constructor(team, land, liga, id, manager, flags) {
+        'use strict';
 
-    this.ID = id;
-    this.Manager = manager;
-    this.Flags = (flags || []);
+        Team.call(this, team, land, liga);
+
+        this.ID = id;
+        this.Manager = manager;
+        this.Flags = (flags || []);
+    }
 }
 
 Class.define(Verein, Team, {
@@ -5748,21 +5889,23 @@ const __HINRUECK    = [ " Hin", " R\xFCck", "" ];
 
 // ==================== Abschnitt fuer Klasse RundenLink ====================
 
-function RundenLink(saison, team) {
-    'use strict';
+class RundenLink {
+    constructor(saison, team) {
+        'use strict';
 
-    this.uri = new URI("http://os.ongapo.com/");
-    this.runde = 0;
-    this.prop = "";
-    this.label = "";
+        this.uri = new URI("http://os.ongapo.com/");
+        this.runde = 0;
+        this.prop = "";
+        this.label = "";
 
-    this.setAktion("Statistik+ausgeben");
+        this.setAktion("Statistik+ausgeben");
 
-    if (saison) {
-        this.setSaison(saison);
-    }
-    if (team) {
-        this.setTeam(team);
+        if (saison) {
+            this.setSaison(saison);
+        }
+        if (team) {
+            this.setTeam(team);
+        }
     }
 }
 
@@ -6186,23 +6329,25 @@ function getLigaSizeFromSpielplan(rows, startIdx, colArtIdx, saison) {
 
 // Klasse fuer Ziehwarnung fuer einen Jugendspieler
 
-function WarnDrawPlayer(player, alertColor) {
-    'use strict';
+class WarnDrawPlayer {
+    constructor(player, alertColor) {
+        'use strict';
 
-    this.player = player;
+        this.player = player;
 
-    if (this.player !== undefined) {
-        // Default Warnlevel...
-        this.setZatLeft(player.getZatLeft());
-        this.currZAT = player.currZAT;
-        this.setWarn(true, true, true);
-        this.colAlert = alertColor || this.alertColor();
-    } else {
-        // Kein Warnlevel...
-        this.setZatLeft(undefined);
-        this.currZAT = undefined;
-        this.setWarn(false, false, false);
-        this.colAlert = undefined;
+        if (this.player !== undefined) {
+            // Default Warnlevel...
+            this.setZatLeft(player.getZatLeft());
+            this.currZAT = player.currZAT;
+            this.setWarn(true, true, true);
+            this.colAlert = alertColor || this.alertColor();
+        } else {
+            // Kein Warnlevel...
+            this.setZatLeft(undefined);
+            this.currZAT = undefined;
+            this.setWarn(false, false, false);
+            this.colAlert = undefined;
+        }
     }
 }
 
@@ -6257,29 +6402,31 @@ const __NOWARNDRAW = new WarnDrawPlayer(undefined, undefined);  // inaktives Obj
 
 // Klasse fuer Warnmeldung fuer einen Jugendspieler
 
-function WarnDrawMessage(optSet, currZAT) {
-    'use strict';
+class WarnDrawMessage {
+    constructor(optSet, currZAT) {
+        'use strict';
 
-    this.optSet = optSet;
+        this.optSet = optSet;
 
-    this.warn = getOptValue(this.optSet.zeigeWarnung, true);
-    this.warnMonth = getOptValue(this.optSet.zeigeWarnungMonat, true);
-    this.warnHome = getOptValue(this.optSet.zeigeWarnungHome, true);
-    this.warnDialog = getOptValue(this.optSet.zeigeWarnungDialog, false);
-    this.warnAufstieg = getOptValue(this.optSet.zeigeWarnungAufstieg, true);
-    this.warnLegende = getOptValue(this.optSet.zeigeWarnungLegende, true);
+        this.warn = getOptValue(this.optSet.zeigeWarnung, true);
+        this.warnMonth = getOptValue(this.optSet.zeigeWarnungMonat, true);
+        this.warnHome = getOptValue(this.optSet.zeigeWarnungHome, true);
+        this.warnDialog = getOptValue(this.optSet.zeigeWarnungDialog, false);
+        this.warnAufstieg = getOptValue(this.optSet.zeigeWarnungAufstieg, true);
+        this.warnLegende = getOptValue(this.optSet.zeigeWarnungLegende, true);
 
-    this.out = {
-                   'supertag' : true,
-                   'top'      : true,
-                   'link'     : true,
-                   'label'    : true,
-                   'bottom'   : true
-               };
+        this.out = {
+                       'supertag' : true,
+                       'top'      : true,
+                       'link'     : true,
+                       'label'    : true,
+                       'bottom'   : true
+                   };
 
-    this.setOptionHome();
+        this.setOptionHome();
 
-    this.startMessage(currZAT);
+        this.startMessage(currZAT);
+    }
 }
 
 Class.define(WarnDrawMessage, Object, {
@@ -6441,15 +6588,17 @@ Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
 
 // Klasse fuer Warnmeldung im Falle eines Aufstiegs fuer einen Jugendspieler
 
-function WarnDrawMessageAufstieg(optSet, currZAT) {
-    'use strict';
+class WarnDrawMessageAufstieg extends WarnDrawMessage {
+    constructor(optSet, currZAT) {
+        'use strict';
 
-    WarnDrawMessage.call(this, optSet, currZAT);
+        WarnDrawMessage.call(this, optSet, currZAT);
 
-    this.out.top = false;  // kein Vorschub vor der Zeile
+        this.out.top = false;  // kein Vorschub vor der Zeile
 
-    this.warn = (this.warn && this.warnAufstieg);  // kann man ausschalten
-    this.startMessage(currZAT);  // 2. Aufruf (zur Korrektur)
+        this.warn = (this.warn && this.warnAufstieg);  // kann man ausschalten
+        this.startMessage(currZAT);  // 2. Aufruf (zur Korrektur)
+    }
 }
 
 Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
@@ -6503,50 +6652,52 @@ Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
 
 // Klasse fuer Spalten des Jugendkaders
 
-function PlayerRecord(land, age, isGoalie, saison, currZAT, donation) {
-    'use strict';
+class PlayerRecord {
+    constructor(land, age, isGoalie, saison, currZAT, donation) {
+        'use strict';
 
-    this.land = land;
-    this.age = age;
-    this.isGoalie = isGoalie;
+        this.land = land;
+        this.age = age;
+        this.isGoalie = isGoalie;
 
-    this.saison = saison;
-    this.currZAT = currZAT;
-    this.donation = donation;
-    this.mwFormel = ((this.saison < 10) ? this.__MWFORMEL.alt : this.__MWFORMEL.S10);
+        this.saison = saison;
+        this.currZAT = currZAT;
+        this.donation = donation;
+        this.mwFormel = ((this.saison < 10) ? this.__MWFORMEL.alt : this.__MWFORMEL.S10);
 
-    // in new PlayerRecord() definiert:
-    // this.land: TLA des Geburtslandes
-    // this.age: Ganzzahliges Alter des Spielers
-    // this.isGoalie: Angabe, ob es ein TOR ist
-    // this.mwFormel: Benutzte MW-Formel, siehe __MWFORMEL
-    // this.donation: Jugendfoerderungsbetrag in Euro
+        // in new PlayerRecord() definiert:
+        // this.land: TLA des Geburtslandes
+        // this.age: Ganzzahliges Alter des Spielers
+        // this.isGoalie: Angabe, ob es ein TOR ist
+        // this.mwFormel: Benutzte MW-Formel, siehe __MWFORMEL
+        // this.donation: Jugendfoerderungsbetrag in Euro
 
-    // in this.initPlayer() definiert:
-    // this.zatGeb: ZAT, an dem der Spieler Geburtstag hat, -1 fuer "noch nicht zugewiesen", also '?'
-    // this.zatAge: Bisherige erfolgte Trainings-ZATs
-    // this.birth: Universell eindeutige Nummer des Geburtstags-ZATs des Spielers
-    // this.talent: Talent als Zahl (-1=wenig, 0=normal, +1=hoch)
-    // this.aufwert: Aufwertungsstring
+        // in this.initPlayer() definiert:
+        // this.zatGeb: ZAT, an dem der Spieler Geburtstag hat, -1 fuer "noch nicht zugewiesen", also '?'
+        // this.zatAge: Bisherige erfolgte Trainings-ZATs
+        // this.birth: Universell eindeutige Nummer des Geburtstags-ZATs des Spielers
+        // this.talent: Talent als Zahl (-1=wenig, 0=normal, +1=hoch)
+        // this.aufwert: Aufwertungsstring
 
-    // in this.calcSkills() definiert:
-    // this.positions[][]: Positionstexte und Optis; TOR-Index ist 5
-    // this.skills[]: Einzelskills
-    // this.skillsEnd[]: Berechnet aus this.skills, this.age und aktuellerZat
-    // this.zatLeft: ZATs bis zum Ende 18 (letzte Ziehmoeglichkeit)
-    // this.restEnd: Korrekturterm zum Ausgleich von Rundungsfehlern mit Ende 18
-    //               (also Skills, die nicht explizit in this.skillsEnd stehen)
+        // in this.calcSkills() definiert:
+        // this.positions[][]: Positionstexte und Optis; TOR-Index ist 5
+        // this.skills[]: Einzelskills
+        // this.skillsEnd[]: Berechnet aus this.skills, this.age und aktuellerZat
+        // this.zatLeft: ZATs bis zum Ende 18 (letzte Ziehmoeglichkeit)
+        // this.restEnd: Korrekturterm zum Ausgleich von Rundungsfehlern mit Ende 18
+        //               (also Skills, die nicht explizit in this.skillsEnd stehen)
 
-    // in this.calcZusatz()/setZusatz() definiert:
-    // this.trainiert: Anzahl der erfolgreichen Trainingspunkte
-    // indirekt this.zatAge und this.bestPos
+        // in this.calcZusatz()/setZusatz() definiert:
+        // this.trainiert: Anzahl der erfolgreichen Trainingspunkte
+        // indirekt this.zatAge und this.bestPos
 
-    // in this.createWarnDraw() definiert:
-    // this.warnDraw: Behandlung von Warnungen Ende 18
-    // this.warnDrawAufstieg: Behandlung von Warnungen bei Aufstieg
+        // in this.createWarnDraw() definiert:
+        // this.warnDraw: Behandlung von Warnungen Ende 18
+        // this.warnDrawAufstieg: Behandlung von Warnungen bei Aufstieg
 
-    // in this.getPos() definiert:
-    // this.bestPos: erster (bester) Positionstext
+        // in this.getPos() definiert:
+        // this.bestPos: erster (bester) Positionstext
+    }
 }
 
 Class.define(PlayerRecord, Object, {
@@ -7001,67 +7152,69 @@ function sortPositionArray(array) {
 
 // Klasse fuer Spalten des Jugendkaders
 
-function ColumnManager(optSet, colIdx, showCol) {
-    'use strict';
+class ColumnManager {
+    constructor(optSet, colIdx, showCol) {
+        'use strict';
 
-    __LOG[4]("ColumnManager()");
+        __LOG[4]("ColumnManager()");
 
-    const __SHOWCOL = getValue(showCol, true);
-    const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
+        const __SHOWCOL = getValue(showCol, true);
+        const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
 
-    const __BIRTHDAYS = getOptValue(optSet.birthdays, []).length;
-    const __TCLASSES = getOptValue(optSet.tClasses, []).length;
-    const __PROGRESSES = getOptValue(optSet.progresses, []).length;
+        const __BIRTHDAYS = getOptValue(optSet.birthdays, []).length;
+        const __TCLASSES = getOptValue(optSet.tClasses, []).length;
+        const __PROGRESSES = getOptValue(optSet.progresses, []).length;
 
-    const __ZATAGES = getOptValue(optSet.zatAges, []).length;
-    const __TRAINIERT = getOptValue(optSet.trainiert, []).length;
-    const __POSITIONS = getOptValue(optSet.positions, []).length;
+        const __ZATAGES = getOptValue(optSet.zatAges, []).length;
+        const __TRAINIERT = getOptValue(optSet.trainiert, []).length;
+        const __POSITIONS = getOptValue(optSet.positions, []).length;
 
-    const __EINZELSKILLS = getOptValue(optSet.skills, []).length;
-    const __PROJECTION = (__EINZELSKILLS && __ZATAGES);
+        const __EINZELSKILLS = getOptValue(optSet.skills, []).length;
+        const __PROJECTION = (__EINZELSKILLS && __ZATAGES);
 
-    this.colIdx = colIdx;
+        this.colIdx = colIdx;
 
-    this.saison = getOptValue(optSet.saison);
-    this.gt = getOptValue(optSet.zeigeJahrgang);
-    this.gtUxx = getOptValue(optSet.zeigeUxx);
+        this.saison = getOptValue(optSet.saison);
+        this.gt = getOptValue(optSet.zeigeJahrgang);
+        this.gtUxx = getOptValue(optSet.zeigeUxx);
 
-    this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
-    this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && getOptValue(optSet.zeigeWarnung));
-    this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && getOptValue(optSet.zeigeWarnungMonat));
-    this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && getOptValue(optSet.zeigeWarnungHome));
-    this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && getOptValue(optSet.zeigeWarnungDialog));
-    this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && getOptValue(optSet.zeigeWarnungAufstieg));
-    this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && getOptValue(optSet.zeigeWarnungLegende));
-    this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && getOptValue(optSet.zeigeBalken));
-    this.barAbs = getOptValue(optSet.absBalken);
-    this.donor = getOptValue(optSet.foerderung);
-    this.geb = (__BIRTHDAYS && getValue(__SHOWCOL.zeigeGeb, __SHOWALL) && getOptValue(optSet.zeigeGeb));
-    this.tal = (__TCLASSES && getValue(__SHOWCOL.zeigeTal, __SHOWALL) && getOptValue(optSet.zeigeTal));
-    this.quo = (__ZATAGES && __TRAINIERT && getValue(__SHOWCOL.zeigeQuote, __SHOWALL) && getOptValue(optSet.zeigeQuote));
-    this.aufw = (__PROGRESSES && getValue(__SHOWCOL.zeigeAufw, __SHOWALL) && getOptValue(optSet.zeigeAufw));
-    this.substAge = (__ZATAGES && getValue(__SHOWCOL.ersetzeAlter, __SHOWALL) && getOptValue(optSet.ersetzeAlter));
-    this.alter = (__ZATAGES && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
-    this.fix = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeFixSkills, __SHOWALL) && getOptValue(optSet.zeigeFixSkills));
-    this.tr = (__EINZELSKILLS && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiert, __SHOWALL) && getOptValue(optSet.zeigeTrainiert));
-    this.zat = (__ZATAGES && getValue(__SHOWCOL.zeigeZatDone, __SHOWALL) && getOptValue(optSet.zeigeZatDone));
-    this.antHpt = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilPri, __SHOWALL) && getOptValue(optSet.zeigeAnteilPri));
-    this.antNeb = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilSec, __SHOWALL) && getOptValue(optSet.zeigeAnteilSec));
-    this.pri = (__EINZELSKILLS && getValue(__SHOWCOL.zeigePrios, __SHOWALL) && getOptValue(optSet.zeigePrios));
-    this.skill = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
-    this.pos = (__EINZELSKILLS && __POSITIONS && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
-    this.anzOpti = ((__EINZELSKILLS && getValue(__SHOWCOL.zeigeOpti, __SHOWALL)) ? getOptValue(optSet.anzahlOpti) : 0);
-    this.anzMw =  ((__PROJECTION && getValue(__SHOWCOL.zeigeMW, __SHOWALL)) ? getOptValue(optSet.anzahlMW) : 0);
-    this.substSkills = (__PROJECTION && getValue(__SHOWCOL.ersetzeSkills, __SHOWALL) && getOptValue(optSet.ersetzeSkills));
-    this.trE = (__PROJECTION && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiertEnde, __SHOWALL) && getOptValue(optSet.zeigeTrainiertEnde));
-    this.zatE = (__ZATAGES && getValue(__SHOWCOL.zeigeZatLeft, __SHOWALL) && getOptValue(optSet.zeigeZatLeft));
-    this.antHptE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilPriEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilPriEnde));
-    this.antNebE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilSecEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilSecEnde));
-    this.priE = (__PROJECTION && getValue(__SHOWCOL.zeigePriosEnde, __SHOWALL) && getOptValue(optSet.zeigePriosEnde));
-    this.skillE = (__PROJECTION && getValue(__SHOWCOL.zeigeSkillEnde, __SHOWALL) && getOptValue(optSet.zeigeSkillEnde));
-    this.anzOptiE = ((__PROJECTION && getValue(__SHOWCOL.zeigeOptiEnde, __SHOWALL)) ? getOptValue(optSet.anzahlOptiEnde) : 0);
-    this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? getOptValue(optSet.anzahlMWEnde) : 0);
-    this.kennzE = getOptValue(optSet.kennzeichenEnde);
+        this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
+        this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && getOptValue(optSet.zeigeWarnung));
+        this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && getOptValue(optSet.zeigeWarnungMonat));
+        this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && getOptValue(optSet.zeigeWarnungHome));
+        this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && getOptValue(optSet.zeigeWarnungDialog));
+        this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && getOptValue(optSet.zeigeWarnungAufstieg));
+        this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && getOptValue(optSet.zeigeWarnungLegende));
+        this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && getOptValue(optSet.zeigeBalken));
+        this.barAbs = getOptValue(optSet.absBalken);
+        this.donor = getOptValue(optSet.foerderung);
+        this.geb = (__BIRTHDAYS && getValue(__SHOWCOL.zeigeGeb, __SHOWALL) && getOptValue(optSet.zeigeGeb));
+        this.tal = (__TCLASSES && getValue(__SHOWCOL.zeigeTal, __SHOWALL) && getOptValue(optSet.zeigeTal));
+        this.quo = (__ZATAGES && __TRAINIERT && getValue(__SHOWCOL.zeigeQuote, __SHOWALL) && getOptValue(optSet.zeigeQuote));
+        this.aufw = (__PROGRESSES && getValue(__SHOWCOL.zeigeAufw, __SHOWALL) && getOptValue(optSet.zeigeAufw));
+        this.substAge = (__ZATAGES && getValue(__SHOWCOL.ersetzeAlter, __SHOWALL) && getOptValue(optSet.ersetzeAlter));
+        this.alter = (__ZATAGES && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
+        this.fix = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeFixSkills, __SHOWALL) && getOptValue(optSet.zeigeFixSkills));
+        this.tr = (__EINZELSKILLS && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiert, __SHOWALL) && getOptValue(optSet.zeigeTrainiert));
+        this.zat = (__ZATAGES && getValue(__SHOWCOL.zeigeZatDone, __SHOWALL) && getOptValue(optSet.zeigeZatDone));
+        this.antHpt = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilPri, __SHOWALL) && getOptValue(optSet.zeigeAnteilPri));
+        this.antNeb = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilSec, __SHOWALL) && getOptValue(optSet.zeigeAnteilSec));
+        this.pri = (__EINZELSKILLS && getValue(__SHOWCOL.zeigePrios, __SHOWALL) && getOptValue(optSet.zeigePrios));
+        this.skill = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
+        this.pos = (__EINZELSKILLS && __POSITIONS && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
+        this.anzOpti = ((__EINZELSKILLS && getValue(__SHOWCOL.zeigeOpti, __SHOWALL)) ? getOptValue(optSet.anzahlOpti) : 0);
+        this.anzMw =  ((__PROJECTION && getValue(__SHOWCOL.zeigeMW, __SHOWALL)) ? getOptValue(optSet.anzahlMW) : 0);
+        this.substSkills = (__PROJECTION && getValue(__SHOWCOL.ersetzeSkills, __SHOWALL) && getOptValue(optSet.ersetzeSkills));
+        this.trE = (__PROJECTION && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiertEnde, __SHOWALL) && getOptValue(optSet.zeigeTrainiertEnde));
+        this.zatE = (__ZATAGES && getValue(__SHOWCOL.zeigeZatLeft, __SHOWALL) && getOptValue(optSet.zeigeZatLeft));
+        this.antHptE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilPriEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilPriEnde));
+        this.antNebE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilSecEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilSecEnde));
+        this.priE = (__PROJECTION && getValue(__SHOWCOL.zeigePriosEnde, __SHOWALL) && getOptValue(optSet.zeigePriosEnde));
+        this.skillE = (__PROJECTION && getValue(__SHOWCOL.zeigeSkillEnde, __SHOWALL) && getOptValue(optSet.zeigeSkillEnde));
+        this.anzOptiE = ((__PROJECTION && getValue(__SHOWCOL.zeigeOptiEnde, __SHOWALL)) ? getOptValue(optSet.anzahlOptiEnde) : 0);
+        this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? getOptValue(optSet.anzahlMWEnde) : 0);
+        this.kennzE = getOptValue(optSet.kennzeichenEnde);
+    }
 }
 
 Class.define(ColumnManager, Object, {
@@ -7253,7 +7406,8 @@ Class.define(ColumnManager, Object, {
                                    this.addAndFillCell(playerRow, player.getGeb(), __COLOR, null, 0);
                                }
                                if (this.substAge) {
-                                   convertStringFromHTML(playerRow.cells, this.colIdx.Age, function(unused) {
+                                   convertStringFromHTML(playerRow.cells, this.colIdx.Age, function(value) {
+                                                                                               UNUSED(value);
                                                                                                return parseFloat(player.getAge()).toFixed(2);
                                                                                            });
                                } else if (this.alter) {
@@ -7313,14 +7467,16 @@ Class.define(ColumnManager, Object, {
                                // Einzelwerte mit Ende 18
                                if (this.colIdx.Einz) {
                                    if (this.substSkills) {
-                                       convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skillsEnd, function(value, cell, unused, index) {
+                                       convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skillsEnd, function(value, cell, arr, index) {
+                                                                                                                     UNUSED(arr);
                                                                                                                      if (~ __IDXPRI.indexOf(index)) {
                                                                                                                          formatCell(cell, true, __OSBLAU, __POS1COLOR, 1.0);
                                                                                                                      }
                                                                                                                      return value;
                                                                                                                  });
                                    } else {
-                                       convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skills.length, function(value, cell, unused, index) {
+                                       convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skills.length, function(value, cell, arr, index) {
+                                                                                                                         UNUSED(arr);
                                                                                                                          if (~ __IDXPRI.indexOf(index)) {
                                                                                                                              formatCell(cell, true, __POS1COLOR, null, 1.0);
                                                                                                                          }
@@ -7408,33 +7564,36 @@ Class.define(ColumnManager, Object, {
 // ==================== Abschnitt fuer Klasse TableManager ====================
 
 // Klasse fuer Tabelle
-function TableManager(optSet, colIdx, rows, offsetUpper, offsetLower) {
-    'use strict';
 
-    Object.call(this);
+class TableManager {
+    constructor(optSet, colIdx, rows, offsetUpper, offsetLower) {
+        'use strict';
 
-    this.currSaison = getOptValue(optSet.aktuelleSaison);
+        Object.call(this);
 
-    this.saison = getOptValue(optSet.saison);
-    this.land = getOptValue(optSet.land);
-    this.liga = getOptValue(optSet.liga);
-    this.tabTypNr = getOptValue(optSet.tabTypNr, 0);
+        this.currSaison = getOptValue(optSet.aktuelleSaison);
 
-    this.colIdx = colIdx;
+        this.saison = getOptValue(optSet.saison);
+        this.land = getOptValue(optSet.land);
+        this.liga = getOptValue(optSet.liga);
+        this.tabTypNr = getOptValue(optSet.tabTypNr, 0);
 
-    this.rows = getValue(rows, []);
-    this.headers = this.rows[0];
-    this.offsetUpper = offsetUpper;
-    this.offsetLower = offsetLower;
+        this.colIdx = colIdx;
 
-    this.vereine = this.createVereine();
+        this.rows = getValue(rows, []);
+        this.headers = this.rows[0];
+        this.offsetUpper = offsetUpper;
+        this.offsetLower = offsetLower;
 
-    this.ligaSize = this.vereine.length;
-    this.ligaNr = getLigaNr(this.liga);
-    this.isErsteLiga = (this.ligaSize && (this.tabTypNr === 0) && (this.ligaNr === 1));
-    this.letzterSpieltag = (this.ligaSize - 1) * ((this.ligaSize === 10) ? 4 : 2);
-    this.isAbschluss = (this.getSpieltag() === this.letzterSpieltag);
-    this.isCurrSaison = (this.saison === this.currSaison);
+        this.vereine = this.createVereine();
+
+        this.ligaSize = this.vereine.length;
+        this.ligaNr = getLigaNr(this.liga);
+        this.isErsteLiga = (this.ligaSize && (this.tabTypNr === 0) && (this.ligaNr === 1));
+        this.letzterSpieltag = (this.ligaSize - 1) * ((this.ligaSize === 10) ? 4 : 2);
+        this.isAbschluss = (this.getSpieltag() === this.letzterSpieltag);
+        this.isCurrSaison = (this.saison === this.currSaison);
+    }
 }
 
 Class.define(TableManager, Object, {

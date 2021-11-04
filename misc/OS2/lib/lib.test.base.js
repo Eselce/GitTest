@@ -62,22 +62,24 @@ async function callPromiseArray(...promises) {
 // msg: Text oder Text liefernde Funktion
 // thisArg: Referenz auf ein Bezugsobjekt
 // params: ggfs. Parameter fuer die msg-Funktion
-function AssertionFailed(whatFailed, msg, thisArg, ...params) {
-    //'use strict';
-    const __THIS = (thisArg || this);
+class AssertionFailed {
+    constructor(whatFailed, msg, thisArg, ...params) {
+        //'use strict';
+        const __THIS = (thisArg || this);
 
-    if (msg === undefined) {
-        this.message = "";
-    } else if ((typeof msg) === 'function') {
-        const __TEXT = msg.call(__THIS, ...params);
+        if (msg === undefined) {
+            this.message = "";
+        } else if ((typeof msg) === 'function') {
+            const __TEXT = msg.call(__THIS, ...params);
 
-        this.message = String(__TEXT);
-    } else {
-        this.message = String(msg);
-    }
+            this.message = String(__TEXT);
+        } else {
+            this.message = String(msg);
+        }
 
-    if (whatFailed) {
-        this.message += " (" + whatFailed + ')';
+        if (whatFailed) {
+            this.message += " (" + whatFailed + ')';
+        }
     }
 }
 
@@ -105,6 +107,7 @@ function assertionCatch(error, ...attribs) {
         const __ERROR = Object.assign(error, ...attribs);
         const __RET = showException(__LABEL, __ERROR, false);
 
+        UNUSED(__RET);
         //ASSERT(false, "Promise rejected!", __RET);  // TODO
 
         return Promise.reject(__ERROR);
@@ -393,15 +396,23 @@ Class.define(UnitTest, Object, {
                                 this.tDefs.push(__ENTRY);
                             },
             'prepare'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                UNUSED(name, desc, thisArg, resultObj, resultFun, tableId);
+
                                 return true;
                             },
             'cleanup'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                UNUSED(name, desc, thisArg, resultObj, resultFun, tableId);
+
                                 return true;
                             },
             'setup'       : async function(name, desc, testFun, thisArg) {
+                                UNUSED(name, desc, testFun, thisArg);
+
                                 return true;
                             },
             'teardown'    : async function(name, desc, testFun, thisArg) {
+                                UNUSED(name, desc, testFun, thisArg);
+
                                 return true;
                             },
             'run'         : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
@@ -691,18 +702,20 @@ UnitTest.getStyleFromResults = function(results) {
 // libName: Name des JS-Moduls
 // libDesc: Beschreibung des Moduls
 // libTest: UnitTest-Klasse des Moduls
-function UnitTestResults(libName, libDesc, libTest) {
-    'use strict';
+class UnitTestResults {
+    constructor(libName, libDesc, libTest) {
+        'use strict';
 
-    this.name = libName;
-    this.desc = libDesc;
-    this.test = (libTest || { });
+        this.name = libName;
+        this.desc = libDesc;
+        this.test = (libTest || { });
 
-    this.countRunning   = 0;  // Zaehler Tests
-    this.countSuccess   = 0;  // Zaehler OK
-    this.countFailed    = 0;  // Zaehler FAIL
-    this.countException = 0;  // Zaehler EX (andere Exceptions ausser ERR)
-    this.countError     = 0;  // Zaehler ERR (Fehler im Test, Spezial-Exception)
+        this.countRunning   = 0;  // Zaehler Tests
+        this.countSuccess   = 0;  // Zaehler OK
+        this.countFailed    = 0;  // Zaehler FAIL
+        this.countException = 0;  // Zaehler EX (andere Exceptions ausser ERR)
+        this.countError     = 0;  // Zaehler ERR (Fehler im Test, Spezial-Exception)
+    }
 }
 
 Class.define(UnitTestResults, Object, {
@@ -835,19 +848,27 @@ function UnitTestOption(name, desc, tests, load) {
 
 Class.define(UnitTestOption, UnitTest, {
             'prepare'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                UNUSED(thisArg, resultObj, resultFun, tableId);
+
                                 __LOG[1]("prepare()", name, desc);
+
                                 return true;
                             },
             'cleanup'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                UNUSED(thisArg, resultObj, resultFun, tableId);
+
                                 __LOG[1]("cleanup()", name, desc);
+
                                 return true;
                             },
             'setup'       : async function(name, desc, testFun, thisArg) {
                                 __LOG[1]("setup()", name, desc, testFun, thisArg);
+
                                 return true;
                             },
             'teardown'    : async function(name, desc, testFun, thisArg) {
                                 __LOG[1]("teardown()", name, desc, testFun, thisArg);
+
                                 return true;
                             }
         });

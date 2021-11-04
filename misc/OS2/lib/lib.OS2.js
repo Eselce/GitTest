@@ -412,15 +412,18 @@ function getColor(pos) {
 // ==================== Abschnitt fuer Klasse TeamClassification ====================
 
 // Klasse fuer die Klassifikation der Optionen nach Team (Erst- und Zweitteam oder Fremdteam)
-function TeamClassification() {
-    'use strict';
 
-    Classification.call(this);
+class TeamClassification extends Classification {
+    constructor() {
+        'use strict';
 
-    this.prefix = undefined;
+        Classification.call(this);
 
-    this.team = undefined;
-    this.teamParams = undefined;
+        this.prefix = undefined;
+
+        this.team = undefined;
+        this.teamParams = undefined;
+    }
 }
 
 Class.define(TeamClassification, Classification, {
@@ -443,14 +446,17 @@ Class.define(TeamClassification, Classification, {
 // ==================== Abschnitt fuer Klasse Team ====================
 
 // Klasse fuer Teamdaten
-function Team(team, land, liga) {
-    'use strict';
 
-    this.Team = team;
-    this.Land = land;
-    this.Liga = liga;
-    this.LdNr = getLandNr(land);
-    this.LgNr = getLigaNr(liga);
+class Team {
+    constructor(team, land, liga) {
+        'use strict';
+
+        this.Team = team;
+        this.Land = land;
+        this.Liga = liga;
+        this.LdNr = getLandNr(land);
+        this.LgNr = getLigaNr(liga);
+    }
 }
 
 Class.define(Team, Object, {
@@ -468,14 +474,17 @@ Class.define(Team, Object, {
 // ==================== Abschnitt fuer Klasse Verein ====================
 
 // Klasse fuer Vereinsdaten
-function Verein(team, land, liga, id, manager, flags) {
-    'use strict';
 
-    Team.call(this, team, land, liga);
+class Verein extends Team {
+    constructor(team, land, liga, id, manager, flags) {
+        'use strict';
 
-    this.ID = id;
-    this.Manager = manager;
-    this.Flags = (flags || []);
+        Team.call(this, team, land, liga);
+
+        this.ID = id;
+        this.Manager = manager;
+        this.Flags = (flags || []);
+    }
 }
 
 Class.define(Verein, Team, {
@@ -747,21 +756,23 @@ const __HINRUECK    = [ " Hin", " R\xFCck", "" ];
 
 // ==================== Abschnitt fuer Klasse RundenLink ====================
 
-function RundenLink(saison, team) {
-    'use strict';
+class RundenLink {
+    constructor(saison, team) {
+        'use strict';
 
-    this.uri = new URI("http://os.ongapo.com/");
-    this.runde = 0;
-    this.prop = "";
-    this.label = "";
+        this.uri = new URI("http://os.ongapo.com/");
+        this.runde = 0;
+        this.prop = "";
+        this.label = "";
 
-    this.setAktion("Statistik+ausgeben");
+        this.setAktion("Statistik+ausgeben");
 
-    if (saison) {
-        this.setSaison(saison);
-    }
-    if (team) {
-        this.setTeam(team);
+        if (saison) {
+            this.setSaison(saison);
+        }
+        if (team) {
+            this.setTeam(team);
+        }
     }
 }
 
@@ -1185,23 +1196,25 @@ function getLigaSizeFromSpielplan(rows, startIdx, colArtIdx, saison) {
 
 // Klasse fuer Ziehwarnung fuer einen Jugendspieler
 
-function WarnDrawPlayer(player, alertColor) {
-    'use strict';
+class WarnDrawPlayer {
+    constructor(player, alertColor) {
+        'use strict';
 
-    this.player = player;
+        this.player = player;
 
-    if (this.player !== undefined) {
-        // Default Warnlevel...
-        this.setZatLeft(player.getZatLeft());
-        this.currZAT = player.currZAT;
-        this.setWarn(true, true, true);
-        this.colAlert = alertColor || this.alertColor();
-    } else {
-        // Kein Warnlevel...
-        this.setZatLeft(undefined);
-        this.currZAT = undefined;
-        this.setWarn(false, false, false);
-        this.colAlert = undefined;
+        if (this.player !== undefined) {
+            // Default Warnlevel...
+            this.setZatLeft(player.getZatLeft());
+            this.currZAT = player.currZAT;
+            this.setWarn(true, true, true);
+            this.colAlert = alertColor || this.alertColor();
+        } else {
+            // Kein Warnlevel...
+            this.setZatLeft(undefined);
+            this.currZAT = undefined;
+            this.setWarn(false, false, false);
+            this.colAlert = undefined;
+        }
     }
 }
 
@@ -1256,29 +1269,31 @@ const __NOWARNDRAW = new WarnDrawPlayer(undefined, undefined);  // inaktives Obj
 
 // Klasse fuer Warnmeldung fuer einen Jugendspieler
 
-function WarnDrawMessage(optSet, currZAT) {
-    'use strict';
+class WarnDrawMessage {
+    constructor(optSet, currZAT) {
+        'use strict';
 
-    this.optSet = optSet;
+        this.optSet = optSet;
 
-    this.warn = getOptValue(this.optSet.zeigeWarnung, true);
-    this.warnMonth = getOptValue(this.optSet.zeigeWarnungMonat, true);
-    this.warnHome = getOptValue(this.optSet.zeigeWarnungHome, true);
-    this.warnDialog = getOptValue(this.optSet.zeigeWarnungDialog, false);
-    this.warnAufstieg = getOptValue(this.optSet.zeigeWarnungAufstieg, true);
-    this.warnLegende = getOptValue(this.optSet.zeigeWarnungLegende, true);
+        this.warn = getOptValue(this.optSet.zeigeWarnung, true);
+        this.warnMonth = getOptValue(this.optSet.zeigeWarnungMonat, true);
+        this.warnHome = getOptValue(this.optSet.zeigeWarnungHome, true);
+        this.warnDialog = getOptValue(this.optSet.zeigeWarnungDialog, false);
+        this.warnAufstieg = getOptValue(this.optSet.zeigeWarnungAufstieg, true);
+        this.warnLegende = getOptValue(this.optSet.zeigeWarnungLegende, true);
 
-    this.out = {
-                   'supertag' : true,
-                   'top'      : true,
-                   'link'     : true,
-                   'label'    : true,
-                   'bottom'   : true
-               };
+        this.out = {
+                       'supertag' : true,
+                       'top'      : true,
+                       'link'     : true,
+                       'label'    : true,
+                       'bottom'   : true
+                   };
 
-    this.setOptionHome();
+        this.setOptionHome();
 
-    this.startMessage(currZAT);
+        this.startMessage(currZAT);
+    }
 }
 
 Class.define(WarnDrawMessage, Object, {
@@ -1440,15 +1455,17 @@ Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
 
 // Klasse fuer Warnmeldung im Falle eines Aufstiegs fuer einen Jugendspieler
 
-function WarnDrawMessageAufstieg(optSet, currZAT) {
-    'use strict';
+class WarnDrawMessageAufstieg extends WarnDrawMessage {
+    constructor(optSet, currZAT) {
+        'use strict';
 
-    WarnDrawMessage.call(this, optSet, currZAT);
+        WarnDrawMessage.call(this, optSet, currZAT);
 
-    this.out.top = false;  // kein Vorschub vor der Zeile
+        this.out.top = false;  // kein Vorschub vor der Zeile
 
-    this.warn = (this.warn && this.warnAufstieg);  // kann man ausschalten
-    this.startMessage(currZAT);  // 2. Aufruf (zur Korrektur)
+        this.warn = (this.warn && this.warnAufstieg);  // kann man ausschalten
+        this.startMessage(currZAT);  // 2. Aufruf (zur Korrektur)
+    }
 }
 
 Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
@@ -1502,50 +1519,52 @@ Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
 
 // Klasse fuer Spalten des Jugendkaders
 
-function PlayerRecord(land, age, isGoalie, saison, currZAT, donation) {
-    'use strict';
+class PlayerRecord {
+    constructor(land, age, isGoalie, saison, currZAT, donation) {
+        'use strict';
 
-    this.land = land;
-    this.age = age;
-    this.isGoalie = isGoalie;
+        this.land = land;
+        this.age = age;
+        this.isGoalie = isGoalie;
 
-    this.saison = saison;
-    this.currZAT = currZAT;
-    this.donation = donation;
-    this.mwFormel = ((this.saison < 10) ? this.__MWFORMEL.alt : this.__MWFORMEL.S10);
+        this.saison = saison;
+        this.currZAT = currZAT;
+        this.donation = donation;
+        this.mwFormel = ((this.saison < 10) ? this.__MWFORMEL.alt : this.__MWFORMEL.S10);
 
-    // in new PlayerRecord() definiert:
-    // this.land: TLA des Geburtslandes
-    // this.age: Ganzzahliges Alter des Spielers
-    // this.isGoalie: Angabe, ob es ein TOR ist
-    // this.mwFormel: Benutzte MW-Formel, siehe __MWFORMEL
-    // this.donation: Jugendfoerderungsbetrag in Euro
+        // in new PlayerRecord() definiert:
+        // this.land: TLA des Geburtslandes
+        // this.age: Ganzzahliges Alter des Spielers
+        // this.isGoalie: Angabe, ob es ein TOR ist
+        // this.mwFormel: Benutzte MW-Formel, siehe __MWFORMEL
+        // this.donation: Jugendfoerderungsbetrag in Euro
 
-    // in this.initPlayer() definiert:
-    // this.zatGeb: ZAT, an dem der Spieler Geburtstag hat, -1 fuer "noch nicht zugewiesen", also '?'
-    // this.zatAge: Bisherige erfolgte Trainings-ZATs
-    // this.birth: Universell eindeutige Nummer des Geburtstags-ZATs des Spielers
-    // this.talent: Talent als Zahl (-1=wenig, 0=normal, +1=hoch)
-    // this.aufwert: Aufwertungsstring
+        // in this.initPlayer() definiert:
+        // this.zatGeb: ZAT, an dem der Spieler Geburtstag hat, -1 fuer "noch nicht zugewiesen", also '?'
+        // this.zatAge: Bisherige erfolgte Trainings-ZATs
+        // this.birth: Universell eindeutige Nummer des Geburtstags-ZATs des Spielers
+        // this.talent: Talent als Zahl (-1=wenig, 0=normal, +1=hoch)
+        // this.aufwert: Aufwertungsstring
 
-    // in this.calcSkills() definiert:
-    // this.positions[][]: Positionstexte und Optis; TOR-Index ist 5
-    // this.skills[]: Einzelskills
-    // this.skillsEnd[]: Berechnet aus this.skills, this.age und aktuellerZat
-    // this.zatLeft: ZATs bis zum Ende 18 (letzte Ziehmoeglichkeit)
-    // this.restEnd: Korrekturterm zum Ausgleich von Rundungsfehlern mit Ende 18
-    //               (also Skills, die nicht explizit in this.skillsEnd stehen)
+        // in this.calcSkills() definiert:
+        // this.positions[][]: Positionstexte und Optis; TOR-Index ist 5
+        // this.skills[]: Einzelskills
+        // this.skillsEnd[]: Berechnet aus this.skills, this.age und aktuellerZat
+        // this.zatLeft: ZATs bis zum Ende 18 (letzte Ziehmoeglichkeit)
+        // this.restEnd: Korrekturterm zum Ausgleich von Rundungsfehlern mit Ende 18
+        //               (also Skills, die nicht explizit in this.skillsEnd stehen)
 
-    // in this.calcZusatz()/setZusatz() definiert:
-    // this.trainiert: Anzahl der erfolgreichen Trainingspunkte
-    // indirekt this.zatAge und this.bestPos
+        // in this.calcZusatz()/setZusatz() definiert:
+        // this.trainiert: Anzahl der erfolgreichen Trainingspunkte
+        // indirekt this.zatAge und this.bestPos
 
-    // in this.createWarnDraw() definiert:
-    // this.warnDraw: Behandlung von Warnungen Ende 18
-    // this.warnDrawAufstieg: Behandlung von Warnungen bei Aufstieg
+        // in this.createWarnDraw() definiert:
+        // this.warnDraw: Behandlung von Warnungen Ende 18
+        // this.warnDrawAufstieg: Behandlung von Warnungen bei Aufstieg
 
-    // in this.getPos() definiert:
-    // this.bestPos: erster (bester) Positionstext
+        // in this.getPos() definiert:
+        // this.bestPos: erster (bester) Positionstext
+    }
 }
 
 Class.define(PlayerRecord, Object, {
@@ -2000,67 +2019,69 @@ function sortPositionArray(array) {
 
 // Klasse fuer Spalten des Jugendkaders
 
-function ColumnManager(optSet, colIdx, showCol) {
-    'use strict';
+class ColumnManager {
+    constructor(optSet, colIdx, showCol) {
+        'use strict';
 
-    __LOG[4]("ColumnManager()");
+        __LOG[4]("ColumnManager()");
 
-    const __SHOWCOL = getValue(showCol, true);
-    const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
+        const __SHOWCOL = getValue(showCol, true);
+        const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
 
-    const __BIRTHDAYS = getOptValue(optSet.birthdays, []).length;
-    const __TCLASSES = getOptValue(optSet.tClasses, []).length;
-    const __PROGRESSES = getOptValue(optSet.progresses, []).length;
+        const __BIRTHDAYS = getOptValue(optSet.birthdays, []).length;
+        const __TCLASSES = getOptValue(optSet.tClasses, []).length;
+        const __PROGRESSES = getOptValue(optSet.progresses, []).length;
 
-    const __ZATAGES = getOptValue(optSet.zatAges, []).length;
-    const __TRAINIERT = getOptValue(optSet.trainiert, []).length;
-    const __POSITIONS = getOptValue(optSet.positions, []).length;
+        const __ZATAGES = getOptValue(optSet.zatAges, []).length;
+        const __TRAINIERT = getOptValue(optSet.trainiert, []).length;
+        const __POSITIONS = getOptValue(optSet.positions, []).length;
 
-    const __EINZELSKILLS = getOptValue(optSet.skills, []).length;
-    const __PROJECTION = (__EINZELSKILLS && __ZATAGES);
+        const __EINZELSKILLS = getOptValue(optSet.skills, []).length;
+        const __PROJECTION = (__EINZELSKILLS && __ZATAGES);
 
-    this.colIdx = colIdx;
+        this.colIdx = colIdx;
 
-    this.saison = getOptValue(optSet.saison);
-    this.gt = getOptValue(optSet.zeigeJahrgang);
-    this.gtUxx = getOptValue(optSet.zeigeUxx);
+        this.saison = getOptValue(optSet.saison);
+        this.gt = getOptValue(optSet.zeigeJahrgang);
+        this.gtUxx = getOptValue(optSet.zeigeUxx);
 
-    this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
-    this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && getOptValue(optSet.zeigeWarnung));
-    this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && getOptValue(optSet.zeigeWarnungMonat));
-    this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && getOptValue(optSet.zeigeWarnungHome));
-    this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && getOptValue(optSet.zeigeWarnungDialog));
-    this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && getOptValue(optSet.zeigeWarnungAufstieg));
-    this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && getOptValue(optSet.zeigeWarnungLegende));
-    this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && getOptValue(optSet.zeigeBalken));
-    this.barAbs = getOptValue(optSet.absBalken);
-    this.donor = getOptValue(optSet.foerderung);
-    this.geb = (__BIRTHDAYS && getValue(__SHOWCOL.zeigeGeb, __SHOWALL) && getOptValue(optSet.zeigeGeb));
-    this.tal = (__TCLASSES && getValue(__SHOWCOL.zeigeTal, __SHOWALL) && getOptValue(optSet.zeigeTal));
-    this.quo = (__ZATAGES && __TRAINIERT && getValue(__SHOWCOL.zeigeQuote, __SHOWALL) && getOptValue(optSet.zeigeQuote));
-    this.aufw = (__PROGRESSES && getValue(__SHOWCOL.zeigeAufw, __SHOWALL) && getOptValue(optSet.zeigeAufw));
-    this.substAge = (__ZATAGES && getValue(__SHOWCOL.ersetzeAlter, __SHOWALL) && getOptValue(optSet.ersetzeAlter));
-    this.alter = (__ZATAGES && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
-    this.fix = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeFixSkills, __SHOWALL) && getOptValue(optSet.zeigeFixSkills));
-    this.tr = (__EINZELSKILLS && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiert, __SHOWALL) && getOptValue(optSet.zeigeTrainiert));
-    this.zat = (__ZATAGES && getValue(__SHOWCOL.zeigeZatDone, __SHOWALL) && getOptValue(optSet.zeigeZatDone));
-    this.antHpt = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilPri, __SHOWALL) && getOptValue(optSet.zeigeAnteilPri));
-    this.antNeb = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilSec, __SHOWALL) && getOptValue(optSet.zeigeAnteilSec));
-    this.pri = (__EINZELSKILLS && getValue(__SHOWCOL.zeigePrios, __SHOWALL) && getOptValue(optSet.zeigePrios));
-    this.skill = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
-    this.pos = (__EINZELSKILLS && __POSITIONS && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
-    this.anzOpti = ((__EINZELSKILLS && getValue(__SHOWCOL.zeigeOpti, __SHOWALL)) ? getOptValue(optSet.anzahlOpti) : 0);
-    this.anzMw =  ((__PROJECTION && getValue(__SHOWCOL.zeigeMW, __SHOWALL)) ? getOptValue(optSet.anzahlMW) : 0);
-    this.substSkills = (__PROJECTION && getValue(__SHOWCOL.ersetzeSkills, __SHOWALL) && getOptValue(optSet.ersetzeSkills));
-    this.trE = (__PROJECTION && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiertEnde, __SHOWALL) && getOptValue(optSet.zeigeTrainiertEnde));
-    this.zatE = (__ZATAGES && getValue(__SHOWCOL.zeigeZatLeft, __SHOWALL) && getOptValue(optSet.zeigeZatLeft));
-    this.antHptE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilPriEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilPriEnde));
-    this.antNebE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilSecEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilSecEnde));
-    this.priE = (__PROJECTION && getValue(__SHOWCOL.zeigePriosEnde, __SHOWALL) && getOptValue(optSet.zeigePriosEnde));
-    this.skillE = (__PROJECTION && getValue(__SHOWCOL.zeigeSkillEnde, __SHOWALL) && getOptValue(optSet.zeigeSkillEnde));
-    this.anzOptiE = ((__PROJECTION && getValue(__SHOWCOL.zeigeOptiEnde, __SHOWALL)) ? getOptValue(optSet.anzahlOptiEnde) : 0);
-    this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? getOptValue(optSet.anzahlMWEnde) : 0);
-    this.kennzE = getOptValue(optSet.kennzeichenEnde);
+        this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
+        this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && getOptValue(optSet.zeigeWarnung));
+        this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && getOptValue(optSet.zeigeWarnungMonat));
+        this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && getOptValue(optSet.zeigeWarnungHome));
+        this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && getOptValue(optSet.zeigeWarnungDialog));
+        this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && getOptValue(optSet.zeigeWarnungAufstieg));
+        this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && getOptValue(optSet.zeigeWarnungLegende));
+        this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && getOptValue(optSet.zeigeBalken));
+        this.barAbs = getOptValue(optSet.absBalken);
+        this.donor = getOptValue(optSet.foerderung);
+        this.geb = (__BIRTHDAYS && getValue(__SHOWCOL.zeigeGeb, __SHOWALL) && getOptValue(optSet.zeigeGeb));
+        this.tal = (__TCLASSES && getValue(__SHOWCOL.zeigeTal, __SHOWALL) && getOptValue(optSet.zeigeTal));
+        this.quo = (__ZATAGES && __TRAINIERT && getValue(__SHOWCOL.zeigeQuote, __SHOWALL) && getOptValue(optSet.zeigeQuote));
+        this.aufw = (__PROGRESSES && getValue(__SHOWCOL.zeigeAufw, __SHOWALL) && getOptValue(optSet.zeigeAufw));
+        this.substAge = (__ZATAGES && getValue(__SHOWCOL.ersetzeAlter, __SHOWALL) && getOptValue(optSet.ersetzeAlter));
+        this.alter = (__ZATAGES && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
+        this.fix = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeFixSkills, __SHOWALL) && getOptValue(optSet.zeigeFixSkills));
+        this.tr = (__EINZELSKILLS && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiert, __SHOWALL) && getOptValue(optSet.zeigeTrainiert));
+        this.zat = (__ZATAGES && getValue(__SHOWCOL.zeigeZatDone, __SHOWALL) && getOptValue(optSet.zeigeZatDone));
+        this.antHpt = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilPri, __SHOWALL) && getOptValue(optSet.zeigeAnteilPri));
+        this.antNeb = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilSec, __SHOWALL) && getOptValue(optSet.zeigeAnteilSec));
+        this.pri = (__EINZELSKILLS && getValue(__SHOWCOL.zeigePrios, __SHOWALL) && getOptValue(optSet.zeigePrios));
+        this.skill = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
+        this.pos = (__EINZELSKILLS && __POSITIONS && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
+        this.anzOpti = ((__EINZELSKILLS && getValue(__SHOWCOL.zeigeOpti, __SHOWALL)) ? getOptValue(optSet.anzahlOpti) : 0);
+        this.anzMw =  ((__PROJECTION && getValue(__SHOWCOL.zeigeMW, __SHOWALL)) ? getOptValue(optSet.anzahlMW) : 0);
+        this.substSkills = (__PROJECTION && getValue(__SHOWCOL.ersetzeSkills, __SHOWALL) && getOptValue(optSet.ersetzeSkills));
+        this.trE = (__PROJECTION && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiertEnde, __SHOWALL) && getOptValue(optSet.zeigeTrainiertEnde));
+        this.zatE = (__ZATAGES && getValue(__SHOWCOL.zeigeZatLeft, __SHOWALL) && getOptValue(optSet.zeigeZatLeft));
+        this.antHptE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilPriEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilPriEnde));
+        this.antNebE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilSecEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilSecEnde));
+        this.priE = (__PROJECTION && getValue(__SHOWCOL.zeigePriosEnde, __SHOWALL) && getOptValue(optSet.zeigePriosEnde));
+        this.skillE = (__PROJECTION && getValue(__SHOWCOL.zeigeSkillEnde, __SHOWALL) && getOptValue(optSet.zeigeSkillEnde));
+        this.anzOptiE = ((__PROJECTION && getValue(__SHOWCOL.zeigeOptiEnde, __SHOWALL)) ? getOptValue(optSet.anzahlOptiEnde) : 0);
+        this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? getOptValue(optSet.anzahlMWEnde) : 0);
+        this.kennzE = getOptValue(optSet.kennzeichenEnde);
+    }
 }
 
 Class.define(ColumnManager, Object, {
@@ -2252,7 +2273,8 @@ Class.define(ColumnManager, Object, {
                                    this.addAndFillCell(playerRow, player.getGeb(), __COLOR, null, 0);
                                }
                                if (this.substAge) {
-                                   convertStringFromHTML(playerRow.cells, this.colIdx.Age, function(unused) {
+                                   convertStringFromHTML(playerRow.cells, this.colIdx.Age, function(value) {
+                                                                                               UNUSED(value);
                                                                                                return parseFloat(player.getAge()).toFixed(2);
                                                                                            });
                                } else if (this.alter) {
@@ -2312,14 +2334,16 @@ Class.define(ColumnManager, Object, {
                                // Einzelwerte mit Ende 18
                                if (this.colIdx.Einz) {
                                    if (this.substSkills) {
-                                       convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skillsEnd, function(value, cell, unused, index) {
+                                       convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skillsEnd, function(value, cell, arr, index) {
+                                                                                                                     UNUSED(arr);
                                                                                                                      if (~ __IDXPRI.indexOf(index)) {
                                                                                                                          formatCell(cell, true, __OSBLAU, __POS1COLOR, 1.0);
                                                                                                                      }
                                                                                                                      return value;
                                                                                                                  });
                                    } else {
-                                       convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skills.length, function(value, cell, unused, index) {
+                                       convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skills.length, function(value, cell, arr, index) {
+                                                                                                                         UNUSED(arr);
                                                                                                                          if (~ __IDXPRI.indexOf(index)) {
                                                                                                                              formatCell(cell, true, __POS1COLOR, null, 1.0);
                                                                                                                          }
@@ -2407,33 +2431,36 @@ Class.define(ColumnManager, Object, {
 // ==================== Abschnitt fuer Klasse TableManager ====================
 
 // Klasse fuer Tabelle
-function TableManager(optSet, colIdx, rows, offsetUpper, offsetLower) {
-    'use strict';
 
-    Object.call(this);
+class TableManager {
+    constructor(optSet, colIdx, rows, offsetUpper, offsetLower) {
+        'use strict';
 
-    this.currSaison = getOptValue(optSet.aktuelleSaison);
+        Object.call(this);
 
-    this.saison = getOptValue(optSet.saison);
-    this.land = getOptValue(optSet.land);
-    this.liga = getOptValue(optSet.liga);
-    this.tabTypNr = getOptValue(optSet.tabTypNr, 0);
+        this.currSaison = getOptValue(optSet.aktuelleSaison);
 
-    this.colIdx = colIdx;
+        this.saison = getOptValue(optSet.saison);
+        this.land = getOptValue(optSet.land);
+        this.liga = getOptValue(optSet.liga);
+        this.tabTypNr = getOptValue(optSet.tabTypNr, 0);
 
-    this.rows = getValue(rows, []);
-    this.headers = this.rows[0];
-    this.offsetUpper = offsetUpper;
-    this.offsetLower = offsetLower;
+        this.colIdx = colIdx;
 
-    this.vereine = this.createVereine();
+        this.rows = getValue(rows, []);
+        this.headers = this.rows[0];
+        this.offsetUpper = offsetUpper;
+        this.offsetLower = offsetLower;
 
-    this.ligaSize = this.vereine.length;
-    this.ligaNr = getLigaNr(this.liga);
-    this.isErsteLiga = (this.ligaSize && (this.tabTypNr === 0) && (this.ligaNr === 1));
-    this.letzterSpieltag = (this.ligaSize - 1) * ((this.ligaSize === 10) ? 4 : 2);
-    this.isAbschluss = (this.getSpieltag() === this.letzterSpieltag);
-    this.isCurrSaison = (this.saison === this.currSaison);
+        this.vereine = this.createVereine();
+
+        this.ligaSize = this.vereine.length;
+        this.ligaNr = getLigaNr(this.liga);
+        this.isErsteLiga = (this.ligaSize && (this.tabTypNr === 0) && (this.ligaNr === 1));
+        this.letzterSpieltag = (this.ligaSize - 1) * ((this.ligaSize === 10) ? 4 : 2);
+        this.isAbschluss = (this.getSpieltag() === this.letzterSpieltag);
+        this.isCurrSaison = (this.saison === this.currSaison);
+    }
 }
 
 Class.define(TableManager, Object, {

@@ -121,6 +121,17 @@ __LOG.init(window, 4);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window,
 // count/countReset
 // assert
 
+// ==================== Abschnitt fuer UNUSED() ====================
+
+// Makro fuer die Markierung bewusst ungenutzter Variablen und Parametern
+// params: Beliebig viele Parameter, mit denen nichts gemacht wird
+// return Liefert formal die Parameter zurueck
+function UNUSED(...unused) {
+    return unused;
+}
+
+// ==================== Ende Abschnitt fuer UNUSED() ====================
+
 // ==================== Abschnitt fuer safeStringify() ====================
 
 // Sicheres JSON.stringify(), das auch mit Zyklen umgehen kann
@@ -143,9 +154,12 @@ function serializer(replacer = undefined, cycleReplacer = undefined) {
 
     if (! cycleReplacer) {
         cycleReplacer = function(key, value) {
+                UNUSED(key);
+
                 if (__STACK[0] === value) {
                     return "[~]";
                 }
+
                 return "[~." + __KEYS.slice(0, __STACK.indexOf(value)).join('.') + ']';
             };
     }
@@ -177,6 +191,8 @@ function serializer(replacer = undefined, cycleReplacer = undefined) {
 // value: Der uebergebene Wert
 // return Fuer Arrays eine kompakte Darstellung, sonst derselbe Wert
 function replaceArraySimple(key, value) {
+    UNUSED(key);
+
     if (Array.isArray(value)) {
         return "[ " + value.join(", ") + " ]";
     }
@@ -189,6 +205,8 @@ function replaceArraySimple(key, value) {
 // value: Der uebergebene Wert
 // return Fuer Arrays eine kompakte Darstellung, sonst derselbe Wert
 function replaceArray(key, value) {
+    UNUSED(key);
+
     if (Array.isArray(value)) {
         const __RET = value.map(function(element) {
                                     return safeStringify(element, replaceArray, 0);
@@ -527,16 +545,18 @@ function floorValue(value, dot = '.') {
 // return Generische Funktion, die an Array-Funktionen uebergeben werden kann, z.B. als Replacer fuer safeStringify()
 function replaceArrayFun(formatFun, space = ' ') {
     return function(key, value) {
-               const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
+            UNUSED(key);
 
-               if (Array.isArray(__VALUE)) {
-                   const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
+            const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
 
-                   return '[' + space + __RET.join(',' + space) + space + ']';
-               }
+            if (Array.isArray(__VALUE)) {
+                const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
 
-               return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
-           };
+                return '[' + space + __RET.join(',' + space) + space + ']';
+            }
+
+            return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
+        };
 }
 
 // Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise rechtsbuending formatiert,
@@ -1311,7 +1331,7 @@ registerStartFun(GM_checkForTampermonkeyBug);
 // name: GM.setValue()-Name, unter dem die Daten gespeichert werden
 // value: Zu speichernder String/Integer/Boolean-Wert
 // return Promise auf ein Objekt, das 'name' und 'value' der Operation enthaelt
-function storeValue(name, value) {
+async function storeValue(name, value) {
     __LOG[5](name + " >> " + __LOG.info(value, true, true));
 
     return __SETVALUE(name, value).then(() => {
@@ -1333,7 +1353,7 @@ function storeValue(name, value) {
 // name: GM.getValue()-Name, unter dem die Daten gespeichert wurden
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
-function summonValue(name, defValue = undefined) {
+async function summonValue(name, defValue = undefined) {
     const __VALPROMISE = __GETVALUE(name, defValue);
 
     return useReadFilter(__VALPROMISE, name, defValue).then(value => {
@@ -1351,7 +1371,7 @@ function summonValue(name, defValue = undefined) {
 // Entfernt einen String/Integer/Boolean-Wert, der unter einem Namen gespeichert ist
 // name: GM.deleteValue()-Name, unter dem die Daten gespeichert wurden
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
-function discardValue(name) {
+async function discardValue(name) {
     __LOG[5]("DELETE " + __LOG.info(name, false));
 
     return __DELETEVALUE(name).then(value => {
@@ -1368,7 +1388,7 @@ function discardValue(name) {
 
 // Listet die Namen aller Orte auf, unter der ein String/Integer/Boolean-Wert gespeichert ist
 // return Promise fuer ein Array von GM.listValues()-Namen, unter denen String/Integer/Boolean-Werte gespeichert sind
-function keyValues() {
+async function keyValues() {
     return __LISTVALUES().then(keys => {
             __LOG[5]("KEYS:", keys);
 
@@ -1385,7 +1405,7 @@ function keyValues() {
 // name: GM.setValue()-Name, unter dem die Daten gespeichert werden
 // value: Beliebiger (strukturierter) Wert
 // return Promise auf ein Objekt, das 'name' und 'value' in der String-Darstellung des Wertes enthaelt
-function serialize(name, value) {
+async function serialize(name, value) {
     const __STREAM = ((value !== undefined) ? safeStringify(value) : value);
 
     return storeValue(name, __STREAM);
@@ -1395,7 +1415,7 @@ function serialize(name, value) {
 // name: GM.getValue()-Name, unter dem die Daten gespeichert wurden
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist
 // return Promise fuer das Objekt, das unter dem Namen gespeichert war
-function deserialize(name, defValue = undefined) {
+async function deserialize(name, defValue = undefined) {
     return summonValue(name).then(stream => {
             if (stream === undefined) {
                 return defValue;  // JSON-codiertes undefined, function, Symbol, etc. => defValue

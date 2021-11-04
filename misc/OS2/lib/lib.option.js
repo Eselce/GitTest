@@ -459,6 +459,7 @@ function Options(optConfig, optSetLabel) {
 
 Class.define(Options, Object, {
                     'checkKey' : function(key) {
+                        UNUSED(key);
                         // Hier kann man Keys 'unsichtbar' machen...
                         return true;
                     },
@@ -1044,6 +1045,8 @@ function startMemoryByOpt(opt, saveOpt = undefined, onFulfilled = undefined, onR
 // Initialisiert die Scriptdatenbank, die einen Datenaustausch zwischen den Scripten ermoeglicht
 // optSet: Gesetzte Optionen (und Config)
 function initScriptDB(optSet) {
+    UNUSED(optSet);
+
      // Speicher fuer die DB-Daten...
     const __DBMEM = myOptMem.Value;
 
@@ -1227,6 +1230,8 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
             }
         }
     }
+
+    __LOG[8]("runStoredCmds():", (invalidated ? "" : "not ") + "invalidated");
 
     return (__LOADEDCMDS.length ? __LOADEDCMDS : undefined);
 }
@@ -1759,7 +1764,7 @@ function groupData(data, byFun, filterFun, sortFun) {
     const __BYKEYSET = new Set(__BYKEYS);
     const __BYKEYARRAY = [...__BYKEYSET];
     const __SORTEDKEYS = __BYKEYARRAY.sort(sortFun);
-    const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => __FILTERFUN(byVal, index, __BYKEYS)));
+    const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => (UNUSED(key), __FILTERFUN(byVal, index, __BYKEYS))));
     const __ASSIGN = ((keyArr, valArr) => Object.assign({ }, ...keyArr.map((key, index) => ({ [key] : valArr[index] }))));
 
     return __ASSIGN(__SORTEDKEYS, __GROUPEDKEYS);
@@ -1816,9 +1821,12 @@ function getOptionForm(optSet, optParams = { }) {
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // return String mit dem HTML-Code fuer das Script
 function getOptionScript(optSet, optParams = { }) {
+    UNUSED(optSet, optParams);
+
     //const __SCRIPT = '<script type="text/javascript">function activateMenu() { console.log("TADAAA!"); }</script>';
     //const __SCRIPT = '<script type="text/javascript">\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionRst(key, value) { alert("RESET"); }\n</script>';
     //const __FORM = '<form method="POST"><input type="button" id="showOpts" name="showOpts" value="Optionen anzeigen" onclick="activateMenu()" /></form>';
+
     const __SCRIPT = "";
 
     //window.eval('function activateMenu() { console.log("TADAAA!"); }');
@@ -2019,13 +2027,15 @@ function initOptions(optConfig, optSet = undefined, preInit = undefined) {
 // ==================== Abschnitt fuer Klasse Classification ====================
 
 // Basisklasse fuer eine Klassifikation der Optionen nach Kriterium (z.B. Erst- und Zweitteam oder Fremdteam)
-function Classification(prefix) {
-    'use strict';
+class Classification {
+    constructor(prefix) {
+        'use strict';
 
-    this.renameFun = prefixName;
-    this.prefix = (prefix || 'old');
-    this.optSet = undefined;
-    this.optSelect = { };
+        this.renameFun = prefixName;
+        this.prefix = (prefix || 'old');
+        this.optSet = undefined;
+        this.optSelect = { };
+    }
 }
 
 Class.define(Classification, Object, {
@@ -2087,66 +2097,68 @@ function optSelect(selList, ignList) {
 // ==================== Abschnitt fuer Klasse ClassificationPair ====================
 
 // Klasse fuer die Klassifikation der Optionen nach Team (Erst- und Zweitteam oder Fremdteam)
-function ClassificationPair(classA, classB) {
-    'use strict';
+class ClassificationPair extends Classification {
+    constructor(classA, classB) {
+        'use strict';
 
-    Classification.call(this);
+        Classification.call(this);
 
-    this.prefix = undefined;
+        this.prefix = undefined;
 
-    this.A = classA;
-    this.B = classB;
+        this.A = classA;
+        this.B = classB;
 
-    // Zugriff auf optSelect synchronisieren...
-    Object.defineProperty(this, 'optSelect', {
-                    get : function() {
-                              const __A = getValue(this.A, { });
-                              const __B = getValue(this.B, { });
+        // Zugriff auf optSelect synchronisieren...
+        Object.defineProperty(this, 'optSelect', {
+                        get : function() {
+                                  const __A = getValue(this.A, { });
+                                  const __B = getValue(this.B, { });
 
-                              return (this.A ? __A.optSelect : __B.optSelect);
-                          },
-                    set : function(optSelect) {
-                              const __A = getValue(this.A, { });
-                              const __B = getValue(this.B, { });
+                                  return (this.A ? __A.optSelect : __B.optSelect);
+                              },
+                        set : function(optSelect) {
+                                  const __A = getValue(this.A, { });
+                                  const __B = getValue(this.B, { });
 
-                              __A.optSelect = optSelect;
-                              __B.optSelect = optSelect;
+                                  __A.optSelect = optSelect;
+                                  __B.optSelect = optSelect;
 
-                              return optSelect;
-                          }
-                });
+                                  return optSelect;
+                              }
+                    });
 
-    // Zugriff auf optSet synchronisieren...
-    Object.defineProperty(this, 'optSet', {
-                    get : function() {
-                              const __A = getValue(this.A, { });
-                              const __B = getValue(this.B, { });
+        // Zugriff auf optSet synchronisieren...
+        Object.defineProperty(this, 'optSet', {
+                        get : function() {
+                                  const __A = getValue(this.A, { });
+                                  const __B = getValue(this.B, { });
 
-                              return (this.A ? __A.optSet : __B.optSet);
-                          },
-                    set : function(optSet) {
-                              const __A = getValue(this.A, { });
-                              const __B = getValue(this.B, { });
+                                  return (this.A ? __A.optSet : __B.optSet);
+                              },
+                        set : function(optSet) {
+                                  const __A = getValue(this.A, { });
+                                  const __B = getValue(this.B, { });
 
-                              __A.optSet = optSet;
-                              __B.optSet = optSet;
+                                  __A.optSet = optSet;
+                                  __B.optSet = optSet;
 
-                              return optSet;
-                          }
-                });
+                                  return optSet;
+                              }
+                    });
+    }
 }
 
 Class.define(ClassificationPair, Classification, {
                     'renameOptions'  : function() {
-                                           return (this.A ? this.A.renameOptions() : Promise.resolve()).then(retValue =>
+                                           return (this.A ? this.A.renameOptions() : Promise.resolve()).then(() =>
                                                    (this.B ? this.B.renameOptions() : Promise.resolve()));
                                        },
                     'saveOptions'    : function(ignList) {
-                                           return (this.A ? this.A.saveOptions(ignList) : Promise.resolve()).then(retValue =>
+                                           return (this.A ? this.A.saveOptions(ignList) : Promise.resolve()).then(() =>
                                                    (this.B ? this.B.saveOptions(ignList) : Promise.resolve()));
                                        },
                     'deleteOptions'  : function(ignList) {
-                                           return (this.A ? this.A.deleteOptions(ignList) : Promise.resolve()).then(retValue =>
+                                           return (this.A ? this.A.deleteOptions(ignList) : Promise.resolve()).then(() =>
                                                    (this.B ? this.B.deleteOptions(ignList) : Promise.resolve()));
                                        }
                 });
