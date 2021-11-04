@@ -284,6 +284,8 @@ function procAufstellung() {
     const __ROWOFFSETUPPER = 1;     // Header-Zeile
     const __ROWOFFSETLOWER = 0;
 
+    UNUSED(__ROWOFFSETUPPER, __ROWOFFSETLOWER);
+
     return buildOptions(__OPTCONFIG, __OPTSET, {
                             'menuAnchor' : getTable(0, 'div'),
                             'formWidth'  : 1
@@ -295,6 +297,8 @@ function procAktionen() {
     const __ROWOFFSETUPPER = 1;     // Header-Zeile
     const __ROWOFFSETLOWER = 0;
 
+    UNUSED(__ROWOFFSETUPPER, __ROWOFFSETLOWER);
+
     return buildOptions(__OPTCONFIG, __OPTSET, {
                             'menuAnchor' : getTable(0, 'div'),
                             'formWidth'  : 1
@@ -305,6 +309,8 @@ function procAktionen() {
 function procEinstellungen() {
     const __ROWOFFSETUPPER = 1;     // Header-Zeile
     const __ROWOFFSETLOWER = 0;
+
+    UNUSED(__ROWOFFSETUPPER, __ROWOFFSETLOWER);
 
     return buildOptions(__OPTCONFIG, __OPTSET, {
                             'menuAnchor' : getTable(0, 'div'),

@@ -855,71 +855,74 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 
 // Klasse ColumnManagerBase *****************************************************************
 
-function ColumnManagerBase(optSet, colIdx, showCol) {
-    'use strict';
+class ColumnManagerBase {
+    constructor(optSet, colIdx, showCol) {
+        'use strict';
+        UNUSED(optSet, showCol);
 
-    __LOG[4]("ColumnManagerBase()");
-
-/***
-    const __SHOWCOL = getValue(showCol, true);
-    const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
-
-    const __BIRTHDAYS = getOptValue(optSet.birthdays, []).length;
-    const __TCLASSES = getOptValue(optSet.tClasses, []).length;
-    const __PROGRESSES = getOptValue(optSet.progresses, []).length;
-
-    const __ZATAGES = getOptValue(optSet.zatAges, []).length;
-    const __TRAINIERT = getOptValue(optSet.trainiert, []).length;
-    const __POSITIONS = getOptValue(optSet.positions, []).length;
-
-    const __EINZELSKILLS = getOptValue(optSet.skills, []).length;
-    const __PROJECTION = (__EINZELSKILLS && __ZATAGES);
-***/
-
-    this.colIdx = colIdx;
+        __LOG[4]("ColumnManagerBase()");
 
 /***
-    this.saison = getOptValue(optSet.saison);
-    this.gt = getOptValue(optSet.zeigeJahrgang);
-    this.gtUxx = getOptValue(optSet.zeigeUxx);
+        const __SHOWCOL = getValue(showCol, true);
+        const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
 
-    this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
-    this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && getOptValue(optSet.zeigeWarnung));
-    this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && getOptValue(optSet.zeigeWarnungMonat));
-    this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && getOptValue(optSet.zeigeWarnungHome));
-    this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && getOptValue(optSet.zeigeWarnungDialog));
-    this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && getOptValue(optSet.zeigeWarnungAufstieg));
-    this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && getOptValue(optSet.zeigeWarnungLegende));
-    this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && getOptValue(optSet.zeigeBalken));
-    this.barAbs = getOptValue(optSet.absBalken);
-    this.donor = getOptValue(optSet.foerderung);
-    this.geb = (__BIRTHDAYS && getValue(__SHOWCOL.zeigeGeb, __SHOWALL) && getOptValue(optSet.zeigeGeb));
-    this.tal = (__TCLASSES && getValue(__SHOWCOL.zeigeTal, __SHOWALL) && getOptValue(optSet.zeigeTal));
-    this.quo = (__ZATAGES && __TRAINIERT && getValue(__SHOWCOL.zeigeQuote, __SHOWALL) && getOptValue(optSet.zeigeQuote));
-    this.aufw = (__PROGRESSES && getValue(__SHOWCOL.zeigeAufw, __SHOWALL) && getOptValue(optSet.zeigeAufw));
-    this.substAge = (__ZATAGES && getValue(__SHOWCOL.ersetzeAlter, __SHOWALL) && getOptValue(optSet.ersetzeAlter));
-    this.alter = (__ZATAGES && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
-    this.fix = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeFixSkills, __SHOWALL) && getOptValue(optSet.zeigeFixSkills));
-    this.tr = (__EINZELSKILLS && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiert, __SHOWALL) && getOptValue(optSet.zeigeTrainiert));
-    this.zat = (__ZATAGES && getValue(__SHOWCOL.zeigeZatDone, __SHOWALL) && getOptValue(optSet.zeigeZatDone));
-    this.antHpt = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilPri, __SHOWALL) && getOptValue(optSet.zeigeAnteilPri));
-    this.antNeb = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilSec, __SHOWALL) && getOptValue(optSet.zeigeAnteilSec));
-    this.pri = (__EINZELSKILLS && getValue(__SHOWCOL.zeigePrios, __SHOWALL) && getOptValue(optSet.zeigePrios));
-    this.skill = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
-    this.pos = (__EINZELSKILLS && __POSITIONS && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
-    this.anzOpti = ((__EINZELSKILLS && getValue(__SHOWCOL.zeigeOpti, __SHOWALL)) ? getOptValue(optSet.anzahlOpti) : 0);
-    this.anzMw =  ((__PROJECTION && getValue(__SHOWCOL.zeigeMW, __SHOWALL)) ? getOptValue(optSet.anzahlMW) : 0);
-    this.substSkills = (__PROJECTION && getValue(__SHOWCOL.ersetzeSkills, __SHOWALL) && getOptValue(optSet.ersetzeSkills));
-    this.trE = (__PROJECTION && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiertEnde, __SHOWALL) && getOptValue(optSet.zeigeTrainiertEnde));
-    this.zatE = (__ZATAGES && getValue(__SHOWCOL.zeigeZatLeft, __SHOWALL) && getOptValue(optSet.zeigeZatLeft));
-    this.antHptE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilPriEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilPriEnde));
-    this.antNebE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilSecEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilSecEnde));
-    this.priE = (__PROJECTION && getValue(__SHOWCOL.zeigePriosEnde, __SHOWALL) && getOptValue(optSet.zeigePriosEnde));
-    this.skillE = (__PROJECTION && getValue(__SHOWCOL.zeigeSkillEnde, __SHOWALL) && getOptValue(optSet.zeigeSkillEnde));
-    this.anzOptiE = ((__PROJECTION && getValue(__SHOWCOL.zeigeOptiEnde, __SHOWALL)) ? getOptValue(optSet.anzahlOptiEnde) : 0);
-    this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? getOptValue(optSet.anzahlMWEnde) : 0);
-    this.kennzE = getOptValue(optSet.kennzeichenEnde);
+        const __BIRTHDAYS = getOptValue(optSet.birthdays, []).length;
+        const __TCLASSES = getOptValue(optSet.tClasses, []).length;
+        const __PROGRESSES = getOptValue(optSet.progresses, []).length;
+
+        const __ZATAGES = getOptValue(optSet.zatAges, []).length;
+        const __TRAINIERT = getOptValue(optSet.trainiert, []).length;
+        const __POSITIONS = getOptValue(optSet.positions, []).length;
+
+        const __EINZELSKILLS = getOptValue(optSet.skills, []).length;
+        const __PROJECTION = (__EINZELSKILLS && __ZATAGES);
 ***/
+
+        this.colIdx = colIdx;
+
+/***
+        this.saison = getOptValue(optSet.saison);
+        this.gt = getOptValue(optSet.zeigeJahrgang);
+        this.gtUxx = getOptValue(optSet.zeigeUxx);
+
+        this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
+        this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && getOptValue(optSet.zeigeWarnung));
+        this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && getOptValue(optSet.zeigeWarnungMonat));
+        this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && getOptValue(optSet.zeigeWarnungHome));
+        this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && getOptValue(optSet.zeigeWarnungDialog));
+        this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && getOptValue(optSet.zeigeWarnungAufstieg));
+        this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && getOptValue(optSet.zeigeWarnungLegende));
+        this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && getOptValue(optSet.zeigeBalken));
+        this.barAbs = getOptValue(optSet.absBalken);
+        this.donor = getOptValue(optSet.foerderung);
+        this.geb = (__BIRTHDAYS && getValue(__SHOWCOL.zeigeGeb, __SHOWALL) && getOptValue(optSet.zeigeGeb));
+        this.tal = (__TCLASSES && getValue(__SHOWCOL.zeigeTal, __SHOWALL) && getOptValue(optSet.zeigeTal));
+        this.quo = (__ZATAGES && __TRAINIERT && getValue(__SHOWCOL.zeigeQuote, __SHOWALL) && getOptValue(optSet.zeigeQuote));
+        this.aufw = (__PROGRESSES && getValue(__SHOWCOL.zeigeAufw, __SHOWALL) && getOptValue(optSet.zeigeAufw));
+        this.substAge = (__ZATAGES && getValue(__SHOWCOL.ersetzeAlter, __SHOWALL) && getOptValue(optSet.ersetzeAlter));
+        this.alter = (__ZATAGES && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
+        this.fix = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeFixSkills, __SHOWALL) && getOptValue(optSet.zeigeFixSkills));
+        this.tr = (__EINZELSKILLS && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiert, __SHOWALL) && getOptValue(optSet.zeigeTrainiert));
+        this.zat = (__ZATAGES && getValue(__SHOWCOL.zeigeZatDone, __SHOWALL) && getOptValue(optSet.zeigeZatDone));
+        this.antHpt = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilPri, __SHOWALL) && getOptValue(optSet.zeigeAnteilPri));
+        this.antNeb = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilSec, __SHOWALL) && getOptValue(optSet.zeigeAnteilSec));
+        this.pri = (__EINZELSKILLS && getValue(__SHOWCOL.zeigePrios, __SHOWALL) && getOptValue(optSet.zeigePrios));
+        this.skill = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
+        this.pos = (__EINZELSKILLS && __POSITIONS && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
+        this.anzOpti = ((__EINZELSKILLS && getValue(__SHOWCOL.zeigeOpti, __SHOWALL)) ? getOptValue(optSet.anzahlOpti) : 0);
+        this.anzMw =  ((__PROJECTION && getValue(__SHOWCOL.zeigeMW, __SHOWALL)) ? getOptValue(optSet.anzahlMW) : 0);
+        this.substSkills = (__PROJECTION && getValue(__SHOWCOL.ersetzeSkills, __SHOWALL) && getOptValue(optSet.ersetzeSkills));
+        this.trE = (__PROJECTION && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiertEnde, __SHOWALL) && getOptValue(optSet.zeigeTrainiertEnde));
+        this.zatE = (__ZATAGES && getValue(__SHOWCOL.zeigeZatLeft, __SHOWALL) && getOptValue(optSet.zeigeZatLeft));
+        this.antHptE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilPriEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilPriEnde));
+        this.antNebE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilSecEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilSecEnde));
+        this.priE = (__PROJECTION && getValue(__SHOWCOL.zeigePriosEnde, __SHOWALL) && getOptValue(optSet.zeigePriosEnde));
+        this.skillE = (__PROJECTION && getValue(__SHOWCOL.zeigeSkillEnde, __SHOWALL) && getOptValue(optSet.zeigeSkillEnde));
+        this.anzOptiE = ((__PROJECTION && getValue(__SHOWCOL.zeigeOptiEnde, __SHOWALL)) ? getOptValue(optSet.anzahlOptiEnde) : 0);
+        this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? getOptValue(optSet.anzahlMWEnde) : 0);
+        this.kennzE = getOptValue(optSet.kennzeichenEnde);
+***/
+    }
 }
 
 Class.define(ColumnManagerBase, Object, {
@@ -987,74 +990,82 @@ Class.define(ColumnManagerBase, Object, {
                                // HTML-Code fuer Anteilsbalken...
                                return '<img src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height="' + __HEIGHT + '">';
                            },
-        'insertTitles'   : function(table, titleColor = '#FFFFFF') { },  // Ende insertTitles()
-        'addTitles'      : function(headers, titleColor = '#FFFFFF') { },  // Ende addTitles()
-        'addValues'      : function(player, playerRow, color = '#FFFFFF') { }  // Ende addValues(player, playerRow)
+        'insertTitles'   : function(table, titleColor = '#FFFFFF') {
+                               UNUSED(table, titleColor);
+                           },  // Ende insertTitles()
+        'addTitles'      : function(headers, titleColor = '#FFFFFF') {
+                               UNUSED(headers, titleColor);
+                           },  // Ende addTitles()
+        'addValues'      : function(player, playerRow, color = '#FFFFFF') {
+                               UNUSED(player, playerRow, color);
+                           }  // Ende addValues(player, playerRow)
     });
 
 // Klasse ColumnManagerZatReport *****************************************************************
 
-function ColumnManagerZatReport(optSet, colIdx, showCol) {
-    'use strict';
+class ColumnManagerZatReport extends ColumnManagerBase {
+    constructor(optSet, colIdx, showCol) {
+        'use strict';
 
-    ColumnManagerBase.call(this, optSet, colIdx, showCol);
+        ColumnManagerBase.call(this, optSet, colIdx, showCol);
 
-    __LOG[3]("ColumnManagerZatReport()");
+        __LOG[3]("ColumnManagerZatReport()");
 
-    const __SHOWCOL = getValue(showCol, true);
-    const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
+        const __SHOWCOL = getValue(showCol, true);
+        const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
 
-    const __SAISON = getOptValue(optSet.saison);
-    const __AKTZAT = getOptValue(optSet.aktuellerZat);
-    const __DATZAT = getOptValue(optSet.datenZat);
-    const __GEALTERT = ((__AKTZAT >= 72) ? true : false);
-    const __CURRZAT = (__GEALTERT ? 0 : __AKTZAT);
+        const __SAISON = getOptValue(optSet.saison);
+        const __AKTZAT = getOptValue(optSet.aktuellerZat);
+        const __DATZAT = getOptValue(optSet.datenZat);
+        const __GEALTERT = ((__AKTZAT >= 72) ? true : false);
+        const __CURRZAT = (__GEALTERT ? 0 : __AKTZAT);
 
-    const __REPSAISON = getSelection('saison', 'Number');
-    const __REPZAT = getSelection('zat', 'Number');
-    const __SAISONWECHSEL = ((__DATZAT === 0) ? true : false);
-    const __OLDSAISON = (__SAISONWECHSEL ? __SAISON - 1 : __SAISON);
-    const __OLDZAT = (__SAISONWECHSEL ? 72 : __DATZAT);
+        const __REPSAISON = getSelection('saison', 'Number');
+        const __REPZAT = getSelection('zat', 'Number');
+        const __SAISONWECHSEL = ((__DATZAT === 0) ? true : false);
+        const __OLDSAISON = (__SAISONWECHSEL ? __SAISON - 1 : __SAISON);
+        const __OLDZAT = (__SAISONWECHSEL ? 72 : __DATZAT);
 
-    const __TEAM = getOptValue(optSet.team, { });
+        const __TEAM = getOptValue(optSet.team, { });
 
-    const __IDS = eval(getOptValue(optSet.ids, []));
-    const __EINSAETZE = eval(getOptValue(optSet.einsaetze, []));
-    const __TSKILLS = eval(getOptValue(optSet.tSkills, []));
-    const __TEAMDATA = __IDS.length;
-    const __EINSDATA = __EINSAETZE.length;
-    const __TRAIDATA = __TSKILLS.length;
-    const __LASTZAT = ((__REPZAT === __OLDZAT) && (__REPSAISON === __OLDSAISON));
+        const __IDS = eval(getOptValue(optSet.ids, []));
+        const __EINSAETZE = eval(getOptValue(optSet.einsaetze, []));
+        const __TSKILLS = eval(getOptValue(optSet.tSkills, []));
+        const __TEAMDATA = __IDS.length;
+        const __EINSDATA = __EINSAETZE.length;
+        const __TRAIDATA = __TSKILLS.length;
+        const __LASTZAT = ((__REPZAT === __OLDZAT) && (__REPSAISON === __OLDSAISON));
 
-    this.saison = __SAISON;
-    this.currZAT = __CURRZAT;
-    this.oldSaison = __OLDSAISON;
-    this.oldZAT = __OLDZAT;
-    this.team = __TEAM;
+        this.saison = __SAISON;
+        this.currZAT = __CURRZAT;
+        this.oldSaison = __OLDSAISON;
+        this.oldZAT = __OLDZAT;
+        this.team = __TEAM;
 
-    __LOG[4]("Team:", __TEAM);
-    __LOG[4]("Aktuell:", __SAISON, __CURRZAT);
-    __LOG[4]("Altdaten:", __OLDSAISON, __OLDZAT);
+        __LOG[4]("Team:", __TEAM);
+        __LOG[4]("Aktuell:", __SAISON, __CURRZAT);
+        __LOG[4]("Altdaten:", __OLDSAISON, __OLDZAT);
 
-    this.id = (getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
-    this.alter = (__TEAMDATA && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
-    this.pos = (__TEAMDATA && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
-    this.goalie = (__TEAMDATA && getValue(__SHOWCOL.zeigeTOR, __SHOWALL) && getOptValue(optSet.zeigeTOR));
-    this.opti = (__TEAMDATA && getValue(__SHOWCOL.zeigeOpti, __SHOWALL) && getOptValue(optSet.zeigeOpti));
-    this.verl = (__TEAMDATA && getValue(__SHOWCOL.zeigeVerletzung, __SHOWALL) && getOptValue(optSet.zeigeVerletzung));
-    this.blessur = (getValue(__SHOWCOL.zeigeBlessur, __SHOWALL) && getOptValue(optSet.zeigeBlessur));
-    this.skillPos = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkillPos, __SHOWALL) && getOptValue(optSet.zeigeSkillPos));
-    this.skill = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
-    this.skillUp = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkillUp, __SHOWALL) && getOptValue(optSet.zeigeSkillUp));
-    this.tSkill = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeTSkill, __SHOWALL) && getOptValue(optSet.zeigeTSkill));
-    this.tNr = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeTNr, __SHOWALL) && getOptValue(optSet.zeigeTNr));
-    this.prio = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigePrio, __SHOWALL) && getOptValue(optSet.zeigePrio));
-    this.eins = (__TEAMDATA && __EINSDATA && __LASTZAT && getValue(__SHOWCOL.zeigeEinsatz, __SHOWALL) && getOptValue(optSet.zeigeEinsatz));
-    this.proz = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeProzent, __SHOWALL) && getOptValue(optSet.zeigeProzent));
-    this.prozB = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeProzentBalken, __SHOWALL) && getOptValue(optSet.zeigeProzentBalken));
-    this.erw = (__LASTZAT && getValue(__SHOWCOL.zeigeErwartung, __SHOWALL) && getOptValue(optSet.zeigeErwartung));
-    this.erwB = (__LASTZAT && getValue(__SHOWCOL.zeigeErwartungBalken, __SHOWALL) && getOptValue(optSet.zeigeErwartungBalken));
-    this.erf = (__LASTZAT && getValue(__SHOWCOL.zeigeErfolg, __SHOWALL) && getOptValue(optSet.zeigeErfolg));
+        this.id = (getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
+        this.alter = (__TEAMDATA && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
+        this.pos = (__TEAMDATA && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
+        this.goalie = (__TEAMDATA && getValue(__SHOWCOL.zeigeTOR, __SHOWALL) && getOptValue(optSet.zeigeTOR));
+        this.opti = (__TEAMDATA && getValue(__SHOWCOL.zeigeOpti, __SHOWALL) && getOptValue(optSet.zeigeOpti));
+        this.verl = (__TEAMDATA && getValue(__SHOWCOL.zeigeVerletzung, __SHOWALL) && getOptValue(optSet.zeigeVerletzung));
+        this.blessur = (getValue(__SHOWCOL.zeigeBlessur, __SHOWALL) && getOptValue(optSet.zeigeBlessur));
+        this.skillPos = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkillPos, __SHOWALL) && getOptValue(optSet.zeigeSkillPos));
+        this.skill = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
+        this.skillUp = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkillUp, __SHOWALL) && getOptValue(optSet.zeigeSkillUp));
+        this.tSkill = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeTSkill, __SHOWALL) && getOptValue(optSet.zeigeTSkill));
+        this.tNr = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeTNr, __SHOWALL) && getOptValue(optSet.zeigeTNr));
+        this.prio = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigePrio, __SHOWALL) && getOptValue(optSet.zeigePrio));
+        this.eins = (__TEAMDATA && __EINSDATA && __LASTZAT && getValue(__SHOWCOL.zeigeEinsatz, __SHOWALL) && getOptValue(optSet.zeigeEinsatz));
+        this.proz = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeProzent, __SHOWALL) && getOptValue(optSet.zeigeProzent));
+        this.prozB = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeProzentBalken, __SHOWALL) && getOptValue(optSet.zeigeProzentBalken));
+        this.erw = (__LASTZAT && getValue(__SHOWCOL.zeigeErwartung, __SHOWALL) && getOptValue(optSet.zeigeErwartung));
+        this.erwB = (__LASTZAT && getValue(__SHOWCOL.zeigeErwartungBalken, __SHOWALL) && getOptValue(optSet.zeigeErwartungBalken));
+        this.erf = (__LASTZAT && getValue(__SHOWCOL.zeigeErfolg, __SHOWALL) && getOptValue(optSet.zeigeErfolg));
+    }
 }
 
 Class.define(ColumnManagerZatReport, ColumnManagerBase, {
@@ -1155,9 +1166,9 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                            },  // Ende addTitles()
         'addValues'      : function(player, playerRow, color = '#FFFFFF') {
                                //const __IDXPRI = getIdxPriSkills(player.getPos());
-                               const __LEICOLOR = getColor('LEI');
+                               //const __LEICOLOR = getColor('LEI');
                                const __TORCOLOR = getColor('TOR');
-                               const __OSBLAU = getColor("");
+                               //const __OSBLAU = getColor("");
                                const __NEUCOLOR = color;
                                const __POSCOLOR = (player.isGoalie ? __TORCOLOR : getColor(player.pos));
                                const __COLOR = ((player.erfolg === undefined) ? color : __POSCOLOR);
@@ -1373,50 +1384,52 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
 
 // Klasse PlayerRecordTraining ******************************************************************
 
-function PlayerRecordTraining(land, age, isGoalie, saison, currZAT, donation) {
-    'use strict';
+class PlayerRecordTraining {
+    constructor(land, age, isGoalie, saison, currZAT, donation) {
+        'use strict';
 
-    this.land = land;
-    this.age = age;
-    this.isGoalie = isGoalie;
+        this.land = land;
+        this.age = age;
+        this.isGoalie = isGoalie;
 
-    this.saison = saison;
-    this.currZAT = currZAT;
-    this.donation = donation;
-    this.mwFormel = ((this.saison < 10) ? this.__MWFORMEL.alt : this.__MWFORMEL.S10);
+        this.saison = saison;
+        this.currZAT = currZAT;
+        this.donation = donation;
+        this.mwFormel = ((this.saison < 10) ? this.__MWFORMEL.alt : this.__MWFORMEL.S10);
 
-    // in new PlayerRecordTraining() definiert:
-    // this.land: TLA des Geburtslandes
-    // this.age: Ganzzahliges Alter des Spielers
-    // this.isGoalie: Angabe, ob es ein TOR ist
-    // this.mwFormel: Benutzte MW-Formel, siehe __MWFORMEL
-    // this.donation: Jugendfoerderungsbetrag in Euro
+        // in new PlayerRecordTraining() definiert:
+        // this.land: TLA des Geburtslandes
+        // this.age: Ganzzahliges Alter des Spielers
+        // this.isGoalie: Angabe, ob es ein TOR ist
+        // this.mwFormel: Benutzte MW-Formel, siehe __MWFORMEL
+        // this.donation: Jugendfoerderungsbetrag in Euro
 
-    // in this.initPlayer() definiert:
-    // this.zatGeb: ZAT, an dem der Spieler Geburtstag hat, -1 fuer "noch nicht zugewiesen", also '?'
-    // this.zatAge: Bisherige erfolgte Trainings-ZATs
-    // this.birth: Universell eindeutige Nummer des Geburtstags-ZATs des Spielers
-    // this.talent: Talent als Zahl (-1=wenig, 0=normal, +1=hoch)
-    // this.aufwert: Aufwertungsstring
+        // in this.initPlayer() definiert:
+        // this.zatGeb: ZAT, an dem der Spieler Geburtstag hat, -1 fuer "noch nicht zugewiesen", also '?'
+        // this.zatAge: Bisherige erfolgte Trainings-ZATs
+        // this.birth: Universell eindeutige Nummer des Geburtstags-ZATs des Spielers
+        // this.talent: Talent als Zahl (-1=wenig, 0=normal, +1=hoch)
+        // this.aufwert: Aufwertungsstring
 
-    // in this.calcSkills() definiert:
-    // this.positions[][]: Positionstexte und Optis; TOR-Index ist 5
-    // this.skills[]: Einzelskills
-    // this.skillsEnd[]: Berechnet aus this.skills, this.age und aktuellerZat
-    // this.zatLeft: ZATs bis zum Ende 18 (letzte Ziehmoeglichkeit)
-    // this.restEnd: Korrekturterm zum Ausgleich von Rundungsfehlern mit Ende 18
-    //               (also Skills, die nicht explizit in this.skillsEnd stehen)
+        // in this.calcSkills() definiert:
+        // this.positions[][]: Positionstexte und Optis; TOR-Index ist 5
+        // this.skills[]: Einzelskills
+        // this.skillsEnd[]: Berechnet aus this.skills, this.age und aktuellerZat
+        // this.zatLeft: ZATs bis zum Ende 18 (letzte Ziehmoeglichkeit)
+        // this.restEnd: Korrekturterm zum Ausgleich von Rundungsfehlern mit Ende 18
+        //               (also Skills, die nicht explizit in this.skillsEnd stehen)
 
-    // in this.calcZusatz()/setZusatz() definiert:
-    // this.trainiert: Anzahl der erfolgreichen Trainingspunkte
-    // indirekt this.zatAge und this.bestPos
+        // in this.calcZusatz()/setZusatz() definiert:
+        // this.trainiert: Anzahl der erfolgreichen Trainingspunkte
+        // indirekt this.zatAge und this.bestPos
 
-    // in this.createWarnDraw() definiert:
-    // this.warnDraw: Behandlung von Warnungen Ende 18
-    // this.warnDrawAufstieg: Behandlung von Warnungen bei Aufstieg
+        // in this.createWarnDraw() definiert:
+        // this.warnDraw: Behandlung von Warnungen Ende 18
+        // this.warnDrawAufstieg: Behandlung von Warnungen bei Aufstieg
 
-    // in this.getPos() definiert:
-    // this.bestPos: erster (bester) Positionstext
+        // in this.getPos() definiert:
+        // this.bestPos: erster (bester) Positionstext
+    }
 }
 
 Class.define(PlayerRecordTraining, Object, {
@@ -1706,6 +1719,7 @@ Class.define(PlayerRecordTraining, Object, {
                                       return this.getSkillSum(when) / 17;
                                   },
         'getOpti'               : function(pos, when = this.__TIME.now) {
+                                      UNUSED(pos, when);
                                       return 85;
 /*                                      const __SUMALLSKILLS = this.getSkillSum(when);
                                       const __SUMPRISKILLS = this.getSkillSum(when, getIdxPriSkills(pos), 2 * 4);
@@ -2221,17 +2235,17 @@ function procAufstellung() {
                 //const __VERLETZT = getOptValue(optSet.verletzt, []);
                 //const __SKILLS = getOptValue(optSet.skills, []);
                 //const __TSKILLS = getOptValue(optSet.tSkills, []);
-                const __TRAINIERT = getOptValue(optSet.trainiert, []);
+                //const __TRAINIERT = getOptValue(optSet.trainiert, []);
                 //const __SKILLPOS = getOptValue(optSet.skillPos, []);
-                const __ISPRIO = getOptValue(optSet.isPrio, []);
+                //const __ISPRIO = getOptValue(optSet.isPrio, []);
                 const __EINSAETZE = getOptValue(optSet.einsaetze, []);
-                const __PROZENTE = getOptValue(optSet.prozente, []);
-                const __EW = getOptValue(optSet.erwartungen, []);
+                //const __PROZENTE = getOptValue(optSet.prozente, []);
+                //const __EW = getOptValue(optSet.erwartungen, []);
                 //const __ERFOLGE = getOptValue(optSet.erfolge, []);
                 //const __BLESSUREN = getOptValue(optSet.blessuren, []);
 
                 const __ROWS = getRows(4);
-                const __HEADERS = __ROWS[0];
+                //const __HEADERS = __ROWS[0];
                 const __SLENGTH = __ROWS.length - 6;
                 //const __TLENGTH = 6;
 
@@ -2317,8 +2331,9 @@ function procAktionen() {
                                                },
                                 'formWidth'  : 1
                             }).then(optSet => {
-                const __ROWS = getRows(1);
-                const __HEADERS = __ROWS[0];
+                UNUSED(optSet);
+                //const __ROWS = getRows(1);
+                //const __HEADERS = __ROWS[0];
             });
     }
 
@@ -2343,8 +2358,9 @@ function procEinstellungen() {
                                                },
                                 'formWidth'  : 1
                             }).then(optSet => {
-                const __ROWS = getRows(1);
-                const __HEADERS = __ROWS[0];
+                UNUSED(optSet);
+                //const __ROWS = getRows(1);
+                //const __HEADERS = __ROWS[0];
             });
     }
 
@@ -2369,8 +2385,9 @@ function procTrainer() {
                                                },
                                 'formWidth'  : 1
                             }).then(optSet => {
-                const __ROWS = getRows(1);
-                const __HEADERS = __ROWS[0];
+                UNUSED(optSet);
+                //const __ROWS = getRows(1);
+                //const __HEADERS = __ROWS[0];
             });
     }
 
@@ -2689,7 +2706,7 @@ function procZatReport() {
                             }).then(optSet => {
                 // Gespeicherte Daten...
                 const __IDS = getOptValue(optSet.ids, []);
-                const __NAMES = getOptValue(optSet.names, []);
+                //const __NAMES = getOptValue(optSet.names, []);
                 const __AGES = getOptValue(optSet.ages, []);
                 const __POSITIONS = getOptValue(optSet.positions, []);
                 const __OPTI27 = getOptValue(optSet.opti27, []);
@@ -2724,6 +2741,7 @@ function procZatReport() {
                 let sumAufwertung = 0.0;
 
                 const __HEADERS = __COLMAN.insertTitles(__TABLE, __TITLECOLOR);
+                UNUSED(__HEADERS);
 
                 for (let i = __ROWOFFSETUPPER, j = 0; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
                     const __CURRENTROW = __ROWS[i];

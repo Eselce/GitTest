@@ -33,6 +33,7 @@ function Options(optConfig, optSetLabel) {
 
 Class.define(Options, Object, {
                     'checkKey' : function(key) {
+                        UNUSED(key);
                         // Hier kann man Keys 'unsichtbar' machen...
                         return true;
                     },

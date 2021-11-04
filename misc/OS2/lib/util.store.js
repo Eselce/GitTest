@@ -153,7 +153,7 @@ registerStartFun(GM_checkForTampermonkeyBug);
 // name: GM.setValue()-Name, unter dem die Daten gespeichert werden
 // value: Zu speichernder String/Integer/Boolean-Wert
 // return Promise auf ein Objekt, das 'name' und 'value' der Operation enthaelt
-function storeValue(name, value) {
+async function storeValue(name, value) {
     __LOG[5](name + " >> " + __LOG.info(value, true, true));
 
     return __SETVALUE(name, value).then(() => {
@@ -175,7 +175,7 @@ function storeValue(name, value) {
 // name: GM.getValue()-Name, unter dem die Daten gespeichert wurden
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
-function summonValue(name, defValue = undefined) {
+async function summonValue(name, defValue = undefined) {
     const __VALPROMISE = __GETVALUE(name, defValue);
 
     return useReadFilter(__VALPROMISE, name, defValue).then(value => {
@@ -193,7 +193,7 @@ function summonValue(name, defValue = undefined) {
 // Entfernt einen String/Integer/Boolean-Wert, der unter einem Namen gespeichert ist
 // name: GM.deleteValue()-Name, unter dem die Daten gespeichert wurden
 // return Promise fuer den String/Integer/Boolean-Wert, der unter dem Namen gespeichert war
-function discardValue(name) {
+async function discardValue(name) {
     __LOG[5]("DELETE " + __LOG.info(name, false));
 
     return __DELETEVALUE(name).then(value => {
@@ -210,7 +210,7 @@ function discardValue(name) {
 
 // Listet die Namen aller Orte auf, unter der ein String/Integer/Boolean-Wert gespeichert ist
 // return Promise fuer ein Array von GM.listValues()-Namen, unter denen String/Integer/Boolean-Werte gespeichert sind
-function keyValues() {
+async function keyValues() {
     return __LISTVALUES().then(keys => {
             __LOG[5]("KEYS:", keys);
 
@@ -227,7 +227,7 @@ function keyValues() {
 // name: GM.setValue()-Name, unter dem die Daten gespeichert werden
 // value: Beliebiger (strukturierter) Wert
 // return Promise auf ein Objekt, das 'name' und 'value' in der String-Darstellung des Wertes enthaelt
-function serialize(name, value) {
+async function serialize(name, value) {
     const __STREAM = ((value !== undefined) ? safeStringify(value) : value);
 
     return storeValue(name, __STREAM);
@@ -237,7 +237,7 @@ function serialize(name, value) {
 // name: GM.getValue()-Name, unter dem die Daten gespeichert wurden
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist
 // return Promise fuer das Objekt, das unter dem Namen gespeichert war
-function deserialize(name, defValue = undefined) {
+async function deserialize(name, defValue = undefined) {
     return summonValue(name).then(stream => {
             if (stream === undefined) {
                 return defValue;  // JSON-codiertes undefined, function, Symbol, etc. => defValue

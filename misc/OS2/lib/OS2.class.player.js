@@ -16,50 +16,52 @@
 
 // Klasse fuer Spalten des Jugendkaders
 
-function PlayerRecord(land, age, isGoalie, saison, currZAT, donation) {
-    'use strict';
+class PlayerRecord {
+    constructor(land, age, isGoalie, saison, currZAT, donation) {
+        'use strict';
 
-    this.land = land;
-    this.age = age;
-    this.isGoalie = isGoalie;
+        this.land = land;
+        this.age = age;
+        this.isGoalie = isGoalie;
 
-    this.saison = saison;
-    this.currZAT = currZAT;
-    this.donation = donation;
-    this.mwFormel = ((this.saison < 10) ? this.__MWFORMEL.alt : this.__MWFORMEL.S10);
+        this.saison = saison;
+        this.currZAT = currZAT;
+        this.donation = donation;
+        this.mwFormel = ((this.saison < 10) ? this.__MWFORMEL.alt : this.__MWFORMEL.S10);
 
-    // in new PlayerRecord() definiert:
-    // this.land: TLA des Geburtslandes
-    // this.age: Ganzzahliges Alter des Spielers
-    // this.isGoalie: Angabe, ob es ein TOR ist
-    // this.mwFormel: Benutzte MW-Formel, siehe __MWFORMEL
-    // this.donation: Jugendfoerderungsbetrag in Euro
+        // in new PlayerRecord() definiert:
+        // this.land: TLA des Geburtslandes
+        // this.age: Ganzzahliges Alter des Spielers
+        // this.isGoalie: Angabe, ob es ein TOR ist
+        // this.mwFormel: Benutzte MW-Formel, siehe __MWFORMEL
+        // this.donation: Jugendfoerderungsbetrag in Euro
 
-    // in this.initPlayer() definiert:
-    // this.zatGeb: ZAT, an dem der Spieler Geburtstag hat, -1 fuer "noch nicht zugewiesen", also '?'
-    // this.zatAge: Bisherige erfolgte Trainings-ZATs
-    // this.birth: Universell eindeutige Nummer des Geburtstags-ZATs des Spielers
-    // this.talent: Talent als Zahl (-1=wenig, 0=normal, +1=hoch)
-    // this.aufwert: Aufwertungsstring
+        // in this.initPlayer() definiert:
+        // this.zatGeb: ZAT, an dem der Spieler Geburtstag hat, -1 fuer "noch nicht zugewiesen", also '?'
+        // this.zatAge: Bisherige erfolgte Trainings-ZATs
+        // this.birth: Universell eindeutige Nummer des Geburtstags-ZATs des Spielers
+        // this.talent: Talent als Zahl (-1=wenig, 0=normal, +1=hoch)
+        // this.aufwert: Aufwertungsstring
 
-    // in this.calcSkills() definiert:
-    // this.positions[][]: Positionstexte und Optis; TOR-Index ist 5
-    // this.skills[]: Einzelskills
-    // this.skillsEnd[]: Berechnet aus this.skills, this.age und aktuellerZat
-    // this.zatLeft: ZATs bis zum Ende 18 (letzte Ziehmoeglichkeit)
-    // this.restEnd: Korrekturterm zum Ausgleich von Rundungsfehlern mit Ende 18
-    //               (also Skills, die nicht explizit in this.skillsEnd stehen)
+        // in this.calcSkills() definiert:
+        // this.positions[][]: Positionstexte und Optis; TOR-Index ist 5
+        // this.skills[]: Einzelskills
+        // this.skillsEnd[]: Berechnet aus this.skills, this.age und aktuellerZat
+        // this.zatLeft: ZATs bis zum Ende 18 (letzte Ziehmoeglichkeit)
+        // this.restEnd: Korrekturterm zum Ausgleich von Rundungsfehlern mit Ende 18
+        //               (also Skills, die nicht explizit in this.skillsEnd stehen)
 
-    // in this.calcZusatz()/setZusatz() definiert:
-    // this.trainiert: Anzahl der erfolgreichen Trainingspunkte
-    // indirekt this.zatAge und this.bestPos
+        // in this.calcZusatz()/setZusatz() definiert:
+        // this.trainiert: Anzahl der erfolgreichen Trainingspunkte
+        // indirekt this.zatAge und this.bestPos
 
-    // in this.createWarnDraw() definiert:
-    // this.warnDraw: Behandlung von Warnungen Ende 18
-    // this.warnDrawAufstieg: Behandlung von Warnungen bei Aufstieg
+        // in this.createWarnDraw() definiert:
+        // this.warnDraw: Behandlung von Warnungen Ende 18
+        // this.warnDrawAufstieg: Behandlung von Warnungen bei Aufstieg
 
-    // in this.getPos() definiert:
-    // this.bestPos: erster (bester) Positionstext
+        // in this.getPos() definiert:
+        // this.bestPos: erster (bester) Positionstext
+    }
 }
 
 Class.define(PlayerRecord, Object, {

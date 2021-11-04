@@ -801,7 +801,7 @@ function initFairplayData(data, laender) {
 // Ermittelt die Verteilung der Europapokalplaetze
 // landData: [1] bis [10/18/20], ['P'], ['P2'], ['OSC'], ['OSE'] (['FP'], ['OSC2'] und ['OSE2']) mit je [ ID, Quali-ID ]
 // return Modifizierte landData mit [ ID, Quali-ID, Quali-ID (effektiv) ]
-function calcEuropaPlaetze(landData, laender) {
+function calcEuropaPlaetze(landData) {
     const __LDATA = getValue(landData, { });
     const __OSETYP = getGameTypeID('OSE');
     const __CLASSES = { };

@@ -130,16 +130,18 @@ function floorValue(value, dot = '.') {
 // return Generische Funktion, die an Array-Funktionen uebergeben werden kann, z.B. als Replacer fuer safeStringify()
 function replaceArrayFun(formatFun, space = ' ') {
     return function(key, value) {
-               const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
+            UNUSED(key);
 
-               if (Array.isArray(__VALUE)) {
-                   const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
+            const __VALUE = getValue(this[""], value);  // value ist anders als in Dokumentation beschrieben, nutze ggfs. ""-Eintrag!
 
-                   return '[' + space + __RET.join(',' + space) + space + ']';
-               }
+            if (Array.isArray(__VALUE)) {
+                const __RET = (formatFun ? __VALUE.map((element, index, arr) => formatFun(element, index, arr)) : __VALUE);
 
-               return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
-           };
+                return '[' + space + __RET.join(',' + space) + space + ']';
+            }
+
+            return value;  // value ist, anders als in der Dokumentation beschrieben, bereits konvertiert!
+        };
 }
 
 // Liefert eine generische Funktion zurueck, die einen String auf eine vorgegebene Weise rechtsbuending formatiert,

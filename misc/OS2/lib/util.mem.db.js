@@ -20,6 +20,8 @@
 // Initialisiert die Scriptdatenbank, die einen Datenaustausch zwischen den Scripten ermoeglicht
 // optSet: Gesetzte Optionen (und Config)
 function initScriptDB(optSet) {
+    UNUSED(optSet);
+
      // Speicher fuer die DB-Daten...
     const __DBMEM = myOptMem.Value;
 

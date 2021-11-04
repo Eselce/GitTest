@@ -23,21 +23,23 @@ const __HINRUECK    = [ " Hin", " R\xFCck", "" ];
 
 // ==================== Abschnitt fuer Klasse RundenLink ====================
 
-function RundenLink(saison, team) {
-    'use strict';
+class RundenLink {
+    constructor(saison, team) {
+        'use strict';
 
-    this.uri = new URI("http://os.ongapo.com/");
-    this.runde = 0;
-    this.prop = "";
-    this.label = "";
+        this.uri = new URI("http://os.ongapo.com/");
+        this.runde = 0;
+        this.prop = "";
+        this.label = "";
 
-    this.setAktion("Statistik+ausgeben");
+        this.setAktion("Statistik+ausgeben");
 
-    if (saison) {
-        this.setSaison(saison);
-    }
-    if (team) {
-        this.setTeam(team);
+        if (saison) {
+            this.setSaison(saison);
+        }
+        if (team) {
+            this.setTeam(team);
+        }
     }
 }
 
