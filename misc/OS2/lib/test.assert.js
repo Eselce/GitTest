@@ -52,22 +52,24 @@ async function callPromiseArray(...promises) {
 // msg: Text oder Text liefernde Funktion
 // thisArg: Referenz auf ein Bezugsobjekt
 // params: ggfs. Parameter fuer die msg-Funktion
-function AssertionFailed(whatFailed, msg, thisArg, ...params) {
-    //'use strict';
-    const __THIS = (thisArg || this);
+class AssertionFailed {
+    constructor(whatFailed, msg, thisArg, ...params) {
+        //'use strict';
+        const __THIS = (thisArg || this);
 
-    if (msg === undefined) {
-        this.message = "";
-    } else if ((typeof msg) === 'function') {
-        const __TEXT = msg.call(__THIS, ...params);
+        if (msg === undefined) {
+            this.message = "";
+        } else if ((typeof msg) === 'function') {
+            const __TEXT = msg.call(__THIS, ...params);
 
-        this.message = String(__TEXT);
-    } else {
-        this.message = String(msg);
-    }
+            this.message = String(__TEXT);
+        } else {
+            this.message = String(msg);
+        }
 
-    if (whatFailed) {
-        this.message += " (" + whatFailed + ')';
+        if (whatFailed) {
+            this.message += " (" + whatFailed + ')';
+        }
     }
 }
 
@@ -95,6 +97,7 @@ function assertionCatch(error, ...attribs) {
         const __ERROR = Object.assign(error, ...attribs);
         const __RET = showException(__LABEL, __ERROR, false);
 
+        UNUSED(__RET);
         //ASSERT(false, "Promise rejected!", __RET);  // TODO
 
         return Promise.reject(__ERROR);

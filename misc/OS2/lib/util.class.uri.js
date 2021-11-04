@@ -24,22 +24,26 @@
 // 'back': Name des relativen Vaterverzeichnisses
 // 'root': Kennung vor dem ersten Trenner am Anfang eines absoluten Pfads
 // 'home': Kennung vor dem ersten Trenner am Anfang eines Pfads relativ zu Home
-function URI(homePath, delims) {
-    'use strict';
+class URI extends Path {
+    constructor(homePath, delims) {
+        'use strict';
 
-    Path.call(this);
+        UNUSED(delims);
 
-    const __HOSTPORT = this.getHostPort(homePath);
+        Path.call(this);
 
-    this.scheme = this.getSchemePrefix(homePath);
-    this.host = __HOSTPORT.host;
-    this.port = this.parseValue(__HOSTPORT.port);
-    this.query = this.parseQuery(this.getQueryString(homePath));
-    this.node = this.getNodeSuffix(homePath);
+        const __HOSTPORT = this.getHostPort(homePath);
 
-    this.homeDirs = this.getDirs(homePath, { 'home' : "" });
+        this.scheme = this.getSchemePrefix(homePath);
+        this.host = __HOSTPORT.host;
+        this.port = this.parseValue(__HOSTPORT.port);
+        this.query = this.parseQuery(this.getQueryString(homePath));
+        this.node = this.getNodeSuffix(homePath);
 
-    this.home();
+        this.homeDirs = this.getDirs(homePath, { 'home' : "" });
+
+        this.home();
+    }
 }
 
 Class.define(URI, Path, {
@@ -217,7 +221,9 @@ Class.define(URI, Path, {
 
                                          return __SCHEME + __HOST + __PORT + Path.prototype.getPath.call(this, dirs, delims) + __QUERY + __NODE;
                                      },
-               'getDirs'           : function(path = undefined, delims = undefined) {
+               'getDirs'           : function(path = undefined, delims) {
+                                         UNUSED(delims);
+
                                          const __PATH = this.getServerPath(path);
 
                                          return Path.prototype.getDirs.call(this, __PATH);

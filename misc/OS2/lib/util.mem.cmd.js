@@ -115,6 +115,8 @@ async function runStoredCmds(storedCmds, optSet = undefined, beforeLoad = undefi
         }
     }
 
+    __LOG[8]("runStoredCmds():", (invalidated ? "" : "not ") + "invalidated");
+
     return (__LOADEDCMDS.length ? __LOADEDCMDS : undefined);
 }
 

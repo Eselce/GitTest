@@ -21,46 +21,44 @@ if ((typeof showAlert) === 'undefined') {
 
 // ==================== Abschnitt fuer Klasse Class ====================
 
-function Class(className, baseClass, initFun) {
-    'use strict';
+class Class {
+    constructor(className, baseClass, initFun) {
+        'use strict';
 
-    try {
-        const __BASE = ((baseClass !== undefined) ? baseClass : Object);
-        const __BASEPROTO = (__BASE ? __BASE.prototype : undefined);
-        const __BASECLASS = (__BASEPROTO ? __BASEPROTO.__class : undefined);
+        try {
+            const __BASE = ((baseClass !== undefined) ? baseClass : Object);
+            const __BASEPROTO = (__BASE ? __BASE.prototype : undefined);
+            const __BASECLASS = (__BASEPROTO ? __BASEPROTO.__class : undefined);
 
-        this.className = (className || '?');
-        this.baseClass = __BASECLASS;
-        Object.setConst(this, 'baseProto', __BASEPROTO, false);
+            this.className = (className || '?');
+            this.baseClass = __BASECLASS;
+            Object.setConst(this, 'baseProto', __BASEPROTO, false);
 
-        if (! initFun) {
-            const __BASEINIT = (__BASECLASS || { }).init;
+            if (! initFun) {
+                const __BASEINIT = (__BASECLASS || { }).init;
 
-            if (__BASEINIT) {
-                initFun = function() {
-                              // Basisklassen-Init aufrufen...
-                              return __BASEINIT.call(this, arguments);
-                          };
-            } else {
-                initFun = function() {
-                              // Basisklassen-Init fehlt (und Basisklasse ist nicht Object)...
-                              return false;
-                          };
+                if (__BASEINIT) {
+                    initFun = function() {
+                                  // Basisklassen-Init aufrufen...
+                                  return __BASEINIT.call(this, arguments);
+                              };
+                } else {
+                    initFun = function() {
+                                  // Basisklassen-Init fehlt (und Basisklasse ist nicht Object)...
+                                  return false;
+                              };
+                }
             }
+
+            console.assert((__BASE === null) || ((typeof __BASE) === 'function'), "No function:", __BASE);
+            console.assert((typeof initFun) === 'function', "Not a function:", initFun);
+
+            this.init = initFun;
+        } catch (ex) {
+            return showException('[' + (ex && ex.lineNumber) + "] Error in Class " + className, ex);
         }
-
-        console.assert((__BASE === null) || ((typeof __BASE) === 'function'), "No function:", __BASE);
-        console.assert((typeof initFun) === 'function', "Not a function:", initFun);
-
-        this.init = initFun;
-    } catch (ex) {
-        return showException('[' + (ex && ex.lineNumber) + "] Error in Class " + className, ex);
     }
 }
-
-Class.define = function(subClass, baseClass, members = undefined, initFun = undefined, createProto = true) {
-        return (subClass.prototype = subClass.subclass(baseClass, members, initFun, createProto));
-    };
 
 Object.setConst = function(obj, item, value, config) {
         return Object.defineProperty(obj, item, {

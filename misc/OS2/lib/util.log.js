@@ -103,6 +103,17 @@ __LOG.init(window, 4);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window,
 // count/countReset
 // assert
 
+// ==================== Abschnitt fuer UNUSED() ====================
+
+// Makro fuer die Markierung bewusst ungenutzter Variablen und Parametern
+// params: Beliebig viele Parameter, mit denen nichts gemacht wird
+// return Liefert formal die Parameter zurueck
+function UNUSED(...unused) {
+    return unused;
+}
+
+// ==================== Ende Abschnitt fuer UNUSED() ====================
+
 // ==================== Abschnitt fuer safeStringify() ====================
 
 // Sicheres JSON.stringify(), das auch mit Zyklen umgehen kann
@@ -125,9 +136,12 @@ function serializer(replacer = undefined, cycleReplacer = undefined) {
 
     if (! cycleReplacer) {
         cycleReplacer = function(key, value) {
+                UNUSED(key);
+
                 if (__STACK[0] === value) {
                     return "[~]";
                 }
+
                 return "[~." + __KEYS.slice(0, __STACK.indexOf(value)).join('.') + ']';
             };
     }
@@ -159,6 +173,8 @@ function serializer(replacer = undefined, cycleReplacer = undefined) {
 // value: Der uebergebene Wert
 // return Fuer Arrays eine kompakte Darstellung, sonst derselbe Wert
 function replaceArraySimple(key, value) {
+    UNUSED(key);
+
     if (Array.isArray(value)) {
         return "[ " + value.join(", ") + " ]";
     }
@@ -171,6 +187,8 @@ function replaceArraySimple(key, value) {
 // value: Der uebergebene Wert
 // return Fuer Arrays eine kompakte Darstellung, sonst derselbe Wert
 function replaceArray(key, value) {
+    UNUSED(key);
+
     if (Array.isArray(value)) {
         const __RET = value.map(function(element) {
                                     return safeStringify(element, replaceArray, 0);

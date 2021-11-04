@@ -81,15 +81,23 @@ Class.define(UnitTest, Object, {
                                 this.tDefs.push(__ENTRY);
                             },
             'prepare'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                UNUSED(name, desc, thisArg, resultObj, resultFun, tableId);
+
                                 return true;
                             },
             'cleanup'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                UNUSED(name, desc, thisArg, resultObj, resultFun, tableId);
+
                                 return true;
                             },
             'setup'       : async function(name, desc, testFun, thisArg) {
+                                UNUSED(name, desc, testFun, thisArg);
+
                                 return true;
                             },
             'teardown'    : async function(name, desc, testFun, thisArg) {
+                                UNUSED(name, desc, testFun, thisArg);
+
                                 return true;
                             },
             'run'         : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
@@ -379,18 +387,20 @@ UnitTest.getStyleFromResults = function(results) {
 // libName: Name des JS-Moduls
 // libDesc: Beschreibung des Moduls
 // libTest: UnitTest-Klasse des Moduls
-function UnitTestResults(libName, libDesc, libTest) {
-    'use strict';
+class UnitTestResults {
+    constructor(libName, libDesc, libTest) {
+        'use strict';
 
-    this.name = libName;
-    this.desc = libDesc;
-    this.test = (libTest || { });
+        this.name = libName;
+        this.desc = libDesc;
+        this.test = (libTest || { });
 
-    this.countRunning   = 0;  // Zaehler Tests
-    this.countSuccess   = 0;  // Zaehler OK
-    this.countFailed    = 0;  // Zaehler FAIL
-    this.countException = 0;  // Zaehler EX (andere Exceptions ausser ERR)
-    this.countError     = 0;  // Zaehler ERR (Fehler im Test, Spezial-Exception)
+        this.countRunning   = 0;  // Zaehler Tests
+        this.countSuccess   = 0;  // Zaehler OK
+        this.countFailed    = 0;  // Zaehler FAIL
+        this.countException = 0;  // Zaehler EX (andere Exceptions ausser ERR)
+        this.countError     = 0;  // Zaehler ERR (Fehler im Test, Spezial-Exception)
+    }
 }
 
 Class.define(UnitTestResults, Object, {

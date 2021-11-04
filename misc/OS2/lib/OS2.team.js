@@ -22,15 +22,18 @@
 // ==================== Abschnitt fuer Klasse TeamClassification ====================
 
 // Klasse fuer die Klassifikation der Optionen nach Team (Erst- und Zweitteam oder Fremdteam)
-function TeamClassification() {
-    'use strict';
 
-    Classification.call(this);
+class TeamClassification extends Classification {
+    constructor() {
+        'use strict';
 
-    this.prefix = undefined;
+        Classification.call(this);
 
-    this.team = undefined;
-    this.teamParams = undefined;
+        this.prefix = undefined;
+
+        this.team = undefined;
+        this.teamParams = undefined;
+    }
 }
 
 Class.define(TeamClassification, Classification, {
@@ -53,14 +56,17 @@ Class.define(TeamClassification, Classification, {
 // ==================== Abschnitt fuer Klasse Team ====================
 
 // Klasse fuer Teamdaten
-function Team(team, land, liga) {
-    'use strict';
 
-    this.Team = team;
-    this.Land = land;
-    this.Liga = liga;
-    this.LdNr = getLandNr(land);
-    this.LgNr = getLigaNr(liga);
+class Team {
+    constructor(team, land, liga) {
+        'use strict';
+
+        this.Team = team;
+        this.Land = land;
+        this.Liga = liga;
+        this.LdNr = getLandNr(land);
+        this.LgNr = getLigaNr(liga);
+    }
 }
 
 Class.define(Team, Object, {
@@ -78,14 +84,17 @@ Class.define(Team, Object, {
 // ==================== Abschnitt fuer Klasse Verein ====================
 
 // Klasse fuer Vereinsdaten
-function Verein(team, land, liga, id, manager, flags) {
-    'use strict';
 
-    Team.call(this, team, land, liga);
+class Verein extends Team {
+    constructor(team, land, liga, id, manager, flags) {
+        'use strict';
 
-    this.ID = id;
-    this.Manager = manager;
-    this.Flags = (flags || []);
+        Team.call(this, team, land, liga);
+
+        this.ID = id;
+        this.Manager = manager;
+        this.Flags = (flags || []);
+    }
 }
 
 Class.define(Verein, Team, {

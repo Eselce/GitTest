@@ -35,7 +35,7 @@ function groupData(data, byFun, filterFun, sortFun) {
     const __BYKEYSET = new Set(__BYKEYS);
     const __BYKEYARRAY = [...__BYKEYSET];
     const __SORTEDKEYS = __BYKEYARRAY.sort(sortFun);
-    const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => __FILTERFUN(byVal, index, __BYKEYS)));
+    const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => (UNUSED(key), __FILTERFUN(byVal, index, __BYKEYS))));
     const __ASSIGN = ((keyArr, valArr) => Object.assign({ }, ...keyArr.map((key, index) => ({ [key] : valArr[index] }))));
 
     return __ASSIGN(__SORTEDKEYS, __GROUPEDKEYS);
@@ -92,9 +92,12 @@ function getOptionForm(optSet, optParams = { }) {
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // return String mit dem HTML-Code fuer das Script
 function getOptionScript(optSet, optParams = { }) {
+    UNUSED(optSet, optParams);
+
     //const __SCRIPT = '<script type="text/javascript">function activateMenu() { console.log("TADAAA!"); }</script>';
     //const __SCRIPT = '<script type="text/javascript">\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionRst(key, value) { alert("RESET"); }\n</script>';
     //const __FORM = '<form method="POST"><input type="button" id="showOpts" name="showOpts" value="Optionen anzeigen" onclick="activateMenu()" /></form>';
+
     const __SCRIPT = "";
 
     //window.eval('function activateMenu() { console.log("TADAAA!"); }');

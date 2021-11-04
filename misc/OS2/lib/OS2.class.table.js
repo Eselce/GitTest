@@ -15,33 +15,36 @@
 // ==================== Abschnitt fuer Klasse TableManager ====================
 
 // Klasse fuer Tabelle
-function TableManager(optSet, colIdx, rows, offsetUpper, offsetLower) {
-    'use strict';
 
-    Object.call(this);
+class TableManager {
+    constructor(optSet, colIdx, rows, offsetUpper, offsetLower) {
+        'use strict';
 
-    this.currSaison = getOptValue(optSet.aktuelleSaison);
+        Object.call(this);
 
-    this.saison = getOptValue(optSet.saison);
-    this.land = getOptValue(optSet.land);
-    this.liga = getOptValue(optSet.liga);
-    this.tabTypNr = getOptValue(optSet.tabTypNr, 0);
+        this.currSaison = getOptValue(optSet.aktuelleSaison);
 
-    this.colIdx = colIdx;
+        this.saison = getOptValue(optSet.saison);
+        this.land = getOptValue(optSet.land);
+        this.liga = getOptValue(optSet.liga);
+        this.tabTypNr = getOptValue(optSet.tabTypNr, 0);
 
-    this.rows = getValue(rows, []);
-    this.headers = this.rows[0];
-    this.offsetUpper = offsetUpper;
-    this.offsetLower = offsetLower;
+        this.colIdx = colIdx;
 
-    this.vereine = this.createVereine();
+        this.rows = getValue(rows, []);
+        this.headers = this.rows[0];
+        this.offsetUpper = offsetUpper;
+        this.offsetLower = offsetLower;
 
-    this.ligaSize = this.vereine.length;
-    this.ligaNr = getLigaNr(this.liga);
-    this.isErsteLiga = (this.ligaSize && (this.tabTypNr === 0) && (this.ligaNr === 1));
-    this.letzterSpieltag = (this.ligaSize - 1) * ((this.ligaSize === 10) ? 4 : 2);
-    this.isAbschluss = (this.getSpieltag() === this.letzterSpieltag);
-    this.isCurrSaison = (this.saison === this.currSaison);
+        this.vereine = this.createVereine();
+
+        this.ligaSize = this.vereine.length;
+        this.ligaNr = getLigaNr(this.liga);
+        this.isErsteLiga = (this.ligaSize && (this.tabTypNr === 0) && (this.ligaNr === 1));
+        this.letzterSpieltag = (this.ligaSize - 1) * ((this.ligaSize === 10) ? 4 : 2);
+        this.isAbschluss = (this.getSpieltag() === this.letzterSpieltag);
+        this.isCurrSaison = (this.saison === this.currSaison);
+    }
 }
 
 Class.define(TableManager, Object, {

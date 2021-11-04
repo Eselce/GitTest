@@ -16,23 +16,25 @@
 
 // Klasse fuer Ziehwarnung fuer einen Jugendspieler
 
-function WarnDrawPlayer(player, alertColor) {
-    'use strict';
+class WarnDrawPlayer {
+    constructor(player, alertColor) {
+        'use strict';
 
-    this.player = player;
+        this.player = player;
 
-    if (this.player !== undefined) {
-        // Default Warnlevel...
-        this.setZatLeft(player.getZatLeft());
-        this.currZAT = player.currZAT;
-        this.setWarn(true, true, true);
-        this.colAlert = alertColor || this.alertColor();
-    } else {
-        // Kein Warnlevel...
-        this.setZatLeft(undefined);
-        this.currZAT = undefined;
-        this.setWarn(false, false, false);
-        this.colAlert = undefined;
+        if (this.player !== undefined) {
+            // Default Warnlevel...
+            this.setZatLeft(player.getZatLeft());
+            this.currZAT = player.currZAT;
+            this.setWarn(true, true, true);
+            this.colAlert = alertColor || this.alertColor();
+        } else {
+            // Kein Warnlevel...
+            this.setZatLeft(undefined);
+            this.currZAT = undefined;
+            this.setWarn(false, false, false);
+            this.colAlert = undefined;
+        }
     }
 }
 
@@ -87,29 +89,31 @@ const __NOWARNDRAW = new WarnDrawPlayer(undefined, undefined);  // inaktives Obj
 
 // Klasse fuer Warnmeldung fuer einen Jugendspieler
 
-function WarnDrawMessage(optSet, currZAT) {
-    'use strict';
+class WarnDrawMessage {
+    constructor(optSet, currZAT) {
+        'use strict';
 
-    this.optSet = optSet;
+        this.optSet = optSet;
 
-    this.warn = getOptValue(this.optSet.zeigeWarnung, true);
-    this.warnMonth = getOptValue(this.optSet.zeigeWarnungMonat, true);
-    this.warnHome = getOptValue(this.optSet.zeigeWarnungHome, true);
-    this.warnDialog = getOptValue(this.optSet.zeigeWarnungDialog, false);
-    this.warnAufstieg = getOptValue(this.optSet.zeigeWarnungAufstieg, true);
-    this.warnLegende = getOptValue(this.optSet.zeigeWarnungLegende, true);
+        this.warn = getOptValue(this.optSet.zeigeWarnung, true);
+        this.warnMonth = getOptValue(this.optSet.zeigeWarnungMonat, true);
+        this.warnHome = getOptValue(this.optSet.zeigeWarnungHome, true);
+        this.warnDialog = getOptValue(this.optSet.zeigeWarnungDialog, false);
+        this.warnAufstieg = getOptValue(this.optSet.zeigeWarnungAufstieg, true);
+        this.warnLegende = getOptValue(this.optSet.zeigeWarnungLegende, true);
 
-    this.out = {
-                   'supertag' : true,
-                   'top'      : true,
-                   'link'     : true,
-                   'label'    : true,
-                   'bottom'   : true
-               };
+        this.out = {
+                       'supertag' : true,
+                       'top'      : true,
+                       'link'     : true,
+                       'label'    : true,
+                       'bottom'   : true
+                   };
 
-    this.setOptionHome();
+        this.setOptionHome();
 
-    this.startMessage(currZAT);
+        this.startMessage(currZAT);
+    }
 }
 
 Class.define(WarnDrawMessage, Object, {
@@ -271,15 +275,17 @@ Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
 
 // Klasse fuer Warnmeldung im Falle eines Aufstiegs fuer einen Jugendspieler
 
-function WarnDrawMessageAufstieg(optSet, currZAT) {
-    'use strict';
+class WarnDrawMessageAufstieg extends WarnDrawMessage {
+    constructor(optSet, currZAT) {
+        'use strict';
 
-    WarnDrawMessage.call(this, optSet, currZAT);
+        WarnDrawMessage.call(this, optSet, currZAT);
 
-    this.out.top = false;  // kein Vorschub vor der Zeile
+        this.out.top = false;  // kein Vorschub vor der Zeile
 
-    this.warn = (this.warn && this.warnAufstieg);  // kann man ausschalten
-    this.startMessage(currZAT);  // 2. Aufruf (zur Korrektur)
+        this.warn = (this.warn && this.warnAufstieg);  // kann man ausschalten
+        this.startMessage(currZAT);  // 2. Aufruf (zur Korrektur)
+    }
 }
 
 Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {

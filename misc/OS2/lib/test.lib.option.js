@@ -32,19 +32,27 @@ function UnitTestOption(name, desc, tests, load) {
 
 Class.define(UnitTestOption, UnitTest, {
             'prepare'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                UNUSED(thisArg, resultObj, resultFun, tableId);
+
                                 __LOG[1]("prepare()", name, desc);
+
                                 return true;
                             },
             'cleanup'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+                                UNUSED(thisArg, resultObj, resultFun, tableId);
+
                                 __LOG[1]("cleanup()", name, desc);
+
                                 return true;
                             },
             'setup'       : async function(name, desc, testFun, thisArg) {
                                 __LOG[1]("setup()", name, desc, testFun, thisArg);
+
                                 return true;
                             },
             'teardown'    : async function(name, desc, testFun, thisArg) {
                                 __LOG[1]("teardown()", name, desc, testFun, thisArg);
+
                                 return true;
                             }
         });
