@@ -2,7 +2,7 @@
 // _name         util.main
 // _namespace    http://os.ongapo.com/
 // _version      0.10
-// _copyright    2017+
+// _copyright    2017/2021+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer das Hauptprogramm zur jeweiligen Seite
 // _require      https://eselce.github.io/OS2.scripts/lib/util.main.js
@@ -14,10 +14,10 @@
 
 // ==================== Abschnitt fuer Aufbau und Start des Hauptprogramms ====================
 
-// Gesetzte Optionen (wird von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = { };
+// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
+const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
 
-function Main(optConfig, optset, classification) { }
+function Main(optConfig, optSet, classification) { }
 // main = new Main(__OPTCONFIG, __OPTSET, __TEAMCLASS);
 
 /*
@@ -72,9 +72,9 @@ function run() {
         } catch (ex) {
             return defaultCatch(ex);
         }
-    })().then(rc => {
-            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
+    }).then(rc => {
             __LOG[2](String(__OPTSET));
+            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
         });
 };
 

@@ -248,6 +248,14 @@ const ASSERT_NOT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEP
     return ASSERT(Math.abs(erg - exp) > __DELTA, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- " + __PROZENT + '%', msg, thisArg, ...params);
 }
 
+const ASSERT_OFTYPE = function(obj, type, msg, thisArg, ...params) {
+    return ASSERT((typeOf(obj) === type), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(type, false), msg, thisArg, ...params);
+}
+
+const ASSERT_NOT_OFTYPE = function(obj, type, msg, thisArg, ...params) {
+    return ASSERT_NOT((typeOf(obj) === type), __LOG.info(obj, true, true) + " ist " + __LOG.info(type, false), msg, thisArg, ...params);
+}
+
 const ASSERT_TYPEOF = function(obj, type, msg, thisArg, ...params) {
     return ASSERT(((typeof obj) === type), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(type, false), msg, thisArg, ...params);
 }
@@ -259,21 +267,21 @@ const ASSERT_NOT_TYPEOF = function(obj, type, msg, thisArg, ...params) {
 const ASSERT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
     const __CLASSNAME = (cls || { }).name;
 
-    return ASSERT((obj instanceof cls), __LOG.info(obj, true, true) + " ist kein " + __CLASSNAME, msg, thisArg, ...params);
+    return ASSERT((obj instanceof cls), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(__CLASSNAME, false), msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
     const __CLASSNAME = (cls || { }).name;
 
-    return ASSERT_NOT((obj instanceof cls), __LOG.info(obj, true, true) + " ist " + __CLASSNAME, msg, thisArg, ...params);
+    return ASSERT_NOT((obj instanceof cls), __LOG.info(obj, true, true) + " ist " + __LOG.info(__CLASSNAME, false), msg, thisArg, ...params);
 }
 
 const ASSERT_MATCH = function(str, pattern, msg, thisArg, ...params) {
-    return ASSERT((str || "").match(pattern), __LOG.info(str, true, true) + " match-t " + __LOG.info(pattern, true, true), msg, thisArg, ...params);
+    return ASSERT((str || "").match(pattern), __LOG.info(str, true, true) + " hat nicht das Muster " + String(pattern), msg, thisArg, ...params);
 }
 
 const ASSERT_NOT_MATCH = function(str, pattern, msg, thisArg, ...params) {
-    return ASSERT_NOT((str || "").match(pattern), __LOG.info(str, true, true) + " match-t nicht " + __LOG.info(pattern, true, true), msg, thisArg, ...params);
+    return ASSERT_NOT((str || "").match(pattern), __LOG.info(str, true, true) + " hat das Muster " + String(pattern), msg, thisArg, ...params);
 }
 
 // ==================== Ende Abschnitt fuer sonstige ASSERT-Funktionen ====================
