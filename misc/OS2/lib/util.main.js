@@ -15,7 +15,7 @@
 // ==================== Abschnitt fuer Aufbau und Start des Hauptprogramms ====================
 
 // Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
+//const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
 
 class Main {
     constructor(optConfig, optSet, classification) {
