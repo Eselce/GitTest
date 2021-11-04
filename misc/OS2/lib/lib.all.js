@@ -4562,7 +4562,10 @@ function groupData(data, byFun, filterFun, sortFun) {
     const __BYKEYSET = new Set(__BYKEYS);
     const __BYKEYARRAY = [...__BYKEYSET];
     const __SORTEDKEYS = __BYKEYARRAY.sort(sortFun);
-    const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => (UNUSED(key), __FILTERFUN(byVal, index, __BYKEYS))));
+    const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => {
+                                                            UNUSED(key);
+                                                            return __FILTERFUN(byVal, index, __BYKEYS);
+                                                        }));
     const __ASSIGN = ((keyArr, valArr) => Object.assign({ }, ...keyArr.map((key, index) => ({ [key] : valArr[index] }))));
 
     return __ASSIGN(__SORTEDKEYS, __GROUPEDKEYS);
@@ -5114,10 +5117,10 @@ function handlePage(optConfig, optSet, page) {
         // Klassifikation verknuepfen...
         __CLASSIFICATION.assign(optSet, __OPTPARAMS);
 
-        startOptions(optConfig, optSet, classification).then(optSet => {
+        startOptions(optConfig, optSet, __CLASSIFICATION).then(optSet => {
                 __PREPAREOPTIONS(optSet, __OPTPARAMS);
 
-                return showOptions(optSet, optParams);
+                return showOptions(optSet, __OPTPARAMS);
             }, defaultCatch).then(__HANDLER);
     } else {
         return Promise.reject(`Keine Options-Parameter f\xFCr Seite ${page} vorhanden!`);
@@ -5138,7 +5141,7 @@ function run() {
             return defaultCatch(ex);
         }
     }).then(rc => {
-            __LOG[2](String(__OPTSET));
+            //__LOG[2](String(__OPTSET));
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
         });
 };
