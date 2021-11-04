@@ -36,19 +36,21 @@ class WarnDrawPlayer {
             this.colAlert = undefined;
         }
     }
+
+    setZatLeft(zatLeft) {
+        this.zatLeft = zatLeft;
+    }
+
+    setWarn(warn, warnMonth, warnAufstieg) {
+        this.warn = (this.aufstieg ? warnAufstieg : warn);
+        this.warnMonth = warnMonth;
+    }
 }
 
 Class.define(WarnDrawPlayer, Object, {
         '__MONATEBISABR'    : 1,
         '__ZATWARNVORLAUF'  : 1,
         '__ZATMONATVORLAUF' : 6,
-        'setZatLeft'        : function(zatLeft) {
-                                  this.zatLeft = zatLeft;
-                              },
-        'setWarn'           : function(warn, warnMonth, warnAufstieg) {
-                                  this.warn = (this.aufstieg ? warnAufstieg : warn);
-                                  this.warnMonth = warnMonth;
-                              },
         'alertColor'        : function() {
                                   return getColor('STU');  // rot
                               },
