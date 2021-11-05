@@ -855,8 +855,8 @@ function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : 
 
 // Klasse ColumnManagerBase *****************************************************************
 
-class ColumnManagerBase {
-    constructor(optSet, colIdx, showCol) {
+/*class*/ function ColumnManagerBase /*{
+    constructor*/(optSet, colIdx, showCol) {
         'use strict';
         UNUSED(optSet, showCol);
 
@@ -923,7 +923,7 @@ class ColumnManagerBase {
         this.kennzE = getOptValue(optSet.kennzeichenEnde);
 ***/
     }
-}
+//}
 
 Class.define(ColumnManagerBase, Object, {
         'toString'       : function() {  // Bisher nur die noetigsten Parameter ausgegeben...
@@ -1003,8 +1003,8 @@ Class.define(ColumnManagerBase, Object, {
 
 // Klasse ColumnManagerZatReport *****************************************************************
 
-class ColumnManagerZatReport extends ColumnManagerBase {
-    constructor(optSet, colIdx, showCol) {
+/*class*/ function ColumnManagerZatReport /*extends ColumnManagerBase {
+    constructor*/(optSet, colIdx, showCol) {
         'use strict';
 
         ColumnManagerBase.call(this, optSet, colIdx, showCol);
@@ -1066,7 +1066,7 @@ class ColumnManagerZatReport extends ColumnManagerBase {
         this.erwB = (__LASTZAT && getValue(__SHOWCOL.zeigeErwartungBalken, __SHOWALL) && getOptValue(optSet.zeigeErwartungBalken));
         this.erf = (__LASTZAT && getValue(__SHOWCOL.zeigeErfolg, __SHOWALL) && getOptValue(optSet.zeigeErfolg));
     }
-}
+//}
 
 Class.define(ColumnManagerZatReport, ColumnManagerBase, {
         'toString'       : function() {  // Bisher nur die noetigsten Parameter ausgegeben...
@@ -1384,8 +1384,8 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
 
 // Klasse PlayerRecordTraining ******************************************************************
 
-class PlayerRecordTraining {
-    constructor(land, age, isGoalie, saison, currZAT, donation) {
+/*class*/ function PlayerRecordTraining /*{
+    constructor*/(land, age, isGoalie, saison, currZAT, donation) {
         'use strict';
 
         this.land = land;
@@ -1430,7 +1430,7 @@ class PlayerRecordTraining {
         // in this.getPos() definiert:
         // this.bestPos: erster (bester) Positionstext
     }
-}
+//}
 
 Class.define(PlayerRecordTraining, Object, {
         '__TIME'                : {   // Zeitpunktangaben

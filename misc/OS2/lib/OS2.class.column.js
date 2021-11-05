@@ -16,8 +16,8 @@
 
 // Klasse fuer Spalten des Jugendkaders
 
-class ColumnManager {
-    constructor(optSet, colIdx, showCol) {
+/*class*/ function ColumnManager /*{
+    constructor*/(optSet, colIdx, showCol) {
         'use strict';
 
         __LOG[4]("ColumnManager()");
@@ -79,7 +79,7 @@ class ColumnManager {
         this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? getOptValue(optSet.anzahlMWEnde) : 0);
         this.kennzE = getOptValue(optSet.kennzeichenEnde);
     }
-}
+//}
 
 Class.define(ColumnManager, Object, {
         'toString'       : function() {  // Bisher nur die noetigsten Parameter ausgegeben...

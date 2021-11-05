@@ -21,8 +21,8 @@ if ((typeof showAlert) === 'undefined') {
 
 // ==================== Abschnitt fuer Klasse Class ====================
 
-class Class {
-    constructor(className, baseClass, initFun) {
+/*class*/ function Class /*{
+    constructor*/(className, baseClass, initFun) {
         'use strict';
 
         try {
@@ -58,7 +58,7 @@ class Class {
             return showException('[' + (ex && ex.lineNumber) + "] Error in Class " + className, ex);
         }
     }
-}
+//}
 
 Class.define = function(subClass, baseClass, members = undefined, initFun = undefined, createProto = true) {
         return (subClass.prototype = subClass.subclass(baseClass, members, initFun, createProto));

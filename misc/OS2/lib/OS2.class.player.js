@@ -16,8 +16,8 @@
 
 // Klasse fuer Spalten des Jugendkaders
 
-class PlayerRecord {
-    constructor(land, age, isGoalie, saison, currZAT, donation) {
+/*class*/ function PlayerRecord /*{
+    constructor*/(land, age, isGoalie, saison, currZAT, donation) {
         'use strict';
 
         this.land = land;
@@ -62,7 +62,7 @@ class PlayerRecord {
         // in this.getPos() definiert:
         // this.bestPos: erster (bester) Positionstext
     }
-}
+//}
 
 Class.define(PlayerRecord, Object, {
         '__TIME'                : {   // Zeitpunktangaben
