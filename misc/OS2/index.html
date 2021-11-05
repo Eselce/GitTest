@@ -87,6 +87,7 @@
 				function addEntry(table, id, meta) {
 					var colText1 = [];
 					var data = getMeta(meta);
+					if (! data.name) { return; }
 					var name = purify(data.name);
 					var version = purify(data.version);
 					var desc = purify(data.description);
