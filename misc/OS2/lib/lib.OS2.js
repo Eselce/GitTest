@@ -413,8 +413,8 @@ function getColor(pos) {
 
 // Klasse fuer die Klassifikation der Optionen nach Team (Erst- und Zweitteam oder Fremdteam)
 
-class TeamClassification extends Classification {
-    constructor() {
+/*class*/ function TeamClassification /*extends Classification {
+    constructor*/() {
         'use strict';
 
         Classification.call(this);
@@ -424,7 +424,7 @@ class TeamClassification extends Classification {
         this.team = undefined;
         this.teamParams = undefined;
     }
-}
+//}
 
 Class.define(TeamClassification, Classification, {
                     'renameParamFun' : function() {
@@ -447,8 +447,8 @@ Class.define(TeamClassification, Classification, {
 
 // Klasse fuer Teamdaten
 
-class Team {
-    constructor(team, land, liga) {
+/*class*/ function Team /*{
+    constructor*/(team, land, liga) {
         'use strict';
 
         this.Team = team;
@@ -457,7 +457,7 @@ class Team {
         this.LdNr = getLandNr(land);
         this.LgNr = getLigaNr(liga);
     }
-}
+//}
 
 Class.define(Team, Object, {
                     '__TEAMITEMS' : {   // Items, die in Team als Teamdaten gesetzt werden...
@@ -475,8 +475,8 @@ Class.define(Team, Object, {
 
 // Klasse fuer Vereinsdaten
 
-class Verein extends Team {
-    constructor(team, land, liga, id, manager, flags) {
+/*class*/ function Verein /*extends Team {
+    constructor*/(team, land, liga, id, manager, flags) {
         'use strict';
 
         Team.call(this, team, land, liga);
@@ -485,7 +485,7 @@ class Verein extends Team {
         this.Manager = manager;
         this.Flags = (flags || []);
     }
-}
+//}
 
 Class.define(Verein, Team, {
                     '__TEAMITEMS' : {   // Items, die in Verein als Teamdaten gesetzt werden...
@@ -756,8 +756,8 @@ const __HINRUECK    = [ " Hin", " R\xFCck", "" ];
 
 // ==================== Abschnitt fuer Klasse RundenLink ====================
 
-class RundenLink {
-    constructor(saison, team) {
+/*class*/ function RundenLink /*{
+    constructor*/(saison, team) {
         'use strict';
 
         this.uri = new URI("http://os.ongapo.com/");
@@ -774,7 +774,7 @@ class RundenLink {
             this.setTeam(team);
         }
     }
-}
+//}
 
 Class.define(RundenLink, Object, {
         'setSaison'    : function(saison) {
@@ -1196,8 +1196,8 @@ function getLigaSizeFromSpielplan(rows, startIdx, colArtIdx, saison) {
 
 // Klasse fuer Ziehwarnung fuer einen Jugendspieler
 
-class WarnDrawPlayer {
-    constructor(player, alertColor) {
+/*class*/ function WarnDrawPlayer /*{
+    constructor*/(player, alertColor) {
         'use strict';
 
         this.player = player;
@@ -1216,7 +1216,7 @@ class WarnDrawPlayer {
             this.colAlert = undefined;
         }
     }
-}
+//}
 
 Class.define(WarnDrawPlayer, Object, {
         '__MONATEBISABR'    : 1,
@@ -1269,8 +1269,8 @@ const __NOWARNDRAW = new WarnDrawPlayer(undefined, undefined);  // inaktives Obj
 
 // Klasse fuer Warnmeldung fuer einen Jugendspieler
 
-class WarnDrawMessage {
-    constructor(optSet, currZAT) {
+/*class*/ function WarnDrawMessage /*{
+    constructor*/(optSet, currZAT) {
         'use strict';
 
         this.optSet = optSet;
@@ -1294,7 +1294,7 @@ class WarnDrawMessage {
 
         this.startMessage(currZAT);
     }
-}
+//}
 
 Class.define(WarnDrawMessage, Object, {
         '__ZATWARNVORLAUF'  : 1,
@@ -1455,8 +1455,8 @@ Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
 
 // Klasse fuer Warnmeldung im Falle eines Aufstiegs fuer einen Jugendspieler
 
-class WarnDrawMessageAufstieg extends WarnDrawMessage {
-    constructor(optSet, currZAT) {
+/*class*/ function WarnDrawMessageAufstieg /*extends WarnDrawMessage {
+    constructor*/(optSet, currZAT) {
         'use strict';
 
         WarnDrawMessage.call(this, optSet, currZAT);
@@ -1466,7 +1466,7 @@ class WarnDrawMessageAufstieg extends WarnDrawMessage {
         this.warn = (this.warn && this.warnAufstieg);  // kann man ausschalten
         this.startMessage(currZAT);  // 2. Aufruf (zur Korrektur)
     }
-}
+//}
 
 Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
         'configureZat'      : function() {
@@ -1519,8 +1519,8 @@ Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
 
 // Klasse fuer Spalten des Jugendkaders
 
-class PlayerRecord {
-    constructor(land, age, isGoalie, saison, currZAT, donation) {
+/*class*/ function PlayerRecord /*{
+    constructor*/(land, age, isGoalie, saison, currZAT, donation) {
         'use strict';
 
         this.land = land;
@@ -1565,7 +1565,7 @@ class PlayerRecord {
         // in this.getPos() definiert:
         // this.bestPos: erster (bester) Positionstext
     }
-}
+//}
 
 Class.define(PlayerRecord, Object, {
         '__TIME'                : {   // Zeitpunktangaben
@@ -2019,8 +2019,8 @@ function sortPositionArray(array) {
 
 // Klasse fuer Spalten des Jugendkaders
 
-class ColumnManager {
-    constructor(optSet, colIdx, showCol) {
+/*class*/ function ColumnManager /*{
+    constructor*/(optSet, colIdx, showCol) {
         'use strict';
 
         __LOG[4]("ColumnManager()");
@@ -2082,7 +2082,7 @@ class ColumnManager {
         this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? getOptValue(optSet.anzahlMWEnde) : 0);
         this.kennzE = getOptValue(optSet.kennzeichenEnde);
     }
-}
+//}
 
 Class.define(ColumnManager, Object, {
         'toString'       : function() {  // Bisher nur die noetigsten Parameter ausgegeben...
@@ -2432,8 +2432,8 @@ Class.define(ColumnManager, Object, {
 
 // Klasse fuer Tabelle
 
-class TableManager {
-    constructor(optSet, colIdx, rows, offsetUpper, offsetLower) {
+/*class*/ function TableManager /*{
+    constructor*/(optSet, colIdx, rows, offsetUpper, offsetLower) {
         'use strict';
 
         Object.call(this);
@@ -2461,7 +2461,7 @@ class TableManager {
         this.isAbschluss = (this.getSpieltag() === this.letzterSpieltag);
         this.isCurrSaison = (this.saison === this.currSaison);
     }
-}
+//}
 
 Class.define(TableManager, Object, {
         'createVereine'  : function() {

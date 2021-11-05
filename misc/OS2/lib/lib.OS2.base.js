@@ -409,8 +409,8 @@ function getColor(pos) {
 
 // Klasse fuer die Klassifikation der Optionen nach Team (Erst- und Zweitteam oder Fremdteam)
 
-class TeamClassification extends Classification {
-    constructor() {
+/*class*/ function TeamClassification /*extends Classification {
+    constructor*/() {
         'use strict';
 
         Classification.call(this);
@@ -420,7 +420,7 @@ class TeamClassification extends Classification {
         this.team = undefined;
         this.teamParams = undefined;
     }
-}
+//}
 
 Class.define(TeamClassification, Classification, {
                     'renameParamFun' : function() {
@@ -443,8 +443,8 @@ Class.define(TeamClassification, Classification, {
 
 // Klasse fuer Teamdaten
 
-class Team {
-    constructor(team, land, liga) {
+/*class*/ function Team /*{
+    constructor*/(team, land, liga) {
         'use strict';
 
         this.Team = team;
@@ -453,7 +453,7 @@ class Team {
         this.LdNr = getLandNr(land);
         this.LgNr = getLigaNr(liga);
     }
-}
+//}
 
 Class.define(Team, Object, {
                     '__TEAMITEMS' : {   // Items, die in Team als Teamdaten gesetzt werden...
@@ -471,8 +471,8 @@ Class.define(Team, Object, {
 
 // Klasse fuer Vereinsdaten
 
-class Verein extends Team {
-    constructor(team, land, liga, id, manager, flags) {
+/*class*/ function Verein /*extends Team {
+    constructor*/(team, land, liga, id, manager, flags) {
         'use strict';
 
         Team.call(this, team, land, liga);
@@ -481,7 +481,7 @@ class Verein extends Team {
         this.Manager = manager;
         this.Flags = (flags || []);
     }
-}
+//}
 
 Class.define(Verein, Team, {
                     '__TEAMITEMS' : {   // Items, die in Verein als Teamdaten gesetzt werden...
@@ -752,8 +752,8 @@ const __HINRUECK    = [ " Hin", " R\xFCck", "" ];
 
 // ==================== Abschnitt fuer Klasse RundenLink ====================
 
-class RundenLink {
-    constructor(saison, team) {
+/*class*/ function RundenLink /*{
+    constructor*/(saison, team) {
         'use strict';
 
         this.uri = new URI("http://os.ongapo.com/");
@@ -770,7 +770,7 @@ class RundenLink {
             this.setTeam(team);
         }
     }
-}
+//}
 
 Class.define(RundenLink, Object, {
         'setSaison'    : function(saison) {

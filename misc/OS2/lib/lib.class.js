@@ -32,8 +32,8 @@ if ((typeof showAlert) === 'undefined') {
 
 // ==================== Abschnitt fuer Klasse Class ====================
 
-class Class {
-    constructor(className, baseClass, initFun) {
+/*class*/ function Class /*{
+    constructor*/(className, baseClass, initFun) {
         'use strict';
 
         try {
@@ -69,7 +69,7 @@ class Class {
             return showException('[' + (ex && ex.lineNumber) + "] Error in Class " + className, ex);
         }
     }
-}
+//}
 
 Class.define = function(subClass, baseClass, members = undefined, initFun = undefined, createProto = true) {
         return (subClass.prototype = subClass.subclass(baseClass, members, initFun, createProto));
@@ -350,8 +350,9 @@ Class.define(UriDelims, Delims, {
 // 'back': Name des relativen Vaterverzeichnisses
 // 'root': Kennung vor dem ersten Trenner am Anfang eines absoluten Pfads
 // 'home': Kennung vor dem ersten Trenner am Anfang eines Pfads relativ zu Home
-class Path {
-    constructor(homePath, delims) {
+
+/*class*/ function Path /*{
+    constructor*/(homePath, delims) {
         'use strict';
 
         this.dirs = [];
@@ -360,7 +361,7 @@ class Path {
 
         this.home();
     }
-}
+//}
 
 Class.define(Path, Object, {
                   'root'           : function() {
@@ -542,8 +543,9 @@ Class.define(ObjRef, Directory, {
 // 'back': Name des relativen Vaterverzeichnisses
 // 'root': Kennung vor dem ersten Trenner am Anfang eines absoluten Pfads
 // 'home': Kennung vor dem ersten Trenner am Anfang eines Pfads relativ zu Home
-class URI extends Path {
-    constructor(homePath, delims) {
+
+/*class*/ function URI /*extends Path {
+    constructor*/(homePath, delims) {
         'use strict';
 
         UNUSED(delims);
@@ -562,7 +564,7 @@ class URI extends Path {
 
         this.home();
     }
-}
+//}
 
 Class.define(URI, Path, {
                'setDelims'         : function() {

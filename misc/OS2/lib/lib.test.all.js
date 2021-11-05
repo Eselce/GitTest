@@ -67,8 +67,9 @@ async function callPromiseArray(...promises) {
 // msg: Text oder Text liefernde Funktion
 // thisArg: Referenz auf ein Bezugsobjekt
 // params: ggfs. Parameter fuer die msg-Funktion
-class AssertionFailed {
-    constructor(whatFailed, msg, thisArg, ...params) {
+
+/*class*/ function AssertionFailed /*{
+    constructor*/(whatFailed, msg, thisArg, ...params) {
         //'use strict';
         const __THIS = (thisArg || this);
 
@@ -86,7 +87,7 @@ class AssertionFailed {
             this.message += " (" + whatFailed + ')';
         }
     }
-}
+//}
 
 Class.define(AssertionFailed, Object, {
                   'getTextMessage'    : function() {
@@ -707,8 +708,9 @@ UnitTest.getStyleFromResults = function(results) {
 // libName: Name des JS-Moduls
 // libDesc: Beschreibung des Moduls
 // libTest: UnitTest-Klasse des Moduls
-class UnitTestResults {
-    constructor(libName, libDesc, libTest) {
+
+/*class*/ function UnitTestResults /*{
+    constructor*/(libName, libDesc, libTest) {
         'use strict';
 
         this.name = libName;
@@ -721,7 +723,7 @@ class UnitTestResults {
         this.countException = 0;  // Zaehler EX (andere Exceptions ausser ERR)
         this.countError     = 0;  // Zaehler ERR (Fehler im Test, Spezial-Exception)
     }
-}
+//}
 
 Class.define(UnitTestResults, Object, {
                 'running'             : function() {

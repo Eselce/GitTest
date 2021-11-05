@@ -2030,8 +2030,9 @@ function initOptions(optConfig, optSet = undefined, preInit = undefined) {
 // ==================== Abschnitt fuer Klasse Classification ====================
 
 // Basisklasse fuer eine Klassifikation der Optionen nach Kriterium (z.B. Erst- und Zweitteam oder Fremdteam)
-class Classification {
-    constructor(prefix) {
+
+/*class*/ function Classification /*{
+    constructor*/(prefix) {
         'use strict';
 
         this.renameFun = prefixName;
@@ -2039,7 +2040,7 @@ class Classification {
         this.optSet = undefined;
         this.optSelect = { };
     }
-}
+//}
 
 Class.define(Classification, Object, {
                     'renameOptions'  : function() {
@@ -2100,8 +2101,9 @@ function optSelect(selList, ignList) {
 // ==================== Abschnitt fuer Klasse ClassificationPair ====================
 
 // Klasse fuer die Klassifikation der Optionen nach Team (Erst- und Zweitteam oder Fremdteam)
-class ClassificationPair extends Classification {
-    constructor(classA, classB) {
+
+/*class*/ function ClassificationPair /*extends Classification {
+    constructor*/(classA, classB) {
         'use strict';
 
         Classification.call(this);
@@ -2149,7 +2151,7 @@ class ClassificationPair extends Classification {
                               }
                     });
     }
-}
+//}
 
 Class.define(ClassificationPair, Classification, {
                     'renameOptions'  : function() {
