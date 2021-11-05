@@ -17,11 +17,11 @@
 // Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
 //const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
 
-class Main {
-    constructor(optConfig, optSet, classification) {
+/*class*/ function Main /*{
+    constructor*/(optConfig, optSet, classification) {
         UNUSED(optConfig, optSet, classification);
     }
-}
+//}
 
 //const __MAIN = new Main(__OPTCONFIG, __OPTSET, __TEAMCLASS);
 

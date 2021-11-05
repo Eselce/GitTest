@@ -52,8 +52,9 @@ async function callPromiseArray(...promises) {
 // msg: Text oder Text liefernde Funktion
 // thisArg: Referenz auf ein Bezugsobjekt
 // params: ggfs. Parameter fuer die msg-Funktion
-class AssertionFailed {
-    constructor(whatFailed, msg, thisArg, ...params) {
+
+/*class*/ function AssertionFailed /*{
+    constructor*/(whatFailed, msg, thisArg, ...params) {
         //'use strict';
         const __THIS = (thisArg || this);
 
@@ -71,7 +72,7 @@ class AssertionFailed {
             this.message += " (" + whatFailed + ')';
         }
     }
-}
+//}
 
 Class.define(AssertionFailed, Object, {
                   'getTextMessage'    : function() {

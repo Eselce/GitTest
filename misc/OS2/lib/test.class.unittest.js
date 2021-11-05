@@ -387,8 +387,9 @@ UnitTest.getStyleFromResults = function(results) {
 // libName: Name des JS-Moduls
 // libDesc: Beschreibung des Moduls
 // libTest: UnitTest-Klasse des Moduls
-class UnitTestResults {
-    constructor(libName, libDesc, libTest) {
+
+/*class*/ function UnitTestResults /*{
+    constructor*/(libName, libDesc, libTest) {
         'use strict';
 
         this.name = libName;
@@ -401,7 +402,7 @@ class UnitTestResults {
         this.countException = 0;  // Zaehler EX (andere Exceptions ausser ERR)
         this.countError     = 0;  // Zaehler ERR (Fehler im Test, Spezial-Exception)
     }
-}
+//}
 
 Class.define(UnitTestResults, Object, {
                 'running'             : function() {

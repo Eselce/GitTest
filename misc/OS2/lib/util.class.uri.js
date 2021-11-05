@@ -24,8 +24,9 @@
 // 'back': Name des relativen Vaterverzeichnisses
 // 'root': Kennung vor dem ersten Trenner am Anfang eines absoluten Pfads
 // 'home': Kennung vor dem ersten Trenner am Anfang eines Pfads relativ zu Home
-class URI extends Path {
-    constructor(homePath, delims) {
+
+/*class*/ function URI /*extends Path {
+    constructor*/(homePath, delims) {
         'use strict';
 
         UNUSED(delims);
@@ -44,7 +45,7 @@ class URI extends Path {
 
         this.home();
     }
-}
+//}
 
 Class.define(URI, Path, {
                'setDelims'         : function() {

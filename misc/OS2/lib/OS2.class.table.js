@@ -16,8 +16,8 @@
 
 // Klasse fuer Tabelle
 
-class TableManager {
-    constructor(optSet, colIdx, rows, offsetUpper, offsetLower) {
+/*class*/ function TableManager /*{
+    constructor*/(optSet, colIdx, rows, offsetUpper, offsetLower) {
         'use strict';
 
         Object.call(this);
@@ -45,7 +45,7 @@ class TableManager {
         this.isAbschluss = (this.getSpieltag() === this.letzterSpieltag);
         this.isCurrSaison = (this.saison === this.currSaison);
     }
-}
+//}
 
 Class.define(TableManager, Object, {
         'createVereine'  : function() {

@@ -24,8 +24,9 @@
 // 'back': Name des relativen Vaterverzeichnisses
 // 'root': Kennung vor dem ersten Trenner am Anfang eines absoluten Pfads
 // 'home': Kennung vor dem ersten Trenner am Anfang eines Pfads relativ zu Home
-class Path {
-    constructor(homePath, delims) {
+
+/*class*/ function Path /*{
+    constructor*/(homePath, delims) {
         'use strict';
 
         this.dirs = [];
@@ -34,7 +35,7 @@ class Path {
 
         this.home();
     }
-}
+//}
 
 Class.define(Path, Object, {
                   'root'           : function() {

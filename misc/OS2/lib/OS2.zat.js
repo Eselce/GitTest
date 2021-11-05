@@ -23,8 +23,8 @@ const __HINRUECK    = [ " Hin", " R\xFCck", "" ];
 
 // ==================== Abschnitt fuer Klasse RundenLink ====================
 
-class RundenLink {
-    constructor(saison, team) {
+/*class*/ function RundenLink /*{
+    constructor*/(saison, team) {
         'use strict';
 
         this.uri = new URI("http://os.ongapo.com/");
@@ -41,7 +41,7 @@ class RundenLink {
             this.setTeam(team);
         }
     }
-}
+//}
 
 Class.define(RundenLink, Object, {
         'setSaison'    : function(saison) {

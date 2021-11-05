@@ -16,8 +16,8 @@
 
 // Klasse fuer Ziehwarnung fuer einen Jugendspieler
 
-class WarnDrawPlayer {
-    constructor(player, alertColor) {
+/*class*/ function WarnDrawPlayer /*{
+    constructor*/(player, alertColor) {
         'use strict';
 
         this.player = player;
@@ -36,21 +36,19 @@ class WarnDrawPlayer {
             this.colAlert = undefined;
         }
     }
-
-    setZatLeft(zatLeft) {
-        this.zatLeft = zatLeft;
-    }
-
-    setWarn(warn, warnMonth, warnAufstieg) {
-        this.warn = (this.aufstieg ? warnAufstieg : warn);
-        this.warnMonth = warnMonth;
-    }
-}
+//}
 
 Class.define(WarnDrawPlayer, Object, {
         '__MONATEBISABR'    : 1,
         '__ZATWARNVORLAUF'  : 1,
         '__ZATMONATVORLAUF' : 6,
+        'setZatLeft'        : function(zatLeft) {
+                                  this.zatLeft = zatLeft;
+                              },
+        'setWarn'           : function(warn, warnMonth, warnAufstieg) {
+                                  this.warn = (this.aufstieg ? warnAufstieg : warn);
+                                  this.warnMonth = warnMonth;
+                              },
         'alertColor'        : function() {
                                   return getColor('STU');  // rot
                               },
@@ -91,8 +89,8 @@ const __NOWARNDRAW = new WarnDrawPlayer(undefined, undefined);  // inaktives Obj
 
 // Klasse fuer Warnmeldung fuer einen Jugendspieler
 
-class WarnDrawMessage {
-    constructor(optSet, currZAT) {
+/*class*/ function WarnDrawMessage /*{
+    constructor*/(optSet, currZAT) {
         'use strict';
 
         this.optSet = optSet;
@@ -116,7 +114,7 @@ class WarnDrawMessage {
 
         this.startMessage(currZAT);
     }
-}
+//}
 
 Class.define(WarnDrawMessage, Object, {
         '__ZATWARNVORLAUF'  : 1,
@@ -277,8 +275,8 @@ Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
 
 // Klasse fuer Warnmeldung im Falle eines Aufstiegs fuer einen Jugendspieler
 
-class WarnDrawMessageAufstieg extends WarnDrawMessage {
-    constructor(optSet, currZAT) {
+/*class*/ function WarnDrawMessageAufstieg /*extends WarnDrawMessage {
+    constructor*/(optSet, currZAT) {
         'use strict';
 
         WarnDrawMessage.call(this, optSet, currZAT);
@@ -288,7 +286,7 @@ class WarnDrawMessageAufstieg extends WarnDrawMessage {
         this.warn = (this.warn && this.warnAufstieg);  // kann man ausschalten
         this.startMessage(currZAT);  // 2. Aufruf (zur Korrektur)
     }
-}
+//}
 
 Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
         'configureZat'      : function() {
