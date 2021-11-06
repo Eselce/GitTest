@@ -803,6 +803,63 @@ String.prototype.format = function() {
                                     });
 };
 
+// Polyfill for das originale Array.reduce, da das alte prototype.js 1.6.0.3
+// dies ueberschreibt durch eine Funktion, die die Aufgabe nicht erfuellt!
+// Um weitere Konflikte zu vermeiden, wird die Methode Array.Reduce genannt
+// reduceFun: Reduktions-Funktion mit bis zu vier Parametern:
+// - value: Kumulativer Wert
+// - element: Das aktuelle Element des Arrays
+// - index: Index von element im Array
+// - arr: Das ganze Array
+// value: Inititaler Wert. Falls nicht angegeben, wird mit dem 1. Element gestartet
+// return Kumulierter Wert nach Durchlaufen des gesamten Arrays
+Array.prototype.Reduce = function(reduceFun, value) {
+    if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
+        throw TypeError();
+    }
+
+    const __LEN = this.length;
+    const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
+
+    if (__DOSHIFT) {
+        value = this[0];
+    } 
+
+    for (let i = (__DOSHIFT ? 1 : 0); i < __LEN; i++) {
+        value = reduceFun.call(this, value, this[i], i, this);
+    }
+
+    return value;
+}
+
+// Polyfill for das originale Array.reduceRight, analog zu Array.reduce
+// Um weitere Konflikte zu vermeiden, wird die Methode Array.ReduceRight genannt
+// reduceFun: Reduktions-Funktion mit bis zu vier Parametern:
+// - value: Kumulativer Wert
+// - element: Das aktuelle Element des Arrays
+// - index: Index von element im Array
+// - arr: Das ganze Array
+// value: Inititaler Wert. Falls nicht angegeben, wird mit dem letzten Element gestartet
+// return Kumulierter Wert nach Durchlaufen des gesamten Arrays
+Array.prototype.ReduceRight = function(reduceFun, value) {
+    if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
+        throw TypeError();
+    }
+
+    const __LEN = this.length;
+    const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
+
+    if (__DOSHIFT) {
+        value = this[__LEN - 1];
+    } 
+
+    for (let i = __LEN - (__DOSHIFT ? 2 : 1); i >= 0; i--) {
+        value = reduceFun.call(this, value, this[i], i, this);
+    }
+
+    return value;
+}
+
 // ==================== Ende Abschnitt mit Ergaenzungen und Polyfills zu Standardobjekten ====================
 
 // *** EOF ***
@@ -1237,7 +1294,7 @@ async function registerStartFun(startFun) {
 // Funktion zum sequentiellen Aufruf der Startroutinen in __SCRIPTINIT ueber Promises
 // return Ein Promise-Objekt fuer den Programmstart
 async function startMain() {
-    return __SCRIPTINIT.reduce((prom, fun) => prom.then(fun, defaultCatch),
+    return __SCRIPTINIT.Reduce((prom, fun) => prom.then(fun, defaultCatch),
             Promise.resolve(true)).then(__SCRIPTINIT.length = 0);
 }
 
@@ -1282,7 +1339,7 @@ async function GM_checkForTampermonkeyBug() {
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist (Zusatzinfo fuer den Filter)
 // return Ein Promise-Objekt mit dem Endresultat
 async function useReadFilter(startValue, name, defValue) {
-    return __GMREADFILTER.reduce((prom, fun) => prom.then(
+    return __GMREADFILTER.Reduce((prom, fun) => prom.then(
             value => fun(value, name, defValue), defaultCatch),
             Promise.resolve(startValue));
 }
