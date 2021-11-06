@@ -19,6 +19,7 @@
 // Fuehrt eine Map-Function auf ein Object aus und liefert ein neues Objekt zurueck.
 // Zusaetzlich kann die Auswahl der Elemente per Filter eingeschraenkt werden sowie
 // das Ergebnis sortiert (Default nach Wert, aber auch nach Schluessel).
+// Um weitere Konflikte mit prototype.js zu vermeiden, wird die Methode Object.Map genannt
 // obj: Das Object, das gemappt wird
 // mapFun: Eine Mapping-Funktion (value [, key [, index [, array]]])
 // - value: Wert
@@ -42,9 +43,9 @@
 // | Alternativ undefined, false: unsortiert
 // | Alternativ true: Normale Sortierung anhand der UTF-16 Codepoints
 // return Ein neues Object mit gemappten Werten
-Object.map = function(obj, mapFun, thisArg, filterFun, sortFun) {
+Object.Map = function(obj, mapFun, thisArg, filterFun, sortFun) {
     if (! obj) {
-        __LOG[3]("Object.map():", "Keine Aktion bei leerem Objekt", obj);
+        __LOG[3]("Object.Map():", "Keine Aktion bei leerem Objekt", obj);
 
         return obj;
     } else if ((typeof obj) === 'object') {
@@ -130,7 +131,7 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
                         } else {
                             const __CLASS = getClass(obj);
                             const __CLASSNAME = (__CLASS ? getClassName(obj) : "");
-                            const __VALSTR = (__LENGTH ? Object.values(Object.map(obj, (value, key) => (getValStr(key, true) + __OBJSETTER
+                            const __VALSTR = (__LENGTH ? Object.values(Object.Map(obj, (value, key) => (getValStr(key, true) + __OBJSETTER
                                             + getValStr(value, false, stepIn, longForm, stepIn)))).join(__OBJDELIM) : "");
 
                             typeStr = (__CLASSNAME ? __CLASSNAME : typeStr);

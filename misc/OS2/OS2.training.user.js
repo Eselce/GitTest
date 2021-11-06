@@ -2164,14 +2164,14 @@ function procHaupt() {
                     __LOG[1]("vor RENAME:" + optSet);
 
                     // Daten in 'old'-Daten ueberfuehren...
-                    __CLASSIFICATION.optSelect = Object.map(__LASTZATCLASS.optSelect, () => false);  // false: Kein reload
+                    __CLASSIFICATION.optSelect = Object.Map(__LASTZATCLASS.optSelect, () => false);  // false: Kein reload
                     __CLASSIFICATION.optSet = optSet;
                     await __CLASSIFICATION.renameOptions();
 
                     __LOG[1]("vor SAVE:" + optSet);
 
                     // Daten in 'old' speichern...
-                    __CLASSIFICATION.optSelect = Object.map(__LASTZATCLASS.optSelect, () => true);  // true: Speichern
+                    __CLASSIFICATION.optSelect = Object.Map(__LASTZATCLASS.optSelect, () => true);  // true: Speichern
                     await __CLASSIFICATION.saveOptions();
 
                     // Stand der alten Daten merken...
