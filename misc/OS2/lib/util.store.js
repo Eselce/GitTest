@@ -32,7 +32,7 @@ async function registerStartFun(startFun) {
 // Funktion zum sequentiellen Aufruf der Startroutinen in __SCRIPTINIT ueber Promises
 // return Ein Promise-Objekt fuer den Programmstart
 async function startMain() {
-    return __SCRIPTINIT.reduce((prom, fun) => prom.then(fun, defaultCatch),
+    return __SCRIPTINIT.Reduce((prom, fun) => prom.then(fun, defaultCatch),
             Promise.resolve(true)).then(__SCRIPTINIT.length = 0);
 }
 
@@ -77,7 +77,7 @@ async function GM_checkForTampermonkeyBug() {
 // defValue: Default-Wert fuer den Fall, dass nichts gespeichert ist (Zusatzinfo fuer den Filter)
 // return Ein Promise-Objekt mit dem Endresultat
 async function useReadFilter(startValue, name, defValue) {
-    return __GMREADFILTER.reduce((prom, fun) => prom.then(
+    return __GMREADFILTER.Reduce((prom, fun) => prom.then(
             value => fun(value, name, defValue), defaultCatch),
             Promise.resolve(startValue));
 }
