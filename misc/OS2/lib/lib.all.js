@@ -90,6 +90,10 @@ const __LOG = {
                                     this[""]    = this.logFun[7];   // console.table
                                     this[true]  = console.group;    // console.group
                                     this[false] = console.groupEnd; // console.groupEnd
+
+                                    if (__NOBIND) {
+                                        __LOG[2]("Prototype JS", Prototype.Version, "detected!");
+                                    }
                                 },
                   'stringify' : safeStringify,      // JSON.stringify
                   'info'      : function(obj, showType = true, elementType = false) {
