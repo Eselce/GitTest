@@ -35,9 +35,12 @@ const __LOG = {
                                                         // [true]     {
                                                         // [false]    }
                   'init'      : function(win, logLevel = 4) {
+                                    // prototypejs macht Function.bind() untauglich (dadurch gibt es falsche Zeilennummern)...
+                                    const __NOBIND = (this && this.Prototype && (this.Prototype.Version === '1.6.0.3'));
+
                                     for (let level = 0; level < this.logFun.length; level++) {
-                                        this[level] = ((level > logLevel) ? function() { } :
-                                                        this.logFun[level].bind(win.console, '[' + level + ']'));
+                                        this[level] = ((level > logLevel) ? function() { } : (__NOBIND ? this.logFun[level] :
+                                                                this.logFun[level].bind(win.console, '[' + level + ']')));
                                     }
                                     this[""]    = this.logFun[7];   // console.table
                                     this[true]  = console.group;    // console.group

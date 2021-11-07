@@ -110,24 +110,26 @@ String.prototype.format = function() {
 // - arr: Das ganze Array
 // value: Inititaler Wert. Falls nicht angegeben, wird mit dem 1. Element gestartet
 // return Kumulierter Wert nach Durchlaufen des gesamten Arrays
-Array.prototype.Reduce = function(reduceFun, value) {
-    if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-        throw TypeError();
-    }
+Object.defineProperty(Array.prototype, 'Reduce', {
+    'enumerable'  : false,
+    'value'       : function(reduceFun, value) {
+        if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
+            throw TypeError();
+        }
 
-    const __LEN = this.length;
-    const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
+        const __LEN = this.length;
+        const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
 
-    if (__DOSHIFT) {
-        value = this[0];
-    } 
+        if (__DOSHIFT) {
+            value = this[0];
+        }
 
-    for (let i = (__DOSHIFT ? 1 : 0); i < __LEN; i++) {
-        value = reduceFun.call(this, value, this[i], i, this);
-    }
+        for (let i = (__DOSHIFT ? 1 : 0); i < __LEN; i++) {
+            value = reduceFun.call(this, value, this[i], i, this);
+        }
 
-    return value;
-}
+        return value;
+    }});
 
 // Polyfill for das originale Array.reduceRight, analog zu Array.reduce
 // Um weitere Konflikte zu vermeiden, wird die Methode Array.ReduceRight genannt
@@ -138,24 +140,26 @@ Array.prototype.Reduce = function(reduceFun, value) {
 // - arr: Das ganze Array
 // value: Inititaler Wert. Falls nicht angegeben, wird mit dem letzten Element gestartet
 // return Kumulierter Wert nach Durchlaufen des gesamten Arrays
-Array.prototype.ReduceRight = function(reduceFun, value) {
-    if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-        throw TypeError();
-    }
+Object.defineProperty(Array.prototype, 'ReduceRight', {
+    'enumerable'  : false,
+    'value'       : function(reduceFun, value) {
+        if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
+            throw TypeError();
+        }
 
-    const __LEN = this.length;
-    const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
+        const __LEN = this.length;
+        const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
 
-    if (__DOSHIFT) {
-        value = this[__LEN - 1];
-    } 
+        if (__DOSHIFT) {
+            value = this[__LEN - 1];
+        }
 
-    for (let i = __LEN - (__DOSHIFT ? 2 : 1); i >= 0; i--) {
-        value = reduceFun.call(this, value, this[i], i, this);
-    }
+        for (let i = __LEN - (__DOSHIFT ? 2 : 1); i >= 0; i--) {
+            value = reduceFun.call(this, value, this[i], i, this);
+        }
 
-    return value;
-}
+        return value;
+    }});
 
 // ==================== Ende Abschnitt mit Ergaenzungen und Polyfills zu Standardobjekten ====================
 
