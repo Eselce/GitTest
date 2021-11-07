@@ -145,14 +145,15 @@ function getOptName(opt) {
 
     if (! __NAME) {
         const __SHARED = __CONFIG.Shared;
+        const __OBJREF = getSharedRef(__SHARED, opt.Item);
 
-        if (__SHARED && ! opt.Loaded) {
-            const __OBJREF = getSharedRef(__SHARED, opt.Item);
+        //if (__SHARED && ! opt.Loaded) {  // TODO klaeren!
 
+        if (__OBJREF) {
             return __OBJREF.getPath();
         }
 
-        showAlert("Error", "Option ohne Namen", safeStringify(__CONFIG));
+        showAlert("Error", "Option ohne Namen", "(Item " + __LOG.info(opt.Item, false) + ") " + safeStringify(__SHARED), false);
     }
 
     return __NAME;

@@ -2842,7 +2842,7 @@ function procZatReport() {
 }
 
 (() => {
-    (async () => {
+    startMain().then(async () => {
         try {
             // URL-Legende:
             // page=0: Zugabgabe Aufstellung
@@ -2876,7 +2876,7 @@ function procZatReport() {
             return defaultCatch(ex);
         }
     }).then(rc => {
-            __LOG[3](String(__OPTSET));
+            __LOG[2](String(__OPTSET));
             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
         })
 })();

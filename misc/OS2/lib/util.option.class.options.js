@@ -43,8 +43,12 @@ Class.define(Options, Object, {
                         for (const [ __KEY, __OPT ] of Object.entries(this)) {
                             if (this.checkKey(__KEY)) {
                                 const __CONFIG = getOptConfig(__OPT);
+                                const __SHAREDDATA = __CONFIG.SharedData;
                                 const __NAME = getOptName(__OPT);
-                                const __VAL = getOptValue(__OPT);
+
+                                // Bei __SHAREDDATA unbedingt zyklische Referenzen vermeiden!
+                                // Daher nur die ObjRef anzeigen, ansonsten den gesetzten Wert...
+                                const __VAL = getValue(__SHAREDDATA, getOptValue(__OPT));
                                 const __OUT = [
                                                   __LOG.info(__VAL, true),
                                                   __LOG.info(__KEY, false),

@@ -210,12 +210,12 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
             try {
                 result = await __PFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
 
-                __LOG[9]("Preparation of module",__LOG.info(__NAME, false), "returned:", result);
+                __LOG[9]("Preparation for module",__LOG.info(__NAME, false), "returned:", result);
             } catch (ex) {
                 // Fehler im Framework zur Vorbereitung der Testklasse...
                 __RESULTS.checkException(ex);
 
-                __LOG[1]("Exception", ex, "in preparation of module", __LOG.info(__NAME, false));
+                __LOG[1]("Exception", ex, "in preparation for module", __LOG.info(__NAME, false));
             }
 
             try {
@@ -229,12 +229,12 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
                 try {
                     result = await __CFUN.call(__TEST, __NAME, __DESC, __THIS, __RESULTS, resultFun, tableId);
 
-                __LOG[9]("Cleanup of module",__LOG.info(__NAME, false), "returned:", result);
+                __LOG[9]("Cleanup for module",__LOG.info(__NAME, false), "returned:", result);
                 } catch (ex) {
                     // Fehler im Framework der Testklasse...
                     __RESULTS.checkException(ex);
 
-                    __LOG[1]("Exception", ex, "in cleanup of module", __LOG.info(__NAME, false));
+                    __LOG[1]("Exception", ex, "in cleanup for module", __LOG.info(__NAME, false));
                 } finally {
                     __ALLRESULTS.merge(__RESULTS);  // aufaddieren...
 
