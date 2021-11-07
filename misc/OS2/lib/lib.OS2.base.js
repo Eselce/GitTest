@@ -1,12 +1,6 @@
-/****** JavaScript-Bibliothek 'lib.OS2.base.js' ["OS2BASE"] ******/
 
-// Inhaltsverzeichnis:
-// https://eselce.github.io/GitTest/misc/OS2/lib/<OS2BASE>: 
-//  OS2.list.js
-//  OS2.team.js
-//  OS2.page.team.js
-//  OS2.page.js
-//  OS2.zat.js
+Benutzerscript-Bibliotheken unter dem Greasemonkey AddOn
+|| Bibliothek generieren || lib.all.js || lib.util.js || lib.class.js || lib.option.js || lib.OS2.base.js || lib.OS2.js || lib.test.base.js || lib.test.js || lib.test.all.js ||
 
 /*** Modul OS2.list.js ***/
 

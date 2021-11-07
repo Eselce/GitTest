@@ -53,9 +53,12 @@ const __LOG = {
                                                         // [true]     {
                                                         // [false]    }
                   'init'      : function(win, logLevel = 4) {
+                                    // prototypejs macht Function.bind() untauglich (dadurch gibt es falsche Zeilennummern)...
+                                    const __NOBIND = (this && this.Prototype && (this.Prototype.Version === '1.6.0.3'));
+
                                     for (let level = 0; level < this.logFun.length; level++) {
-                                        this[level] = ((level > logLevel) ? function() { } :
-                                                        this.logFun[level].bind(win.console, '[' + level + ']'));
+                                        this[level] = ((level > logLevel) ? function() { } : (__NOBIND ? this.logFun[level] :
+                                                                this.logFun[level].bind(win.console, '[' + level + ']')));
                                     }
                                     this[""]    = this.logFun[7];   // console.table
                                     this[true]  = console.group;    // console.group
@@ -247,6 +250,7 @@ function replaceArray(key, value) {
 // Fuehrt eine Map-Function auf ein Object aus und liefert ein neues Objekt zurueck.
 // Zusaetzlich kann die Auswahl der Elemente per Filter eingeschraenkt werden sowie
 // das Ergebnis sortiert (Default nach Wert, aber auch nach Schluessel).
+// Um weitere Konflikte mit prototype.js zu vermeiden, wird die Methode Object.Map genannt
 // obj: Das Object, das gemappt wird
 // mapFun: Eine Mapping-Funktion (value [, key [, index [, array]]])
 // - value: Wert
@@ -270,9 +274,9 @@ function replaceArray(key, value) {
 // | Alternativ undefined, false: unsortiert
 // | Alternativ true: Normale Sortierung anhand der UTF-16 Codepoints
 // return Ein neues Object mit gemappten Werten
-Object.map = function(obj, mapFun, thisArg, filterFun, sortFun) {
+Object.Map = function(obj, mapFun, thisArg, filterFun, sortFun) {
     if (! obj) {
-        __LOG[3]("Object.map():", "Keine Aktion bei leerem Objekt", obj);
+        __LOG[3]("Object.Map():", "Keine Aktion bei leerem Objekt", obj);
 
         return obj;
     } else if ((typeof obj) === 'object') {
@@ -358,7 +362,7 @@ function getObjInfo(obj, keyStrings, longForm, stepIn) {
                         } else {
                             const __CLASS = getClass(obj);
                             const __CLASSNAME = (__CLASS ? getClassName(obj) : "");
-                            const __VALSTR = (__LENGTH ? Object.values(Object.map(obj, (value, key) => (getValStr(key, true) + __OBJSETTER
+                            const __VALSTR = (__LENGTH ? Object.values(Object.Map(obj, (value, key) => (getValStr(key, true) + __OBJSETTER
                                             + getValStr(value, false, stepIn, longForm, stepIn)))).join(__OBJDELIM) : "");
 
                             typeStr = (__CLASSNAME ? __CLASSNAME : typeStr);
@@ -786,24 +790,26 @@ String.prototype.format = function() {
 // - arr: Das ganze Array
 // value: Inititaler Wert. Falls nicht angegeben, wird mit dem 1. Element gestartet
 // return Kumulierter Wert nach Durchlaufen des gesamten Arrays
-Array.prototype.Reduce = function(reduceFun, value) {
-    if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-        throw TypeError();
-    }
+Object.defineProperty(Array.prototype, 'Reduce', {
+    'enumerable'  : false,
+    'value'       : function(reduceFun, value) {
+        if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
+            throw TypeError();
+        }
 
-    const __LEN = this.length;
-    const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
+        const __LEN = this.length;
+        const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
 
-    if (__DOSHIFT) {
-        value = this[0];
-    } 
+        if (__DOSHIFT) {
+            value = this[0];
+        }
 
-    for (let i = (__DOSHIFT ? 1 : 0); i < __LEN; i++) {
-        value = reduceFun.call(this, value, this[i], i, this);
-    }
+        for (let i = (__DOSHIFT ? 1 : 0); i < __LEN; i++) {
+            value = reduceFun.call(this, value, this[i], i, this);
+        }
 
-    return value;
-}
+        return value;
+    }});
 
 // Polyfill for das originale Array.reduceRight, analog zu Array.reduce
 // Um weitere Konflikte zu vermeiden, wird die Methode Array.ReduceRight genannt
@@ -814,24 +820,26 @@ Array.prototype.Reduce = function(reduceFun, value) {
 // - arr: Das ganze Array
 // value: Inititaler Wert. Falls nicht angegeben, wird mit dem letzten Element gestartet
 // return Kumulierter Wert nach Durchlaufen des gesamten Arrays
-Array.prototype.ReduceRight = function(reduceFun, value) {
-    if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-        throw TypeError();
-    }
+Object.defineProperty(Array.prototype, 'ReduceRight', {
+    'enumerable'  : false,
+    'value'       : function(reduceFun, value) {
+        if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
+            throw TypeError();
+        }
 
-    const __LEN = this.length;
-    const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
+        const __LEN = this.length;
+        const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
 
-    if (__DOSHIFT) {
-        value = this[__LEN - 1];
-    } 
+        if (__DOSHIFT) {
+            value = this[__LEN - 1];
+        }
 
-    for (let i = __LEN - (__DOSHIFT ? 2 : 1); i >= 0; i--) {
-        value = reduceFun.call(this, value, this[i], i, this);
-    }
+        for (let i = __LEN - (__DOSHIFT ? 2 : 1); i >= 0; i--) {
+            value = reduceFun.call(this, value, this[i], i, this);
+        }
 
-    return value;
-}
+        return value;
+    }});
 
 // ==================== Ende Abschnitt mit Ergaenzungen und Polyfills zu Standardobjekten ====================
 
