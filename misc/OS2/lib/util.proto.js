@@ -111,8 +111,9 @@ String.prototype.format = function() {
 // value: Inititaler Wert. Falls nicht angegeben, wird mit dem 1. Element gestartet
 // return Kumulierter Wert nach Durchlaufen des gesamten Arrays
 Object.defineProperty(Array.prototype, 'Reduce', {
-    'enumerable'  : false,
-    'value'       : function(reduceFun, value) {
+    'configurable'    : true,
+    'enumerable'      : false,
+    'value'           : function(reduceFun, value) {
         if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
             throw TypeError();
         }
@@ -141,8 +142,9 @@ Object.defineProperty(Array.prototype, 'Reduce', {
 // value: Inititaler Wert. Falls nicht angegeben, wird mit dem letzten Element gestartet
 // return Kumulierter Wert nach Durchlaufen des gesamten Arrays
 Object.defineProperty(Array.prototype, 'ReduceRight', {
-    'enumerable'  : false,
-    'value'       : function(reduceFun, value) {
+    'configurable'    : true,
+    'enumerable'      : false,
+    'value'           : function(reduceFun, value) {
         if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
             throw TypeError();
         }
