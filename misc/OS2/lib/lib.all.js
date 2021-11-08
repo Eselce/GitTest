@@ -79,21 +79,33 @@ const __LOG = {
                                 ],                      // [""] Log:  Table
                                                         // [true]     {
                                                         // [false]    }
-                  'init'      : function(win, logLevel = 4) {
-                                    // prototypejs macht Function.bind() untauglich (dadurch gibt es falsche Zeilennummern)...
-                                    const __NOBIND = (this && this.Prototype && (this.Prototype.Version === '1.6.0.3'));
+                  'init'      : function(win, logLevel = 4, show = true) {
+                                    // prototypejs 1.6.0.3 macht Function.bind() untauglich (dadurch gibt es falsche Zeilennummern)...
+                                    const __NOBIND = (((typeof Prototype) !== 'undefined') ? (Prototype.Version === '1.6.0.3') : false);
+                                    //const __NOBIND = ([true].reduce(() => false, true));  // Heuristik ueber Array.prototype.reduce
 
                                     for (let level = 0; level < this.logFun.length; level++) {
                                         this[level] = ((level > logLevel) ? function() { } : (__NOBIND ? this.logFun[level] :
                                                                 this.logFun[level].bind(win.console, '[' + level + ']')));
                                     }
                                     this[""]    = this.logFun[7];   // console.table
-                                    this[true]  = console.group;    // console.group
+                                    this["!"]   = console.assert;   // console.assert(cond, ...)
+                                    this[true]  = console.group;    // console.group(name)
                                     this[false] = console.groupEnd; // console.groupEnd
 
-                                    if (__NOBIND) {
-                                        __LOG[2]("Prototype JS", Prototype.Version, "detected!");
+                                    if (this.__NOBIND === undefined) {
+                                        this.__NOBIND = __NOBIND;
+                                        if (this.__NOBIND) {
+                                            __LOG[2]("Prototype", Prototype.Version, "detected!");
+                                        }
                                     }
+
+                                    this.__LOGLEVEL = logLevel;
+                                    if (show) {
+                                        __LOG[2]("Loglevel:", this.__LOGLEVEL);
+                                    }
+
+                                    return this.__LOGLEVEL;
                                 },
                   'stringify' : safeStringify,      // JSON.stringify
                   'info'      : function(obj, showType = true, elementType = false) {
@@ -111,7 +123,7 @@ const __LOG = {
                                 }
               };
 
-__LOG.init(window, 4);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window, __LOGLEVEL) im Hauptprogramm...
+__LOG.init(window, 4, false);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(window, __LOGLEVEL) im Hauptprogramm...
 
 // ==================== Notizen zum console-Objekt fuer Logging ====================
 
