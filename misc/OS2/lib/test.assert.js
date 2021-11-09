@@ -18,17 +18,28 @@
 // ==================== Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen ====================
 
 // Funktion zum sequentiellen Aufruf eines Arrays von Funktionen ueber Promises
-// startValue: Promise oder Wert, der/die den Startwert oder das Startobjekt beinhaltet
+// startValue: Promise, das den Startwert oder das Startobjekt beinhaltet
 // funs: Liste oder Array von Funktionen, die jeweils das Zwischenergebnis umwandeln
 // throw Wirft im Fehlerfall eine AssertionFailed-Exception
 // return Ein Promise-Objekt mit dem Endresultat
 async function callPromiseChain(startValue, ...funs) {
+    if (startValue !== undefined) {
+        if (((typeof startValue) !== 'object') || ! (startValue instanceof Promise)) {
+            throw TypeError("callPromiseChain(): startValue should be a Promise!");
+        }
+    }
+    funs.forEach((fun, index) => {
+            if ((typeof fun) !== 'function') {
+                throw TypeError("callPromiseChain(): Parameter #" + (index + 1) + " should be a Function!");
+            }
+        });
+
     return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun, ex => assertionCatch(ex, {
             'function'  : fun,
             'param'     : prom,
             'array'     : arr,
             'index'     : idx
-        })), Promise.resolve(startValue));
+        })), startValue);
 }
 
 // Funktion zum parallelen Aufruf eines Arrays von Promises bzw. Promise-basierten Funktionen

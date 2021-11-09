@@ -24,11 +24,32 @@
 // ==================== Abschnitt Operationen auf Optionen ====================
 
     const __TESTDATA = {
-            'prefixName'    : [ "Name", "Prefix",   "PrefixName"    ],
-            'postfixName'   : [ "Name", "Postfix",  "NamePostfix"   ]
+            'prefixName'    : [ "Name",     "Prefix",   "PrefixName"                        ],
+            'postfixName'   : [ "Name",     "Postfix",  "NamePostfix"                       ],
+            'loadOption'    : [ "saison",   42,         17,             false,  undefined   ],
         };
 
     new UnitTestOption('util.option.api', "Schnittstelle zur Behandlung von Optionen", {
+            'loadOption'          : function() {
+                                        const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
+                                        const __OPT = this.optSet[__NAME];
+
+                                        return callPromiseChain(invalidateOpt(__OPT, true, false), () => loadOption(__OPT, false), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
+                                            });
+                                    },
+            'loadOptionForce'     : function() {
+                                        const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
+                                        const __OPT = this.optSet[__NAME];
+
+                                        return callPromiseChain(invalidateOpt(__OPT, true, false), () => loadOption(__OPT, true), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
+                                            });
+                                    },
             'prefixName'          : function() {
                                         const [ __NAME, __PREFIX, __EXP ] = __TESTDATA['prefixName'];
 
@@ -42,6 +63,53 @@
                                         const __RET = postfixName(__NAME, __POSTFIX);
 
                                         return ASSERT_EQUAL(__RET, __EXP, "Name falsch zusammengesetzt");
+                                    },
+            'resetOptions'        : async function() {
+                                        const [ __NAME, __VAL, __EXP, __RELOAD ] = __TESTDATA['loadOption'];
+                                        const __OPT = this.optSet[__NAME];
+
+                                        await callPromiseChain(new Promise(function(resolve, reject) { return setOpt(__OPT, __VAL, __RELOAD, resolve, reject); }), () => getOptValue(__OPT), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "getOptValue($[" + __LOG.info(__NAME, false) + "]) sollte die gesetzte Saison liefern");
+                                            });
+
+                                        return callPromiseChain(resetOptions(this.optSet, __RELOAD), () => getOptValue(__OPT), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "getOptValue($[" + __LOG.info(__NAME, false) + "]) sollte die Default-Saison liefern");
+                                            });
+                                    },
+            'loadOptValue'        : function() {
+                                        const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
+                                        const __OPT = this.optSet[__NAME];
+
+                                        return callPromiseChain(loadOptValue(__OPT), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
+                                            });
+                                    },
+            'loadOptValueDefault' : function() {
+                                        const [ __NAME, , __EXP, __RELOAD, __ALT ] = __TESTDATA['loadOption'];
+                                        const __OPT = this.optSet[__NAME];
+
+                                        return callPromiseChain(new Promise(function(resolve, reject) { return setOpt(__OPT, __ALT, __RELOAD, resolve, reject); }), () => loadOptValue(__OPT, __EXP), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
+                                            });
+                                    },
+            'loadOptValueSync'    : function() {
+                                        const [ __NAME, , __EXP, , __ALT ] = __TESTDATA['loadOption'];
+                                        const __ASYNC = false;
+                                        const __OPT = this.optSet[__NAME];
+
+                                        return callPromiseChain(Promise.resolve(loadOptValue(__OPT, __ALT, __ASYNC)), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
+                                            });
                                     }
         });
 

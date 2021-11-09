@@ -183,7 +183,7 @@ function setOptValue(opt, value) {
 function getOptValue(opt, defValue = undefined) {
     let value;
 
-    if (opt && opt.Loaded) {
+    if (opt /*&& opt.Loaded*/) {  // NOTE opt.Loaded steuert das Laden, aber opt.Value den Wert
         value = getValue(opt.Value, defValue);
     }
 

@@ -15,7 +15,11 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
-__LOG.init(window, 9);  // Testphase
+// ==================== Konfigurations-Abschnitt fuer Optionen ====================
+
+const __TESTLOGLEVEL = 9;
+
+__LOG.init(window, __TESTLOGLEVEL);  // Testphase
 
 // ==================== Abschnitt fuer Klasse UnitTest ====================
 
