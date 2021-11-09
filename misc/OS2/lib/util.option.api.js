@@ -21,15 +21,37 @@
 
 // ==================== Abschnitt Operationen auf Optionen ====================
 
+// Prueft ein Objekt, ob es eine syntaktisch valide (ueber Menu) gesetzte Option ist
+// opt: Zu validierendes Options-Objekt
+// return [__CONFIG, __NAME, ...] Konfiguration und ggfs. Name der Option
+function checkOpt(opt) {
+    if (opt === undefined) {
+        throw Error("Option is undefined");
+    }
+
+    const __CONFIG = getOptConfig(opt);
+    const __NAME = getOptName(opt);
+
+    if (! opt.validOption) {
+        if (((typeof __NAME) !== 'undefined') && __NAME.length && ((typeof __CONFIG) === 'object')) {
+            opt.validOption = true;
+        } else {
+            throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
+        }
+    }
+
+    return [ __CONFIG, __NAME ];
+}
+
 // Invalidiert eine (ueber Menu) gesetzte Option
 // opt: Zu invalidierende Option
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf resultierenden Wert
 function invalidateOpt(opt, force = false, reload = true) {
+    const [ __CONFIG ] = checkOpt(opt);
+
     return Promise.resolve(opt.Promise).then(() => {
             if (opt.Loaded && reload && ! opt.ReadOnly) {
-                const __CONFIG = getOptConfig(opt);
-
                 // Wert "ungeladen"...
                 opt.Loaded = (force || ! __CONFIG.AutoReset);
 
@@ -37,6 +59,8 @@ function invalidateOpt(opt, force = false, reload = true) {
                     // Nur zuruecksetzen, gilt als geladen...
                     setOptValue(opt, initOptValue(__CONFIG));
                 }
+            } else {  // ! opt.Loaded || ! reload || opt.ReadOnly
+                opt.Loaded = false;
             }
 
             return getOptValue(opt);
@@ -62,10 +86,10 @@ async function invalidateOpts(optSet, force = false, reload = true) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf gesetzten Wert der gelandenen Option
 function loadOption(opt, force = false) {
+    const [ __CONFIG, __NAME ] = checkOpt(opt);
+
     if (! opt.Promise) {
-        const __CONFIG = getOptConfig(opt);
         const __ISSHARED = getValue(__CONFIG.Shared, false, true);
-        const __NAME = getOptName(opt);
         const __DEFAULT = getOptValue(opt, undefined);
         let value;
 
@@ -90,7 +114,7 @@ function loadOption(opt, force = false) {
         opt.Promise = Promise.resolve(value).then(value => {
                 // Paranoide Sicherheitsabfrage (das sollte nie passieren!)...
                 if (opt.Loaded || ! opt.Promise) {
-                    showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", safeStringify(opt));
+                    showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", __LOG.info(opt, true, true));
                 }
                 __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value, true, true));
 
@@ -141,10 +165,9 @@ function loadOptions(optSet, force = false) {
 // reset: Setzt bei Erfolg auf Initialwert der Option (auch fuer nicht 'AutoReset')
 // return Promise von GM.deleteValue() (oder void)
 function deleteOption(opt, force = false, reset = true) {
-    const __CONFIG = getOptConfig(opt);
+    const [ __CONFIG, __NAME ] = checkOpt(opt);
 
     if (force || ! __CONFIG.Permanent) {
-        const __NAME = getOptName(opt);
         const __VALUE = getOptValue(opt, undefined, false);
         let newValue;
 
@@ -182,10 +205,9 @@ async function deleteOptions(optSet, optSelect = undefined, force = false, reset
 // opt: Gesetzte Option
 // return Promise von setOptValue() (oder void)
 function saveOption(opt) {
-    const __CONFIG = getOptConfig(opt);
+    const [ __CONFIG, __NAME ] = checkOpt(opt);
 
     if (__CONFIG !== undefined) {
-        const __NAME = getOptName(opt);
         const __VALUE = getOptValue(opt);
 
         __LOG[4]("SAVE " + __NAME);
@@ -220,7 +242,7 @@ async function saveOptions(optSet, optSelect = undefined) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf umbenannte Option
 async function renameOption(opt, name, reload = false, force = false) {
-    const __NAME = getOptName(opt);
+    const [ , __NAME ] = checkOpt(opt);
 
     if (__NAME !== name) {
         await deleteOption(opt, true, false);
@@ -310,21 +332,23 @@ async function resetOptions(optSet, reload = true) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Gesetzter Wert bzw. ein Promise darauf bei asyncLoad
 function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false) {
+    if (! opt) {
+        return Promise.reject("loadOptValue: Option ist undefined");
+    }
+
+    const [ , __NAME ] = checkOpt(opt);
+
     if (asyncLoad) {
-        if (! opt) {
-            return Promise.reject("loadOptValue: Option ist undefined");
-        } else {
-            let promise = (opt.Loaded ? Promise.resolve(opt.Value) : opt.Promise);
+        let promise = (opt.Loaded ? Promise.resolve(opt.Value) : opt.Promise);
 
-            if (! promise) {
-                promise = loadOption(opt, force);
-            }
-
-            return promise.then(value => valueOf(getValue(value, defValue)));
+        if (! promise) {
+            promise = loadOption(opt, force);
         }
+
+        return promise.then(value => valueOf(getValue(value, defValue)));
     } else {
-        if (! (opt && opt.Loaded)) {
-            __LOG[1](`Warnung: loadOptValue(${getOptName(opt)}) erlaubt kein Nachladen!`);
+        if (! opt.Loaded) {
+            __LOG[1]("Warnung: loadOptValue(" + __LOG.info(__NAME, false) + ") erlaubt kein Nachladen!");
         }
 
         return getOptValue(opt, defValue);

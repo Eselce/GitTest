@@ -66,6 +66,51 @@ function defaultCatch(error, show) {
     }
 }
 
+// Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
+// longForm: Ausgabe des vollen Pfades anstelle von nur dem Dateinamen und der Zeilennummer
+// showFunName: Neben Datei und Zeilennummer zusaetzlich Funktionsnamen zurueckgeben (Default: false)
+// ignoreCaller: Neben codeLine() auch den Caller ignorieren, als Zahl: Anzahl der Caller (Default: false)
+// ignoreLibs (empfohlen): Ueberspringen von lib*.js-Eintraegen (ausser beim untersten Aufruf)
+// return Liefert Dateiname:Zeilennummer des Aufrufers als String
+function codeLine(longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
+    try {
+        const __STACK = Error().stack.split("\n");
+        let countCaller = Number(ignoreCaller);  // Normalerweise 0 oder 1, bei 2 wird auch der naechste Aufrufer ignoriert!
+        let ret;
+        let nameLine;
+        let funName;
+
+        for (let i = 1 /* ohne codeLine() selber */; i < __STACK.length; i++) {
+            const __LINE = __STACK[i];
+            if (! __LINE) { break; }
+            const [ __FUNNAME, __LOCATION ] = __LINE.split('@', 2);
+            const __NAMELINE = getValue(__LOCATION, "").replace(/.*\//, ""); 
+
+            if (countCaller-- > 0) {
+                // Aufrufer wird ignoriert...
+                continue;
+            }
+
+            if (ignoreLibs && __NAMELINE.match(/^lib\./)) {  // "lib.*"
+                if (! ret) {
+                    [ ret, nameLine, funName ] = [ __LOCATION, __NAMELINE, __FUNNAME ];
+                }
+                continue;
+            }
+            [ ret, nameLine, funName ] = [ __LOCATION, __NAMELINE, __FUNNAME ];
+            break;
+        }
+
+        if (ret && ! longForm) {
+            ret = nameLine;
+        }
+
+        return ret + (showFunName ? (':' + funName) : "");
+    } catch (ex) {
+        return showException("Error in codeLine()", ex);
+    }
+}
+
 // ==================== Ende Abschnitt fuer Debugging, Error-Handling ====================
 
 // *** EOF ***
