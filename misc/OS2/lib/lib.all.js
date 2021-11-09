@@ -838,7 +838,7 @@ Object.defineProperty(Array.prototype, 'Reduce', {
     'enumerable'      : false,
     'value'           : function(reduceFun, value) {
         if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-            throw TypeError("Invalid reduce() function!");
+            throw TypeError();
         }
 
         const __LEN = this.length;
@@ -869,7 +869,7 @@ Object.defineProperty(Array.prototype, 'ReduceRight', {
     'enumerable'      : false,
     'value'           : function(reduceFun, value) {
         if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-            throw TypeError("Invalid reduceRight() function!");
+            throw TypeError();
         }
 
         const __LEN = this.length;
@@ -1164,7 +1164,7 @@ function ScriptModule(meta) {
             set           : undefined
         });
 
-    __LOG[1](__DBMOD);
+    __LOG[2](__DBMOD);
 
     return __DBMOD;
 }
@@ -1275,51 +1275,6 @@ function defaultCatch(error, show) {
         return Promise.reject(showException(__LABEL, error, show));
     } catch (ex) {
         return Promise.reject(showException(`[${ex && ex.lineNumber}] ${__DBMOD.Name}`, ex, true));
-    }
-}
-
-// Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
-// longForm: Ausgabe des vollen Pfades anstelle von nur dem Dateinamen und der Zeilennummer
-// showFunName: Neben Datei und Zeilennummer zusaetzlich Funktionsnamen zurueckgeben (Default: false)
-// ignoreCaller: Neben codeLine() auch den Caller ignorieren, als Zahl: Anzahl der Caller (Default: false)
-// ignoreLibs (empfohlen): Ueberspringen von lib*.js-Eintraegen (ausser beim untersten Aufruf)
-// return Liefert Dateiname:Zeilennummer des Aufrufers als String
-function codeLine(longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
-    try {
-        const __STACK = Error().stack.split("\n");
-        let countCaller = Number(ignoreCaller);  // Normalerweise 0 oder 1, bei 2 wird auch der naechste Aufrufer ignoriert!
-        let ret;
-        let nameLine;
-        let funName;
-
-        for (let i = 1 /* ohne codeLine() selber */; i < __STACK.length; i++) {
-            const __LINE = __STACK[i];
-            if (! __LINE) { break; }
-            const [ __FUNNAME, __LOCATION ] = __LINE.split('@', 2);
-            const __NAMELINE = getValue(__LOCATION, "").replace(/.*\//, ""); 
-
-            if (countCaller-- > 0) {
-                // Aufrufer wird ignoriert...
-                continue;
-            }
-
-            if (ignoreLibs && __NAMELINE.match(/^lib\./)) {  // "lib.*"
-                if (! ret) {
-                    [ ret, nameLine, funName ] = [ __LOCATION, __NAMELINE, __FUNNAME ];
-                }
-                continue;
-            }
-            [ ret, nameLine, funName ] = [ __LOCATION, __NAMELINE, __FUNNAME ];
-            break;
-        }
-
-        if (ret && ! longForm) {
-            ret = nameLine;
-        }
-
-        return ret + (showFunName ? (':' + funName) : "");
-    } catch (ex) {
-        return showException("Error in codeLine()", ex);
     }
 }
 
@@ -3171,7 +3126,7 @@ function setOptValue(opt, value) {
 function getOptValue(opt, defValue = undefined) {
     let value;
 
-    if (opt /*&& opt.Loaded*/) {  // NOTE opt.Loaded steuert das Laden, aber opt.Value den Wert
+    if (opt && opt.Loaded) {
         value = getValue(opt.Value, defValue);
     }
 
@@ -3430,7 +3385,7 @@ Class.define(Options, Object, {
 
 /*** Modul util.option.api.js ***/
 
-// // ==UserScript==
+// ==UserScript==
 // _name         util.option.api
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -3453,37 +3408,15 @@ Class.define(Options, Object, {
 
 // ==================== Abschnitt Operationen auf Optionen ====================
 
-// Prueft ein Objekt, ob es eine syntaktisch valide (ueber Menu) gesetzte Option ist
-// opt: Zu validierendes Options-Objekt
-// return [__CONFIG, __NAME, ...] Konfiguration und ggfs. Name der Option
-function checkOpt(opt) {
-    if (opt === undefined) {
-        throw Error("Option is undefined");
-    }
-
-    const __CONFIG = getOptConfig(opt);
-    const __NAME = getOptName(opt);
-
-    if (! opt.validOption) {
-        if (((typeof __NAME) !== 'undefined') && __NAME.length && ((typeof __CONFIG) === 'object')) {
-            opt.validOption = true;
-        } else {
-            throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
-        }
-    }
-
-    return [ __CONFIG, __NAME ];
-}
-
 // Invalidiert eine (ueber Menu) gesetzte Option
 // opt: Zu invalidierende Option
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf resultierenden Wert
 function invalidateOpt(opt, force = false, reload = true) {
-    const [ __CONFIG ] = checkOpt(opt);
-
     return Promise.resolve(opt.Promise).then(() => {
             if (opt.Loaded && reload && ! opt.ReadOnly) {
+                const __CONFIG = getOptConfig(opt);
+
                 // Wert "ungeladen"...
                 opt.Loaded = (force || ! __CONFIG.AutoReset);
 
@@ -3491,8 +3424,6 @@ function invalidateOpt(opt, force = false, reload = true) {
                     // Nur zuruecksetzen, gilt als geladen...
                     setOptValue(opt, initOptValue(__CONFIG));
                 }
-            } else {  // ! opt.Loaded || ! reload || opt.ReadOnly
-                opt.Loaded = false;
             }
 
             return getOptValue(opt);
@@ -3518,10 +3449,10 @@ async function invalidateOpts(optSet, force = false, reload = true) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf gesetzten Wert der gelandenen Option
 function loadOption(opt, force = false) {
-    const [ __CONFIG, __NAME ] = checkOpt(opt);
-
     if (! opt.Promise) {
+        const __CONFIG = getOptConfig(opt);
         const __ISSHARED = getValue(__CONFIG.Shared, false, true);
+        const __NAME = getOptName(opt);
         const __DEFAULT = getOptValue(opt, undefined);
         let value;
 
@@ -3546,7 +3477,7 @@ function loadOption(opt, force = false) {
         opt.Promise = Promise.resolve(value).then(value => {
                 // Paranoide Sicherheitsabfrage (das sollte nie passieren!)...
                 if (opt.Loaded || ! opt.Promise) {
-                    showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", __LOG.info(opt, true, true));
+                    showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", safeStringify(opt));
                 }
                 __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value, true, true));
 
@@ -3597,9 +3528,10 @@ function loadOptions(optSet, force = false) {
 // reset: Setzt bei Erfolg auf Initialwert der Option (auch fuer nicht 'AutoReset')
 // return Promise von GM.deleteValue() (oder void)
 function deleteOption(opt, force = false, reset = true) {
-    const [ __CONFIG, __NAME ] = checkOpt(opt);
+    const __CONFIG = getOptConfig(opt);
 
     if (force || ! __CONFIG.Permanent) {
+        const __NAME = getOptName(opt);
         const __VALUE = getOptValue(opt, undefined, false);
         let newValue;
 
@@ -3637,9 +3569,10 @@ async function deleteOptions(optSet, optSelect = undefined, force = false, reset
 // opt: Gesetzte Option
 // return Promise von setOptValue() (oder void)
 function saveOption(opt) {
-    const [ __CONFIG, __NAME ] = checkOpt(opt);
+    const __CONFIG = getOptConfig(opt);
 
     if (__CONFIG !== undefined) {
+        const __NAME = getOptName(opt);
         const __VALUE = getOptValue(opt);
 
         __LOG[4]("SAVE " + __NAME);
@@ -3674,7 +3607,7 @@ async function saveOptions(optSet, optSelect = undefined) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf umbenannte Option
 async function renameOption(opt, name, reload = false, force = false) {
-    const [ , __NAME ] = checkOpt(opt);
+    const __NAME = getOptName(opt);
 
     if (__NAME !== name) {
         await deleteOption(opt, true, false);
@@ -3764,23 +3697,21 @@ async function resetOptions(optSet, reload = true) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Gesetzter Wert bzw. ein Promise darauf bei asyncLoad
 function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false) {
-    if (! opt) {
-        return Promise.reject("loadOptValue: Option ist undefined");
-    }
-
-    const [ , __NAME ] = checkOpt(opt);
-
     if (asyncLoad) {
-        let promise = (opt.Loaded ? Promise.resolve(opt.Value) : opt.Promise);
+        if (! opt) {
+            return Promise.reject("loadOptValue: Option ist undefined");
+        } else {
+            let promise = (opt.Loaded ? Promise.resolve(opt.Value) : opt.Promise);
 
-        if (! promise) {
-            promise = loadOption(opt, force);
+            if (! promise) {
+                promise = loadOption(opt, force);
+            }
+
+            return promise.then(value => valueOf(getValue(value, defValue)));
         }
-
-        return promise.then(value => valueOf(getValue(value, defValue)));
     } else {
-        if (! opt.Loaded) {
-            __LOG[1]("Warnung: loadOptValue(" + __LOG.info(__NAME, false) + ") erlaubt kein Nachladen!");
+        if (! (opt && opt.Loaded)) {
+            __LOG[1](`Warnung: loadOptValue(${getOptName(opt)}) erlaubt kein Nachladen!`);
         }
 
         return getOptValue(opt, defValue);
