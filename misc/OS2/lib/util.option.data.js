@@ -285,7 +285,7 @@ function promptNextOpt(opt, value = undefined, reload = false, freeValue = false
             }
 
             if (nextVal !== __VALUE) {
-                if (nextVal) {
+                if (nextVal !== undefined) {
                     return setOpt(opt, nextVal, reload, onFulfilled, onRejected);
                 }
 
@@ -294,7 +294,11 @@ function promptNextOpt(opt, value = undefined, reload = false, freeValue = false
                 showAlert(__LABEL, "Ung\xFCltige Eingabe: " + __ANSWER);
             }
         }
+
+        onFulfilled(__VALUE);
     } catch (ex) {
+        onRejected(ex);
+
         showException('[' + (ex && ex.lineNumber) + "] promptNextOpt()", ex);
     }
 
