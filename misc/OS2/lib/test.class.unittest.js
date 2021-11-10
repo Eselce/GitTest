@@ -311,6 +311,7 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
             appendCell(__ROW, __RESULTS.countException);
             appendCell(__ROW, __RESULTS.countError);
             appendCell(__ROW, __RESULTS.result);
+            appendCell(__ROW, __RESULTS.codeLine);
         }
 
         setRowStyle(__ROW, __STYLE);
@@ -344,6 +345,7 @@ UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = docum
         appendCell(__ROW, "EX", __COLOR);
         appendCell(__ROW, "ERR", __COLOR);
         appendCell(__ROW, "Ergebnis", __COLOR);
+        appendCell(__ROW, "Quellcode", __COLOR);
 
         table.appendChild(__ROW);
     }
@@ -423,10 +425,12 @@ Class.define(UnitTestResults, Object, {
 
                                             if (__EX instanceof AssertionFailed) {
                                                 this.result = __EX.getTextMessage();
+                                                this.codeLine = __EX.codeLine;
 
                                                 return this.failed();
                                             } else {
                                                 this.result = String(__EX);
+                                                this.codeLine = codeLineFor(__EX, false, true, false, true);
 
                                                 return ++this.countException;
                                             }
@@ -435,6 +439,7 @@ Class.define(UnitTestResults, Object, {
                                             const __EX = (ex || { });
 
                                             this.result = __EX.message;
+                                            this.codeLine = codeLineFor(__EX, false, true, false, true);
 
                                             return ++this.countError;
                                         },
@@ -472,6 +477,13 @@ Class.define(UnitTestResults, Object, {
                                             }
                                             this.results[resultsToAdd.name] = resultsToAdd.results;
 
+                                            if (! this.codeLines) {
+                                                this.codeLines = { };
+                                            }
+                                            if (resultsToAdd.codeLines) {
+                                                this.codeLines[resultsToAdd.name] = resultsToAdd.codeLines;
+                                            }
+
                                             return this;
                                         },
                 'sum'                 : function() {
@@ -484,7 +496,8 @@ Class.define(UnitTestResults, Object, {
                                                     'exception' : this.countException,
                                                     'error'     : this.countError,
                                                     'tests'     : this.test.tDefs,
-                                                    'results'   : this.results
+                                                    'results'   : this.results,
+                                                    'codeLines' : this.codeLines
                                                 };
                                         }
             });
