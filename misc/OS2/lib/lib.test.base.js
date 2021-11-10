@@ -151,11 +151,13 @@ const ASSERT = function(test, whatFailed, msg, thisArg, ...params) {
 
     if (! test) {
         const __FAIL = new AssertionFailed(whatFailed, msg, thisArg, ...params);
+
+        __FAIL.codeLine = codeLine(false, true, 2, true);
         __LOG[4]("FAIL", __LOG.info(__FAIL, true, true));
 
         throw __FAIL;
     } else {
-        __LOG[8]("OK", test);
+        __LOG[8]("OK", test, codeLine(false, true, 2, false), "(NOT " + whatFailed + ')');
     }
 
     return true;
@@ -278,7 +280,7 @@ const ASSERT_OFTYPE = function(obj, type, msg, thisArg, ...params) {
 }
 
 const ASSERT_NOT_OFTYPE = function(obj, type, msg, thisArg, ...params) {
-    return ASSERT_NOT((typeOf(obj) === type), __LOG.info(obj, true, true) + " ist " + __LOG.info(type, false), msg, thisArg, ...params);
+    return ASSERT((typeOf(obj) !== type), __LOG.info(obj, true, true) + " ist " + __LOG.info(type, false), msg, thisArg, ...params);
 }
 
 const ASSERT_TYPEOF = function(obj, type, msg, thisArg, ...params) {
@@ -286,7 +288,7 @@ const ASSERT_TYPEOF = function(obj, type, msg, thisArg, ...params) {
 }
 
 const ASSERT_NOT_TYPEOF = function(obj, type, msg, thisArg, ...params) {
-    return ASSERT_NOT(((typeof obj) === type), __LOG.info(obj, true, true) + " ist " + __LOG.info(type, false), msg, thisArg, ...params);
+    return ASSERT(((typeof obj) !== type), __LOG.info(obj, true, true) + " ist " + __LOG.info(type, false), msg, thisArg, ...params);
 }
 
 const ASSERT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
@@ -298,7 +300,7 @@ const ASSERT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
 const ASSERT_NOT_INSTANCEOF = function(obj, cls, msg, thisArg, ...params) {
     const __CLASSNAME = (cls || { }).name;
 
-    return ASSERT_NOT((obj instanceof cls), __LOG.info(obj, true, true) + " ist " + __LOG.info(__CLASSNAME, false), msg, thisArg, ...params);
+    return ASSERT(! (obj instanceof cls), __LOG.info(obj, true, true) + " ist " + __LOG.info(__CLASSNAME, false), msg, thisArg, ...params);
 }
 
 const ASSERT_MATCH = function(str, pattern, msg, thisArg, ...params) {
@@ -306,7 +308,7 @@ const ASSERT_MATCH = function(str, pattern, msg, thisArg, ...params) {
 }
 
 const ASSERT_NOT_MATCH = function(str, pattern, msg, thisArg, ...params) {
-    return ASSERT_NOT((str || "").match(pattern), __LOG.info(str, true, true) + " hat das Muster " + String(pattern), msg, thisArg, ...params);
+    return ASSERT(! (str || "").match(pattern), __LOG.info(str, true, true) + " hat das Muster " + String(pattern), msg, thisArg, ...params);
 }
 
 // ==================== Ende Abschnitt fuer sonstige ASSERT-Funktionen ====================
@@ -638,6 +640,7 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
             appendCell(__ROW, __RESULTS.countException);
             appendCell(__ROW, __RESULTS.countError);
             appendCell(__ROW, __RESULTS.result);
+            appendCell(__ROW, __RESULTS.codeLine);
         }
 
         setRowStyle(__ROW, __STYLE);
@@ -671,6 +674,7 @@ UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = docum
         appendCell(__ROW, "EX", __COLOR);
         appendCell(__ROW, "ERR", __COLOR);
         appendCell(__ROW, "Ergebnis", __COLOR);
+        appendCell(__ROW, "Quellcode", __COLOR);
 
         table.appendChild(__ROW);
     }
@@ -750,10 +754,12 @@ Class.define(UnitTestResults, Object, {
 
                                             if (__EX instanceof AssertionFailed) {
                                                 this.result = __EX.getTextMessage();
+                                                this.codeLine = __EX.codeLine;
 
                                                 return this.failed();
                                             } else {
                                                 this.result = String(__EX);
+                                                this.codeLine = codeLineFor(__EX, false, true, false, true);
 
                                                 return ++this.countException;
                                             }
@@ -762,6 +768,7 @@ Class.define(UnitTestResults, Object, {
                                             const __EX = (ex || { });
 
                                             this.result = __EX.message;
+                                            this.codeLine = codeLineFor(__EX, false, true, false, true);
 
                                             return ++this.countError;
                                         },
@@ -799,6 +806,13 @@ Class.define(UnitTestResults, Object, {
                                             }
                                             this.results[resultsToAdd.name] = resultsToAdd.results;
 
+                                            if (! this.codeLines) {
+                                                this.codeLines = { };
+                                            }
+                                            if (resultsToAdd.codeLines) {
+                                                this.codeLines[resultsToAdd.name] = resultsToAdd.codeLines;
+                                            }
+
                                             return this;
                                         },
                 'sum'                 : function() {
@@ -811,7 +825,8 @@ Class.define(UnitTestResults, Object, {
                                                     'exception' : this.countException,
                                                     'error'     : this.countError,
                                                     'tests'     : this.test.tDefs,
-                                                    'results'   : this.results
+                                                    'results'   : this.results,
+                                                    'codeLines' : this.codeLines
                                                 };
                                         }
             });

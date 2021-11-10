@@ -1279,14 +1279,16 @@ function defaultCatch(error, show) {
 }
 
 // Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
+// ex: Exception, Error o.ae. mit 'stack' Eigenschaft, die ein Stacktrace enthaelt
 // longForm: Ausgabe des vollen Pfades anstelle von nur dem Dateinamen und der Zeilennummer
 // showFunName: Neben Datei und Zeilennummer zusaetzlich Funktionsnamen zurueckgeben (Default: false)
 // ignoreCaller: Neben codeLine() auch den Caller ignorieren, als Zahl: Anzahl der Caller (Default: false)
 // ignoreLibs (empfohlen): Ueberspringen von lib*.js-Eintraegen (ausser beim untersten Aufruf)
 // return Liefert Dateiname:Zeilennummer des Aufrufers als String
-function codeLine(longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
+function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
     try {
-        const __STACK = Error().stack.split("\n");
+        const __EX = (ex || { stack : "" });
+        const __STACK = __EX.stack.split("\n");
         let countCaller = Number(ignoreCaller);  // Normalerweise 0 oder 1, bei 2 wird auch der naechste Aufrufer ignoriert!
         let ret;
         let nameLine;
@@ -1321,6 +1323,18 @@ function codeLine(longForm = false, showFunName = false, ignoreCaller = false, i
     } catch (ex) {
         return showException("Error in codeLine()", ex);
     }
+}
+
+// Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
+// longForm: Ausgabe des vollen Pfades anstelle von nur dem Dateinamen und der Zeilennummer
+// showFunName: Neben Datei und Zeilennummer zusaetzlich Funktionsnamen zurueckgeben (Default: false)
+// ignoreCaller: Neben codeLine() auch den Caller ignorieren, als Zahl: Anzahl der Caller (Default: false)
+// ignoreLibs (empfohlen): Ueberspringen von lib*.js-Eintraegen (ausser beim untersten Aufruf)
+// return Liefert Dateiname:Zeilennummer des Aufrufers als String
+function codeLine(longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
+    const __EX = Error();
+
+    return codeLineFor(__EX, longForm, showFunName, ignoreCaller, ignoreLibs);
 }
 
 // ==================== Ende Abschnitt fuer Debugging, Error-Handling ====================
@@ -3273,7 +3287,7 @@ function promptNextOpt(opt, value = undefined, reload = false, freeValue = false
             }
 
             if (nextVal !== __VALUE) {
-                if (nextVal) {
+                if (nextVal !== undefined) {
                     return setOpt(opt, nextVal, reload, onFulfilled, onRejected);
                 }
 
@@ -3282,7 +3296,11 @@ function promptNextOpt(opt, value = undefined, reload = false, freeValue = false
                 showAlert(__LABEL, "Ung\xFCltige Eingabe: " + __ANSWER);
             }
         }
+
+        onFulfilled(__VALUE);
     } catch (ex) {
+        onRejected(ex);
+
         showException('[' + (ex && ex.lineNumber) + "] promptNextOpt()", ex);
     }
 
@@ -4884,22 +4902,24 @@ function initOptAction(optAction, item = undefined, optSet = undefined, optConfi
         const __RELOAD = getValue(getValue(__CONFIG, { }).ActionReload, true);
 
         switch (optAction) {
-        case __OPTACTION.SET : fun = function() {
-                                       return setOptByName(optSet, item, __CONFIG.SetValue, __RELOAD).catch(defaultCatch);
-                                   };
-                               break;
-        case __OPTACTION.NXT : fun = function() {
-                                       return promptNextOptByName(optSet, item, __CONFIG.SetValue, __RELOAD,
-                                                  __CONFIG.FreeValue, __CONFIG.SelValue, __CONFIG.MinChoice).catch(defaultCatch);
-                                   };
-                               break;
-        case __OPTACTION.RST : fun = function() {
-                                       return resetOptions(optSet, __RELOAD).then(
-                                               result => __LOG[4]("RESETTING (" + result + ")..."),
-                                               defaultCatch);
-                                   };
-                               break;
-        default :              break;
+        case __OPTACTION.SET  : fun = function() {
+                                        return setOptByName(optSet, item, __CONFIG.SetValue, __RELOAD).catch(defaultCatch);
+                                    };
+                                break;
+        case __OPTACTION.NXT  : fun = async function() {
+                                        return new Promise(function(resolve, reject) {
+                                                return promptNextOptByName(optSet, item, __CONFIG.SetValue, __RELOAD,
+                                                    __CONFIG.FreeValue, __CONFIG.SelValue, __CONFIG.MinChoice, resolve, reject);
+                                            }).catch(defaultCatch);
+                                    };
+                                break;
+        case __OPTACTION.RST  : fun = function() {
+                                        return resetOptions(optSet, __RELOAD).then(
+                                                result => __LOG[4]("RESETTING (" + result + ")..."),
+                                                defaultCatch);
+                                    };
+                                break;
+        default :               break;
         }
     }
 

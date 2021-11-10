@@ -4293,12 +4293,69 @@
 // ==================== Abschnitt fuer die Sicherung von Daten mit Callback ====================
 
     new UnitTest('util.store.js Callback', "Sicherung von Daten mit Callback", {
-//            'setStored'           : function() {
-//                                    }
-        });
+            'setStored'           : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object2'];
+                                        const __RELOAD = false;
+                                        const __SERIAL = false;
 
-//function setStored(name, value, reload = false, serial = false, onFulfilled = undefined, onRejected = undefined) {
-//function setNextStored(arr, name, value, reload = false, serial = false, onFulfilled = undefined, onRejected = undefined) {
+                                        return callPromiseChain(new Promise(function(resolve, reject) { return setStored(__NAME, __VAL, __RELOAD, __SERIAL, resolve, reject); }), () => summonValue(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
+                                            });
+                                    },
+            'setStoredSerial'     : function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Object2'];
+                                        const __RELOAD = false;
+                                        const __SERIAL = true;
+
+                                        return callPromiseChain(new Promise(function(resolve, reject) { return setStored(__NAME, __VAL, __RELOAD, __SERIAL, resolve, reject); }), () => deserialize(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "Object falsch geladen");
+                                            });
+                                    },
+            'setNextStored'       : async function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Int'];
+                                        const __ARR = [ 1, 2, 4, 8, 42, 47.11 ];
+                                        const __EXP1 = 47.11;
+                                        const __EXP2 = 1;
+                                        const __RELOAD = false;
+                                        const __SERIAL = false;
+
+                                        await callPromiseChain(new Promise(function(resolve, reject) { return setNextStored(__ARR, __NAME, __VAL, __RELOAD, __SERIAL, resolve, reject); }), () => summonValue(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP1, "Object falsch geladen");
+                                            });
+
+                                        return callPromiseChain(new Promise(function(resolve, reject) { return setNextStored(__ARR, __NAME, __EXP1, __RELOAD, __SERIAL, resolve, reject); }), () => summonValue(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP2, "Object falsch geladen");
+                                            });
+                                    },
+            'setNextStoredSerial' : async function() {
+                                        const [ __NAME, __VAL ] = __TESTDATA['Int'];
+                                        const __ARR = [ 1, 2, 4, 8, 42, 47.11 ];
+                                        const __EXP1 = 47.11;
+                                        const __EXP2 = 1;
+                                        const __RELOAD = false;
+                                        const __SERIAL = true;
+
+                                        await callPromiseChain(new Promise(function(resolve, reject) { return setNextStored(__ARR, __NAME, __VAL, __RELOAD, __SERIAL, resolve, reject); }), () => deserialize(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP1, "Object falsch geladen");
+                                            });
+
+                                        return callPromiseChain(new Promise(function(resolve, reject) { return setNextStored(__ARR, __NAME, __EXP1, __RELOAD, __SERIAL, resolve, reject); }), () => deserialize(__NAME, __ERROR), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP2, "Object falsch geladen");
+                                            });
+                                    }
+        });
 
 // ==================== Ende Abschnitt fuer die Sicherung und das Laden von Daten ====================
 

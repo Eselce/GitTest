@@ -1252,14 +1252,16 @@ function defaultCatch(error, show) {
 }
 
 // Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
+// ex: Exception, Error o.ae. mit 'stack' Eigenschaft, die ein Stacktrace enthaelt
 // longForm: Ausgabe des vollen Pfades anstelle von nur dem Dateinamen und der Zeilennummer
 // showFunName: Neben Datei und Zeilennummer zusaetzlich Funktionsnamen zurueckgeben (Default: false)
 // ignoreCaller: Neben codeLine() auch den Caller ignorieren, als Zahl: Anzahl der Caller (Default: false)
 // ignoreLibs (empfohlen): Ueberspringen von lib*.js-Eintraegen (ausser beim untersten Aufruf)
 // return Liefert Dateiname:Zeilennummer des Aufrufers als String
-function codeLine(longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
+function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
     try {
-        const __STACK = Error().stack.split("\n");
+        const __EX = (ex || { stack : "" });
+        const __STACK = __EX.stack.split("\n");
         let countCaller = Number(ignoreCaller);  // Normalerweise 0 oder 1, bei 2 wird auch der naechste Aufrufer ignoriert!
         let ret;
         let nameLine;
@@ -1294,6 +1296,18 @@ function codeLine(longForm = false, showFunName = false, ignoreCaller = false, i
     } catch (ex) {
         return showException("Error in codeLine()", ex);
     }
+}
+
+// Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
+// longForm: Ausgabe des vollen Pfades anstelle von nur dem Dateinamen und der Zeilennummer
+// showFunName: Neben Datei und Zeilennummer zusaetzlich Funktionsnamen zurueckgeben (Default: false)
+// ignoreCaller: Neben codeLine() auch den Caller ignorieren, als Zahl: Anzahl der Caller (Default: false)
+// ignoreLibs (empfohlen): Ueberspringen von lib*.js-Eintraegen (ausser beim untersten Aufruf)
+// return Liefert Dateiname:Zeilennummer des Aufrufers als String
+function codeLine(longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
+    const __EX = Error();
+
+    return codeLineFor(__EX, longForm, showFunName, ignoreCaller, ignoreLibs);
 }
 
 // ==================== Ende Abschnitt fuer Debugging, Error-Handling ====================

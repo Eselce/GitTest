@@ -75,7 +75,8 @@ function defaultCatch(error, show) {
 // return Liefert Dateiname:Zeilennummer des Aufrufers als String
 function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
     try {
-        const __STACK = (ex || { stack : "" }).stack.split("\n");
+        const __EX = (ex || { stack : "" });
+        const __STACK = __EX.stack.split("\n");
         let countCaller = Number(ignoreCaller);  // Normalerweise 0 oder 1, bei 2 wird auch der naechste Aufrufer ignoriert!
         let ret;
         let nameLine;

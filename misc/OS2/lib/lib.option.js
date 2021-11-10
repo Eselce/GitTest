@@ -345,7 +345,7 @@ function promptNextOpt(opt, value = undefined, reload = false, freeValue = false
             }
 
             if (nextVal !== __VALUE) {
-                if (nextVal) {
+                if (nextVal !== undefined) {
                     return setOpt(opt, nextVal, reload, onFulfilled, onRejected);
                 }
 
@@ -354,7 +354,11 @@ function promptNextOpt(opt, value = undefined, reload = false, freeValue = false
                 showAlert(__LABEL, "Ung\xFCltige Eingabe: " + __ANSWER);
             }
         }
+
+        onFulfilled(__VALUE);
     } catch (ex) {
+        onRejected(ex);
+
         showException('[' + (ex && ex.lineNumber) + "] promptNextOpt()", ex);
     }
 
@@ -1956,22 +1960,24 @@ function initOptAction(optAction, item = undefined, optSet = undefined, optConfi
         const __RELOAD = getValue(getValue(__CONFIG, { }).ActionReload, true);
 
         switch (optAction) {
-        case __OPTACTION.SET : fun = function() {
-                                       return setOptByName(optSet, item, __CONFIG.SetValue, __RELOAD).catch(defaultCatch);
-                                   };
-                               break;
-        case __OPTACTION.NXT : fun = function() {
-                                       return promptNextOptByName(optSet, item, __CONFIG.SetValue, __RELOAD,
-                                                  __CONFIG.FreeValue, __CONFIG.SelValue, __CONFIG.MinChoice).catch(defaultCatch);
-                                   };
-                               break;
-        case __OPTACTION.RST : fun = function() {
-                                       return resetOptions(optSet, __RELOAD).then(
-                                               result => __LOG[4]("RESETTING (" + result + ")..."),
-                                               defaultCatch);
-                                   };
-                               break;
-        default :              break;
+        case __OPTACTION.SET  : fun = function() {
+                                        return setOptByName(optSet, item, __CONFIG.SetValue, __RELOAD).catch(defaultCatch);
+                                    };
+                                break;
+        case __OPTACTION.NXT  : fun = async function() {
+                                        return new Promise(function(resolve, reject) {
+                                                return promptNextOptByName(optSet, item, __CONFIG.SetValue, __RELOAD,
+                                                    __CONFIG.FreeValue, __CONFIG.SelValue, __CONFIG.MinChoice, resolve, reject);
+                                            }).catch(defaultCatch);
+                                    };
+                                break;
+        case __OPTACTION.RST  : fun = function() {
+                                        return resetOptions(optSet, __RELOAD).then(
+                                                result => __LOG[4]("RESETTING (" + result + ")..."),
+                                                defaultCatch);
+                                    };
+                                break;
+        default :               break;
         }
     }
 
