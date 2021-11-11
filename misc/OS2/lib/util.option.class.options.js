@@ -38,7 +38,7 @@ Class.define(Options, Object, {
                         return true;
                     },
                     'toString' : function() {
-                        let retStr = this.setLabel + " = {\n";
+                        let retStr = this.setLabel + " = {  // " + __DBMOD.Name + " / " + __DBMAN.Name + '\n';
 
                         for (const [ __KEY, __OPT ] of Object.entries(this)) {
                             if (this.checkKey(__KEY)) {

@@ -37,18 +37,22 @@
 //}
 
 Class.define(TeamClassification, Classification, {
-                    'renameParamFun' : function() {
-                                           const __MYTEAM = (this.team = getMyTeam(this.optSet, this.teamParams, this.team));
+                    'assign'          : function(optSet, optParams) {
+                                            Classification.prototype.assign.call(this, optSet, optParams);
+                                            this.teamParams = optParams.teamParams;
+                                        },
+                    'renameParamFun'  : function() {
+                                            const __MYTEAM = (this.team = getMyTeam(this.optSet, this.teamParams, this.team));
 
-                                           if (__MYTEAM.LdNr) {
-                                               // Prefix fuer die Optionen mit gesonderten Behandlung...
-                                               this.prefix = __MYTEAM.LdNr.toString() + '.' + __MYTEAM.LgNr.toString();
-                                           } else {
-                                               this.prefix = undefined;
-                                           }
+                                            if (__MYTEAM.LdNr) {
+                                                // Prefix fuer die Optionen mit gesonderten Behandlung...
+                                                this.prefix = __MYTEAM.LdNr.toString() + '.' + __MYTEAM.LgNr.toString();
+                                            } else {
+                                                this.prefix = undefined;
+                                            }
 
-                                           return this.prefixParamFun();
-                                       }
+                                            return this.prefixParamFun();
+                                        }
                 });
 
 // ==================== Ende Abschnitt fuer Klasse TeamClassification ====================

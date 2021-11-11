@@ -156,39 +156,44 @@ function initOptions(optConfig, optSet = undefined, preInit = undefined) {
         this.renameFun = prefixName;
         this.prefix = (prefix || 'old');
         this.optSet = undefined;
+        this.optParams = undefined;
         this.optSelect = { };
     }
 //}
 
 Class.define(Classification, Object, {
-                    'renameOptions'  : function() {
-                                           const __PARAM = this.renameParamFun();
+                    'assign'          : function(optSet, optParams) {
+                                            this.optSet = optSet;
+                                            this.optParams = optParams;
+                                        },
+                    'renameOptions'   : function() {
+                                            const __PARAM = this.renameParamFun();
 
-                                           if (__PARAM !== undefined) {
-                                               // Klassifizierte Optionen umbenennen...
-                                               return renameOptions(this.optSet, this.optSelect, __PARAM, this.renameFun);
-                                           } else {
-                                               return Promise.resolve();
-                                           }
-                                       },
-                    'saveOptions'    : function(ignList) {
-                                           const __OPTSELECT = optSelect(this.optSelect, ignList);
+                                            if (__PARAM !== undefined) {
+                                                // Klassifizierte Optionen umbenennen...
+                                                return renameOptions(this.optSet, this.optSelect, __PARAM, this.renameFun);
+                                            } else {
+                                                return Promise.resolve();
+                                            }
+                                        },
+                    'saveOptions'     : function(ignList) {
+                                            const __OPTSELECT = optSelect(this.optSelect, ignList);
 
-                                           return saveOptions(this.optSet, __OPTSELECT);
-                                       },
-                    'deleteOptions'  : function(ignList) {
-                                           const __OPTSELECT = optSelect(this.optSelectl, ignList);
+                                            return saveOptions(this.optSet, __OPTSELECT);
+                                        },
+                    'deleteOptions'   : function(ignList) {
+                                            const __OPTSELECT = optSelect(this.optSelectl, ignList);
 
-                                           return deleteOptions(this.optSet, __OPTSELECT, true, true);
-                                       },
-                    'prefixParamFun' : function() {
-                                           // Parameter fuer 'prefixName': Prefix "old:"
-                                           return ((this.prefix !== undefined) ? this.prefix + ':' : this.prefix);
-                                       },
-                    'renameParamFun' : function() {
-                                           // Parameter fuer 'renameFun': Default ist 'prefixName' ("old:")
-                                           return this.prefixParamFun();
-                                       }
+                                            return deleteOptions(this.optSet, __OPTSELECT, true, true);
+                                        },
+                    'prefixParamFun'  : function() {
+                                            // Parameter fuer 'prefixName': Prefix "old:"
+                                            return ((this.prefix !== undefined) ? this.prefix + ':' : this.prefix);
+                                        },
+                    'renameParamFun'  : function() {
+                                            // Parameter fuer 'renameFun': Default ist 'prefixName' ("old:")
+                                            return this.prefixParamFun();
+                                        }
                 });
 
 // Wandelt ein Array von Options-Schluesseln (props) in das optSelect-Format { 'key1' : true, 'key2' : true, ... }
