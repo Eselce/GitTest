@@ -56,6 +56,9 @@ function showException(label, ex, show = true) {
 function defaultCatch(error, show) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
     error = (error || new Error("Promise rejected!"));
+    if (error[2]) {  // Recatch...
+        return Promise.reject(error);
+    }
 
     try {
         const __LABEL = `[${error.lineNumber}] ${__DBMOD.Name}`;
