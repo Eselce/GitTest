@@ -17,11 +17,16 @@
 // ==================== Abschnitt fuer Klasse Main ====================
 
 /*class*/ function Main /*{
-    constructor*/(optConfig, prepareOpt, ...pageManager) {
+    constructor*/(optConfig, mainConfig, ... pageManager) {
+        const __MAINCONFIG = (mainConfig || { });
+
         this.optConfig      = optConfig;
         this.optSet         = new Options(this.optConfig, '__OPTSET');
-        this.prepareOpt     = prepareOpt;
-        this.manager        = pageManager;
+        this.setupManager   = __MAINCONFIG.setupManager;
+        this.checkOptParams = __MAINCONFIG.checkOptParams;
+        this.prepareOpt     = __MAINCONFIG.prepareOpt;
+        this.verifyOpt      = __MAINCONFIG.verifyOpt;
+        this.pageManager    = pageManager;
     }
 //}
 
@@ -30,49 +35,57 @@ Class.define(Main, Object, {
                             // Fuehrt die Bearbeitung einer speziellen Seite durch
                             // page: ID fuer die aktuelle Seite
                             // return Promise auf die Durchfuehrung der Bearbeitung
-                            const __MANAGER         = (this.manager[page] || { name : "Seite #" + page });
-                            const __CLASSIFICATION  = (__MANAGER.classification || (new Classification()));
+                            const __SETUPMANAGER    = (this.setupManager || (page => this.pageManager[page]));
+                            const __MANAGER         = getValue(__SETUPMANAGER.call(this, page), { name : "Seite #" + page });
                             const __SETUPOPTPARAMS  = (__MANAGER.setupOptParams || (() => ({ 'hideMenu' : false })));
-                            const __HANDLER         = (__MANAGER.handler || (() => Promise.resolve(false)));
-                            const __PREPAREOPT      = (this.prepareOpt || (() => { }));
-                            const __OPTPARAMS       = __SETUPOPTPARAMS(this.optSet);
+                            const __OPTPARAMS       = __SETUPOPTPARAMS.call(__MANAGER, this.optSet, ... this.params);
+                            const __CHECKOPTPARAMS  = (this.checkOptParams || (optParams => !! optParams));
 
-                            if (__OPTPARAMS) {
+                            if (__CHECKOPTPARAMS(__OPTPARAMS, __MANAGER)) {
+                                const __CLASSIFICATION  = (__MANAGER.classification || (new Classification()));
+                                const __HANDLER         = (__MANAGER.handler || (() => Promise.resolve(false)));
+
                                 // Klassifikation verknuepfen...
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
 
-                                return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(async optSet => {
-                                        __PREPAREOPT(optSet, __OPTPARAMS);
-
-                                        return await showOptions(optSet, __OPTPARAMS);
-                                    }, defaultCatch).then(__HANDLER).then(ret => (ret ? 'OK' : ('FAILED ' + __MANAGER.name)));
+                                return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(
+                                    async optSet => {
+                                            const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || (optSet => optSet));
+                                            const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || (optSet => Object.values(optSet).forEach(checkOpt)));
+    
+                                            return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
+                                                                        optSet => showOptions(optSet, __OPTPARAMS).then(
+                                                                        optSet => __VERIFYOPT(optSet, __OPTPARAMS)));
+                                        }).then(__HANDLER.bind(__MANAGER, this.optSet, ... this.params)).then(
+                                                                ret => (ret ? 'OK' : ('FAILED ' + __MANAGER.name)));
                             } else {
                                 return Promise.reject(`Keine Options-Parameter f\xFCr '${__MANAGER.name}' vorhanden!`);
                             }
                         },
-        'run'         : function(selector, ...selectorParams) {
+        'run'         : function(selector, ... selectorParams) {
                             // Fuehrt die Bearbeitung zu einer selektierten Seite durch
                             // selector: Funktion zur Selektion aufgrund der als erstem Parameter uebergebenen URL der Seite
                             // selectorParams: Weitere Parameter fuer selector(URL, ...)
                             // return Promise auf die Durchfuehrung der Bearbeitung im Hauptprogramm
-                            return startMain().then(async () => {
-                                try {
-                                    const __SELECTOR = (selector || (() => 0));
-                                    const __SELECTORPARAMS = selectorParams;
-                                    const __PAGE = __SELECTOR(window.location.href, ...__SELECTORPARAMS);
+                            return startMain().then(
+                                async () => {
+                                        try {
+                                            const __SELECTOR = (selector || (() => 0));
+                                            const __SELECTORPARAMS = selectorParams;
+                                            const __PAGE = __SELECTOR(window.location.href, ... __SELECTORPARAMS);
 
-                                    return await this.handlePage(__PAGE).catch(defaultCatch);
-                                } catch (ex) {
-                                    return defaultCatch(ex);
-                                }
-                            }).then(rc => {
-                                    __LOG[2](String(this.optSet));
-                                    __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
-                                }, ex => {
-                                    __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message, ex[0] + ": " + ex[1])) + ')');
-                                    __LOG[2](String(this.optSet));
-                                    __LOG[1]('SCRIPT END', __DBMAN.Name);
-                                });
+                                            return await this.handlePage(__PAGE).catch(defaultCatch);
+                                        } catch (ex) {
+                                            return defaultCatch(ex);
+                                        }
+                                    }).then(rc => {
+                                            __LOG[2](String(this.optSet));
+                                            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
+                                        }, ex => {
+                                            __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message, ex[0] + ": " + ex[1])) + ')');
+                                            __LOG[2](String(this.optSet));
+                                            __LOG[1]('SCRIPT END', __DBMAN.Name);
+                                        });
                         }
     });
 
@@ -81,15 +94,24 @@ Class.define(Main, Object, {
 // ==================== Abschnitt fuer Klasse PageManager ====================
 
 /*class*/ function PageManager /*{
-    constructor*/(pageName, classification, setupOptParams, handler) {
+    constructor*/(pageName, classification, setupOptParams, handler, ... params) {
         this.name           = pageName;
         this.classification = classification;
         this.setupOptParams = setupOptParams;
         this.handler        = handler;
+        this.params         = (params || []);
     }
 //}
 
-Class.define(RundenLink, Object);
+Class.define(PageManager, Object, {
+        'clone'       : function(... params) {
+                            const __PARAMS = this.params.concat(params || []);
+
+                            return new PageManager(this.pageName + " (" + params.join(", ") + ')',
+                                                    this.classification, this.setupOptParams,
+                                                    this.handler, ... __PARAMS);
+                        }
+    });
 
 // ==================== Ende Abschnitt fuer Klasse PageManager ====================
 

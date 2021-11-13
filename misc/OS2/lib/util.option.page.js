@@ -33,13 +33,13 @@ function groupData(data, byFun, filterFun, sortFun) {
     const __VALS = Object.values(data);
     const __BYKEYS = __VALS.map(__BYFUN);
     const __BYKEYSET = new Set(__BYKEYS);
-    const __BYKEYARRAY = [...__BYKEYSET];
+    const __BYKEYARRAY = [... __BYKEYSET];
     const __SORTEDKEYS = __BYKEYARRAY.sort(sortFun);
     const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => {
                                                             UNUSED(key);
                                                             return __FILTERFUN(byVal, index, __BYKEYS);
                                                         }));
-    const __ASSIGN = ((keyArr, valArr) => Object.assign({ }, ...keyArr.map((key, index) => ({ [key] : valArr[index] }))));
+    const __ASSIGN = ((keyArr, valArr) => Object.assign({ }, ... keyArr.map((key, index) => ({ [key] : valArr[index] }))));
 
     return __ASSIGN(__SORTEDKEYS, __GROUPEDKEYS);
 }

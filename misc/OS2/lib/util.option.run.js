@@ -277,6 +277,10 @@ function optSelect(selList, ignList) {
 //}
 
 Class.define(ClassificationPair, Classification, {
+                    'assign'          : function(optSet, optParams) {
+                                            (this.A && this.A.assign(optSet, optParams));
+                                            (this.B && this.B.assign(optSet, optParams));
+                                        },
                     'renameOptions'  : function() {
                                            return (this.A ? this.A.renameOptions() : Promise.resolve()).then(() =>
                                                    (this.B ? this.B.renameOptions() : Promise.resolve()));
