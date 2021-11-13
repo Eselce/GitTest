@@ -20,7 +20,7 @@
     constructor*/(optSet, colIdx, rows, offsetUpper, offsetLower) {
         'use strict';
 
-        Object.call(this);
+        //Object.call(this);
 
         this.currSaison = getOptValue(optSet.aktuelleSaison);
 

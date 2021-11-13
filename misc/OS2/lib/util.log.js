@@ -127,7 +127,7 @@ __LOG.init(window, 4, false);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(
 // Makro fuer die Markierung bewusst ungenutzter Variablen und Parametern
 // params: Beliebig viele Parameter, mit denen nichts gemacht wird
 // return Liefert formal die Parameter zurueck
-function UNUSED(...unused) {
+function UNUSED(... unused) {
     return unused;
 }
 

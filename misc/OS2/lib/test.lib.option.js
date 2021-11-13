@@ -32,20 +32,30 @@ function UnitTestOption(name, desc, tests, load) {
 
 Class.define(UnitTestOption, UnitTest, {
             'prepare'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
-                                UNUSED(resultObj, resultFun, tableId);
-
-                                const __TEAMPARAMS = new Team("Choromonets Odessa", "Ukraine", "1. Liga");
+                                UNUSED(thisArg, resultObj, resultFun, tableId);
 
                                 __LOG[1]("prepare()", name, desc);
 
-                                thisArg.optSet = await buildOptions(__TESTOPTCONFIG, __TESTOPTSET, {
-                                        'teamParams'  : __TEAMPARAMS,
-                                        'menuAnchor'  : getTable(1, 'div'),
-                                        'hideMenu'    : true,
-                                        'hideForm'    : {
-                                                           'team'   : true
-                                                        }
+                                const __TEAMPARAMS = new Team("Choromonets Odessa", "Ukraine", "1. Liga");
+
+                                const __MANAGER = new PageManager("Test-Umgebung", __TESTTEAMCLASS, () => {
+                                        return {
+                                                'teamParams'  : __TEAMPARAMS,
+                                                'menuAnchor'  : getTable(1, 'div'),
+                                                'hideMenu'    : true,
+                                                'hideForm'    : {
+                                                                    'team'  : true
+                                                                }
+                                            };
+                                    }, async optSet => {
+                                        UNUSED(optSet);
+
+                                        return true;
                                     });
+
+                                const __MAIN = new Main(__OPTCONFIG, null, __MANAGER);
+
+                                await __MAIN.run();
 
                                 return true;
                             },
@@ -194,9 +204,6 @@ const __TESTOPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-const __TESTOPTSET = new Options(__TESTOPTCONFIG, '__TESTOPTSET');
-
 // Teamparameter fuer getrennte Speicherung der Optionen fuer Erst- und Zweitteam...
 const __TESTTEAMCLASS = new TeamClassification();
 
@@ -205,28 +212,6 @@ __TESTTEAMCLASS.optSelect = {
 //        'datenZat'   : true,
 //        'ligaSize'   : true
     };
-
-// Behandelt die Optionen und laedt das Benutzermenu
-// optConfig: Konfiguration der Optionen
-// optSet: Platz fuer die gesetzten Optionen
-// optParams: Eventuell notwendige Parameter zur Initialisierung
-// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
-// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
-// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
-// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
-// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
-// 'formWidth': Anzahl der Elemente pro Zeile
-// 'formBreak': Elementnummer des ersten Zeilenumbruchs
-// return Promise auf gefuelltes Objekt mit den gesetzten Optionen
-function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : false }) {
-    // Klassifikation ueber Land und Liga des Teams...
-    __TESTTEAMCLASS.optSet = optSet;  // Classification mit optSet verknuepfen
-    __TESTTEAMCLASS.teamParams = optParams.teamParams;  // Ermittelte Parameter
-
-    return startOptions(optConfig, optSet, __TESTTEAMCLASS).then(
-                optSet => showOptions(optSet, optParams),
-                defaultCatch);
-}
 
 // ==================== Ende Abschnitt fuer Optionen ====================
 

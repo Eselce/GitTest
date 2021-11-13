@@ -25,9 +25,9 @@ function getPageIdFromURL(url, leafs, item = 'page') {
 
     for (let leaf in leafs) {
         if (__LEAF === leaf) {
-            const __DEFAULT = leafs[leaf];
+            const __BASE = leafs[leaf];
 
-            return getValue(__URI.getQueryPar(item), __DEFAULT);
+            return __BASE + getValue(__URI.getQueryPar(item), 0);
         }
     }
 

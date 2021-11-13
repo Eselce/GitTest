@@ -119,10 +119,10 @@ function GM_function(action, label, condition = true, altAction = undefined, lev
     const __LABEL = ((condition ? '+' : '-') + label);
     const __FUNKEY = (condition ? action : altAction);
 
-    return function(...args) {
+    return function(... args) {
             const __NAME = __LOG.info(args[0], false);
             __LOG[level](__LABEL, __NAME);
-            return GM[__FUNKEY](...args);
+            return GM[__FUNKEY](... args);
         };
 }
 

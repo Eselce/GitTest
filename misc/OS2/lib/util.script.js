@@ -38,8 +38,8 @@ function loadScript(url) {
 // fun: Auszufuehrende Funktion
 // params: Parameterliste fuer den Aufruf der Funktion
 // return Promise auf den Rueckgabewert dieser Funktion
-function getScript(url, fun, ...params) {
-    return loadScript(url).then(fun(...params),
+function getScript(url, fun, ... params) {
+    return loadScript(url).then(fun(... params),
                                 () => {
                                         __LOG[1]("Failed to load", url);
                                     });
