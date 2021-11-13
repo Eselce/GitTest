@@ -47,6 +47,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
@@ -187,75 +188,66 @@ const __OPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
-
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);
 
-// Behandelt die Optionen und laedt das Benutzermenu
-// optConfig: Konfiguration der Optionen
+// ==================== Ende Abschnitt fuer Optionen ====================
+
+// ==================== Page-Manager fuer zu bearbeitende Seiten ====================
+
+// Verarbeitet Ansicht "Unit-Test Quellcode" zur Ausfuehrung der UnitTests dieser Datei
+const procHaupt = new PageManager("Unit-Test Quellcode", null, () => {
+        return {
+//                'menuAnchor'  : getTable(0, 'div'),
+                'hideMenu'    : false,
+                'showForm'    : true
+            };
+    }, async optSet => {
+        const __MINLEVEL = getOptValue(optSet.minLevel);
+        const __LOADSCRIPT = getOptValue(optSet.loadScript);
+        const __EVAL = (__LOADSCRIPT ? "" : document.body.textContent);
+
+        document.body.innerHTML = '';  // Seite leeren
+
+        if (__LOADSCRIPT) {
+            return await getScript(window.location.href, UnitTest.runAll, __MINLEVEL);
+        } else {
+            eval(__EVAL);  // Die gerade geladene JS-Datei
+
+            return await UnitTest.runAll(__MINLEVEL);
+        }
+    });
+
+// ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================
+
+// ==================== Spezialbehandlung der Startparameter ====================
+
+// Callback-Funktion fuer die Behandlung der Optionen und Laden des Benutzermenus
+// Diese Funktion erledigt nur Modifikationen und kann z.B. einfach optSet zurueckgeben!
 // optSet: Platz fuer die gesetzten Optionen
 // optParams: Eventuell notwendige Parameter zur Initialisierung
 // 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
+// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
 // 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
 // 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // 'formWidth': Anzahl der Elemente pro Zeile
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
-// return Promise auf gefuelltes Objekt mit den gesetzten Optionen
-function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : false }) {
-    return startOptions(optConfig, optSet).then(optSet => {
-                    return showOptions(optSet, optParams);
-                }, defaultCatch);
+// return Gefuelltes Objekt mit den gesetzten Optionen
+function prepareOptions(optSet, optParams) {
+    UNUSED(optParams);
+
+    return optSet;
 }
 
-// ==================== Ende Abschnitt fuer Optionen ====================
+// ==================== Ende Spezialbehandlung der Startparameter ====================
 
 // ==================== Hauptprogramm ====================
 
-// Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
-function procHaupt() {
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-//                            'menuAnchor' : getTable(0, 'div'),
-                            'hideMenu'   : false,
-                            'showForm'   : true
-                        }).then(async optSet => {
-            const __MINLEVEL = getOptValue(optSet.minLevel);
-            const __LOADSCRIPT = getOptValue(optSet.loadScript);
-            const __EVAL = (__LOADSCRIPT ? "" : document.body.textContent);
+const __MAIN = new Main(__OPTCONFIG, null, procHaupt);
 
-            document.body.innerHTML = '';  // Seite leeren
+__MAIN.run();
 
-            if (__LOADSCRIPT) {
-                return getScript(window.location.href, UnitTest.runAll, __MINLEVEL);
-            } else {
-                eval(__EVAL);  // Die gerade geladene JS-Datei
-
-                return UnitTest.runAll(__MINLEVEL);
-            }
-        });
-}
-
-(() => {
-    startMain().then(async () => {
-        try {
-            // Verzweige in unterschiedliche Verarbeitungen je nach Wert von page:
-            switch (getPageIdFromURL(window.location.href, {
-                                                               'util.store.test.js' : 0  // Unit-Test-Datei
-                                                           }, 'page')) {
-                case 0  : await procHaupt().catch(defaultCatch); break;
-                default : await procHaupt().catch(defaultCatch); break;
-            }
-
-            return 'OK';
-        } catch (ex) {
-            return defaultCatch(ex);
-        }
-    }).then(rc => {
-            __LOG[2](String(__OPTSET));
-            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-        })
-})();
+// ==================== Ende Hauptprogramm ====================
 
 // *** EOF ***

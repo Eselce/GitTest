@@ -45,6 +45,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
@@ -164,10 +165,10 @@ const __OPTCONFIG = {
                    'AutoReset' : true,
                    'Permanent' : true,
                    'Default'   :
-                                 [ undefined, // S17, ZAT 38
+                                 [ undefined, // S17, ZAT 37 - 39
                                    1848, 1923, 1461, 1526, 1430, 930, 980, 169, 47, 1755, 68, 1866, 1882, 39, 82, 382, 41, 121, 809, 1226, 160, 873, 1891, 1528, 1911, 1771, 726, 1662, 1218, 170, 1926, 483, 419, 1756, 1659, 1554, 779, 1568, 495, 1157, 820, 890, 51, 1566, 1686, 616, 693, 778, 1841, 333, 1858, 37, 1802, 1337, 963, 383, 728, 219, 1527, 1352, 1847, 300, 977, 602, 259, 182, 1778, 275, 152, 1933, 327, 157, 920, 446, 764, 667, 1197, 313, 881, 1254, 314, 172, 1843, 1810, 73, 696, 1572, 563, 13, 582, 1420, 28, 1076, 763, 1929, 1552, 1794, 1222, 835, 692, 559, 137, 1476, 155, 1825, 1190, 1915, 80, 1838, 1168, 1821, 1668, 132, 386, 71, 597, 689, 322, 1447, 569, 1935, 1421, 981, 1652, 1096, 836, 1818, 1724, 1822, 1152, 86, 345, 1030, 734, 545, 1548, 736, 198, 346, 1797, 1275, 761, 436, 25, 510, 708, 1493, 524, 741, 878, 762, 1261, 401, 242, 660, 224, 1910, 859, 1359, 330, 252, 1820, 1177, 14, 451, 1787, 1795, 394, 493, 595, 355, 254, 1209, 824, 55, 823, 1881, 1758, 1086, 1321, 21, 1596, 1006, 352, 1264, 1022, 107, 1010, 663, 102, 67, 214, 38, 1094, 1295, 261, 1832, 1186, 1657, 398, 789, 564, 1238, 1054, 49 ],
                              /*
-                                 [ undefined, // S17, ZAT 37
+                                 [ undefined, // S17, ZAT 37 - 39
                                    1848, 1923, 1461, 1526, 1430, 930, 980, 169, 47, 1755, 68, 1866, 1882, 39, 82, 382, 41, 121, 809, 1226, 160, 873, 1891, 1528, 1911, 1771, 726, 1662, 1218, 170, 1926, 483, 419, 1756, 1659, 1554, 779, 1568, 495, 1157, 820, 890, 51, 1566, 1686, 616, 693, 778, 1841, 333, 1858, 37, 1802, 1337, 963, 383, 728, 219, 1527, 1352, 1847, 300, 977, 602, 259, 182, 1778, 275, 152, 1933, 327, 157, 920, 446, 764, 667, 1197, 313, 881, 1254, 314, 172, 1843, 1810, 73, 696, 1572, 563, 13, 582, 1420, 28, 1076, 763, 1929, 1552, 1794, 1222, 835, 692, 559, 137, 1476, 155, 1825, 1190, 1915, 80, 1838, 1168, 1821, 1668, 132, 386, 71, 597, 689, 322, 1447, 569, 1935, 1421, 981, 1652, 1096, 836, 1818, 1724, 1822, 1152, 86, 345, 1030, 734, 545, 1548, 736, 198, 346, 1797, 1275, 761, 436, 25, 510, 708, 1493, 524, 741, 878, 762, 1261, 401, 242, 660, 224, 1910, 859, 1359, 330, 252, 1820, 1177, 14, 451, 1787, 1795, 394, 493, 595, 355, 254, 1209, 824, 55, 823, 1881, 1758, 1086, 1321, 21, 1596, 1006, 352, 1264, 1022, 107, 1010, 663, 102, 67, 214, 38, 1094, 1295, 261, 1832, 1186, 1657, 398, 789, 564, 1238, 1054, 49 ],
                                  [ undefined, // S17, ZAT 36
                                    1461, 1923, 1848, 1526, 1430, 930, 980, 169, 47, 1755, 68, 1866, 1882, 39, 41, 382, 82, 121, 809, 1226, 160, 873, 1891, 1771, 1911, 1528, 419, 1662, 1568, 1926, 170, 483, 726, 1756, 1659, 1554, 693, 1218, 495, 1157, 1858, 890, 51, 1566, 1686, 616, 779, 778, 1841, 333, 820, 37, 1802, 1337, 963, 383, 152, 219, 1527, 1352, 1847, 300, 977, 602, 259, 182, 1778, 275, 728, 1933, 327, 157, 920, 13, 764, 667, 1197, 313, 881, 1254, 314, 172, 1843, 1810, 73, 696, 1572, 563, 446, 582, 1420, 28, 1076, 763, 597, 1552, 1794, 1222, 835, 692, 559, 137, 1476, 155, 1825, 1190, 1915, 80, 1838, 1168, 1821, 1668, 132, 386, 71, 1929, 689, 322, 1447, 569, 1935, 1421, 981, 1652, 1096, 836, 1818, 1724, 1822, 1152, 86, 345, 1030, 734, 545, 1548, 736, 198, 346, 1797, 1275, 761, 436, 25, 510, 708, 1493, 524, 741, 878, 762, 1261, 401, 242, 660, 224, 1910, 859, 1359, 330, 252, 1820, 1177, 14, 451, 1787, 1795, 394, 493, 595, 355, 254, 1209, 824, 55, 823, 1881, 1758, 1086, 1321, 21, 1596, 1006, 352, 1264, 1022, 107, 1010, 663, 102, 67, 214, 38, 1094, 1295, 261, 1832, 1186, 1657, 398, 789, 564, 1238, 1054, 49 ],
@@ -3363,9 +3364,6 @@ const __OPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
-
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);
 
@@ -3384,28 +3382,6 @@ __TEAMCLASS.optSelect = {
         'teamNames'    : true,
         'gegner'       : true
     };
-
-// Behandelt die Optionen und laedt das Benutzermenu
-// optConfig: Konfiguration der Optionen
-// optSet: Platz fuer die gesetzten Optionen
-// optParams: Eventuell notwendige Parameter zur Initialisierung
-// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
-// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
-// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
-// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
-// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
-// 'formWidth': Anzahl der Elemente pro Zeile
-// 'formBreak': Elementnummer des ersten Zeilenumbruchs
-// return Promise auf gefuelltes Objekt mit den gesetzten Optionen
-function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : false }) {
-    // Klassifikation ueber Land und Liga des Teams...
-    __TEAMCLASS.optSet = optSet;  // Classification mit optSet verknuepfen
-    __TEAMCLASS.teamParams = optParams.teamParams;  // Ermittelte Parameter
-
-    return startOptions(optConfig, optSet, __TEAMCLASS).then(
-                optSet => showOptions(optSet, optParams),
-                defaultCatch);
-}
 
 // ==================== Ende Abschnitt fuer Optionen ====================
 
@@ -3645,115 +3621,132 @@ function testInsertBefore2(node, before) {
 
 // ==================== Ende Erzeugung von Testdaten ====================
 
-// ==================== Hauptprogramm ====================
+// ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
-function procHaupt() {
-    const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
+const procHaupt = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
+        const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
 
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'teamParams' : __TEAMPARAMS,
-                            'hideMenu'   : true
-                        }).then(async optSet => {
-            const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
-            const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
-            const __CURRZAT = __NEXTZAT - 1;
-            const __DATAZAT = getOptValue(optSet.datenZat);
+        return {
+                'teamParams' : __TEAMPARAMS,
+                'hideMenu'   : true
+            };
+    }, async optSet => {
+        const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
+        const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
+        const __CURRZAT = __NEXTZAT - 1;
+        const __DATAZAT = getOptValue(optSet.datenZat);
 
-            // Stand der alten Daten merken...
-            setOpt(optSet.oldDatenZat, __DATAZAT, false);
+        // Stand der alten Daten merken...
+        setOpt(optSet.oldDatenZat, __DATAZAT, false);
 
-            if (__CURRZAT >= 0) {
-                __LOG[2]("Aktueller ZAT: " + __CURRZAT);
+        if (__CURRZAT >= 0) {
+            __LOG[2]("Aktueller ZAT: " + __CURRZAT);
 
-                // Neuen aktuellen ZAT speichern...
-                setOpt(optSet.aktuellerZat, __CURRZAT, false);
+            // Neuen aktuellen ZAT speichern...
+            setOpt(optSet.aktuellerZat, __CURRZAT, false);
 
-                if (__CURRZAT !== __DATAZAT) {
-                    __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
+            if (__CURRZAT !== __DATAZAT) {
+                __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
 
-                    // ... und ZAT-bezogene Daten als veraltet markieren (ausser 'skills' und 'positions')
-                    await __TEAMCLASS.deleteOptions({
-                                                  'datenZat'    : true,
-                                                  'oldDatenZat' : true
-                                              }).catch(defaultCatch);
+                // ... und ZAT-bezogene Daten als veraltet markieren (ausser 'skills' und 'positions')
+                await __TEAMCLASS.deleteOptions({
+                                              'datenZat'    : true,
+                                              'oldDatenZat' : true
+                                          }).catch(defaultCatch);
 
-                    // Neuen Daten-ZAT speichern...
-                    setOpt(optSet.datenZat, __CURRZAT, false);
-                }
+                // Neuen Daten-ZAT speichern...
+                setOpt(optSet.datenZat, __CURRZAT, false);
             }
-        });
-}
+        }
+
+        return true;
+    });
 
 // Verarbeitet Ansicht "FSS-Turniere" (Register-Tab 'd' : "offizielles FSS-Turnier")
-function procOSFSSTurnier() {
-    const __TAB4 = document.getElementById('d');
+const procOSFSSTurnier = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
+        const __TAB4 = document.getElementById('d');
 
-    if ((__TAB4 === undefined) || (__TAB4 === null)) {
-        __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
-    } else {
-        // Nur Test: Daten produzieren...
-        //testInsertBefore1(__TAB4, __TAB4.getElementsByTagName('ol')[0]);
+        if ((__TAB4 === undefined) || (__TAB4 === null)) {
+            __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+        } else {
+            // Nur Test: Daten produzieren...
+            //testInsertBefore1(__TAB4, __TAB4.getElementsByTagName('ol')[0]);
 
-        return buildOptions(__OPTCONFIG, __OPTSET, {
-                                'menuAnchor' : __TAB4,
-                                'formWidth'  : 1
-                            }).then(optSet => {
-                const __TABLE = getTable(0, 'table', __TAB4);
-                const __GAMELIST = getTable(0, 'ul', __TAB4);
-                const __MYTEAM = getOptValue(optSet.team);
-                const __GEGNER = getOptValue(optSet.gegner);
-                const __TEAMIDS = getOptValue(optSet.teamIds);
-                const __TEAMNAMES = getOptValue(optSet.teamNames);
+            return {
+                    'menuAnchor' : __TAB4,
+                    'formWidth'  : 1
+                };
+        }
+        // Fehler fuer alle Faelle ohne Rueckgabewert...
+        return false;
+    }, async optSet => {
+            const __TAB4 = document.getElementById('d');
+            const __TABLE = getTable(0, 'table', __TAB4);
+            const __GAMELIST = getTable(0, 'ul', __TAB4);
+            const __MYTEAM = getOptValue(optSet.team);
+            const __GEGNER = getOptValue(optSet.gegner);
+            const __TEAMIDS = getOptValue(optSet.teamIds);
+            const __TEAMNAMES = getOptValue(optSet.teamNames);
 
-                calcRanksFromTable(__TABLE, optSet);
-                calcChallengesFromHTML(__TAB4, optSet);
+            calcRanksFromTable(__TABLE, optSet);
+            calcChallengesFromHTML(__TAB4, optSet);
 
-                markChanges(__TABLE, optSet);
+            markChanges(__TABLE, optSet);
 
-                if (__GAMELIST !== undefined) {
-                    const __GAMES = __GAMELIST.getElementsByTagName('li');
+            if (__GAMELIST !== undefined) {
+                const __GAMES = __GAMELIST.getElementsByTagName('li');
 
-                    calcGegner(__GAMES, optSet);
-                }
-
-                const __TEAMID = __TEAMIDS[__MYTEAM.Team];
-                const __GEGNERID = __GEGNER[__TEAMID];
-                const __GEGNERNAME = __TEAMNAMES[__GEGNERID];
-
-                markTeam(__TABLE, optSet, __MYTEAM.Team, __GEGNERNAME);
-            });
-    }
-
-    // Promise fuer alle Faelle ohne Rueckgabewert...
-    return Promise.resolve();
-}
-
-(() => {
-    startMain().then(async () => {
-        try {
-            // URL-Legende:
-            // page=0: Managerbuero
-            // page=1: offizielles FSS-Turnier
-
-            // Verzweige in unterschiedliche Verarbeitungen je nach Wert von page:
-            switch (getPageIdFromURL(window.location.href, {
-                                                               'haupt.php'      : 0,  // Ansicht "Haupt" (Managerbuero)
-                                                               'fssturnier.php' : 1   // Ansicht "FSS-Turniere" (offizielles FSS-Turnier)
-                                                           }, 'page')) {
-                case 0  : await procHaupt().catch(defaultCatch); break;
-                case 1  : await procOSFSSTurnier().catch(defaultCatch); break;
-                default : break;
+                calcGegner(__GAMES, optSet);
             }
 
-            return 'OK';
-        } catch (ex) {
-            return defaultCatch(ex);
-        }
-    }).then(rc => {
-            __LOG[2](String(__OPTSET));
-            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-        })
-})();
+            const __TEAMID = __TEAMIDS[__MYTEAM.Team];
+            const __GEGNERID = __GEGNER[__TEAMID];
+            const __GEGNERNAME = __TEAMNAMES[__GEGNERID];
+
+            markTeam(__TABLE, optSet, __MYTEAM.Team, __GEGNERNAME);
+
+            return true;
+        });
+
+// ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================
+
+// ==================== Spezialbehandlung der Startparameter ====================
+
+// Callback-Funktion fuer die Behandlung der Optionen und Laden des Benutzermenus
+// Diese Funktion erledigt nur Modifikationen und kann z.B. einfach optSet zurueckgeben!
+// optSet: Platz fuer die gesetzten Optionen
+// optParams: Eventuell notwendige Parameter zur Initialisierung
+// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
+// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
+// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
+// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
+// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
+// 'formWidth': Anzahl der Elemente pro Zeile
+// 'formBreak': Elementnummer des ersten Zeilenumbruchs
+// return Gefuelltes Objekt mit den gesetzten Optionen
+function prepareOptions(optSet, optParams) {
+    UNUSED(optParams);
+
+    return optSet;
+}
+
+// ==================== Ende Spezialbehandlung der Startparameter ====================
+
+// ==================== Hauptprogramm ====================
+
+const __LEAFS = {
+                    'haupt.php'      : 0,  // Ansicht "Haupt" (Managerbuero)
+                    'fssturnier.php' : 1   // Ansicht "FSS-Turniere" (offizielles FSS-Turnier)
+                };
+
+// URL-Legende:
+// page=0: Managerbuero
+// page=1: offizielles FSS-Turnier
+const __MAIN = new Main(__OPTCONFIG, null, procHaupt, procOSFSSTurnier);
+
+__MAIN.run(getPageIdFromURL, __LEAFS);
+
+// ==================== Ende Hauptprogramm ====================
 
 // *** EOF ***

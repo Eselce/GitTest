@@ -172,7 +172,7 @@ __LOG.init(window, 4, false);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(
 // Makro fuer die Markierung bewusst ungenutzter Variablen und Parametern
 // params: Beliebig viele Parameter, mit denen nichts gemacht wird
 // return Liefert formal die Parameter zurueck
-function UNUSED(...unused) {
+function UNUSED(... unused) {
     return unused;
 }
 
@@ -1268,6 +1268,9 @@ function showException(label, ex, show = true) {
 function defaultCatch(error, show) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
     error = (error || new Error("Promise rejected!"));
+    if (error[2]) {  // Recatch...
+        return Promise.reject(error);
+    }
 
     try {
         const __LABEL = `[${error.lineNumber}] ${__DBMOD.Name}`;
@@ -1466,10 +1469,10 @@ function GM_function(action, label, condition = true, altAction = undefined, lev
     const __LABEL = ((condition ? '+' : '-') + label);
     const __FUNKEY = (condition ? action : altAction);
 
-    return function(...args) {
+    return function(... args) {
             const __NAME = __LOG.info(args[0], false);
             __LOG[level](__LABEL, __NAME);
-            return GM[__FUNKEY](...args);
+            return GM[__FUNKEY](... args);
         };
 }
 
@@ -2196,8 +2199,8 @@ function loadScript(url) {
 // fun: Auszufuehrende Funktion
 // params: Parameterliste fuer den Aufruf der Funktion
 // return Promise auf den Rueckgabewert dieser Funktion
-function getScript(url, fun, ...params) {
-    return loadScript(url).then(fun(...params),
+function getScript(url, fun, ... params) {
+    return loadScript(url).then(fun(... params),
                                 () => {
                                         __LOG[1]("Failed to load", url);
                                     });
@@ -2253,7 +2256,7 @@ if ((typeof showAlert) === 'undefined') {
                 if (__BASEINIT) {
                     initFun = function() {
                                   // Basisklassen-Init aufrufen...
-                                  return __BASEINIT.call(this, arguments);
+                                  return __BASEINIT.apply(this, arguments);
                               };
                 } else {
                     initFun = function() {
@@ -3411,7 +3414,7 @@ Class.define(Options, Object, {
                         return true;
                     },
                     'toString' : function() {
-                        let retStr = this.setLabel + " = {\n";
+                        let retStr = this.setLabel + " = {  // " + __DBMOD.Name + " / " + __DBMAN.Name + '\n';
 
                         for (const [ __KEY, __OPT ] of Object.entries(this)) {
                             if (this.checkKey(__KEY)) {
@@ -4737,13 +4740,13 @@ function groupData(data, byFun, filterFun, sortFun) {
     const __VALS = Object.values(data);
     const __BYKEYS = __VALS.map(__BYFUN);
     const __BYKEYSET = new Set(__BYKEYS);
-    const __BYKEYARRAY = [...__BYKEYSET];
+    const __BYKEYARRAY = [... __BYKEYSET];
     const __SORTEDKEYS = __BYKEYARRAY.sort(sortFun);
     const __GROUPEDKEYS = __SORTEDKEYS.map(byVal => __KEYS.filter((key, index) => {
                                                             UNUSED(key);
                                                             return __FILTERFUN(byVal, index, __BYKEYS);
                                                         }));
-    const __ASSIGN = ((keyArr, valArr) => Object.assign({ }, ...keyArr.map((key, index) => ({ [key] : valArr[index] }))));
+    const __ASSIGN = ((keyArr, valArr) => Object.assign({ }, ... keyArr.map((key, index) => ({ [key] : valArr[index] }))));
 
     return __ASSIGN(__SORTEDKEYS, __GROUPEDKEYS);
 }
@@ -5015,39 +5018,44 @@ function initOptions(optConfig, optSet = undefined, preInit = undefined) {
         this.renameFun = prefixName;
         this.prefix = (prefix || 'old');
         this.optSet = undefined;
+        this.optParams = undefined;
         this.optSelect = { };
     }
 //}
 
 Class.define(Classification, Object, {
-                    'renameOptions'  : function() {
-                                           const __PARAM = this.renameParamFun();
+                    'assign'          : function(optSet, optParams) {
+                                            this.optSet = optSet;
+                                            this.optParams = optParams;
+                                        },
+                    'renameOptions'   : function() {
+                                            const __PARAM = this.renameParamFun();
 
-                                           if (__PARAM !== undefined) {
-                                               // Klassifizierte Optionen umbenennen...
-                                               return renameOptions(this.optSet, this.optSelect, __PARAM, this.renameFun);
-                                           } else {
-                                               return Promise.resolve();
-                                           }
-                                       },
-                    'saveOptions'    : function(ignList) {
-                                           const __OPTSELECT = optSelect(this.optSelect, ignList);
+                                            if (__PARAM !== undefined) {
+                                                // Klassifizierte Optionen umbenennen...
+                                                return renameOptions(this.optSet, this.optSelect, __PARAM, this.renameFun);
+                                            } else {
+                                                return Promise.resolve();
+                                            }
+                                        },
+                    'saveOptions'     : function(ignList) {
+                                            const __OPTSELECT = optSelect(this.optSelect, ignList);
 
-                                           return saveOptions(this.optSet, __OPTSELECT);
-                                       },
-                    'deleteOptions'  : function(ignList) {
-                                           const __OPTSELECT = optSelect(this.optSelectl, ignList);
+                                            return saveOptions(this.optSet, __OPTSELECT);
+                                        },
+                    'deleteOptions'   : function(ignList) {
+                                            const __OPTSELECT = optSelect(this.optSelectl, ignList);
 
-                                           return deleteOptions(this.optSet, __OPTSELECT, true, true);
-                                       },
-                    'prefixParamFun' : function() {
-                                           // Parameter fuer 'prefixName': Prefix "old:"
-                                           return ((this.prefix !== undefined) ? this.prefix + ':' : this.prefix);
-                                       },
-                    'renameParamFun' : function() {
-                                           // Parameter fuer 'renameFun': Default ist 'prefixName' ("old:")
-                                           return this.prefixParamFun();
-                                       }
+                                            return deleteOptions(this.optSet, __OPTSELECT, true, true);
+                                        },
+                    'prefixParamFun'  : function() {
+                                            // Parameter fuer 'prefixName': Prefix "old:"
+                                            return ((this.prefix !== undefined) ? this.prefix + ':' : this.prefix);
+                                        },
+                    'renameParamFun'  : function() {
+                                            // Parameter fuer 'renameFun': Default ist 'prefixName' ("old:")
+                                            return this.prefixParamFun();
+                                        }
                 });
 
 // Wandelt ein Array von Options-Schluesseln (props) in das optSelect-Format { 'key1' : true, 'key2' : true, ... }
@@ -5131,6 +5139,10 @@ function optSelect(selList, ignList) {
 //}
 
 Class.define(ClassificationPair, Classification, {
+                    'assign'          : function(optSet, optParams) {
+                                            (this.A && this.A.assign(optSet, optParams));
+                                            (this.B && this.B.assign(optSet, optParams));
+                                        },
                     'renameOptions'  : function() {
                                            return (this.A ? this.A.renameOptions() : Promise.resolve()).then(() =>
                                                    (this.B ? this.B.renameOptions() : Promise.resolve()));
@@ -5258,74 +5270,106 @@ function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
 
 // ==================== Abschnitt fuer Aufbau und Start des Hauptprogramms ====================
 
-// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-//const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
+// ==================== Abschnitt fuer Klasse Main ====================
 
 /*class*/ function Main /*{
-    constructor*/(optConfig, optSet, classification) {
-        UNUSED(optConfig, optSet, classification);
+    constructor*/(optConfig, mainConfig, ... pageManager) {
+        const __MAINCONFIG = (mainConfig || { });
+
+        this.optConfig      = optConfig;
+        this.optSet         = new Options(this.optConfig, '__OPTSET');
+        this.setupManager   = __MAINCONFIG.setupManager;
+        this.checkOptParams = __MAINCONFIG.checkOptParams;
+        this.prepareOpt     = __MAINCONFIG.prepareOpt;
+        this.verifyOpt      = __MAINCONFIG.verifyOpt;
+        this.pageManager    = pageManager;
     }
 //}
 
-//const __MAIN = new Main(__OPTCONFIG, __OPTSET, __TEAMCLASS);
+Class.define(Main, Object, {
+        'handlePage'  : async function(page) {
+                            // Fuehrt die Bearbeitung einer speziellen Seite durch
+                            // page: ID fuer die aktuelle Seite
+                            // return Promise auf die Durchfuehrung der Bearbeitung
+                            const __SETUPMANAGER    = (this.setupManager || (page => this.pageManager[page]));
+                            const __MANAGER         = getValue(__SETUPMANAGER.call(this, page), { name : "Seite #" + page });
+                            const __SETUPOPTPARAMS  = (__MANAGER.setupOptParams || (() => ({ 'hideMenu' : false })));
+                            const __OPTPARAMS       = __SETUPOPTPARAMS.call(__MANAGER, this.optSet, ... __MANAGER.params);
+                            const __CHECKOPTPARAMS  = (this.checkOptParams || (optParams => !! optParams));
 
-/*
-Classification.assign(optSet, optParam) {
-    this.optSet = optSet;
-    this.optParam = optParam;
-}
+                            if (__CHECKOPTPARAMS(__OPTPARAMS, __MANAGER)) {
+                                const __CLASSIFICATION  = (__MANAGER.classification || (new Classification()));
+                                const __HANDLER         = (__MANAGER.handler || (() => Promise.resolve(false)));
 
-TeamClassification.assign(optSet, optParam) {
-    this.optSet = optSet;
-    this.optParam = optParam;
-    this.teamParam = optParam.teamParam;
-}
-*/
+                                // Klassifikation verknuepfen...
+                                __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
 
-// Fuehrt die Bearbeitung einer speziellen Seite durch
-// optConfig: Konfiguration der Optionen
-// optSet: Platz fuer die gesetzten Optionen (und Config)
-// page: ID fuer die aktuelle Seite
-// return Promise auf die Durchfuehrung der Bearbeitung
-function handlePage(optConfig, optSet, page) {
-    const __SETUPOPTPARAMS = (this.setupOptParams[page] || (() => ({ 'hideMenu' : false })));
-    const __CLASSIFICATION = this.classification[page];
-    const __PREPAREOPTIONS = this.prepareOptions;
-    const __HANDLER = this.handler[page];
-    const __OPTPARAMS = __SETUPOPTPARAMS(optSet);
+                                return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(
+                                    async optSet => {
+                                            const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || (optSet => optSet));
+                                            const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || (optSet => Object.values(optSet).forEach(checkOpt)));
+    
+                                            return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
+                                                                        optSet => Promise.resolve(showOptions(optSet, __OPTPARAMS)).then(
+                                                                        optSet => __VERIFYOPT(optSet, __OPTPARAMS)));
+                                        }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
+                                                                ret => (ret ? 'OK' : ('FAILED ' + __MANAGER.name)));
+                            } else {
+                                return Promise.reject(`Keine Options-Parameter f\xFCr '${__MANAGER.name}' vorhanden!`);
+                            }
+                        },
+        'run'         : function(selector, ... selectorParams) {
+                            // Fuehrt die Bearbeitung zu einer selektierten Seite durch
+                            // selector: Funktion zur Selektion aufgrund der als erstem Parameter uebergebenen URL der Seite
+                            // selectorParams: Weitere Parameter fuer selector(URL, ...)
+                            // return Promise auf die Durchfuehrung der Bearbeitung im Hauptprogramm
+                            return startMain().then(
+                                async () => {
+                                        try {
+                                            const __SELECTOR = (selector || (() => 0));
+                                            const __SELECTORPARAMS = selectorParams;
+                                            const __PAGE = __SELECTOR(window.location.href, ... __SELECTORPARAMS);
 
-    if (__OPTPARAMS) {
-        // Klassifikation verknuepfen...
-        __CLASSIFICATION.assign(optSet, __OPTPARAMS);
+                                            return await this.handlePage(__PAGE).catch(defaultCatch);
+                                        } catch (ex) {
+                                            return defaultCatch(ex);
+                                        }
+                                    }).then(rc => {
+                                            __LOG[2](String(this.optSet));
+                                            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
+                                        }, ex => {
+                                            __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message, ex[0] + ": " + ex[1])) + ')');
+                                            __LOG[2](String(this.optSet));
+                                            __LOG[1]('SCRIPT END', __DBMAN.Name);
+                                        });
+                        }
+    });
 
-        startOptions(optConfig, optSet, __CLASSIFICATION).then(optSet => {
-                __PREPAREOPTIONS(optSet, __OPTPARAMS);
+// ==================== Ende Abschnitt fuer Klasse Main ====================
 
-                return showOptions(optSet, __OPTPARAMS);
-            }, defaultCatch).then(__HANDLER);
-    } else {
-        return Promise.reject(`Keine Options-Parameter f\xFCr Seite ${page} vorhanden!`);
+// ==================== Abschnitt fuer Klasse PageManager ====================
+
+/*class*/ function PageManager /*{
+    constructor*/(pageName, classification, setupOptParams, handler, ... params) {
+        this.name           = pageName;
+        this.classification = classification;
+        this.setupOptParams = setupOptParams;
+        this.handler        = handler;
+        this.params         = (params || []);
     }
-}
+//}
 
-function run() {
-    startMain().then(async () => {
-        try {
-            const __SELECTOR = this.selector;
-            const __SELECTORPARAMS = this.selectorParams;
-            const __PAGE = __SELECTOR(window.location.href, ...__SELECTORPARAMS);
+Class.define(PageManager, Object, {
+        'clone'       : function(... params) {
+                            const __PARAMS = this.params.concat(params || []);
 
-            await handlePage(this.optConfig, this.optSet, __PAGE).catch(defaultCatch);
+                            return new PageManager(this.pageName + " (" + params.join(", ") + ')',
+                                                    this.classification, this.setupOptParams,
+                                                    this.handler, ... __PARAMS);
+                        }
+    });
 
-            return 'OK';
-        } catch (ex) {
-            return defaultCatch(ex);
-        }
-    }).then(rc => {
-            //__LOG[2](String(__OPTSET));
-            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-        });
-};
+// ==================== Ende Abschnitt fuer Klasse PageManager ====================
 
 // ==================== Ende Abschnitt fuer Aufbau und Start des Hauptprogramms ====================
 
@@ -5748,18 +5792,22 @@ function getColor(pos) {
 //}
 
 Class.define(TeamClassification, Classification, {
-                    'renameParamFun' : function() {
-                                           const __MYTEAM = (this.team = getMyTeam(this.optSet, this.teamParams, this.team));
+                    'assign'          : function(optSet, optParams) {
+                                            Classification.prototype.assign.call(this, optSet, optParams);
+                                            this.teamParams = optParams.teamParams;
+                                        },
+                    'renameParamFun'  : function() {
+                                            const __MYTEAM = (this.team = getMyTeam(this.optSet, this.teamParams, this.team));
 
-                                           if (__MYTEAM.LdNr) {
-                                               // Prefix fuer die Optionen mit gesonderten Behandlung...
-                                               this.prefix = __MYTEAM.LdNr.toString() + '.' + __MYTEAM.LgNr.toString();
-                                           } else {
-                                               this.prefix = undefined;
-                                           }
+                                            if (__MYTEAM.LdNr) {
+                                                // Prefix fuer die Optionen mit gesonderten Behandlung...
+                                                this.prefix = __MYTEAM.LdNr.toString() + '.' + __MYTEAM.LgNr.toString();
+                                            } else {
+                                                this.prefix = undefined;
+                                            }
 
-                                           return this.prefixParamFun();
-                                       }
+                                            return this.prefixParamFun();
+                                        }
                 });
 
 // ==================== Ende Abschnitt fuer Klasse TeamClassification ====================
@@ -5966,8 +6014,8 @@ function getTeamParamsFromTable(table, teamSearch = undefined) {
 
 // Verarbeitet die URL der Seite und ermittelt die Nummer der gewuenschten Unterseite
 // url: Adresse der Seite
-// leafs: Liste von Filenamen mit der Default-Seitennummer (falls Query-Parameter nicht gefunden)
-// item: Query-Parameter, der die Nummer der Unterseite angibt
+// leafs: Liste von Filenamen mit Basis-Seitennummern (zu denen ggfs. Query-Parameter addiert wird)
+// item: Query-Parameter, der die Nummer der Unterseite angibt (wird zur Basisnummer addiert)
 // return Parameter aus der URL der Seite als Nummer
 function getPageIdFromURL(url, leafs, item = 'page') {
     const __URI = new URI(url);
@@ -5975,9 +6023,9 @@ function getPageIdFromURL(url, leafs, item = 'page') {
 
     for (let leaf in leafs) {
         if (__LEAF === leaf) {
-            const __DEFAULT = leafs[leaf];
+            const __BASE = getValue(leafs[leaf], 0);
 
-            return getValue(__URI.getQueryPar(item), __DEFAULT);
+            return __BASE + getValue(__URI.getQueryPar(item), 0);
         }
     }
 
@@ -7757,7 +7805,7 @@ Class.define(ColumnManager, Object, {
     constructor*/(optSet, colIdx, rows, offsetUpper, offsetLower) {
         'use strict';
 
-        Object.call(this);
+        //Object.call(this);
 
         this.currSaison = getOptValue(optSet.aktuelleSaison);
 

@@ -45,6 +45,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
@@ -490,9 +491,6 @@ const __OPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
-
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);
 
@@ -501,62 +499,6 @@ const __TEAMCLASS = new TeamClassification();
 
 // Optionen mit Daten, die ZAT- und Team-bezogen gemerkt werden...
 __TEAMCLASS.optSelect = { };
-
-// Behandelt die Optionen und laedt das Benutzermenu
-// optConfig: Konfiguration der Optionen
-// optSet: Platz fuer die gesetzten Optionen
-// optParams: Eventuell notwendige Parameter zur Initialisierung
-// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
-// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
-// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
-// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
-// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
-// 'formWidth': Anzahl der Elemente pro Zeile
-// 'formBreak': Elementnummer des ersten Zeilenumbruchs
-// return Promise auf gefuelltes Objekt mit den gesetzten Optionen
-function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : false }) {
-    // Klassifikation ueber Land und Liga des Teams...
-    __TEAMCLASS.optSet = optSet;  // Classification mit optSet verknuepfen
-    __TEAMCLASS.teamParams = optParams.teamParams;  // Ermittelte Parameter
-
-    return startOptions(optConfig, optSet, __TEAMCLASS).then(optSet => {
-                    // Werte aus der HTML-Seite ermitteln...
-                    const __LIGA = getSelection('ligaauswahl');
-                    const __LAND = getSelection('landauswahl');
-                    const __TABTYP = getSelection('tabauswahl');
-                    const __PRUNDE = getSelection('stauswahl');
-                    const __OSCRUNDE = getSelection('runde');
-                    const __OSERUNDE = getSelection('runde');
-                    const __DEFSAISON = getOptValue(optSet.aktuelleSaison);
-                    const __SAISONS = getSelectionArray('saauswahl', 'Number', getSelectedValue);
-                    const __CURRSAISON = (__SAISONS ? Math.max(... __SAISONS) : __DEFSAISON);
-                    const __SAISON = getSelection('saauswahl', 'Number', getSelectedValue);
-                    const __LIGANR = getSelection('ligaauswahl', 'Number', getSelectedValue);
-                    const __LANDNR = getSelection('landauswahl', 'Number', getSelectedValue);
-                    const __TABTYPNR = getSelection('tabauswahl', 'Number', getSelectedValue);
-                    const __PRUNDNR = getSelection('stauswahl', 'Number', getSelectedValue);
-                    const __OSCRUNDNR = getSelection('runde', 'Number', getSelectedValue);
-                    const __OSERUNDNR = getSelection('runde', 'Number', getSelectedValue);
-
-                    // ... und abspeichern...
-                    setOpt(optSet.liga, __LIGA, false);
-                    setOpt(optSet.land, __LAND, false);
-                    setOpt(optSet.tabTyp, __TABTYP, false);
-                    setOpt(optSet.Prunde, __PRUNDE, false);
-                    setOpt(optSet.OSCrunde, __OSCRUNDE, false);
-                    setOpt(optSet.OSErunde, __OSERUNDE, false);
-                    setOpt(optSet.aktuelleSaison, __CURRSAISON, false);
-                    setOpt(optSet.saison, __SAISON, false);
-                    setOpt(optSet.ligaNr, __LIGANR, false);
-                    setOpt(optSet.landNr, __LANDNR, false);
-                    setOpt(optSet.tabTypNr, __TABTYPNR, false);
-                    setOpt(optSet.PrundenNr, __PRUNDNR, false);
-                    setOpt(optSet.OSCrundenNr, __OSCRUNDNR, false);
-                    setOpt(optSet.OSErundenNr, __OSERUNDNR, false);
-
-                    return showOptions(optSet, optParams);
-                }, defaultCatch);
-}
 
 // ==================== Ende Abschnitt fuer Optionen ====================
 
@@ -891,303 +833,313 @@ function calcEuropaPlaetze(landData) {
     return landData;
 }
 
-// ==================== Hauptprogramm ====================
+// ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
-function procHaupt() {
-    const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
+const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
+        const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
 
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'teamParams' : __TEAMPARAMS,
-                            'hideMenu'   : true
-                        });
-}
+        return {
+                'teamParams' : __TEAMPARAMS,
+                'hideMenu'   : true
+            };
+    }, async optSet => {
+        UNUSED(optSet);
+        //return true;
+    });
 
 // Verarbeitet Ansicht "Fairplaytabelle"
-function procFairplay() {
-    const __ROWOFFSETUPPER = 1;     // Header-Zeile
-    const __ROWOFFSETLOWER = 0;
+const procFairplay = new PageManager("Fairplaytabelle", __TEAMCLASS, () => {
+        return {
+                'menuAnchor' : getTable(0, 'div'),
+                'hideForm'   : {
+                                   'saison'        : true,
+                                   'liga'          : true,
+                                   'land'          : true,
+                                   'tabTyp'        : true,
+                                   'Prunde'        : true,
+                                   'OSCrunde'      : true,
+                                   'OSErunde'      : true,
+                                   'ligaNr'        : true,
+                                   'landNr'        : true,
+                                   'tabTypNr'      : true,
+                                   'PrundenNr'     : true,
+                                   'OSCrundenNr'   : true,
+                                   'OSErundenNr'   : true,
+                                   'data'          : true,
+                                   'dataStats'     : true,
+                                   'manager'       : true,
+                                   'ligen'         : true
+                               },
+                'formWidth'  : 1
+            };
+    }, async optSet => {
+        const __ROWOFFSETUPPER = 1;     // Header-Zeile
+        const __ROWOFFSETLOWER = 0;
 
-    const __COLUMNINDEX = {
-            'Platz'   : 0,
-            'Team'    : 1,
-            'Gelb'    : 2,
-            'GelbRot' : 3,
-            'Rot'     : 5,
-            'Anz'     : 6,
-            'Punkte'  : 7
-        };
+        const __COLUMNINDEX = {
+                'Platz'   : 0,
+                'Team'    : 1,
+                'Gelb'    : 2,
+                'GelbRot' : 3,
+                'Rot'     : 5,
+                'Anz'     : 6,
+                'Punkte'  : 7
+            };
+        const __CURRSAISON = getOptValue(optSet.aktuelleSaison);
+        const __EINFAERBUNG = getOptValue(optSet.zeigeQuali, true);
+        const __SHOWTITLES = getOptValue(optSet.zeigeTitel, true);
+        const __LAENDER = getOptValue(optSet.laender, []);
+        const __DATA = getOptValue(optSet.data, []);
 
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'menuAnchor' : getTable(0, 'div'),
-                            'hideForm'   : {
-                                               'saison'        : true,
-                                               'liga'          : true,
-                                               'land'          : true,
-                                               'tabTyp'        : true,
-                                               'Prunde'        : true,
-                                               'OSCrunde'      : true,
-                                               'OSErunde'      : true,
-                                               'ligaNr'        : true,
-                                               'landNr'        : true,
-                                               'tabTypNr'      : true,
-                                               'PrundenNr'     : true,
-                                               'OSCrundenNr'   : true,
-                                               'OSErundenNr'   : true,
-                                               'data'          : true,
-                                               'dataStats'     : true,
-                                               'manager'       : true,
-                                               'ligen'         : true
-                                           },
-                            'formWidth'  : 1
-                        }).then(optSet => {
-            const __CURRSAISON = getOptValue(optSet.aktuelleSaison);
-            const __EINFAERBUNG = getOptValue(optSet.zeigeQuali, true);
-            const __SHOWTITLES = getOptValue(optSet.zeigeTitel, true);
-            const __LAENDER = getOptValue(optSet.laender, []);
-            const __DATA = getOptValue(optSet.data, []);
+        const __TABLEMAN = new TableManager(optSet, __COLUMNINDEX, getRowsById('fairplay'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
 
-            const __TABLEMAN = new TableManager(optSet, __COLUMNINDEX, getRowsById('fairplay'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
+        __TABLEMAN.isAbschluss = true;  // Vorschau der Fairplay-Tabelle auf Saisonende!
+        __TABLEMAN.saison = __CURRSAISON;  // Fairplay-Tabelle gilt fuer die aktuelle Saison!
 
-            __TABLEMAN.isAbschluss = true;  // Vorschau der Fairplay-Tabelle auf Saisonende!
-            __TABLEMAN.saison = __CURRSAISON;  // Fairplay-Tabelle gilt fuer die aktuelle Saison!
+        const __SDATA = getProp(__DATA, __CURRSAISON, { });
+        const __ANZFAIRPLAY = 3;  // Nur unter gewissen Umstaenden mehr als 3!
+        const __LANDSHOWN = { };
+        const __ENTRIES = { };
+        const __TITEL = { };
 
-            const __SDATA = getProp(__DATA, __CURRSAISON, { });
-            const __ANZFAIRPLAY = 3;  // Nur unter gewissen Umstaenden mehr als 3!
-            const __LANDSHOWN = { };
-            const __ENTRIES = { };
-            const __TITEL = { };
+        const __TYPEN = {
+                    'P2'   : 'Pokalfinalist',
+                    'P'    : 'Pokalsieger',
+                    'OSE'  : 'OSE-Sieger',
+                    'OSC'  : 'OSC-Sieger',
+                    '1'    : 'Meister',       // Ab hier nur Markierungen, kein Eintrag!
+                    '2'    : 'Vizemeister',
+                    'OSE2' : 'OSE-Finalist',
+                    'OSC2' : 'OSC-Finalist',
+                    'FP'   : 'Fairplay'
+                };
 
-            const __TYPEN = {
-                        'P2'   : 'Pokalfinalist',
-                        'P'    : 'Pokalsieger',
-                        'OSE'  : 'OSE-Sieger',
-                        'OSC'  : 'OSC-Sieger',
-                        '1'    : 'Meister',       // Ab hier nur Markierungen, kein Eintrag!
-                        '2'    : 'Vizemeister',
-                        'OSE2' : 'OSE-Finalist',
-                        'OSC2' : 'OSC-Finalist',
-                        'FP'   : 'Fairplay'
-                    };
+        for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
+            const __VEREIN = __TABLEMAN.vereine[i];
+            const __TEAMID = __VEREIN.ID;
+            const __LAND = __LAENDER[__TEAMID];
 
-            for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
-                const __VEREIN = __TABLEMAN.vereine[i];
-                const __TEAMID = __VEREIN.ID;
-                const __LAND = __LAENDER[__TEAMID];
+            __LANDSHOWN[__LAND] = true;
+        }
 
-                __LANDSHOWN[__LAND] = true;
-            }
+        for (let land in __LANDSHOWN) {
+            const __LDATA = getProp(__SDATA, land, { });
 
-            for (let land in __LANDSHOWN) {
-                const __LDATA = getProp(__SDATA, land, { });
+            // Eventuell vorhandenen Eintrag entfernen (wird weiter unten neu ermittelt)...
+            delete __LDATA.FP;
 
-                // Eventuell vorhandenen Eintrag entfernen (wird weiter unten neu ermittelt)...
-                delete __LDATA.FP;
+            for (let typ in __LDATA) {
+                const __ENTRY = getValue(__LDATA[typ], []);
+                const __TEAMID = __ENTRY[0];
+                const __TYP = __ENTRY[2];
 
-                for (let typ in __LDATA) {
-                    const __ENTRY = getValue(__LDATA[typ], []);
-                    const __TEAMID = __ENTRY[0];
-                    const __TYP = __ENTRY[2];
+                if (__TEAMID) {
+                    const __TYPNAME = __TYPEN[typ];
 
-                    if (__TEAMID) {
-                        const __TYPNAME = __TYPEN[typ];
+                    if (__TYPNAME) {
+                        getProp(__TITEL, __TEAMID, []).push(__TYPEN[typ]);
+                    }
 
-                        if (__TYPNAME) {
-                            getProp(__TITEL, __TEAMID, []).push(__TYPEN[typ]);
-                        }
-
-                        if (__TYP) {
-                            __ENTRIES[__TEAMID] = __ENTRY;
-                        }
+                    if (__TYP) {
+                        __ENTRIES[__TEAMID] = __ENTRY;
                     }
                 }
             }
+        }
 console.log(__ENTRIES);
 console.log(__TITEL);
-            for (let i = 0, count = __ANZFAIRPLAY; i < __TABLEMAN.ligaSize; i++) {
-                const __VEREIN = __TABLEMAN.vereine[i];
-                const __TEAMID = __VEREIN.ID;
-                const __ENTRY = __ENTRIES[__TEAMID];
+        for (let i = 0, count = __ANZFAIRPLAY; i < __TABLEMAN.ligaSize; i++) {
+            const __VEREIN = __TABLEMAN.vereine[i];
+            const __TEAMID = __VEREIN.ID;
+            const __ENTRY = __ENTRIES[__TEAMID];
 
-                if (__ENTRY) {
-                    if (__EINFAERBUNG) {
-                        const __TYP = __ENTRY[2];
+            if (__ENTRY) {
+                if (__EINFAERBUNG) {
+                    const __TYP = __ENTRY[2];
 
-                        __TABLEMAN.setClass(i, __TYP);
-                    }
-                } else if (count-- > 0) {
-                    const __LAND = __LAENDER[__TEAMID];
-                    const __LDATA = getProp(__SDATA, __LAND, { });
-                    const __QUALI = getGameTypeID((__CURRSAISON < 7) ? 'OSE' : 'OSEQ');
-
-                    __LDATA.FP = [ __TEAMID, __QUALI, __QUALI ];
-                    getProp(__TITEL, __TEAMID, []).push(__TYPEN.FP);
+                    __TABLEMAN.setClass(i, __TYP);
                 }
+            } else if (count-- > 0) {
+                const __LAND = __LAENDER[__TEAMID];
+                const __LDATA = getProp(__SDATA, __LAND, { });
+                const __QUALI = getGameTypeID((__CURRSAISON < 7) ? 'OSE' : 'OSEQ');
 
-                if (__SHOWTITLES) {
-                    const __TIT = __TITEL[__TEAMID];
-
-                    __TABLEMAN.addTitel(i, __TIT, ", ");
-                }
+                __LDATA.FP = [ __TEAMID, __QUALI, __QUALI ];
+                getProp(__TITEL, __TEAMID, []).push(__TYPEN.FP);
             }
 
-            saveQualiData(optSet, __DATA, __CURRSAISON);
-        });
-}
+            if (__SHOWTITLES) {
+                const __TIT = __TITEL[__TEAMID];
+
+                __TABLEMAN.addTitel(i, __TIT, ", ");
+            }
+        }
+
+        saveQualiData(optSet, __DATA, __CURRSAISON);
+
+        return true;
+    });
 
 // Verarbeitet Ansichten "OS Championscup FR" und "OS Europacup"
 // typ: Name des Wettbewerbs ('OSC' oder 'OSE')
-// finale: Runde mit dem Finalspiel
-function procEuropa(typ, finale) {
-    const __COLUMNINDEX = {
-            'LandH'  : 0,
-            'WappH'  : 1,
-            'TeamH'  : 2,
-            'vs'     : 3,
-            'LandA'  : 4,
-            'WappA'  : 5,
-            'TeamA'  : 6,
-            '_1'     : 7,
-            'Erg'    : 8,
-            '_2'     : 9,
-            'Ber'    : 10,
-            '_3'     : 11,
-            'Kom'    : 12,
-            '_4'     : 13,
-            'ErgR'   : 14,
-            '_5'     : 15,
-            'BerR'   : 16,
-            '_6'     : 17,
-            'KomR'   : 18
-        };
+// finale: Letzte Runde mit dem Finalspiel
+const procEuropa = new PageManager("OS Championscup FR / OS Europacup", __TEAMCLASS, (optSet, typ, finale) => {
+        UNUSED(optSet, finale);
 
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'menuAnchor' : getTable(0, 'div'),
-                            'hideForm'   : {
-                                               'land'          : true,
-                                               'liga'          : true,
-                                               'tabTyp'        : true,
-                                               'Prunde'        : true,
-                                               'OSCrunde'      : (typ === 'OSC'),
-                                               'OSErunde'      : (typ === 'OSE'),
-                                               'landNr'        : true,
-                                               'ligaNr'        : true,
-                                               'tabTypNr'      : true,
-                                               'PrundenNr'     : true,
-                                               'OSCrundenNr'   : (typ === 'OSC'),
-                                               'OSErundenNr'   : (typ === 'OSE')
-                                           },
-                            'formWidth'  : 1
-                        }).then(optSet => {
-            const __RUNDE = getOptValue(optSet[typ + 'rundenNr']);
-            const __FINALE = (__RUNDE === finale);
-            const __ROWS = getRows(0);
+        return {
+                'menuAnchor' : getTable(0, 'div'),
+                'hideForm'   : {
+                                   'land'          : true,
+                                   'liga'          : true,
+                                   'tabTyp'        : true,
+                                   'Prunde'        : true,
+                                   'OSCrunde'      : (typ === 'OSC'),
+                                   'OSErunde'      : (typ === 'OSE'),
+                                   'landNr'        : true,
+                                   'ligaNr'        : true,
+                                   'tabTypNr'      : true,
+                                   'PrundenNr'     : true,
+                                   'OSCrundenNr'   : (typ === 'OSC'),
+                                   'OSErundenNr'   : (typ === 'OSE')
+                               },
+                'formWidth'  : 1
+            };
+    }, async (optSet, typ, finale) => {
+        const __COLUMNINDEX = {
+                'LandH'  : 0,
+                'WappH'  : 1,
+                'TeamH'  : 2,
+                'vs'     : 3,
+                'LandA'  : 4,
+                'WappA'  : 5,
+                'TeamA'  : 6,
+                '_1'     : 7,
+                'Erg'    : 8,
+                '_2'     : 9,
+                'Ber'    : 10,
+                '_3'     : 11,
+                'Kom'    : 12,
+                '_4'     : 13,
+                'ErgR'   : 14,
+                '_5'     : 15,
+                'BerR'   : 16,
+                '_6'     : 17,
+                'KomR'   : 18
+            };
 
-            if (__FINALE && __ROWS.length) {
-                const __CELLS = __ROWS[0].cells;  // Finalspiel
-                const __SAISON = getOptValue(optSet.saison);
-                const __VEREINE = getOptValue(optSet.vereine, []);
-                const __LAENDER = getOptValue(optSet.laender, []);
-                const __DATA = getOptValue(optSet.data, []);
-                const __HEIMLAND = getLandNameFromCell(__CELLS[__COLUMNINDEX.LandH]);
-                const __TEAMHEIMCELL = __CELLS[__COLUMNINDEX.TeamH];
-                const __HEIMNAME = getTeamNameFromCell(__TEAMHEIMCELL);
-                const __HEIMID = getTeamIdFromCell(__TEAMHEIMCELL);
-                const __HEIM = new Verein(__HEIMNAME, __HEIMLAND, undefined, __HEIMID, undefined, undefined);
-                const __GASTLAND = getLandNameFromCell(__CELLS[__COLUMNINDEX.LandA]);
-                const __TEAMGASTCELL = __CELLS[__COLUMNINDEX.TeamA];
-                const __GASTNAME = getTeamNameFromCell(__TEAMGASTCELL);
-                const __GASTID = getTeamIdFromCell(__TEAMGASTCELL);
-                const __GAST = new Verein(__GASTNAME, __GASTLAND, undefined, __GASTID, undefined, undefined);
-                const __ERGEBNIS = setErgebnisFromCell({ }, __CELLS[__COLUMNINDEX.Erg]);
-                const __HEIMSIEG = ((__ERGEBNIS.gFor > -1) ? (__ERGEBNIS.gFor > __ERGEBNIS.gAga) : undefined);
-                const __WINNER =  (__HEIMSIEG ? __HEIM : __GAST);
-                const __LOSER = (__HEIMSIEG ? __GAST : __HEIM);
-                const __WID = __WINNER.ID;
-                const __LID = __LOSER.ID;
-                const __WLAND = __WINNER.Land;
-                const __LLAND = __LOSER.Land;
-                const __SDATA = getProp(__DATA, __SAISON, { });
-                const __LDATA = getProp(__SDATA, __WLAND, { });
-                const __LDATA2 = getProp(__SDATA, __LLAND, { });
+        const __RUNDE = getOptValue(optSet[typ + 'rundenNr']);
+        const __FINALE = (__RUNDE === finale);
+        const __ROWS = getRows(0);
 
-                __VEREINE[__HEIMID] = __HEIM.Team;
-                __LAENDER[__HEIMID] = __HEIM.Land;
-                __VEREINE[__GASTID] = __GAST.Team;
-                __LAENDER[__GASTID] = __GAST.Land;
+        if (__FINALE && __ROWS.length) {
+            const __CELLS = __ROWS[0].cells;  // Finalspiel
+            const __SAISON = getOptValue(optSet.saison);
+            const __VEREINE = getOptValue(optSet.vereine, []);
+            const __LAENDER = getOptValue(optSet.laender, []);
+            const __DATA = getOptValue(optSet.data, []);
+            const __HEIMLAND = getLandNameFromCell(__CELLS[__COLUMNINDEX.LandH]);
+            const __TEAMHEIMCELL = __CELLS[__COLUMNINDEX.TeamH];
+            const __HEIMNAME = getTeamNameFromCell(__TEAMHEIMCELL);
+            const __HEIMID = getTeamIdFromCell(__TEAMHEIMCELL);
+            const __HEIM = new Verein(__HEIMNAME, __HEIMLAND, undefined, __HEIMID, undefined, undefined);
+            const __GASTLAND = getLandNameFromCell(__CELLS[__COLUMNINDEX.LandA]);
+            const __TEAMGASTCELL = __CELLS[__COLUMNINDEX.TeamA];
+            const __GASTNAME = getTeamNameFromCell(__TEAMGASTCELL);
+            const __GASTID = getTeamIdFromCell(__TEAMGASTCELL);
+            const __GAST = new Verein(__GASTNAME, __GASTLAND, undefined, __GASTID, undefined, undefined);
+            const __ERGEBNIS = setErgebnisFromCell({ }, __CELLS[__COLUMNINDEX.Erg]);
+            const __HEIMSIEG = ((__ERGEBNIS.gFor > -1) ? (__ERGEBNIS.gFor > __ERGEBNIS.gAga) : undefined);
+            const __WINNER =  (__HEIMSIEG ? __HEIM : __GAST);
+            const __LOSER = (__HEIMSIEG ? __GAST : __HEIM);
+            const __WID = __WINNER.ID;
+            const __LID = __LOSER.ID;
+            const __WLAND = __WINNER.Land;
+            const __LLAND = __LOSER.Land;
+            const __SDATA = getProp(__DATA, __SAISON, { });
+            const __LDATA = getProp(__SDATA, __WLAND, { });
+            const __LDATA2 = getProp(__SDATA, __LLAND, { });
 
-                if (__HEIMSIEG !== undefined) {
-                    __LDATA[typ] = [ __WID, getGameTypeID(typ) ];
-                    __LDATA2[typ + '2'] = [ __LID ];
+            __VEREINE[__HEIMID] = __HEIM.Team;
+            __LAENDER[__HEIMID] = __HEIM.Land;
+            __VEREINE[__GASTID] = __GAST.Team;
+            __LAENDER[__GASTID] = __GAST.Land;
 
-                    saveQualiData(optSet, __DATA, __SAISON);
-                }
+            if (__HEIMSIEG !== undefined) {
+                __LDATA[typ] = [ __WID, getGameTypeID(typ) ];
+                __LDATA2[typ + '2'] = [ __LID ];
 
-                setOpt(optSet.vereine, __VEREINE, false);
-                setOpt(optSet.laender, __LAENDER, false);
+                saveQualiData(optSet, __DATA, __SAISON);
             }
-        });
-}
+
+            setOpt(optSet.vereine, __VEREINE, false);
+            setOpt(optSet.laender, __LAENDER, false);
+        }
+
+        return true;
+    });
 
 // Verarbeitet Ansicht "Landespokale"
-// finale: Runde mit dem Finalspiel
-function procPokal(finale) {
-    const __COLUMNINDEX = {
-            'Ausw'   : 0,
-            'WappH'  : 1,
-            'TeamH'  : 2,
-            'vs'     : 3,
-            'WappA'  : 4,
-            'TeamA'  : 5,
-            '_1'     : 6,
-            'Erg'    : 7,
-            '_2'     : 8,
-            'Ber'    : 9,
-            '_3'     : 10,
-            'Kom'    : 11
-        };
+// finale: Letzte Runde mit dem Finalspiel
+const procPokal = new PageManager("Landespokale", __TEAMCLASS, (optSet, finale) => {
+        UNUSED(optSet, finale);
 
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'menuAnchor' : getTable(0, 'div'),
-                            'hideForm'   : {
-                                               'liga'          : true,
-                                               'tabTyp'        : true,
-                                               'OSCrunde'      : true,
-                                               'OSErunde'      : true,
-                                               'ligaNr'        : true,
-                                               'tabTypNr'      : true,
-                                               'OSCrundenNr'   : true,
-                                               'OSErundenNr'   : true
-                                           },
-                            'formWidth'  : 1
-                        }).then(optSet => {
-            const __RUNDE = getOptValue(optSet.PrundenNr);
-            const __FINALE = (__RUNDE === finale);
-            const __ROWS = getRows(0);
+        return {
+                'menuAnchor' : getTable(0, 'div'),
+                'hideForm'   : {
+                                   'liga'          : true,
+                                   'tabTyp'        : true,
+                                   'OSCrunde'      : true,
+                                   'OSErunde'      : true,
+                                   'ligaNr'        : true,
+                                   'tabTypNr'      : true,
+                                   'OSCrundenNr'   : true,
+                                   'OSErundenNr'   : true
+                               },
+                'formWidth'  : 1
+            };
+    }, async (optSet, finale) => {
+        const __COLUMNINDEX = {
+                'Ausw'   : 0,
+                'WappH'  : 1,
+                'TeamH'  : 2,
+                'vs'     : 3,
+                'WappA'  : 4,
+                'TeamA'  : 5,
+                '_1'     : 6,
+                'Erg'    : 7,
+                '_2'     : 8,
+                'Ber'    : 9,
+                '_3'     : 10,
+                'Kom'    : 11
+            };
+        const __RUNDE = getOptValue(optSet.PrundenNr);
+        const __FINALE = (__RUNDE === finale);
+        const __ROWS = getRows(0);
 
-            if (__FINALE && __ROWS.length) {
-                const __CELLS = __ROWS[0].cells;  // Finalspiel
-                const __SAISON = getOptValue(optSet.saison);
-                const __LAND = getOptValue(optSet.land);
-                const __VEREINE = getOptValue(optSet.vereine, []);
-                const __LAENDER = getOptValue(optSet.laender, []);
-                const __DATA = getOptValue(optSet.data, []);
-                const __HEIMTEAMCELL = __CELLS[__COLUMNINDEX.TeamH];
-                const __HEIMNAME = getTeamNameFromCell(__HEIMTEAMCELL);
-                const __HEIMID = getTeamIdFromCell(__HEIMTEAMCELL);
-                const __HEIM = new Verein(__HEIMNAME, __LAND, undefined, __HEIMID, undefined, undefined);
-                const __GASTTEAMCELL = __CELLS[__COLUMNINDEX.TeamA];
-                const __GASTNAME = getTeamNameFromCell(__GASTTEAMCELL);
-                const __GASTID = getTeamIdFromCell(__GASTTEAMCELL);
-                const __GAST = new Verein(__GASTNAME, __LAND, undefined, __GASTID, undefined, undefined);
-                const __ERGEBNIS = setErgebnisFromCell({ }, __CELLS[__COLUMNINDEX.Erg]);
-                const __HEIMSIEG = ((__ERGEBNIS.gFor > -1) ? (__ERGEBNIS.gFor > __ERGEBNIS.gAga) : undefined);
-                const __WINNER =  (__HEIMSIEG ? __HEIM : __GAST);
-                const __LOSER = (__HEIMSIEG ? __GAST : __HEIM);
-                const __WID = __WINNER.ID;
-                const __LID = __LOSER.ID;
-                const __SDATA = getProp(__DATA, __SAISON, { });
-                const __LDATA = getProp(__SDATA, __LAND, { });
+        if (__FINALE && __ROWS.length) {
+            const __CELLS = __ROWS[0].cells;  // Finalspiel
+            const __SAISON = getOptValue(optSet.saison);
+            const __LAND = getOptValue(optSet.land);
+            const __VEREINE = getOptValue(optSet.vereine, []);
+            const __LAENDER = getOptValue(optSet.laender, []);
+            const __DATA = getOptValue(optSet.data, []);
+            const __HEIMTEAMCELL = __CELLS[__COLUMNINDEX.TeamH];
+            const __HEIMNAME = getTeamNameFromCell(__HEIMTEAMCELL);
+            const __HEIMID = getTeamIdFromCell(__HEIMTEAMCELL);
+            const __HEIM = new Verein(__HEIMNAME, __LAND, undefined, __HEIMID, undefined, undefined);
+            const __GASTTEAMCELL = __CELLS[__COLUMNINDEX.TeamA];
+            const __GASTNAME = getTeamNameFromCell(__GASTTEAMCELL);
+            const __GASTID = getTeamIdFromCell(__GASTTEAMCELL);
+            const __GAST = new Verein(__GASTNAME, __LAND, undefined, __GASTID, undefined, undefined);
+            const __ERGEBNIS = setErgebnisFromCell({ }, __CELLS[__COLUMNINDEX.Erg]);
+            const __HEIMSIEG = ((__ERGEBNIS.gFor > -1) ? (__ERGEBNIS.gFor > __ERGEBNIS.gAga) : undefined);
+            const __WINNER =  (__HEIMSIEG ? __HEIM : __GAST);
+            const __LOSER = (__HEIMSIEG ? __GAST : __HEIM);
+            const __WID = __WINNER.ID;
+            const __LID = __LOSER.ID;
+            const __SDATA = getProp(__DATA, __SAISON, { });
+            const __LDATA = getProp(__SDATA, __LAND, { });
 
 console.log(__HEIMTEAMCELL);
 console.log(__GASTTEAMCELL);
@@ -1195,315 +1147,376 @@ console.log(__HEIM);
 console.log(__GAST);
 console.log(__ERGEBNIS);
 
-                __VEREINE[__HEIMID] = __HEIM.Team;
-                __LAENDER[__HEIMID] = __HEIM.Land;
-                __VEREINE[__GASTID] = __GAST.Team;
-                __LAENDER[__GASTID] = __GAST.Land;
+            __VEREINE[__HEIMID] = __HEIM.Team;
+            __LAENDER[__HEIMID] = __HEIM.Land;
+            __VEREINE[__GASTID] = __GAST.Team;
+            __LAENDER[__GASTID] = __GAST.Land;
 
-                if (__HEIMSIEG !== undefined) {
-                    __LDATA.P = [ __WID, getGameTypeID('OSE') ];
-                    __LDATA.P2 = [ __LID ];
+            if (__HEIMSIEG !== undefined) {
+                __LDATA.P = [ __WID, getGameTypeID('OSE') ];
+                __LDATA.P2 = [ __LID ];
 
-                    saveQualiData(optSet, __DATA, __SAISON);
-                }
-
-                setOpt(optSet.vereine, __VEREINE, false);
-                setOpt(optSet.laender, __LAENDER, false);
+                saveQualiData(optSet, __DATA, __SAISON);
             }
-        });
-}
+
+            setOpt(optSet.vereine, __VEREINE, false);
+            setOpt(optSet.laender, __LAENDER, false);
+        }
+
+        return true;
+    });
 
 // Verarbeitet Ansicht "Ligatabelle"
-function procTabelle() {
-    const __ROWOFFSETUPPER = 1;     // Header-Zeile
-    const __ROWOFFSETLOWER = 0;
+const procTabelle = new PageManager("Ligatabelle", __TEAMCLASS, () => {
+        return {
+                'menuAnchor' : getTable(0, 'div'),
+                'hideForm'   : {
+                                   'Prunde'        : true,
+                                   'OSCrunde'      : true,
+                                   'OSErunde'      : true,
+                                   'PrundenNr'     : true,
+                                   'OSCrundenNr'   : true,
+                                   'OSErundenNr'   : true
+                               },
+                'formWidth'  : 1
+            };
+    }, async optSet => {
+        const __ROWOFFSETUPPER = 1;     // Header-Zeile
+        const __ROWOFFSETLOWER = 0;
 
-    const __COLUMNINDEX = {
-            'Platz'  : 0,
-            'Wappen' : 1,
-            'Team'   : 2,
-            'Anz'    : 3,
-            'S'      : 4,
-            'U'      : 5,
-            'N'      : 6,
-            'TorF'   : 7,
-            'TorA'   : 8,
-            'TorD'   : 9,
-            'Punkte' : 10
-        };
+        const __COLUMNINDEX = {
+                'Platz'  : 0,
+                'Wappen' : 1,
+                'Team'   : 2,
+                'Anz'    : 3,
+                'S'      : 4,
+                'U'      : 5,
+                'N'      : 6,
+                'TorF'   : 7,
+                'TorA'   : 8,
+                'TorD'   : 9,
+                'Punkte' : 10
+            };
 
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'menuAnchor' : getTable(0, 'div'),
-                            'hideForm'   : {
-                                               'Prunde'        : true,
-                                               'OSCrunde'      : true,
-                                               'OSErunde'      : true,
-                                               'PrundenNr'     : true,
-                                               'OSCrundenNr'   : true,
-                                               'OSErundenNr'   : true
-                                           },
-                            'formWidth'  : 1
-                        }).then(optSet => {
-            const __TABLEMAN = new TableManager(optSet, __COLUMNINDEX, getRowsById('kader1'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
+        const __TABLEMAN = new TableManager(optSet, __COLUMNINDEX, getRowsById('kader1'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
 
-            const __SAISON = __TABLEMAN.saison;
-            const __LAND = __TABLEMAN.land;
-            const __EINFAERBUNG = getOptValue(optSet.zeigeQuali, true);
-            const __SHOWTITLES = getOptValue(optSet.zeigeTitel, true);
-            const __SHOWCURRTITLES = getOptValue(optSet.zeigeAktuelleTitel, true);
-            const __SHOWQUALITITLES = getOptValue(optSet.zeigeQualiTitel, true);
-            const __VEREINE = getOptValue(optSet.vereine, []);
-            const __LAENDER = getOptValue(optSet.laender, []);
-            //const __MANAGER = getOptValue(optSet.manager, []);
-            const __LIGEN = getOptValue(optSet.ligen, []);
-            const __DATA = getOptValue(optSet.data, []);
-            const __SDATA = getProp(__DATA, __SAISON, { });
-            const __LDATA = getProp(__SDATA, __LAND, { });
+        const __SAISON = __TABLEMAN.saison;
+        const __LAND = __TABLEMAN.land;
+        const __EINFAERBUNG = getOptValue(optSet.zeigeQuali, true);
+        const __SHOWTITLES = getOptValue(optSet.zeigeTitel, true);
+        const __SHOWCURRTITLES = getOptValue(optSet.zeigeAktuelleTitel, true);
+        const __SHOWQUALITITLES = getOptValue(optSet.zeigeQualiTitel, true);
+        const __VEREINE = getOptValue(optSet.vereine, []);
+        const __LAENDER = getOptValue(optSet.laender, []);
+        //const __MANAGER = getOptValue(optSet.manager, []);
+        const __LIGEN = getOptValue(optSet.ligen, []);
+        const __DATA = getOptValue(optSet.data, []);
+        const __SDATA = getProp(__DATA, __SAISON, { });
+        const __LDATA = getProp(__SDATA, __LAND, { });
 
-            if (getOptValue(optSet.setFPdata, false)) {
-                initFairplayData(__DATA, __LAENDER);
+        if (getOptValue(optSet.setFPdata, false)) {
+            initFairplayData(__DATA, __LAENDER);
 
-                setOpt(optSet.setFPdata, false, false);
+            setOpt(optSet.setFPdata, false, false);
+        }
+
+        for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
+            const __VEREIN = __TABLEMAN.vereine[i];
+            const __TEAMID = __VEREIN.ID;
+
+            __VEREINE[__TEAMID] = __VEREIN.Team;
+            __LAENDER[__TEAMID] = __VEREIN.Land;
+            //__MANAGER[__TEAMID] = __VEREIN.Manager;
+            __LIGEN[__TEAMID] = __VEREIN.LgNr;
+
+            if (__TABLEMAN.isErsteLiga) {
+                const __QUALI = __TABLEMAN.getQuali(i);
+                const __ENTRY = [ __TEAMID ];
+
+                if (__QUALI) {
+                    __ENTRY.push(__QUALI);
+                }
+
+                __LDATA[i + 1] = __ENTRY;
+            }
+        }
+
+        __TABLEMAN.formatAllCols([
+                                     [
+                                         {
+                                             'textAlign' : 'center'
+                                         },
+                                         'Anz',
+                                         'Punkte'
+                                     ],
+                                     [
+                                         {
+                                             'textAlign' : 'right',
+                                             'padding'   : "0px .75em"
+                                         },
+                                         'TorF'
+                                     ],
+                                     [
+                                         {
+                                             'textAlign' : 'left',
+                                             'padding'   : "0px .75em"
+                                         },
+                                         'TorA'
+                                     ]
+                                 ]);
+
+        setOpt(optSet.vereine, __VEREINE, false);
+        setOpt(optSet.laender, __LAENDER, false);
+        //setOpt(optSet.manager, __MANAGER, false);
+        setOpt(optSet.ligen, __LIGEN, false);
+
+        if (__TABLEMAN.isErsteLiga) {
+            calcEuropaPlaetze(__LDATA);
+
+            saveQualiData(optSet, __DATA, __SAISON);
+
+            if (__EINFAERBUNG) {
+                for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
+                    const __ENTRY = getProp(__LDATA, i + 1, []);
+                    const __TYP = __ENTRY[2];
+
+                    __TABLEMAN.setClass(i, __TYP);
+                }
+            }
+        }
+
+        if (__EINFAERBUNG || __SHOWTITLES || __SHOWCURRTITLES || __SHOWQUALITITLES) {
+            const __ENTRIES = { };
+            const __TITEL = { };
+            const __LTITEL = { };
+
+            const __LEGENDE = getTable(1);
+            const __ROWS = (__LEGENDE ? __LEGENDE.getElementsByTagName("tr") : { });
+            const __TABCOLORS = getStyleFromElements(__ROWS, "backgroundColor", getUpperClassNameFromElement);  // Faerbungen aus Legende ermitteln
+/*
+            const __TABCOLORS = {
+                    'OSC'  : 'darkgreen',
+                    'OSCQ' : 'olivedrab',
+                    'OSE'  : 'darkOlivegreen',
+                    'OSEQ' : '#88864E'
+                };
+*/
+            const __TYPEN = {
+                    'P'    : 'Pokalsieger',
+                    'P2'   : 'Pokalfinalist',
+                    'OSE'  : 'OSE-Sieger',
+                    'OSC'  : 'OSC-Sieger',
+                    'FP'   : 'Fairplay',
+                    '1'    : 'Meister',       // Ab hier nur Markierungen, kein Eintrag!
+                    '2'    : 'Vizemeister',
+                    'OSE2' : 'OSE-Finalist',
+                    'OSC2' : 'OSC-Finalist'
+                };
+
+            const __FLAGTYPEN = {
+                    'M'    : 'Meister',
+                    'P'    : 'Pokalsieger',
+                    'N'    : 'Aufsteiger',
+                    'A'    : 'abgestiegen',  // 'Absteiger' wird leicht verwechselt!
+                    'Z'    : 'Zwangsabsteiger',
+                    'OSE'  : 'OSE-Sieger',
+                    'OSC'  : 'OSC-Sieger'
+                };
+
+            const __ADDTYPEN = {
+                    'P2'   : true,
+                    'FP'   : true,
+                    '2'    : true,
+                    'OSE2' : true,
+                    'OSC2' : true
+                };
+
+            if (__SAISON > 1) {
+                const __SLDATA = getProp(__DATA, __SAISON - 1, { });
+                const __LLDATA = getProp(__SLDATA, __LAND, { });
+                const __HASCURRTITLES = (__SHOWCURRTITLES && __TABLEMAN.isCurrSaison && ! __TABLEMAN.isAbschluss);
+
+                if (__SHOWQUALITITLES || __SHOWCURRTITLES) {
+                    for (let typ in __LLDATA) {
+                        const __ENTRY = getValue(__LLDATA[typ], []);
+                        const __TEAMID = __ENTRY[0];
+                        const __QUALI = __ENTRY[2];
+                        const __TTYP = __TYPEN[typ];
+                        const __ADDTTYP = (__HASCURRTITLES ? __ADDTYPEN[typ] : false);
+
+                        if (__QUALI) {
+                            const __LTYP = getGameType(__QUALI);
+
+                            getProp(__LTITEL, __TEAMID, []).push(__LTYP);
+                        }
+
+                        if (__TTYP && __ADDTTYP) {
+                            getProp(__TITEL, __TEAMID, []).push(__TTYP);
+                        }
+                    }
+                }
+
+                if (__HASCURRTITLES) {
+                    for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
+                        const __VEREIN = __TABLEMAN.vereine[i];
+                        const __TEAMID = __VEREIN.ID;
+                        const __FLAGS = __VEREIN.Flags;
+
+                        for (let j = 0; j < __FLAGS.length; j++) {
+                            const __FLAG = __FLAGS[j];
+                            const __TYP = __FLAGTYPEN[__FLAG];
+
+                            getProp(__TITEL, __TEAMID, []).push(__TYP);
+                        }
+                    }
+                }
             }
 
+            const __LTITELSIZE = (__SHOWQUALITITLES ? Object.keys(__LTITEL).length : 0);
+
+            for (let typ in __TYPEN) {
+                const __ENTRY = getValue(__LDATA[typ], []);
+                const __TEAMID = __ENTRY[0];
+                const __QUALI = __ENTRY[2];
+
+                if (__TEAMID) {
+                    if (__TABLEMAN.isAbschluss) {
+                        getProp(__TITEL, __TEAMID, []).push(__TYPEN[typ]);
+                    }
+
+                    if (__QUALI) {
+                        __ENTRIES[__TEAMID] = __ENTRY;
+                    }
+                }
+            }
+console.log(__LDATA);
+console.log(__ENTRIES);
+console.log(__TITEL);
+console.log(__LTITEL);
             for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
                 const __VEREIN = __TABLEMAN.vereine[i];
                 const __TEAMID = __VEREIN.ID;
 
-                __VEREINE[__TEAMID] = __VEREIN.Team;
-                __LAENDER[__TEAMID] = __VEREIN.Land;
-                //__MANAGER[__TEAMID] = __VEREIN.Manager;
-                __LIGEN[__TEAMID] = __VEREIN.LgNr;
-
-                if (__TABLEMAN.isErsteLiga) {
-                    const __QUALI = __TABLEMAN.getQuali(i);
-                    const __ENTRY = [ __TEAMID ];
-
-                    if (__QUALI) {
-                        __ENTRY.push(__QUALI);
-                    }
-
-                    __LDATA[i + 1] = __ENTRY;
-                }
-            }
-
-            __TABLEMAN.formatAllCols([
-                                         [
-                                             {
-                                                 'textAlign' : 'center'
-                                             },
-                                             'Anz',
-                                             'Punkte'
-                                         ],
-                                         [
-                                             {
-                                                 'textAlign' : 'right',
-                                                 'padding'   : "0px .75em"
-                                             },
-                                             'TorF'
-                                         ],
-                                         [
-                                             {
-                                                 'textAlign' : 'left',
-                                                 'padding'   : "0px .75em"
-                                             },
-                                             'TorA'
-                                         ]
-                                     ]);
-
-            setOpt(optSet.vereine, __VEREINE, false);
-            setOpt(optSet.laender, __LAENDER, false);
-            //setOpt(optSet.manager, __MANAGER, false);
-            setOpt(optSet.ligen, __LIGEN, false);
-
-            if (__TABLEMAN.isErsteLiga) {
-                calcEuropaPlaetze(__LDATA);
-
-                saveQualiData(optSet, __DATA, __SAISON);
-
                 if (__EINFAERBUNG) {
-                    for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
-                        const __ENTRY = getProp(__LDATA, i + 1, []);
+                    const __ENTRY = __ENTRIES[__TEAMID];
+
+                    if (__ENTRY) {
                         const __TYP = __ENTRY[2];
 
                         __TABLEMAN.setClass(i, __TYP);
                     }
                 }
-            }
 
-            if (__EINFAERBUNG || __SHOWTITLES || __SHOWCURRTITLES || __SHOWQUALITITLES) {
-                const __ENTRIES = { };
-                const __TITEL = { };
-                const __LTITEL = { };
-
-                const __LEGENDE = getTable(1);
-                const __ROWS = (__LEGENDE ? __LEGENDE.getElementsByTagName("tr") : { });
-                const __TABCOLORS = getStyleFromElements(__ROWS, "backgroundColor", getUpperClassNameFromElement);  // Faerbungen aus Legende ermitteln
-/*
-                const __TABCOLORS = {
-                        'OSC'  : 'darkgreen',
-                        'OSCQ' : 'olivedrab',
-                        'OSE'  : 'darkOlivegreen',
-                        'OSEQ' : '#88864E'
-                    };
-*/
-                const __TYPEN = {
-                        'P'    : 'Pokalsieger',
-                        'P2'   : 'Pokalfinalist',
-                        'OSE'  : 'OSE-Sieger',
-                        'OSC'  : 'OSC-Sieger',
-                        'FP'   : 'Fairplay',
-                        '1'    : 'Meister',       // Ab hier nur Markierungen, kein Eintrag!
-                        '2'    : 'Vizemeister',
-                        'OSE2' : 'OSE-Finalist',
-                        'OSC2' : 'OSC-Finalist'
-                    };
-
-                const __FLAGTYPEN = {
-                        'M'    : 'Meister',
-                        'P'    : 'Pokalsieger',
-                        'N'    : 'Aufsteiger',
-                        'A'    : 'abgestiegen',  // 'Absteiger' wird leicht verwechselt!
-                        'Z'    : 'Zwangsabsteiger',
-                        'OSE'  : 'OSE-Sieger',
-                        'OSC'  : 'OSC-Sieger'
-                    };
-
-                const __ADDTYPEN = {
-                        'P2'   : true,
-                        'FP'   : true,
-                        '2'    : true,
-                        'OSE2' : true,
-                        'OSC2' : true
-                    };
-
-                if (__SAISON > 1) {
-                    const __SLDATA = getProp(__DATA, __SAISON - 1, { });
-                    const __LLDATA = getProp(__SLDATA, __LAND, { });
-                    const __HASCURRTITLES = (__SHOWCURRTITLES && __TABLEMAN.isCurrSaison && ! __TABLEMAN.isAbschluss);
-
-                    if (__SHOWQUALITITLES || __SHOWCURRTITLES) {
-                        for (let typ in __LLDATA) {
-                            const __ENTRY = getValue(__LLDATA[typ], []);
-                            const __TEAMID = __ENTRY[0];
-                            const __QUALI = __ENTRY[2];
-                            const __TTYP = __TYPEN[typ];
-                            const __ADDTTYP = (__HASCURRTITLES ? __ADDTYPEN[typ] : false);
-
-                            if (__QUALI) {
-                                const __LTYP = getGameType(__QUALI);
-
-                                getProp(__LTITEL, __TEAMID, []).push(__LTYP);
-                            }
-
-                            if (__TTYP && __ADDTTYP) {
-                                getProp(__TITEL, __TEAMID, []).push(__TTYP);
-                            }
-                        }
-                    }
-
-                    if (__HASCURRTITLES) {
-                        for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
-                            const __VEREIN = __TABLEMAN.vereine[i];
-                            const __TEAMID = __VEREIN.ID;
-                            const __FLAGS = __VEREIN.Flags;
-
-                            for (let j = 0; j < __FLAGS.length; j++) {
-                                const __FLAG = __FLAGS[j];
-                                const __TYP = __FLAGTYPEN[__FLAG];
-
-                                getProp(__TITEL, __TEAMID, []).push(__TYP);
-                            }
-                        }
-                    }
+                if (__SHOWCURRTITLES) {
+                    __TABLEMAN.delFlags(i);
                 }
 
-                const __LTITELSIZE = (__SHOWQUALITITLES ? Object.keys(__LTITEL).length : 0);
+                if (__SHOWTITLES || __SHOWCURRTITLES || __SHOWQUALITITLES) {
+                    const __LTIT = __LTITEL[__TEAMID];
+                    const __TIT = __TITEL[__TEAMID];
+                    const __LFILL = ((__LTITELSIZE && __TIT) ? [] : undefined);
+                    const __LTITSHOWN = (__SHOWQUALITITLES ? __LTIT : undefined);
 
-                for (let typ in __TYPEN) {
-                    const __ENTRY = getValue(__LDATA[typ], []);
-                    const __TEAMID = __ENTRY[0];
-                    const __QUALI = __ENTRY[2];
+                    const __OSBLAU = '#111166';
+                    const __LCOLOR = (__LTIT ? __TABCOLORS[__LTIT] : __OSBLAU);
+                    const __TCOLOR = ((__TABLEMAN.isCurrSaison && ! __TABLEMAN.isAbschluss) ? __LCOLOR : undefined);
 
-                    if (__TEAMID) {
-                        if (__TABLEMAN.isAbschluss) {
-                            getProp(__TITEL, __TEAMID, []).push(__TYPEN[typ]);
-                        }
-
-                        if (__QUALI) {
-                            __ENTRIES[__TEAMID] = __ENTRY;
-                        }
-                    }
-                }
-console.log(__LDATA);
-console.log(__ENTRIES);
-console.log(__TITEL);
-console.log(__LTITEL);
-                for (let i = 0; i < __TABLEMAN.ligaSize; i++) {
-                    const __VEREIN = __TABLEMAN.vereine[i];
-                    const __TEAMID = __VEREIN.ID;
-
-                    if (__EINFAERBUNG) {
-                        const __ENTRY = __ENTRIES[__TEAMID];
-
-                        if (__ENTRY) {
-                            const __TYP = __ENTRY[2];
-
-                            __TABLEMAN.setClass(i, __TYP);
-                        }
-                    }
-
-                    if (__SHOWCURRTITLES) {
-                        __TABLEMAN.delFlags(i);
-                    }
-
-                    if (__SHOWTITLES || __SHOWCURRTITLES || __SHOWQUALITITLES) {
-                        const __LTIT = __LTITEL[__TEAMID];
-                        const __TIT = __TITEL[__TEAMID];
-                        const __LFILL = ((__LTITELSIZE && __TIT) ? [] : undefined);
-                        const __LTITSHOWN = (__SHOWQUALITITLES ? __LTIT : undefined);
-
-                        const __OSBLAU = '#111166';
-                        const __LCOLOR = (__LTIT ? __TABCOLORS[__LTIT] : __OSBLAU);
-                        const __TCOLOR = ((__TABLEMAN.isCurrSaison && ! __TABLEMAN.isAbschluss) ? __LCOLOR : undefined);
-
-                        __TABLEMAN.addTitel(i, getValue(__LTITSHOWN, __LFILL), ", ", __LCOLOR);
-                        __TABLEMAN.addTitel(i, __TIT, ", ", __TCOLOR);
-                    }
+                    __TABLEMAN.addTitel(i, getValue(__LTITSHOWN, __LFILL), ", ", __LCOLOR);
+                    __TABLEMAN.addTitel(i, __TIT, ", ", __TCOLOR);
                 }
             }
-        });
+        }
+
+        return true;
+    });
+
+// ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================
+
+// ==================== Spezialbehandlung der Startparameter ====================
+
+// Callback-Funktion fuer die Behandlung der Optionen und Laden des Benutzermenus
+// Diese Funktion erledigt nur Modifikationen und kann z.B. einfach optSet zurueckgeben!
+// optSet: Platz fuer die gesetzten Optionen
+// optParams: Eventuell notwendige Parameter zur Initialisierung
+// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
+// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
+// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
+// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
+// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
+// 'formWidth': Anzahl der Elemente pro Zeile
+// 'formBreak': Elementnummer des ersten Zeilenumbruchs
+// return Gefuelltes Objekt mit den gesetzten Optionen
+function prepareOptions(optSet, optParams) {
+    UNUSED(optParams);
+
+    // Werte aus der HTML-Seite ermitteln...
+    const __LIGA = getSelection('ligaauswahl');
+    const __LAND = getSelection('landauswahl');
+    const __TABTYP = getSelection('tabauswahl');
+    const __PRUNDE = getSelection('stauswahl');
+    const __OSCRUNDE = getSelection('runde');
+    const __OSERUNDE = getSelection('runde');
+    const __DEFSAISON = getOptValue(optSet.aktuelleSaison);
+    const __SAISONS = getSelectionArray('saauswahl', 'Number', getSelectedValue);
+    const __CURRSAISON = (__SAISONS ? Math.max(... __SAISONS) : __DEFSAISON);
+    const __SAISON = getSelection('saauswahl', 'Number', getSelectedValue);
+    const __LIGANR = getSelection('ligaauswahl', 'Number', getSelectedValue);
+    const __LANDNR = getSelection('landauswahl', 'Number', getSelectedValue);
+    const __TABTYPNR = getSelection('tabauswahl', 'Number', getSelectedValue);
+    const __PRUNDNR = getSelection('stauswahl', 'Number', getSelectedValue);
+    const __OSCRUNDNR = getSelection('runde', 'Number', getSelectedValue);
+    const __OSERUNDNR = getSelection('runde', 'Number', getSelectedValue);
+
+    // ... und abspeichern...
+    setOpt(optSet.liga, __LIGA, false);
+    setOpt(optSet.land, __LAND, false);
+    setOpt(optSet.tabTyp, __TABTYP, false);
+    setOpt(optSet.Prunde, __PRUNDE, false);
+    setOpt(optSet.OSCrunde, __OSCRUNDE, false);
+    setOpt(optSet.OSErunde, __OSERUNDE, false);
+    setOpt(optSet.aktuelleSaison, __CURRSAISON, false);
+    setOpt(optSet.saison, __SAISON, false);
+    setOpt(optSet.ligaNr, __LIGANR, false);
+    setOpt(optSet.landNr, __LANDNR, false);
+    setOpt(optSet.tabTypNr, __TABTYPNR, false);
+    setOpt(optSet.PrundenNr, __PRUNDNR, false);
+    setOpt(optSet.OSCrundenNr, __OSCRUNDNR, false);
+    setOpt(optSet.OSErundenNr, __OSERUNDNR, false);
+
+    return optSet;
 }
 
-(() => {
-    startMain().then(async () => {
-        try {
-            // Verzweige in unterschiedliche Verarbeitungen je nach aufgerufener Seite:
-            switch (getPageIdFromURL(window.location.href, {
-                                                               'haupt.php' : 0,  // Ansicht "Haupt" (Managerbuero)
-                                                               'lp.php'    : 1,  // Ansicht "Landespokale" (Pokalfinale)
-                                                               'lt.php'    : 2,  // Ansicht "Ligatabelle" (Gesamttabelle)
-                                                               'oscfr.php' : 3,  // Ansicht "OS Championscup FR" (OSC-Finale)
-                                                               'ose.php'   : 4,  // Ansicht "OS Europacup" (OSE-Finale)
-                                                               'fpt.php'   : 5   // Ansicht "Fairplaytabelle"
-                                                           })) {
-                case 0  : await procHaupt().catch(defaultCatch); break;
-                case 1  : await procPokal(7).catch(defaultCatch); break;
-                case 2  : await procTabelle().catch(defaultCatch); break;
-                case 3  : await procEuropa('OSC', 9).catch(defaultCatch); break;
-                case 4  : await procEuropa('OSE', 8).catch(defaultCatch); break;
-                case 5  : await procFairplay().catch(defaultCatch); break;
-                default : break;
-            }
+// ==================== Ende Spezialbehandlung der Startparameter ====================
 
-            return 'OK';
-        } catch (ex) {
-            return defaultCatch(ex);
-        }
-    }).then(rc => {
-            __LOG[2](String(__OPTSET));
-            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-        })
-})();
+// ==================== Hauptprogramm ====================
+
+const __MAINCONFIG = {
+                        prepareOpt  : prepareOptions
+                    };
+
+const __LEAFS = {
+                    'haupt.php' : 0,    // Ansicht "Haupt" (Managerbuero)
+                    'lp.php'    : 1,    // Ansicht "Landespokale" (Pokalfinale)
+                    'lt.php'    : 2,    // Ansicht "Ligatabelle" (Gesamttabelle)
+                    'oscfr.php' : 3,    // Ansicht "OS Championscup FR" (OSC-Finale)
+                    'ose.php'   : 4,    // Ansicht "OS Europacup" (OSE-Finale)
+                    'fpt.php'   : 5     // Ansicht "Fairplaytabelle"
+                };
+
+// URL-Legende:
+// page=0: Managerbuero
+// page=1: Landespokale
+// page=2: Ligatabelle
+// page=3: OS Championscup FR (OSC-Finale)
+// page=4: OS Europacup (OSE-Finale)
+// page=5: Fairplaytabelle
+const __MAIN = new Main(__OPTCONFIG, __MAINCONFIG,
+                        procHaupt, procPokal.clone(7), procTabelle,
+                        procEuropa.clone('OSC', 9),
+                        procEuropa.clone('OSE', 8), procFairplay);
+
+__MAIN.run(getPageIdFromURL, __LEAFS);
+
+// ==================== Ende Hauptprogramm ====================
 
 // *** EOF ***

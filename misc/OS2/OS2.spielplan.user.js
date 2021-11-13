@@ -44,6 +44,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
@@ -228,9 +229,6 @@ const __OPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
-
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);
 
@@ -242,8 +240,137 @@ __TEAMCLASS.optSelect = {
         'ligaSize'   : true
     };
 
-// Behandelt die Optionen und laedt das Benutzermenu
-// optConfig: Konfiguration der Optionen
+// ==================== Ende Abschnitt fuer Optionen ====================
+
+// ==================== Page-Manager fuer zu bearbeitende Seiten ====================
+
+// Verarbeitet Ansicht "Saisonplan"
+const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
+        const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHTEAM);  // Link mit Team, Liga, Land...
+
+        return {
+                'Tab'         : getTable(2),
+                'Zei'         : __ROWOFFSETUPPER,
+                'Spa'         : __COLUMNINDEX.Art,
+                'teamParams'  : __TEAMPARAMS,
+                'menuAnchor'  : getTable(0, 'div'),
+                'hideForm'    : {
+                                    'team'  : true
+                                },
+                'formWidth'   : 3,
+                'formBreak'   : 4
+            };
+    }, async optSet => {
+        const __ROWOFFSETUPPER = 1;     // Header-Zeile
+        const __ROWOFFSETLOWER = 0;
+        const __CLASSFREI = 'DMI';  // magenta
+
+        const __COLUMNINDEX = {
+                'ZAT' : 0,
+                'Art' : 1,
+                'Geg' : 2,
+                'Erg' : 3,
+                'Ber' : 4,
+                'Zus' : 5,
+                'Kom' : 6
+            };
+
+        const __ZAT = firstZAT(getOptValue(optSet.saison), getOptValue(optSet.ligaSize));
+
+        const __ROWS = getRows(2);
+
+        if (! __ROWS) {
+            __LOG[1]("Kein Spielplan vorhanden!");
+            return;
+        }
+
+        let ligaStats = emptyStats();
+        let euroStats = emptyStats();
+
+        for (let i = __ROWOFFSETUPPER; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
+            const __CELLS = __ROWS[i].cells;    // Aktuelle Eintraege
+            const __ARTCLASS = __CELLS[__COLUMNINDEX.Art].className;
+
+            incZAT(__ZAT);
+
+            setGegnerFromCell(__ZAT, __CELLS[__COLUMNINDEX.Geg]);
+            setSpielArtFromCell(__ZAT, __CELLS[__COLUMNINDEX.Art]);
+            setErgebnisFromCell(__ZAT, __CELLS[__COLUMNINDEX.Erg]);
+
+            if (getOptValue(optSet.shortKom)) {
+                const __CELLKOM = __CELLS[__COLUMNINDEX.Kom];
+                const __CELLART = __CELLS[__COLUMNINDEX.Art];
+
+                __CELLKOM.innerHTML = __CELLKOM.innerHTML.replace("Vorbericht(e)", 'V').replace("Kommentar(e)", 'K').replace("&amp;", '/').replace('&', '/');
+                __CELLART.innerHTML = __CELLART.innerHTML.replace(": Heim", "(H)").replace(": Ausw\xE4rts", "(A)").replace(__ZAT.gameType, getGameTypeAlias(__ZAT.gameType));
+            }
+
+            __CELLS[__COLUMNINDEX.Erg].className = __ARTCLASS;
+            __CELLS[__COLUMNINDEX.Zus].className = __ARTCLASS;
+
+            if (__ZAT.gameType === 'spielfrei') {
+                __CELLS[__COLUMNINDEX.ZAT].className = __CLASSFREI;
+            }
+
+            if (__CELLS[__COLUMNINDEX.Zus].textContent === "") {
+                const __CELLBER = __CELLS[__COLUMNINDEX.Ber];
+                let stats = "";
+
+                addBilanzLinkToCell(__CELLBER, __ZAT.gameType, "Bilanz");
+
+                if (getOptValue(optSet.shortKom)) {
+                    __CELLBER.innerHTML = __CELLBER.innerHTML.replace("Klick", "(*)").replace("Bilanz", 'V').replace("Vorschau", 'V');
+                }
+
+                if (__ZAT.gameType === 'Liga') {
+                    if (__ZAT.ZAT < 70) {
+                        stats = addResultToStats(ligaStats, getOptValue(optSet.longStats), __ZAT);
+                    }
+                } else if ((__ZAT.gameType === 'OSCQ') || (__ZAT.gameType === 'OSEQ') || (__ZAT.gameType === 'OSE')) {
+                    if (__ZAT.hinRueck !== 1) {
+                        euroStats = emptyStats();
+                    }
+                    stats = addResultToStats(euroStats, getOptValue(optSet.longStats), __ZAT);
+                } else if (__ZAT.gameType === 'OSC') {
+                    if ((__ZAT.hinRueck !== 1) && ((__ZAT.euroRunde >= 9) || ((__ZAT.euroRunde % 3) === 0))) {
+                        euroStats = emptyStats();
+                    }
+                    stats = addResultToStats(euroStats, getOptValue(optSet.longStats), __ZAT);
+                }
+
+                if (getOptValue(optSet.showStats)) {
+                    if (stats !== "") {
+                        stats = ' ' + stats;
+                    }
+                } else {
+                    stats = "";
+                }
+                __CELLS[__COLUMNINDEX.Zus].innerHTML = getZatLink(__ZAT, __TEAMCLASS.team, true) + addTableLink(__ZAT, __TEAMCLASS.team, stats, true);
+            }
+
+            if (getOptValue(optSet.sepMonths) && (__ZAT.ZAT % __ZAT.anzZATpMonth === 0) && (i < __ROWS.length - __ROWOFFSETLOWER - 1)) {
+                // Format der Trennlinie zwischen den Monaten...
+                const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
+/*
+                for (let entry of __CELLS) {
+                    entry.style.borderBottom = __BORDERSTRING;
+                }
+*/
+                for (let j = 0; j < __CELLS.length; j++) {
+                    __CELLS[j].style.borderBottom = __BORDERSTRING;
+                }
+            }
+        }
+
+        return true;
+    });
+
+// ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================
+
+// ==================== Spezialbehandlung der Startparameter ====================
+
+// Callback-Funktion fuer die Behandlung der Optionen und Laden des Benutzermenus
+// Diese Funktion erledigt nur Modifikationen und kann z.B. einfach optSet zurueckgeben!
 // optSet: Platz fuer die gesetzten Optionen
 // optParams: Eventuell notwendige Parameter zur Initialisierung
 // 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
@@ -256,182 +383,82 @@ __TEAMCLASS.optSelect = {
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // 'formWidth': Anzahl der Elemente pro Zeile
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
-// return Promise auf gefuelltes Objekt mit den gesetzten Optionen
-function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : false }) {
-    // Klassifikation ueber Land und Liga des Teams...
-    __TEAMCLASS.optSet = optSet;  // Classification mit optSet verknuepfen
-    __TEAMCLASS.teamParams = optParams.teamParams;  // Ermittelte Parameter
+// return Gefuelltes Objekt mit den gesetzten Optionen
+function prepareOptions(optSet, optParams) {
+    UNUSED(optParams);
 
-    return startOptions(optConfig, optSet, __TEAMCLASS).then(optSet => {
-                    // Werte aus der HTML-Seite ermitteln...
-                    const __BOXSAISONS = document.getElementsByTagName('option');
-                    const __SAISON = getSelectionFromComboBox(__BOXSAISONS, 0, 'Number');
-                    const __LIGASIZE = (optParams.Tab ? getLigaSizeFromSpielplan(optParams.Tab.rows, optParams.Zei, optParams.Spa, getOptValue(optSet.saison)) : undefined);
+    // Werte aus der HTML-Seite ermitteln...
+    const __LIGA = getSelection('ligaauswahl');
+    const __LAND = getSelection('landauswahl');
+    const __TABTYP = getSelection('tabauswahl');
+    const __PRUNDE = getSelection('stauswahl');
+    const __OSCRUNDE = getSelection('runde');
+    const __OSERUNDE = getSelection('runde');
+    const __DEFSAISON = getOptValue(optSet.aktuelleSaison);
+    const __SAISONS = getSelectionArray('saauswahl', 'Number', getSelectedValue);
+    const __CURRSAISON = (__SAISONS ? Math.max(... __SAISONS) : __DEFSAISON);
+    const __SAISON = getSelection('saauswahl', 'Number', getSelectedValue);
+    const __LIGANR = getSelection('ligaauswahl', 'Number', getSelectedValue);
+    const __LANDNR = getSelection('landauswahl', 'Number', getSelectedValue);
+    const __TABTYPNR = getSelection('tabauswahl', 'Number', getSelectedValue);
+    const __PRUNDNR = getSelection('stauswahl', 'Number', getSelectedValue);
+    const __OSCRUNDNR = getSelection('runde', 'Number', getSelectedValue);
+    const __OSERUNDNR = getSelection('runde', 'Number', getSelectedValue);
 
-                    // ... und abspeichern...
-                    setOpt(optSet.saison, __SAISON, false);
-                    setOpt(optSet.ligaSize, __LIGASIZE, false);
+    // ... und abspeichern...
+    setOpt(optSet.liga, __LIGA, false);
+    setOpt(optSet.land, __LAND, false);
+    setOpt(optSet.tabTyp, __TABTYP, false);
+    setOpt(optSet.Prunde, __PRUNDE, false);
+    setOpt(optSet.OSCrunde, __OSCRUNDE, false);
+    setOpt(optSet.OSErunde, __OSERUNDE, false);
+    setOpt(optSet.aktuelleSaison, __CURRSAISON, false);
+    setOpt(optSet.saison, __SAISON, false);
+    setOpt(optSet.ligaNr, __LIGANR, false);
+    setOpt(optSet.landNr, __LANDNR, false);
+    setOpt(optSet.tabTypNr, __TABTYPNR, false);
+    setOpt(optSet.PrundenNr, __PRUNDNR, false);
+    setOpt(optSet.OSCrundenNr, __OSCRUNDNR, false);
+    setOpt(optSet.OSErundenNr, __OSERUNDNR, false);
 
-                    return showOptions(optSet, optParams);
-                }, defaultCatch);
+    return optSet;
 }
 
-// ==================== Ende Abschnitt fuer Optionen ====================
+function setupManager(page) {
+    const __MAIN = this;
+
+    return __MAIN.pageManager[page - 6];
+}
+
+// ==================== Ende Spezialbehandlung der Startparameter ====================
 
 // ==================== Hauptprogramm ====================
 
-// Verarbeitet Ansicht "Saisonplan"
-function procSpielplan() {
-    const __ROWOFFSETUPPER = 1;     // Header-Zeile
-    const __ROWOFFSETLOWER = 0;
-    const __CLASSFREI = 'DMI';
+const __MAINCONFIG = {
+                        setupManager    : setupManager,
+                        prepareOpt      : prepareOptions
+                    };
+const __LEAFS = {
+                    'showteam.php' : 0, // Teamansicht Hauptfenster
+                    'st.php'       : 0  // Teamansicht Popupfenster
+                };
+const __ITEM = 's';
 
-    const __COLUMNINDEX = {
-        'ZAT' : 0,
-        'Art' : 1,
-        'Geg' : 2,
-        'Erg' : 3,
-        'Ber' : 4,
-        'Zus' : 5,
-        'Kom' : 6
-    };
+// URL-Legende:
+// s=0: Teamuebersicht
+// s=1: Vertragsdaten
+// s=2: Einzelwerte
+// s=3: Statistik Saison
+// s=4: Statistik Gesamt
+// s=5: Teaminfo
+// s=6: Saisonplan (*) s=6 wird ersetzt durch Selection 0
+// s=7: Vereinshistorie
+// s=8: Transferhistorie
+// s=9: Leihhistorie
+const __MAIN = new Main(__OPTCONFIG, __MAINCONFIG, procSpielplan);
 
-    const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHTEAM);  // Link mit Team, Liga, Land...
+__MAIN.run(getPageIdFromURL, __LEAFS);
 
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'Tab'        : getTable(2),
-                            'Zei'        : __ROWOFFSETUPPER,
-                            'Spa'        : __COLUMNINDEX.Art,
-                            'teamParams' : __TEAMPARAMS,
-                            'menuAnchor' : getTable(0, 'div'),
-                            'hideForm'   : {
-                                               'team'         : true
-                                           },
-                            'formWidth'  : 3,
-                            'formBreak'  : 4
-                        }).then(optSet => {
-            const __ZAT = firstZAT(getOptValue(optSet.saison), getOptValue(optSet.ligaSize));
-
-            const __ROWS = getRows(2);
-
-            if (! __ROWS) {
-                __LOG[1]("Kein Spielplan vorhanden!");
-                return;
-            }
-
-            let ligaStats = emptyStats();
-            let euroStats = emptyStats();
-
-            for (let i = __ROWOFFSETUPPER; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
-                const __CELLS = __ROWS[i].cells;    // Aktuelle Eintraege
-                const __ARTCLASS = __CELLS[__COLUMNINDEX.Art].className;
-
-                incZAT(__ZAT);
-
-                setGegnerFromCell(__ZAT, __CELLS[__COLUMNINDEX.Geg]);
-                setSpielArtFromCell(__ZAT, __CELLS[__COLUMNINDEX.Art]);
-                setErgebnisFromCell(__ZAT, __CELLS[__COLUMNINDEX.Erg]);
-
-                if (getOptValue(optSet.shortKom)) {
-                    const __CELLKOM = __CELLS[__COLUMNINDEX.Kom];
-                    const __CELLART = __CELLS[__COLUMNINDEX.Art];
-
-                    __CELLKOM.innerHTML = __CELLKOM.innerHTML.replace("Vorbericht(e)", 'V').replace("Kommentar(e)", 'K').replace("&amp;", '/').replace('&', '/');
-                    __CELLART.innerHTML = __CELLART.innerHTML.replace(": Heim", "(H)").replace(": Ausw\xE4rts", "(A)").replace(__ZAT.gameType, getGameTypeAlias(__ZAT.gameType));
-                }
-
-                __CELLS[__COLUMNINDEX.Erg].className = __ARTCLASS;
-                __CELLS[__COLUMNINDEX.Zus].className = __ARTCLASS;
-
-                if (__ZAT.gameType === 'spielfrei') {
-                    __CELLS[__COLUMNINDEX.ZAT].className = __CLASSFREI;
-                }
-
-                if (__CELLS[__COLUMNINDEX.Zus].textContent === "") {
-                    const __CELLBER = __CELLS[__COLUMNINDEX.Ber];
-                    let stats = "";
-
-                    addBilanzLinkToCell(__CELLBER, __ZAT.gameType, "Bilanz");
-
-                    if (getOptValue(optSet.shortKom)) {
-                        __CELLBER.innerHTML = __CELLBER.innerHTML.replace("Klick", "(*)").replace("Bilanz", 'V').replace("Vorschau", 'V');
-                    }
-
-                    if (__ZAT.gameType === 'Liga') {
-                        if (__ZAT.ZAT < 70) {
-                            stats = addResultToStats(ligaStats, getOptValue(optSet.longStats), __ZAT);
-                        }
-                    } else if ((__ZAT.gameType === 'OSCQ') || (__ZAT.gameType === 'OSEQ') || (__ZAT.gameType === 'OSE')) {
-                        if (__ZAT.hinRueck !== 1) {
-                            euroStats = emptyStats();
-                        }
-                        stats = addResultToStats(euroStats, getOptValue(optSet.longStats), __ZAT);
-                    } else if (__ZAT.gameType === 'OSC') {
-                        if ((__ZAT.hinRueck !== 1) && ((__ZAT.euroRunde >= 9) || ((__ZAT.euroRunde % 3) === 0))) {
-                            euroStats = emptyStats();
-                        }
-                        stats = addResultToStats(euroStats, getOptValue(optSet.longStats), __ZAT);
-                    }
-
-                    if (getOptValue(optSet.showStats)) {
-                        if (stats !== "") {
-                            stats = ' ' + stats;
-                        }
-                    } else {
-                        stats = "";
-                    }
-                    __CELLS[__COLUMNINDEX.Zus].innerHTML = getZatLink(__ZAT, __TEAMCLASS.team, true) + addTableLink(__ZAT, __TEAMCLASS.team, stats, true);
-                }
-
-                if (getOptValue(optSet.sepMonths) && (__ZAT.ZAT % __ZAT.anzZATpMonth === 0) && (i < __ROWS.length - __ROWOFFSETLOWER - 1)) {
-                    // Format der Trennlinie zwischen den Monaten...
-                    const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
-
-/*
-                    for (let entry of __CELLS) {
-                        entry.style.borderBottom = __BORDERSTRING;
-                    }
-*/
-                    for (let j = 0; j < __CELLS.length; j++) {
-                        __CELLS[j].style.borderBottom = __BORDERSTRING;
-                    }
-                }
-            }
-        });
-}
-
-(() => {
-    startMain().then(async () => {
-        try {
-            // URL-Legende:
-            // s=0: Teamuebersicht
-            // s=1: Vertragsdaten
-            // s=2: Einzelwerte
-            // s=3: Statistik Saison
-            // s=4: Statistik Gesamt
-            // s=5: Teaminfo
-            // s=6: Saisonplan
-            // s=7: Vereinshistorie
-            // s=8: Transferhistorie
-            // s=9: Leihhistorie
-
-            // Verzweige in unterschiedliche Verarbeitungen je nach Wert von s:
-            switch (getPageIdFromURL(window.location.href, {
-                                                               'showteam.php' : 0,  // Teamansicht Hauptfenster
-                                                               'st.php'       : 0   // Teamansicht Popupfenster
-                                                           }, 's')) {
-                case 6  : await procSpielplan().catch(defaultCatch); break;
-                default : break;
-            }
-
-            return 'OK';
-        } catch (ex) {
-            return defaultCatch(ex);
-        }
-    }).then(rc => {
-            __LOG[2](String(__OPTSET));
-            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-        })
-})();
+// ==================== Ende Hauptprogramm ====================
 
 // *** EOF ***

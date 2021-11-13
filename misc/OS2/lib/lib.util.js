@@ -145,7 +145,7 @@ __LOG.init(window, 4, false);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(
 // Makro fuer die Markierung bewusst ungenutzter Variablen und Parametern
 // params: Beliebig viele Parameter, mit denen nichts gemacht wird
 // return Liefert formal die Parameter zurueck
-function UNUSED(...unused) {
+function UNUSED(... unused) {
     return unused;
 }
 
@@ -1241,6 +1241,9 @@ function showException(label, ex, show = true) {
 function defaultCatch(error, show) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
     error = (error || new Error("Promise rejected!"));
+    if (error[2]) {  // Recatch...
+        return Promise.reject(error);
+    }
 
     try {
         const __LABEL = `[${error.lineNumber}] ${__DBMOD.Name}`;
@@ -1439,10 +1442,10 @@ function GM_function(action, label, condition = true, altAction = undefined, lev
     const __LABEL = ((condition ? '+' : '-') + label);
     const __FUNKEY = (condition ? action : altAction);
 
-    return function(...args) {
+    return function(... args) {
             const __NAME = __LOG.info(args[0], false);
             __LOG[level](__LABEL, __NAME);
-            return GM[__FUNKEY](...args);
+            return GM[__FUNKEY](... args);
         };
 }
 
@@ -2169,8 +2172,8 @@ function loadScript(url) {
 // fun: Auszufuehrende Funktion
 // params: Parameterliste fuer den Aufruf der Funktion
 // return Promise auf den Rueckgabewert dieser Funktion
-function getScript(url, fun, ...params) {
-    return loadScript(url).then(fun(...params),
+function getScript(url, fun, ... params) {
+    return loadScript(url).then(fun(... params),
                                 () => {
                                         __LOG[1]("Failed to load", url);
                                     });

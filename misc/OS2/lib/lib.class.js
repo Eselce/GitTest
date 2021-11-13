@@ -51,7 +51,7 @@ if ((typeof showAlert) === 'undefined') {
                 if (__BASEINIT) {
                     initFun = function() {
                                   // Basisklassen-Init aufrufen...
-                                  return __BASEINIT.call(this, arguments);
+                                  return __BASEINIT.apply(this, arguments);
                               };
                 } else {
                     initFun = function() {

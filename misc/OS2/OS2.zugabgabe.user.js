@@ -45,6 +45,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
@@ -199,9 +200,6 @@ const __OPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
-
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);
 
@@ -211,8 +209,98 @@ const __TEAMCLASS = new TeamClassification();
 // Optionen mit Daten, die ZAT- und Team-bezogen gemerkt werden...
 __TEAMCLASS.optSelect = { };
 
-// Behandelt die Optionen und laedt das Benutzermenu
-// optConfig: Konfiguration der Optionen
+// ==================== Ende Abschnitt fuer Optionen ====================
+
+// ==================== Page-Manager fuer zu bearbeitende Seiten ====================
+
+// Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
+const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
+        const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
+
+        return {
+                'teamParams'  : __TEAMPARAMS,
+                'hideMenu'    : true
+            };
+    }, async optSet => {
+        const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
+        const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
+        const __CURRZAT = __NEXTZAT - 1;
+        const __DATAZAT = getOptValue(optSet.datenZat);
+
+        // Stand der alten Daten merken...
+        setOpt(optSet.oldDatenZat, __DATAZAT, false);
+
+        if (__CURRZAT >= 0) {
+            __LOG[2]("Aktueller ZAT: " + __CURRZAT);
+
+            // Neuen aktuellen ZAT speichern...
+            setOpt(optSet.aktuellerZat, __CURRZAT, false);
+
+            if (__CURRZAT !== __DATAZAT) {
+                __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
+
+                // ... und ZAT-bezogene Daten als veraltet markieren
+                await __TEAMCLASS.deleteOptions({
+                                              'datenZat'    : true,
+                                              'oldDatenZat' : true
+                                          }).catch(defaultCatch);
+
+                // Neuen Daten-ZAT speichern...
+                setOpt(optSet.datenZat, __CURRZAT, false);
+            }
+        }
+
+        return true;
+    });
+
+// Verarbeitet Ansicht "Aufstellung"
+const procAufstellung = new PageManager("Aufstellung", __TEAMCLASS, () => {
+        return {
+                'menuAnchor'  : getTable(0, 'div'),
+                'formWidth'   : 1
+            };
+    }, async optSet => {
+        UNUSED(optSet);
+        //const __ROWOFFSETUPPER = 1;   // Header-Zeile
+        //const __ROWOFFSETLOWER = 0;
+        //UNUSED(__ROWOFFSETUPPER, __ROWOFFSETLOWER);
+        //return true;
+    });
+
+// Verarbeitet Ansicht "Aktionen"
+const procAktionen = new PageManager("Aktionen", __TEAMCLASS, () => {
+        return {
+                'menuAnchor'  : getTable(0, 'div'),
+                'formWidth'   : 1
+            };
+    }, async optSet => {
+        UNUSED(optSet);
+        //const __ROWOFFSETUPPER = 1;   // Header-Zeile
+        //const __ROWOFFSETLOWER = 0;
+        //UNUSED(__ROWOFFSETUPPER, __ROWOFFSETLOWER);
+        //return true;
+    });
+
+// Verarbeitet Ansicht "Einstellungen"
+const procEinstellungen = new PageManager("Einstellungen", __TEAMCLASS, () => {
+        return {
+                'menuAnchor'  : getTable(0, 'div'),
+                'formWidth'   : 1
+            };
+    }, async optSet => {
+        UNUSED(optSet);
+        //const __ROWOFFSETUPPER = 1;   // Header-Zeile
+        //const __ROWOFFSETLOWER = 0;
+        //UNUSED(__ROWOFFSETUPPER, __ROWOFFSETLOWER);
+        //return true;
+    });
+
+// ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================
+
+// ==================== Spezialbehandlung der Startparameter ====================
+
+// Callback-Funktion fuer die Behandlung der Optionen und Laden des Benutzermenus
+// Diese Funktion erledigt nur Modifikationen und kann z.B. einfach optSet zurueckgeben!
 // optSet: Platz fuer die gesetzten Optionen
 // optParams: Eventuell notwendige Parameter zur Initialisierung
 // 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
@@ -222,125 +310,41 @@ __TEAMCLASS.optSelect = { };
 // 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
 // 'formWidth': Anzahl der Elemente pro Zeile
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
-// return Promise auf gefuelltes Objekt mit den gesetzten Optionen
-function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : false }) {
-    // Klassifikation ueber Land und Liga des Teams...
-    __TEAMCLASS.optSet = optSet;  // Classification mit optSet verknuepfen
-    __TEAMCLASS.teamParams = optParams.teamParams;  // Ermittelte Parameter
+// return Gefuelltes Objekt mit den gesetzten Optionen
+function prepareOptions(optSet, optParams) {
+    UNUSED(optParams);
 
-    return startOptions(optConfig, optSet, __TEAMCLASS).then(optSet => {
-                    // Werte aus der HTML-Seite ermitteln...
+    // Werte aus der HTML-Seite ermitteln...
 
-                    // ... und abspeichern...
+    // ... und abspeichern...
 
-                    return showOptions(optSet, optParams);
-                }, defaultCatch);
+    return optSet;
 }
 
-// ==================== Ende Abschnitt fuer Optionen ====================
+// ==================== Ende Spezialbehandlung der Startparameter ====================
 
 // ==================== Hauptprogramm ====================
 
-// Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
-function procHaupt() {
-    const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
+const __MAINCONFIG = {
+                        prepareOpt      : prepareOptions
+                    };
 
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'teamParams' : __TEAMPARAMS,
-                            'hideMenu'   : true
-                        }).then(async optSet => {
-            const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
-            const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
-            const __CURRZAT = __NEXTZAT - 1;
-            const __DATAZAT = getOptValue(optSet.datenZat);
+const __LEAFS = {
+                    'zugabgabe.php' :  0,   // Ansicht "Zugabgabe" (p = 0, 1, 2)
+                    'haupt.php'     :  3,   // Ansicht "Haupt" (Managerbuero)
+                };
+const __ITEM = 'p';
 
-            // Stand der alten Daten merken...
-            setOpt(optSet.oldDatenZat, __DATAZAT, false);
+// URL-Legende:
+// p=0: Zugabgabe Aufstellung
+// p=1: Zugabgabe Aktionen
+// p=2: Zugabgabe Einstellungen
+// p=3: Managerbuero
+const __MAIN = new Main(__OPTCONFIG, __MAINCONFIG,
+                        procAufstellung, procAktionen, procEinstellungen, procHaupt);
 
-            if (__CURRZAT >= 0) {
-                __LOG[2]("Aktueller ZAT: " + __CURRZAT);
+__MAIN.run(getPageIdFromURL, __LEAFS, __ITEM);
 
-                // Neuen aktuellen ZAT speichern...
-                setOpt(optSet.aktuellerZat, __CURRZAT, false);
-
-                if (__CURRZAT !== __DATAZAT) {
-                    __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
-
-                    // ... und ZAT-bezogene Daten als veraltet markieren
-                    await __TEAMCLASS.deleteOptions({
-                                                  'datenZat'    : true,
-                                                  'oldDatenZat' : true
-                                              }).catch(defaultCatch);
-
-                    // Neuen Daten-ZAT speichern...
-                    setOpt(optSet.datenZat, __CURRZAT, false);
-                }
-            }
-        });
-}
-
-// Verarbeitet Ansicht "Aufstellung"
-function procAufstellung() {
-    const __ROWOFFSETUPPER = 1;     // Header-Zeile
-    const __ROWOFFSETLOWER = 0;
-
-    UNUSED(__ROWOFFSETUPPER, __ROWOFFSETLOWER);
-
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'menuAnchor' : getTable(0, 'div'),
-                            'formWidth'  : 1
-                        });
-}
-
-// Verarbeitet Ansicht "Aktionen"
-function procAktionen() {
-    const __ROWOFFSETUPPER = 1;     // Header-Zeile
-    const __ROWOFFSETLOWER = 0;
-
-    UNUSED(__ROWOFFSETUPPER, __ROWOFFSETLOWER);
-
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'menuAnchor' : getTable(0, 'div'),
-                            'formWidth'  : 1
-                        });
-}
-
-// Verarbeitet Ansicht "Einstellungen"
-function procEinstellungen() {
-    const __ROWOFFSETUPPER = 1;     // Header-Zeile
-    const __ROWOFFSETLOWER = 0;
-
-    UNUSED(__ROWOFFSETUPPER, __ROWOFFSETLOWER);
-
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'menuAnchor' : getTable(0, 'div'),
-                            'formWidth'  : 1
-                        });
-}
-
-(() => {
-    startMain().then(async () => {
-        try {
-            // Verzweige in unterschiedliche Verarbeitungen je nach aufgerufener Seite:
-            switch (getPageIdFromURL(window.location.href, {
-                                                               'haupt.php'     : -1,  // Ansicht "Haupt" (Managerbuero)
-                                                               'zugabgabe.php' :  0   // Ansicht "Zugabgabe"
-                                                           }, 'p')) {
-                case -1 : await procHaupt().catch(defaultCatch); break;
-                case  0 : await procAufstellung().catch(defaultCatch); break;
-                case  1 : await procAktionen().catch(defaultCatch); break;
-                case  2 : await procEinstellungen().catch(defaultCatch); break;
-                default : break;
-            }
-
-            return 'OK';
-        } catch (ex) {
-            return defaultCatch(ex);
-        }
-    }).then(rc => {
-            __LOG[2](String(__OPTSET));
-            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-        })
-})();
+// ==================== Ende Hauptprogramm ====================
 
 // *** EOF ***
