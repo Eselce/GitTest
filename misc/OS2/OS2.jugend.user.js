@@ -46,6 +46,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
@@ -859,9 +860,6 @@ const __OPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
-
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);
 
@@ -884,39 +882,6 @@ __TEAMCLASS.optSelect = {
         'skills'          : true,
         'foerderung'      : true
     };
-
-// Behandelt die Optionen und laedt das Benutzermenu
-// optConfig: Konfiguration der Optionen
-// optSet: Platz fuer die gesetzten Optionen
-// optParams: Eventuell notwendige Parameter zur Initialisierung
-// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
-// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
-// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
-// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
-// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
-// 'formWidth': Anzahl der Elemente pro Zeile
-// 'formBreak': Elementnummer des ersten Zeilenumbruchs
-// return Promise auf gefuelltes Objekt mit den gesetzten Optionen
-function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : false }) {
-    // Klassifikation ueber Land und Liga des Teams...
-    __TEAMCLASS.optSet = optSet;  // Classification mit optSet verknuepfen
-    __TEAMCLASS.teamParams = optParams.teamParams;  // Ermittelte Parameter
-
-    return startOptions(optConfig, optSet, __TEAMCLASS).then(optSet => {
-                    if (optParams.getDonation) {
-                        // Jugendfoerderung aus der Options-HTML-Seite ermitteln...
-                        const __BOXDONATION = document.getElementsByTagName('option');
-                        const __DONATION = getSelectionFromComboBox(__BOXDONATION, 10000, 'Number');
-
-                        __LOG[4]("Jugendf\xF6rderung: " + __DONATION + " Euro");
-
-                        // ... und abspeichern...
-                        setOpt(optSet.foerderung, __DONATION, false);
-                    }
-
-                    return showOptions(optSet, optParams);
-                }, defaultCatch);
-}
 
 // ==================== Ende Abschnitt fuer Optionen ====================
 
@@ -1160,7 +1125,7 @@ function storePlayerDataColsFromHTML(playerRows, optSet, colDefs, offsetUpper = 
             for (let key in colDefs) {
                 const __COLDEF = colDefs[key];
 
-                __DATA[key][j] = __COLDEF.getFun(__CELLS, ...__COLDEF.params);
+                __DATA[key][j] = __COLDEF.getFun(__CELLS, ... __COLDEF.params);
             }
             j++;
         }
@@ -1251,27 +1216,28 @@ function getAufwertFromHTML(cells, colIdxAuf, shortForm = true) {
 
 // ==================== Ende Abschnitt genereller Code zur Anzeige der Jugend ====================
 
-// ==================== Hauptprogramm ====================
+// ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
-function procHaupt() {
-    const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
+const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
+        const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
 
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'teamParams' : __TEAMPARAMS,
-//                            'menuAnchor' : getTable(0, 'div'),
-                            'hideMenu'   : true,
-                            'showForm'   : {
-                                               'zeigeWarnung'         : true,
-                                               'zeigeWarnungMonat'    : true,
-                                               'zeigeWarnungHome'     : true,
-                                               'zeigeWarnungDialog'   : true,
-                                               'zeigeWarnungAufstieg' : true,
-                                               'zeigeWarnungLegende'  : true,
-                                               'ziehAnz'              : true,
-                                               'showForm'             : true
-                                           }
-                        }).then(async optSet => {
+        return {
+                'teamParams' : __TEAMPARAMS,
+//                'menuAnchor' : getTable(0, 'div'),
+                'hideMenu'   : true,
+                'showForm'   : {
+                                   'zeigeWarnung'         : true,
+                                   'zeigeWarnungMonat'    : true,
+                                   'zeigeWarnungHome'     : true,
+                                   'zeigeWarnungDialog'   : true,
+                                   'zeigeWarnungAufstieg' : true,
+                                   'zeigeWarnungLegende'  : true,
+                                   'ziehAnz'              : true,
+                                   'showForm'             : true
+                               }
+            };
+    }, async optSet => {
             const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
             const __CURRZAT = __NEXTZAT - 1;
@@ -1310,394 +1276,427 @@ function procHaupt() {
             __MSG.showMessage(__ANCHOR, 'tr', true);
             __MSG.showDialog(showAlert);
             __MSGAUFSTIEG.showMessage(__ANCHOR, 'tr', true);
+
+            return true;
         });
-}
 
 // Verarbeitet Ansicht "Optionen" zur Ermittlung der Jugendfoerderung
-function procOptionen() {
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'menuAnchor'  : getTable(0, 'div'),
-                            'hideMenu'    : true,
-                            'getDonation' : true,
-                            'showForm'    : {
-                                                'foerderung'           : true,
-                                                'zeigeWarnung'         : true,
-                                                'zeigeWarnungMonat'    : true,
-                                                'zeigeWarnungHome'     : true,
-                                                'zeigeWarnungDialog'   : true,
-                                                'zeigeWarnungAufstieg' : true,
-                                                'zeigeWarnungLegende'  : true,
-                                                'ziehAnz'              : true,
-                                                'showForm'             : true
-                                            }
+const procOptionen = new PageManager("Optionen", __TEAMCLASS, () => {
+        return {
+                'menuAnchor'  : getTable(0, 'div'),
+                'hideMenu'    : true,
+                'getDonation' : true,
+                'showForm'    : {
+                                    'foerderung'           : true,
+                                    'zeigeWarnung'         : true,
+                                    'zeigeWarnungMonat'    : true,
+                                    'zeigeWarnungHome'     : true,
+                                    'zeigeWarnungDialog'   : true,
+                                    'zeigeWarnungAufstieg' : true,
+                                    'zeigeWarnungLegende'  : true,
+                                    'ziehAnz'              : true,
+                                    'showForm'             : true
+                                }
+            };
+    }, async optSet => {
+            UNUSED(optSet);
+            //return true;
         });
-}
 
 // Verarbeitet Ansicht "Teamuebersicht"
-function procTeamuebersicht() {
-    const __ROWOFFSETUPPER = 1;     // Header-Zeile
-    const __ROWOFFSETLOWER = 1;     // Ziehen-Button
+const procTeamuebersicht = new PageManager("Team\xFCbersicht", __TEAMCLASS, () => {
+        if (getElement('transfer') !== undefined) {
+            __LOG[1]("Ziehen-Seite");
+        } else if (getRows(1) === undefined) {
+            __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+        } else {
+            return {
+                    'menuAnchor' : getTable(0, 'div'),
+                    'showForm'   : {
+                                       'kennzeichenEnde'      : true,
+                                       'shortAufw'            : true,
+                                       'sepStyle'             : true,
+                                       'sepColor'             : true,
+                                       'sepWidth'             : true,
+                                       'saison'               : true,
+                                       'aktuellerZat'         : true,
+                                       'foerderung'           : true,
+                                       'team'                 : true,
+                                       'zeigeJahrgang'        : true,
+                                       'zeigeUxx'             : true,
+                                       'zeigeWarnung'         : true,
+                                       'zeigeWarnungMonat'    : true,
+                                       'zeigeWarnungHome'     : true,
+                                       'zeigeWarnungDialog'   : true,
+                                       'zeigeWarnungAufstieg' : true,
+                                       'zeigeWarnungLegende'  : true,
+                                       'zeigeBalken'          : true,
+                                       'absBalken'            : true,
+                                       'zeigeId'              : true,
+                                       'ersetzeAlter'         : true,
+                                       'zeigeAlter'           : true,
+                                       'zeigeQuote'           : true,
+                                       'zeigePosition'        : true,
+                                       'zeigeZatDone'         : true,
+                                       'zeigeZatLeft'         : true,
+                                       'zeigeFixSkills'       : true,
+                                       'zeigeTrainiert'       : true,
+                                       'zeigeAnteilPri'       : true,
+                                       'zeigeAnteilSec'       : true,
+                                       'zeigePrios'           : true,
+                                       'anzahlOpti'           : true,
+                                       'anzahlMW'             : true,
+                                       'zeigeTrainiertEnde'   : true,
+                                       'zeigeAnteilPriEnde'   : true,
+                                       'zeigeAnteilSecEnde'   : true,
+                                       'zeigePriosEnde'       : true,
+                                       'zeigeSkillEnde'       : true,
+                                       'anzahlOptiEnde'       : true,
+                                       'anzahlMWEnde'         : true,
+                                       'ziehAnz'              : true,
+                                       'zatAges'              : true,
+                                       'trainiert'            : true,
+                                       'positions'            : true,
+                                       'skills'               : true,
+                                       'reset'                : true,
+                                       'showForm'             : true
+                                   },
+                    'formWidth'  : 1
+                };
+        }
+        // Fehler fuer alle Faelle ohne Rueckgabewert...
+        return false;
+    }, async optSet => {
+            const __ROWOFFSETUPPER = 1;     // Header-Zeile
+            const __ROWOFFSETLOWER = 1;     // Ziehen-Button
 
-    const __COLUMNINDEX = {
-            'Age'   : 0,
-            'Geb'   : 1,
-            'Flg'   : 2,
-            'Land'  : 3,
-            'U'     : 4,
-            'Skill' : 5,
-            'Tal'   : 6,
-            'Akt'   : 7,
-            'Auf'   : 8,
-            'Zus'   : 9
-        };
+            const __COLUMNINDEX = {
+                    'Age'   : 0,
+                    'Geb'   : 1,
+                    'Flg'   : 2,
+                    'Land'  : 3,
+                    'U'     : 4,
+                    'Skill' : 5,
+                    'Tal'   : 6,
+                    'Akt'   : 7,
+                    'Auf'   : 8,
+                    'Zus'   : 9
+                };
 
-    if (getElement('transfer') !== undefined) {
-        __LOG[1]("Ziehen-Seite");
-    } else if (getRows(1) === undefined) {
-        __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
-    } else {
-        return buildOptions(__OPTCONFIG, __OPTSET, {
-                                'menuAnchor' : getTable(0, 'div'),
-                                'showForm'   : {
-                                                   'kennzeichenEnde'      : true,
-                                                   'shortAufw'            : true,
-                                                   'sepStyle'             : true,
-                                                   'sepColor'             : true,
-                                                   'sepWidth'             : true,
-                                                   'saison'               : true,
-                                                   'aktuellerZat'         : true,
-                                                   'foerderung'           : true,
-                                                   'team'                 : true,
-                                                   'zeigeJahrgang'        : true,
-                                                   'zeigeUxx'             : true,
-                                                   'zeigeWarnung'         : true,
-                                                   'zeigeWarnungMonat'    : true,
-                                                   'zeigeWarnungHome'     : true,
-                                                   'zeigeWarnungDialog'   : true,
-                                                   'zeigeWarnungAufstieg' : true,
-                                                   'zeigeWarnungLegende'  : true,
-                                                   'zeigeBalken'          : true,
-                                                   'absBalken'            : true,
-                                                   'zeigeId'              : true,
-                                                   'ersetzeAlter'         : true,
-                                                   'zeigeAlter'           : true,
-                                                   'zeigeQuote'           : true,
-                                                   'zeigePosition'        : true,
-                                                   'zeigeZatDone'         : true,
-                                                   'zeigeZatLeft'         : true,
-                                                   'zeigeFixSkills'       : true,
-                                                   'zeigeTrainiert'       : true,
-                                                   'zeigeAnteilPri'       : true,
-                                                   'zeigeAnteilSec'       : true,
-                                                   'zeigePrios'           : true,
-                                                   'anzahlOpti'           : true,
-                                                   'anzahlMW'             : true,
-                                                   'zeigeTrainiertEnde'   : true,
-                                                   'zeigeAnteilPriEnde'   : true,
-                                                   'zeigeAnteilSecEnde'   : true,
-                                                   'zeigePriosEnde'       : true,
-                                                   'zeigeSkillEnde'       : true,
-                                                   'anzahlOptiEnde'       : true,
-                                                   'anzahlMWEnde'         : true,
-                                                   'ziehAnz'              : true,
-                                                   'zatAges'              : true,
-                                                   'trainiert'            : true,
-                                                   'positions'            : true,
-                                                   'skills'               : true,
-                                                   'reset'                : true,
-                                                   'showForm'             : true
-                                               },
-                                'formWidth'  : 1
-                            }).then(optSet => {
-                const __ROWS = getRows(1);
-                const __HEADERS = __ROWS[0];
-                const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
+            const __ROWS = getRows(1);
+            const __HEADERS = __ROWS[0];
+            const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
-                const __PLAYERS = init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 1);
-                const __COLMAN = new ColumnManager(optSet, __COLUMNINDEX, {
-                                                    'Default'            : true,
-                                                    'ersetzeSkills'      : false,
-                                                    'zeigeGeb'           : false,
-                                                    'zeigeSkill'         : false,
-                                                    'zeigeTal'           : false,
-                                                    'zeigeAufw'          : false
-                                                });
+            const __PLAYERS = init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 1);
+            const __COLMAN = new ColumnManager(optSet, __COLUMNINDEX, {
+                                                'Default'            : true,
+                                                'ersetzeSkills'      : false,
+                                                'zeigeGeb'           : false,
+                                                'zeigeSkill'         : false,
+                                                'zeigeTal'           : false,
+                                                'zeigeAufw'          : false
+                                            });
 
-                __COLMAN.addTitles(__HEADERS, __TITLECOLOR);
+            __COLMAN.addTitles(__HEADERS, __TITLECOLOR);
 
-                for (let i = __ROWOFFSETUPPER, j = 0; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
-                    if (__ROWS[i].cells.length > 1) {
-                        __COLMAN.addValues(__PLAYERS[j++], __ROWS[i], __TITLECOLOR);
-                    } else {
-                        __COLMAN.setGroupTitle(__ROWS[i]);
-                    }
+            for (let i = __ROWOFFSETUPPER, j = 0; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
+                if (__ROWS[i].cells.length > 1) {
+                    __COLMAN.addValues(__PLAYERS[j++], __ROWS[i], __TITLECOLOR);
+                } else {
+                    __COLMAN.setGroupTitle(__ROWS[i]);
                 }
-
-                // Format der Trennlinie zwischen den Jahrgaengen...
-                if (! __COLMAN.gt) {
-                    const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
-
-                    separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
-                }
-
-                const __CURRZAT = getOptValue(optSet.datenZat);
-                const __MSG = new WarnDrawMessage(optSet, __CURRZAT);
-                const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(optSet, __CURRZAT);
-                const __ANCHOR = getTable(0, 'div');
-                const __SEARCH = '<form method="POST">';
-
-                // Kompaktere Darstellung und ohne Links...
-                __MSG.out.top = false;
-                __MSG.out.label = false;
-                __MSG.out.link = false;
-                __MSG.out.bottom = false;
-                __MSGAUFSTIEG.out.label = false;
-                __MSGAUFSTIEG.out.link = false;
-                __MSGAUFSTIEG.out.bottom = false;
-
-                __MSG.setOptionLegende();
-                __MSGAUFSTIEG.setOptionLegende();
-
-                __MSG.showMessage(__ANCHOR, 'p', __SEARCH);
-                __MSGAUFSTIEG.showMessage(__ANCHOR, 'p', __SEARCH);
-            });
-    }
-
-    // Promise fuer alle Faelle ohne Rueckgabewert...
-    return Promise.resolve();
-}
-
-// Verarbeitet Ansicht "Spielereinzelwerte"
-function procSpielereinzelwerte() {
-    const __ROWOFFSETUPPER = 1;     // Header-Zeile
-    const __ROWOFFSETLOWER = 0;
-
-    const __COLUMNINDEX = {
-            'Flg'   : 0,
-            'Land'  : 1,
-            'U'     : 2,
-            'X'     : 3,
-            'Age'   : 4,
-            'Einz'  : 5,    // ab hier die Einzelskills
-            'SCH'   : 5,
-            'ABS'   : 5,    // TOR
-            'BAK'   : 6,
-            'STS'   : 6,    // TOR
-            'KOB'   : 7,
-            'FAN'   : 7,    // TOR
-            'ZWK'   : 8,
-            'STB'   : 8,    // TOR
-            'DEC'   : 9,
-            'SPL'   : 9,    // TOR
-            'GES'   : 10,
-            'REF'   : 10,   // TOR
-            'FUQ'   : 11,
-            'ERF'   : 12,
-            'AGG'   : 13,
-            'PAS'   : 14,
-            'AUS'   : 15,
-            'UEB'   : 16,
-            'WID'   : 17,
-            'SEL'   : 18,
-            'DIS'   : 19,
-            'ZUV'   : 20,
-            'EIN'   : 21,
-            'Zus'   : 22     // Zusaetze hinter den Einzelskills
-        };
-
-    if (getRows(1) === undefined) {
-        __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
-    } else {
-        return buildOptions(__OPTCONFIG, __OPTSET, {
-                                'menuAnchor' : getTable(0, 'div'),
-                                'hideForm'   : {
-                                                   'zeigeWarnung'         : false,
-                                                   'zeigeWarnungMonat'    : false,
-                                                   'zeigeWarnungHome'     : false,
-                                                   'zeigeWarnungDialog'   : false,
-                                                   'zeigeWarnungAufstieg' : false,
-                                                   'zeigeWarnungLegende'  : false,
-                                                   'ziehAnz'              : true,
-                                                   'zatAges'              : true,
-                                                   'trainiert'            : true,
-                                                   'positions'            : true,
-                                                   'skills'               : true,
-                                                   'shortAufw'            : true
-                                               },
-                                'formWidth'  : 1
-                            }).then(optSet => {
-                const __ROWS = getRows(1);
-                const __HEADERS = __ROWS[0];
-                const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
-
-                const __PLAYERS = init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 2);
-                const __COLMAN = new ColumnManager(optSet, __COLUMNINDEX, true);
-
-                __COLMAN.addTitles(__HEADERS, __TITLECOLOR);
-
-                for (let i = __ROWOFFSETUPPER, j = 0; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
-                    if (__ROWS[i].cells.length > 1) {
-                        __COLMAN.addValues(__PLAYERS[j++], __ROWS[i], __TITLECOLOR);
-                    } else {
-                        __COLMAN.setGroupTitle(__ROWS[i]);
-                    }
-                }
-
-                // Format der Trennlinie zwischen den Jahrgaengen...
-                if (! __COLMAN.gt) {
-                    const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
-
-                    separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
-                }
-            });
-    }
-
-    // Promise fuer alle Faelle ohne Rueckgabewert...
-    return Promise.resolve();
-}
-
-// Verarbeitet Ansicht "Opt. Skill"
-function procOptSkill() {
-    const __ROWOFFSETUPPER = 1;     // Header-Zeile
-    const __ROWOFFSETLOWER = 0;
-
-    const __COLUMNINDEX = {
-            'Flg'   : 0,
-            'Land'  : 1,
-            'U'     : 2,
-            'Age'   : 3,
-            'Skill' : 4,
-            'TOR'   : 5,
-            'ABW'   : 6,
-            'DMI'   : 7,
-            'MIT'   : 8,
-            'OMI'   : 9,
-            'STU'   : 10,
-            'Zus'   : 11     // Zusaetze hinter den OptSkills
-        };
-
-    if (getRows(1) === undefined) {
-        __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
-    } else {
-        return buildOptions(__OPTCONFIG, __OPTSET, {
-                                'menuAnchor' : getTable(0, 'div'),
-                                'showForm'   : {
-                                                   'kennzeichenEnde'      : true,
-                                                   'sepStyle'             : true,
-                                                   'sepColor'             : true,
-                                                   'sepWidth'             : true,
-                                                   'saison'               : true,
-                                                   'aktuellerZat'         : true,
-                                                   'foerderung'           : true,
-                                                   'team'                 : true,
-                                                   'zeigeJahrgang'        : true,
-                                                   'zeigeUxx'             : true,
-                                                   'zeigeWarnung'         : false,
-                                                   'zeigeWarnungMonat'    : false,
-                                                   'zeigeWarnungHome'     : false,
-                                                   'zeigeWarnungDialog'   : false,
-                                                   'zeigeWarnungAufstieg' : false,
-                                                   'zeigeWarnungLegende'  : false,
-                                                   'zeigeBalken'          : true,
-                                                   'absBalken'            : true,
-                                                   'zeigeId'              : true,
-                                                   'ersetzeAlter'         : true,
-                                                   'zeigeAlter'           : true,
-                                                   'zeigeQuote'           : true,
-                                                   'zeigePosition'        : true,
-                                                   'zeigeZatDone'         : true,
-                                                   'zeigeZatLeft'         : true,
-                                                   'zeigeFixSkills'       : true,
-                                                   'zeigeTrainiert'       : true,
-                                                   'zeigeAnteilPri'       : true,
-                                                   'zeigeAnteilSec'       : true,
-                                                   'zeigePrios'           : true,
-                                                   'zeigeAufw'            : true,
-                                                   'zeigeGeb'             : true,
-                                                   'zeigeTal'             : true,
-                                                   'anzahlOpti'           : true,
-                                                   'anzahlMW'             : true,
-                                                   'zeigeTrainiertEnde'   : true,
-                                                   'zeigeAnteilPriEnde'   : true,
-                                                   'zeigeAnteilSecEnde'   : true,
-                                                   'zeigePriosEnde'       : true,
-                                                   'zeigeSkillEnde'       : true,
-                                                   'anzahlOptiEnde'       : true,
-                                                   'anzahlMWEnde'         : true,
-                                                   'zatAges'              : true,
-                                                   'trainiert'            : true,
-                                                   'positions'            : true,
-                                                   'skills'               : true,
-                                                   'reset'                : true,
-                                                   'showForm'             : true
-                                               },
-                                'formWidth'  : 1
-                            }).then(optSet => {
-                const __ROWS = getRows(1);
-                const __HEADERS = __ROWS[0];
-                const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
-
-                const __PLAYERS = init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 3);
-                const __COLMAN = new ColumnManager(optSet, __COLUMNINDEX, {
-                                                    'Default'            : true,
-                                                    'ersetzeSkills'      : false,
-                                                    'zeigeSkill'         : false
-                                                });
-
-                __COLMAN.addTitles(__HEADERS, __TITLECOLOR);
-
-                for (let i = __ROWOFFSETUPPER, j = 0; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
-                    if (__ROWS[i].cells.length > 1) {
-                        __COLMAN.addValues(__PLAYERS[j++], __ROWS[i], __TITLECOLOR);
-                    } else {
-                        __COLMAN.setGroupTitle(__ROWS[i]);
-                    }
-                }
-
-                // Format der Trennlinie zwischen den Jahrgaengen...
-                if (! __COLMAN.gt) {
-                    const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
-
-                    separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
-                }
-            });
-    }
-
-    // Promise fuer alle Faelle ohne Rueckgabewert...
-    return Promise.resolve();
-}
-
-(() => {
-    startMain().then(async () => {
-        try {
-            // URL-Legende:
-            // page=0: Managerbuero
-            // page=1: Teamuebersicht
-            // page=2: Spielereinzelwerte
-            // page=3: Opt. Skill
-            // page=4: Optionen
-
-            // Verzweige in unterschiedliche Verarbeitungen je nach Wert von page:
-            switch (getPageIdFromURL(window.location.href, {
-                                                               'haupt.php' : 0,  // Ansicht "Haupt" (Managerbuero)
-                                                               'ju.php'    : 1   // Ansicht "Jugendteam" (page = 1, 2, 3, 4)
-                                                           }, 'page')) {
-                case 0  : await procHaupt().catch(defaultCatch); break;
-                case 1  : await procTeamuebersicht().catch(defaultCatch); break;
-                case 2  : await procSpielereinzelwerte().catch(defaultCatch); break;
-                case 3  : await procOptSkill().catch(defaultCatch); break;
-                case 4  : await procOptionen().catch(defaultCatch); break;
-                default : break;
             }
 
-            return 'OK';
-        } catch (ex) {
-            return defaultCatch(ex);
+            // Format der Trennlinie zwischen den Jahrgaengen...
+            if (! __COLMAN.gt) {
+                const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
+
+                separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
+            }
+
+            const __CURRZAT = getOptValue(optSet.datenZat);
+            const __MSG = new WarnDrawMessage(optSet, __CURRZAT);
+            const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(optSet, __CURRZAT);
+            const __ANCHOR = getTable(0, 'div');
+            const __SEARCH = '<form method="POST">';
+
+            // Kompaktere Darstellung und ohne Links...
+            __MSG.out.top = false;
+            __MSG.out.label = false;
+            __MSG.out.link = false;
+            __MSG.out.bottom = false;
+            __MSGAUFSTIEG.out.label = false;
+            __MSGAUFSTIEG.out.link = false;
+            __MSGAUFSTIEG.out.bottom = false;
+
+            __MSG.setOptionLegende();
+            __MSGAUFSTIEG.setOptionLegende();
+
+            __MSG.showMessage(__ANCHOR, 'p', __SEARCH);
+            __MSGAUFSTIEG.showMessage(__ANCHOR, 'p', __SEARCH);
+
+            return true;
+        });
+
+// Verarbeitet Ansicht "Spielereinzelwerte"
+const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS, () => {
+        if (getRows(1) === undefined) {
+            __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+        } else {
+            return {
+                    'menuAnchor' : getTable(0, 'div'),
+                    'hideForm'   : {
+                                       'zeigeWarnung'         : false,
+                                       'zeigeWarnungMonat'    : false,
+                                       'zeigeWarnungHome'     : false,
+                                       'zeigeWarnungDialog'   : false,
+                                       'zeigeWarnungAufstieg' : false,
+                                       'zeigeWarnungLegende'  : false,
+                                       'ziehAnz'              : true,
+                                       'zatAges'              : true,
+                                       'trainiert'            : true,
+                                       'positions'            : true,
+                                       'skills'               : true,
+                                       'shortAufw'            : true
+                                   },
+                    'formWidth'  : 1
+                };
         }
-    }).then(rc => {
-            __LOG[2](String(__OPTSET));
-            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-        })
-})();
+        // Fehler fuer alle Faelle ohne Rueckgabewert...
+        return false;
+    }, async optSet => {
+            const __ROWOFFSETUPPER = 1;     // Header-Zeile
+            const __ROWOFFSETLOWER = 0;
+
+            const __COLUMNINDEX = {
+                    'Flg'   : 0,
+                    'Land'  : 1,
+                    'U'     : 2,
+                    'X'     : 3,
+                    'Age'   : 4,
+                    'Einz'  : 5,    // ab hier die Einzelskills
+                    'SCH'   : 5,
+                    'ABS'   : 5,    // TOR
+                    'BAK'   : 6,
+                    'STS'   : 6,    // TOR
+                    'KOB'   : 7,
+                    'FAN'   : 7,    // TOR
+                    'ZWK'   : 8,
+                    'STB'   : 8,    // TOR
+                    'DEC'   : 9,
+                    'SPL'   : 9,    // TOR
+                    'GES'   : 10,
+                    'REF'   : 10,   // TOR
+                    'FUQ'   : 11,
+                    'ERF'   : 12,
+                    'AGG'   : 13,
+                    'PAS'   : 14,
+                    'AUS'   : 15,
+                    'UEB'   : 16,
+                    'WID'   : 17,
+                    'SEL'   : 18,
+                    'DIS'   : 19,
+                    'ZUV'   : 20,
+                    'EIN'   : 21,
+                    'Zus'   : 22     // Zusaetze hinter den Einzelskills
+                };
+
+            const __ROWS = getRows(1);
+            const __HEADERS = __ROWS[0];
+            const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
+
+            const __PLAYERS = init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 2);
+            const __COLMAN = new ColumnManager(optSet, __COLUMNINDEX, true);
+
+            __COLMAN.addTitles(__HEADERS, __TITLECOLOR);
+
+            for (let i = __ROWOFFSETUPPER, j = 0; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
+                if (__ROWS[i].cells.length > 1) {
+                    __COLMAN.addValues(__PLAYERS[j++], __ROWS[i], __TITLECOLOR);
+                } else {
+                    __COLMAN.setGroupTitle(__ROWS[i]);
+                }
+            }
+
+            // Format der Trennlinie zwischen den Jahrgaengen...
+            if (! __COLMAN.gt) {
+                const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
+
+                separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
+            }
+
+            return true;
+        });
+
+// Verarbeitet Ansicht "Opt. Skill"
+const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
+        if (getRows(1) === undefined) {
+            __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+        } else {
+            return {
+                    'menuAnchor' : getTable(0, 'div'),
+                    'showForm'   : {
+                                       'kennzeichenEnde'      : true,
+                                       'sepStyle'             : true,
+                                       'sepColor'             : true,
+                                       'sepWidth'             : true,
+                                       'saison'               : true,
+                                       'aktuellerZat'         : true,
+                                       'foerderung'           : true,
+                                       'team'                 : true,
+                                       'zeigeJahrgang'        : true,
+                                       'zeigeUxx'             : true,
+                                       'zeigeWarnung'         : false,
+                                       'zeigeWarnungMonat'    : false,
+                                       'zeigeWarnungHome'     : false,
+                                       'zeigeWarnungDialog'   : false,
+                                       'zeigeWarnungAufstieg' : false,
+                                       'zeigeWarnungLegende'  : false,
+                                       'zeigeBalken'          : true,
+                                       'absBalken'            : true,
+                                       'zeigeId'              : true,
+                                       'ersetzeAlter'         : true,
+                                       'zeigeAlter'           : true,
+                                       'zeigeQuote'           : true,
+                                       'zeigePosition'        : true,
+                                       'zeigeZatDone'         : true,
+                                       'zeigeZatLeft'         : true,
+                                       'zeigeFixSkills'       : true,
+                                       'zeigeTrainiert'       : true,
+                                       'zeigeAnteilPri'       : true,
+                                       'zeigeAnteilSec'       : true,
+                                       'zeigePrios'           : true,
+                                       'zeigeAufw'            : true,
+                                       'zeigeGeb'             : true,
+                                       'zeigeTal'             : true,
+                                       'anzahlOpti'           : true,
+                                       'anzahlMW'             : true,
+                                       'zeigeTrainiertEnde'   : true,
+                                       'zeigeAnteilPriEnde'   : true,
+                                       'zeigeAnteilSecEnde'   : true,
+                                       'zeigePriosEnde'       : true,
+                                       'zeigeSkillEnde'       : true,
+                                       'anzahlOptiEnde'       : true,
+                                       'anzahlMWEnde'         : true,
+                                       'zatAges'              : true,
+                                       'trainiert'            : true,
+                                       'positions'            : true,
+                                       'skills'               : true,
+                                       'reset'                : true,
+                                       'showForm'             : true
+                                   },
+                    'formWidth'  : 1
+                };
+        }
+        // Fehler fuer alle Faelle ohne Rueckgabewert...
+        return false;
+    }, async optSet => {
+            const __ROWOFFSETUPPER = 1;     // Header-Zeile
+            const __ROWOFFSETLOWER = 0;
+
+            const __COLUMNINDEX = {
+                    'Flg'   : 0,
+                    'Land'  : 1,
+                    'U'     : 2,
+                    'Age'   : 3,
+                    'Skill' : 4,
+                    'TOR'   : 5,
+                    'ABW'   : 6,
+                    'DMI'   : 7,
+                    'MIT'   : 8,
+                    'OMI'   : 9,
+                    'STU'   : 10,
+                    'Zus'   : 11     // Zusaetze hinter den OptSkills
+                };
+
+            const __ROWS = getRows(1);
+            const __HEADERS = __ROWS[0];
+            const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
+
+            const __PLAYERS = init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 3);
+            const __COLMAN = new ColumnManager(optSet, __COLUMNINDEX, {
+                                                'Default'            : true,
+                                                'ersetzeSkills'      : false,
+                                                'zeigeSkill'         : false
+                                            });
+
+            __COLMAN.addTitles(__HEADERS, __TITLECOLOR);
+
+            for (let i = __ROWOFFSETUPPER, j = 0; i < __ROWS.length - __ROWOFFSETLOWER; i++) {
+                if (__ROWS[i].cells.length > 1) {
+                    __COLMAN.addValues(__PLAYERS[j++], __ROWS[i], __TITLECOLOR);
+                } else {
+                    __COLMAN.setGroupTitle(__ROWS[i]);
+                }
+            }
+
+            // Format der Trennlinie zwischen den Jahrgaengen...
+            if (! __COLMAN.gt) {
+                const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
+
+                separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
+            }
+
+            return true;
+        });
+
+// ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================
+
+// ==================== Spezialbehandlung der Startparameter ====================
+
+// Callback-Funktion fuer die Behandlung der Optionen und Laden des Benutzermenus
+// Diese Funktion erledigt nur Modifikationen und kann z.B. einfach optSet zurueckgeben!
+// optSet: Platz fuer die gesetzten Optionen
+// optParams: Eventuell notwendige Parameter zur Initialisierung
+// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
+// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
+// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
+// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
+// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
+// 'formWidth': Anzahl der Elemente pro Zeile
+// 'formBreak': Elementnummer des ersten Zeilenumbruchs
+// return Gefuelltes Objekt mit den gesetzten Optionen
+function prepareOptions(optSet, optParams) {
+    if (optParams.getDonation) {
+        // Jugendfoerderung aus der Options-HTML-Seite ermitteln...
+        const __BOXDONATION = document.getElementsByTagName('option');
+        const __DONATION = getSelectionFromComboBox(__BOXDONATION, 10000, 'Number');
+
+        __LOG[4]("Jugendf\xF6rderung: " + __DONATION + " Euro");
+
+        // ... und abspeichern...
+        setOpt(optSet.foerderung, __DONATION, false);
+    }
+
+    return optSet;
+}
+
+// ==================== Ende Spezialbehandlung der Startparameter ====================
+
+// ==================== Hauptprogramm ====================
+
+const __MAINCONFIG = {
+                        prepareOpt  : prepareOptions
+                    };
+
+const __LEAFS = {
+                    'haupt.php' : 0,  // Ansicht "Haupt" (Managerbuero)
+                    'ju.php'    : 1   // Ansicht "Jugendteam" (page = 1, 2, 3, 4)
+                };
+const __ITEM = 'page';
+
+// URL-Legende:
+// page=0: Managerbuero
+// page=1: Jugend Teamuebersicht
+// page=2: Jugend Spielereinzelwerte
+// page=3: Jugend Opt. Skill
+// page=4: Jugend Optionen
+const __MAIN = new Main(__OPTCONFIG, __MAINCONFIG,
+                        procHaupt, procTeamuebersicht, procSpielereinzelwerte,
+                        procOptSkill, procOptionen);
+
+__MAIN.run(getPageIdFromURL, __LEAFS, __ITEM);
+
+// ==================== Ende Hauptprogramm ====================
 
 // *** EOF ***

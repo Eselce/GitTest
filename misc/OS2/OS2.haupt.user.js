@@ -44,6 +44,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
@@ -166,9 +167,6 @@ const __OPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
-
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);
 
@@ -180,28 +178,6 @@ __TEAMCLASS.optSelect = {
         'datenZat'   : true,
         'ligaSize'   : true
     };
-
-// Behandelt die Optionen und laedt das Benutzermenu
-// optConfig: Konfiguration der Optionen
-// optSet: Platz fuer die gesetzten Optionen
-// optParams: Eventuell notwendige Parameter zur Initialisierung
-// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
-// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
-// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
-// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
-// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
-// 'formWidth': Anzahl der Elemente pro Zeile
-// 'formBreak': Elementnummer des ersten Zeilenumbruchs
-// return Promise auf gefuelltes Objekt mit den gesetzten Optionen
-function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : false }) {
-    // Klassifikation ueber Land und Liga des Teams...
-    __TEAMCLASS.optSet = optSet;  // Classification mit optSet verknuepfen
-    __TEAMCLASS.teamParams = optParams.teamParams;  // Ermittelte Parameter
-
-    return startOptions(optConfig, optSet, __TEAMCLASS).then(
-                optSet => showOptions(optSet, optParams),
-                defaultCatch);
-}
 
 // ==================== Ende Abschnitt fuer Optionen ====================
 
@@ -235,42 +211,59 @@ function addZusatz(row, currZAT, anzZAT = 1, bilanz = false) {
     }
 }
 
-// ==================== Hauptprogramm ====================
+// ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero)
-function procHaupt() {
-    const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
+const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
+        const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
 
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'teamParams' : __TEAMPARAMS,
-                            'menuAnchor' : getTable(1, 'div'),
-                            'hideForm'   : {
-                                               'team'         : true
-                                           }
-                        }).then(optSet => {
-            const __ZAT = firstZAT(getOptValue(optSet.saison), getOptValue(optSet.ligaSize));
-            const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
-            const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
-            const __CURRZAT = __NEXTZAT - 1;
+        return {
+                'teamParams'  : __TEAMPARAMS,
+                'menuAnchor'  : getTable(1, 'div'),
+                'hideForm'    : {
+                                    'team'  : true
+                                }
+            };
+    }, async optSet => {
+        const __ZAT = firstZAT(getOptValue(optSet.saison), getOptValue(optSet.ligaSize));
+        const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
+        const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
+        const __CURRZAT = __NEXTZAT - 1;
 
-            addZusatz(getProp(getRows(2), 0), __ZAT, __CURRZAT, true);    // "Dein letztes Spiel:" (+ __CURRZAT)
-            addZusatz(getProp(getRows(3), 0), __ZAT);                     // "Dein naechstes Spiel:" (+ 1 ZAT)
-        });
+        addZusatz(getProp(getRows(2), 0), __ZAT, __CURRZAT, true);  // "Dein letztes Spiel:" (+ __CURRZAT)
+        addZusatz(getProp(getRows(3), 0), __ZAT);                   // "Dein naechstes Spiel:" (+ 1 ZAT)
+    });
+
+// ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================
+
+// ==================== Spezialbehandlung der Startparameter ====================
+
+// Callback-Funktion fuer die Behandlung der Optionen und Laden des Benutzermenus
+// Diese Funktion erledigt nur Modifikationen und kann z.B. einfach optSet zurueckgeben!
+// optSet: Platz fuer die gesetzten Optionen
+// optParams: Eventuell notwendige Parameter zur Initialisierung
+// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
+// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
+// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
+// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
+// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
+// 'formWidth': Anzahl der Elemente pro Zeile
+// 'formBreak': Elementnummer des ersten Zeilenumbruchs
+// return Gefuelltes Objekt mit den gesetzten Optionen
+function prepareOptions(optSet, optParams) {
+    UNUSED(optParams);
+
+    return optSet;
 }
 
-(() => {
-    startMain().then(async () => {
-        try {
-            await procHaupt().catch(defaultCatch);
+// ==================== Ende Spezialbehandlung der Startparameter ====================
 
-            return 'OK';
-        } catch (ex) {
-            return defaultCatch(ex);
-        }
-    }).then(rc => {
-            __LOG[2](String(__OPTSET));
-            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-        })
-})();
+// ==================== Hauptprogramm ====================
+
+const __MAIN = new Main(__OPTCONFIG, null, procHaupt);
+
+__MAIN.run();
+
+// ==================== Ende Hauptprogramm ====================
 
 // *** EOF ***

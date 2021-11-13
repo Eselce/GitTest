@@ -427,18 +427,22 @@ function getColor(pos) {
 //}
 
 Class.define(TeamClassification, Classification, {
-                    'renameParamFun' : function() {
-                                           const __MYTEAM = (this.team = getMyTeam(this.optSet, this.teamParams, this.team));
+                    'assign'          : function(optSet, optParams) {
+                                            Classification.prototype.assign.call(this, optSet, optParams);
+                                            this.teamParams = optParams.teamParams;
+                                        },
+                    'renameParamFun'  : function() {
+                                            const __MYTEAM = (this.team = getMyTeam(this.optSet, this.teamParams, this.team));
 
-                                           if (__MYTEAM.LdNr) {
-                                               // Prefix fuer die Optionen mit gesonderten Behandlung...
-                                               this.prefix = __MYTEAM.LdNr.toString() + '.' + __MYTEAM.LgNr.toString();
-                                           } else {
-                                               this.prefix = undefined;
-                                           }
+                                            if (__MYTEAM.LdNr) {
+                                                // Prefix fuer die Optionen mit gesonderten Behandlung...
+                                                this.prefix = __MYTEAM.LdNr.toString() + '.' + __MYTEAM.LgNr.toString();
+                                            } else {
+                                                this.prefix = undefined;
+                                            }
 
-                                           return this.prefixParamFun();
-                                       }
+                                            return this.prefixParamFun();
+                                        }
                 });
 
 // ==================== Ende Abschnitt fuer Klasse TeamClassification ====================
@@ -645,8 +649,8 @@ function getTeamParamsFromTable(table, teamSearch = undefined) {
 
 // Verarbeitet die URL der Seite und ermittelt die Nummer der gewuenschten Unterseite
 // url: Adresse der Seite
-// leafs: Liste von Filenamen mit der Default-Seitennummer (falls Query-Parameter nicht gefunden)
-// item: Query-Parameter, der die Nummer der Unterseite angibt
+// leafs: Liste von Filenamen mit Basis-Seitennummern (zu denen ggfs. Query-Parameter addiert wird)
+// item: Query-Parameter, der die Nummer der Unterseite angibt (wird zur Basisnummer addiert)
 // return Parameter aus der URL der Seite als Nummer
 function getPageIdFromURL(url, leafs, item = 'page') {
     const __URI = new URI(url);
@@ -654,9 +658,9 @@ function getPageIdFromURL(url, leafs, item = 'page') {
 
     for (let leaf in leafs) {
         if (__LEAF === leaf) {
-            const __DEFAULT = leafs[leaf];
+            const __BASE = getValue(leafs[leaf], 0);
 
-            return getValue(__URI.getQueryPar(item), __DEFAULT);
+            return __BASE + getValue(__URI.getQueryPar(item), 0);
         }
     }
 
@@ -2436,7 +2440,7 @@ Class.define(ColumnManager, Object, {
     constructor*/(optSet, colIdx, rows, offsetUpper, offsetLower) {
         'use strict';
 
-        Object.call(this);
+        //Object.call(this);
 
         this.currSaison = getOptValue(optSet.aktuelleSaison);
 

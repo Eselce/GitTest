@@ -44,6 +44,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
@@ -167,9 +168,6 @@ const __OPTCONFIG = {
 
 // ==================== Spezialisierter Abschnitt fuer Optionen ====================
 
-// Gesetzte Optionen (werden ggfs. von initOptions() angelegt und von loadOptions() gefuellt):
-const __OPTSET = new Options(__OPTCONFIG, '__OPTSET');
-
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);
 
@@ -178,28 +176,6 @@ const __TEAMCLASS = new TeamClassification();
 
 // Optionen mit Daten, die ZAT- und Team-bezogen gemerkt werden...
 __TEAMCLASS.optSelect = { };
-
-// Behandelt die Optionen und laedt das Benutzermenu
-// optConfig: Konfiguration der Optionen
-// optSet: Platz fuer die gesetzten Optionen
-// optParams: Eventuell notwendige Parameter zur Initialisierung
-// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
-// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
-// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
-// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
-// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
-// 'formWidth': Anzahl der Elemente pro Zeile
-// 'formBreak': Elementnummer des ersten Zeilenumbruchs
-// return Promise auf gefuelltes Objekt mit den gesetzten Optionen
-function buildOptions(optConfig, optSet = undefined, optParams = { 'hideMenu' : false }) {
-    // Klassifikation ueber Land und Liga des Teams...
-    __TEAMCLASS.optSet = optSet;  // Classification mit optSet verknuepfen
-    __TEAMCLASS.teamParams = optParams.teamParams;  // Ermittelte Parameter
-
-    return startOptions(optConfig, optSet, __TEAMCLASS).then(
-                optSet => showOptions(optSet, optParams),
-                defaultCatch);
-}
 
 // ==================== Ende Abschnitt fuer Optionen ====================
 
@@ -302,55 +278,74 @@ function getScriptFromHTML(pathElement, table) {
     return getScriptFromArray(__NAME, __LINES);
 }
 
+// ==================== Page-Manager fuer zu bearbeitende Seiten ====================
+
 // Verarbeitet eine Script-Ansicht bei GitHub
-function procScript() {
-    return buildOptions(__OPTCONFIG, __OPTSET, {
-                            'menuAnchor' : getTable(0, 'ul'),
-                            'formWidth'  : 2
-                        }).then(optSet => {
-            // Quellcode ermitteln...
-            const __TABLE = getTable(1);  // um 1 verschoben wegen Options-Form
-            const __SCRIPT = getScriptFromHTML('path', __TABLE);
-            const __LIB = __SCRIPT.libname;
-            const __LIBS = getOptValue(optSet.libs, { });
-            const __FUNS = getOptValue(optSet.funs, { });
-            const __DEPS = getOptValue(optSet.deps, { });
+const procScript = new PageManager("Script-Ansicht bei GitHub", null__TEAMCLASS, () => {
+        return {
+                'menuAnchor' : getTable(0, 'ul'),
+                'formWidth'  : 2
+            };
+    }, async optSet => {
+        // Quellcode ermitteln...
+        const __TABLE = getTable(1);  // um 1 verschoben wegen Options-Form
+        const __SCRIPT = getScriptFromHTML('path', __TABLE);
+        const __LIB = __SCRIPT.libname;
+        const __LIBS = getOptValue(optSet.libs, { });
+        const __FUNS = getOptValue(optSet.funs, { });
+        const __DEPS = getOptValue(optSet.deps, { });
 
-            if (__SCRIPT.filename && ! __SCRIPT.filename.endsWith(".user.js")) {
-                __LIBS[__LIB] = __SCRIPT.funs;
-                Object.keys(__SCRIPT.funs).forEach(fun => (__FUNS[fun] = __LIB));
-            }
+        if (__SCRIPT.filename && ! __SCRIPT.filename.endsWith(".user.js")) {
+            __LIBS[__LIB] = __SCRIPT.funs;
+            Object.keys(__SCRIPT.funs).forEach(fun => (__FUNS[fun] = __LIB));
+        }
 
-            const __CALLS = __SCRIPT.findCalls(__FUNS);
+        const __CALLS = __SCRIPT.findCalls(__FUNS);
 
-            __DEPS[__LIB] = __CALLS.__LIBS;
+        __DEPS[__LIB] = __CALLS.__LIBS;
 
-            console.error(__SCRIPT);
-            console.error(__LIBS);
-            console.error(__FUNS);
-            console.error(__CALLS);
-            console.error(__DEPS);
+        console.error(__SCRIPT);
+        console.error(__LIBS);
+        console.error(__FUNS);
+        console.error(__CALLS);
+        console.error(__DEPS);
 
-            setOpt(optSet.libs, __LIBS, false);
-            setOpt(optSet.funs, __FUNS, false);
-            setOpt(optSet.calls, __CALLS, false);
-            setOpt(optSet.deps, __DEPS, false);
-        });
+        setOpt(optSet.libs, __LIBS, false);
+        setOpt(optSet.funs, __FUNS, false);
+        setOpt(optSet.calls, __CALLS, false);
+        setOpt(optSet.deps, __DEPS, false);
+    });
+
+// ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================
+
+// ==================== Spezialbehandlung der Startparameter ====================
+
+// Callback-Funktion fuer die Behandlung der Optionen und Laden des Benutzermenus
+// Diese Funktion erledigt nur Modifikationen und kann z.B. einfach optSet zurueckgeben!
+// optSet: Platz fuer die gesetzten Optionen
+// optParams: Eventuell notwendige Parameter zur Initialisierung
+// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
+// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
+// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
+// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
+// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
+// 'formWidth': Anzahl der Elemente pro Zeile
+// 'formBreak': Elementnummer des ersten Zeilenumbruchs
+// return Gefuelltes Objekt mit den gesetzten Optionen
+function prepareOptions(optSet, optParams) {
+    UNUSED(optParams);
+
+    return optSet;
 }
 
-(() => {
-    startMain().then(async () => {
-        try {
-            await procScript().catch(defaultCatch);
+// ==================== Ende Spezialbehandlung der Startparameter ====================
 
-            return 'OK';
-        } catch (ex) {
-            return defaultCatch(ex);
-        }
-    }).then(rc => {
-            __LOG[2](String(__OPTSET));
-            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')');
-        });
-})();
+// ==================== Hauptprogramm ====================
+
+const __MAIN = new Main(__OPTCONFIG, null, procScript);
+
+__MAIN.run();
+
+// ==================== Ende Hauptprogramm ====================
 
 // *** EOF ***
