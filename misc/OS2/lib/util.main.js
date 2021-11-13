@@ -38,7 +38,7 @@ Class.define(Main, Object, {
                             const __SETUPMANAGER    = (this.setupManager || (page => this.pageManager[page]));
                             const __MANAGER         = getValue(__SETUPMANAGER.call(this, page), { name : "Seite #" + page });
                             const __SETUPOPTPARAMS  = (__MANAGER.setupOptParams || (() => ({ 'hideMenu' : false })));
-                            const __OPTPARAMS       = __SETUPOPTPARAMS.call(__MANAGER, this.optSet, ... this.params);
+                            const __OPTPARAMS       = __SETUPOPTPARAMS.call(__MANAGER, this.optSet, ... __MANAGER.params);
                             const __CHECKOPTPARAMS  = (this.checkOptParams || (optParams => !! optParams));
 
                             if (__CHECKOPTPARAMS(__OPTPARAMS, __MANAGER)) {
@@ -54,9 +54,9 @@ Class.define(Main, Object, {
                                             const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || (optSet => Object.values(optSet).forEach(checkOpt)));
     
                                             return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
-                                                                        optSet => showOptions(optSet, __OPTPARAMS).then(
+                                                                        optSet => Promise.resolve(showOptions(optSet, __OPTPARAMS)).then(
                                                                         optSet => __VERIFYOPT(optSet, __OPTPARAMS)));
-                                        }).then(__HANDLER.bind(__MANAGER, this.optSet, ... this.params)).then(
+                                        }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
                                                                 ret => (ret ? 'OK' : ('FAILED ' + __MANAGER.name)));
                             } else {
                                 return Promise.reject(`Keine Options-Parameter f\xFCr '${__MANAGER.name}' vorhanden!`);
