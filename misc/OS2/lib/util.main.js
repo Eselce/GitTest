@@ -46,8 +46,10 @@ Class.define(Main, Object, {
                                 const __HANDLER         = __MANAGER.handler;
 
                                 if (! __HANDLER) {
-                                    return Promise.reject(`Kein Handler f\xFCr '${__MANAGER.name}' vorhanden!`);
+                                    return Promise.reject(`Kein Seiten-Handler f\xFCr '${__MANAGER.name}' vorhanden!`);
                                 }
+
+                                __LOG[2](`${__DBMOD.Name}: Starte Seiten-Verarbeitung f\xFCr '${__MANAGER.name}'...`);
 
                                 // Klassifikation verknuepfen...
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
@@ -61,9 +63,9 @@ Class.define(Main, Object, {
                                                                         optSet => Promise.resolve(showOptions(optSet, __OPTPARAMS)).then(
                                                                         optSet => __VERIFYOPT(optSet, __OPTPARAMS)));
                                         }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
-                                                                ret => (ret ? 'OK' : ('FAILED ' + __MANAGER.name)));
+                                                                ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
                             } else {
-                                return Promise.reject(`Keine Options-Parameter f\xFCr '${__MANAGER.name}' vorhanden!`);
+                                return Promise.reject(`Keine Options-Parameter f\xFCr Seite '${__MANAGER.name}' vorhanden!`);
                             }
                         },
         'run'         : function(selector, ... selectorParams) {
@@ -99,11 +101,11 @@ Class.define(Main, Object, {
 // ==================== Abschnitt fuer Klasse PageManager ====================
 
 /*class*/ function PageManager /*{
-    constructor*/(pageName, classification, setupOptParams, handler, ... params) {
+    constructor*/(pageName, classification, setupOptParams, pageHandler, ... params) {
         this.name           = pageName;
         this.classification = classification;
         this.setupOptParams = setupOptParams;
-        this.handler        = handler;
+        this.handler        = pageHandler;
         this.params         = (params || []);
     }
 //}
@@ -112,7 +114,7 @@ Class.define(PageManager, Object, {
         'clone'       : function(... params) {
                             const __PARAMS = this.params.concat(params || []);
 
-                            return new PageManager(this.pageName + " (" + params.join(", ") + ')',
+                            return new PageManager(this.name + " (" + params.join(", ") + ')',
                                                     this.classification, this.setupOptParams,
                                                     this.handler, ... __PARAMS);
                         }
