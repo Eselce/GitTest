@@ -87,11 +87,15 @@ Class.define(Main, Object, {
                                     }).then(rc => {
                                             __LOG[2](String(this.optSet));
                                             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
+
+                                            return true;
                                         }, ex => {
                                             __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message,
                                                         ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1]))) + ')');
                                             __LOG[2](String(this.optSet));
                                             __LOG[1]('SCRIPT END', __DBMAN.Name);
+
+                                            return false;
                                         });
                         }
     });
