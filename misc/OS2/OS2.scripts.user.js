@@ -5,7 +5,7 @@
 // @copyright    2017+
 // @author       Sven Loges (SLC)
 // @description  Analysiert die Scripts auf GitHub
-// @include      /^https?://(www\.)?(github\.com)/(Eselce)/(GitTest|OS2\.scripts)/(tree|blob)/(master)/(misc/OS2/|)(lib/.*\.js|.*\.user\.js)(\?\S+(&\S+)*)?(#\S+)?$/
+// @include      /^https?://(www\.)?github\.com/Eselce/(GitTest|OS2\.scripts)/(tree/|blob/)?master/(misc/OS2/)?(lib/.*\.js|.*\.user\.js)(\?\S+(&\S+)*)?(#\S+)?$/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue
@@ -171,12 +171,6 @@ const __OPTCONFIG = {
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);
 
-// Teamparameter fuer getrennte Speicherung der Optionen fuer Erst- und Zweitteam...
-const __TEAMCLASS = new TeamClassification();
-
-// Optionen mit Daten, die ZAT- und Team-bezogen gemerkt werden...
-__TEAMCLASS.optSelect = { };
-
 // ==================== Ende Abschnitt fuer Optionen ====================
 
 // ==================== Hauptprogramm ====================
@@ -281,7 +275,7 @@ function getScriptFromHTML(pathElement, table) {
 // ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet eine Script-Ansicht bei GitHub
-const procScript = new PageManager("Script-Ansicht bei GitHub", null__TEAMCLASS, () => {
+const procScript = new PageManager("Script-Ansicht bei GitHub", null, () => {
         return {
                 'menuAnchor' : getTable(0, 'ul'),
                 'formWidth'  : 2

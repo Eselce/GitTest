@@ -127,18 +127,12 @@ const __OPTCONFIG = {
 // Logging initialisieren mit Loglevel (siehe ganz oben im Konfigurationsabschnitt)...
 __LOG.init(window, __LOGLEVEL);
 
-// Teamparameter fuer getrennte Speicherung der Optionen fuer Erst- und Zweitteam...
-const __TEAMCLASS = new TeamClassification();
-
-// Optionen mit Daten, die ZAT- und Team-bezogen gemerkt werden...
-__TEAMCLASS.optSelect = { };
-
 // ==================== Ende Abschnitt fuer Optionen ====================
 
 // ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet eine Ergebnis-Ansicht
-const procErgebnisse = new PageManager("Ergebnisse", __TEAMCLASS, () => {
+const procErgebnisse = new PageManager("Ergebnisse", null, () => {
         return {
                 'menuAnchor' : getTable(0, 'div'),
                 'formWidth'  : 2
@@ -146,6 +140,8 @@ const procErgebnisse = new PageManager("Ergebnisse", __TEAMCLASS, () => {
     }, async optSet => {
         // Aktiviere Checkbox "Ergebnisse anzeigen" je nach Einstellung der Option
         getElement("erganzeigen").checked = getOptValue(optSet.showErgs);
+
+        return true;
     });
 
 // ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================

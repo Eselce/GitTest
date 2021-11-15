@@ -986,7 +986,7 @@ console.log(__TITEL);
 // Verarbeitet Ansichten "OS Championscup FR" und "OS Europacup"
 // typ: Name des Wettbewerbs ('OSC' oder 'OSE')
 // finale: Letzte Runde mit dem Finalspiel
-const procEuropa = new PageManager("OS Championscup FR / OS Europacup", __TEAMCLASS, (optSet, typ, finale) => {
+const procEuropa = new PageManager("Internationales Finale", __TEAMCLASS, (optSet, typ, finale) => {
         UNUSED(optSet, finale);
 
         return {
@@ -1083,7 +1083,7 @@ const procEuropa = new PageManager("OS Championscup FR / OS Europacup", __TEAMCL
 
 // Verarbeitet Ansicht "Landespokale"
 // finale: Letzte Runde mit dem Finalspiel
-const procPokal = new PageManager("Landespokale", __TEAMCLASS, (optSet, finale) => {
+const procPokal = new PageManager("Landespokalfinale", __TEAMCLASS, (optSet, finale) => {
         UNUSED(optSet, finale);
 
         return {

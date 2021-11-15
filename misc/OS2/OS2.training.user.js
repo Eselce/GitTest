@@ -2347,9 +2347,9 @@ const procEinstellungen = new PageManager("Zugabgabe - Einstellungen", null, () 
 
 // Verarbeitet Ansicht "Trainer"
 const procTrainer = new PageManager("Trainer", null, () => {
-    if (getRows(1) === undefined) {
-        __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
-        } else {
+//        if (getRows(1) === undefined) {
+//            __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+//        } else {
             return {
                     'menuAnchor'  : getTable(0, 'div'),
                     'oldData'     : false,
@@ -2362,9 +2362,9 @@ const procTrainer = new PageManager("Trainer", null, () => {
                                     },
                     'formWidth'   : 1
                 };
-        }
+//        }
         // Fehler fuer alle Faelle ohne Rueckgabewert...
-        return false;
+//        return false;
     }, async optSet => {
             UNUSED(optSet);
             //const __ROWS = getRows(1);
