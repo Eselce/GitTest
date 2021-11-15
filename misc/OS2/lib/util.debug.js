@@ -56,7 +56,17 @@ function showException(label, ex, show = true) {
 function defaultCatch(error, show) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
     error = (error || new Error("Promise rejected!"));
-    if (error[2]) {  // Recatch...
+
+    if ((typeof error) === 'string') {
+        const __CODELINE = codeLine(true, false, true, false);
+        const [ __FILENAME, __LINECOLNUMBER ] = __CODELINE.match(/(.*?):(\d+(?::\d+))/).slice(1, 3);  // [1], [2]
+
+        error = {
+                    message     : error,
+                    fileName    : __FILENAME,
+                    lineNumber  : __LINECOLNUMBER
+                };
+    } else if (error[2]) {  // Recatch...
         return Promise.reject(error);
     }
 

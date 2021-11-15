@@ -845,7 +845,9 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
             };
     }, async optSet => {
         UNUSED(optSet);
-        //return true;
+
+        // Nichts zu tun!
+        return true;
     });
 
 // Verarbeitet Ansicht "Fairplaytabelle"

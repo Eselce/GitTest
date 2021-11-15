@@ -232,6 +232,8 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
 
         addZusatz(getProp(getRows(2), 0), __ZAT, __CURRZAT, true);  // "Dein letztes Spiel:" (+ __CURRZAT)
         addZusatz(getProp(getRows(3), 0), __ZAT);                   // "Dein naechstes Spiel:" (+ 1 ZAT)
+
+        return true;
     });
 
 // ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================
