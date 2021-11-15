@@ -2484,30 +2484,34 @@ Class.define(Main, Object, {
                                 return Promise.reject(`Keine Options-Parameter f\xFCr Seite '${__MANAGER.name}' vorhanden!`);
                             }
                         },
-        'run'         : function(selector, ... selectorParams) {
+        'run'         : async function(selector, ... selectorParams) {
                             // Fuehrt die Bearbeitung zu einer selektierten Seite durch
                             // selector: Funktion zur Selektion aufgrund der als erstem Parameter uebergebenen URL der Seite
                             // selectorParams: Weitere Parameter fuer selector(URL, ...)
                             // return Promise auf die Durchfuehrung der Bearbeitung im Hauptprogramm
-                            return startMain().then(
+                            return await startMain().then(
                                 async () => {
                                         try {
                                             const __SELECTOR = (selector || (() => 0));
                                             const __SELECTORPARAMS = selectorParams;
                                             const __PAGE = __SELECTOR(window.location.href, ... __SELECTORPARAMS);
 
-                                            return await this.handlePage(__PAGE).catch(defaultCatch);
+                                            return this.handlePage(__PAGE).catch(defaultCatch);
                                         } catch (ex) {
-                                            return defaultCatch(ex);
+                                            return Promise.reject(defaultCatch(ex));
                                         }
                                     }).then(rc => {
                                             __LOG[2](String(this.optSet));
                                             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
+
+                                            return Promise.resolve(true);
                                         }, ex => {
                                             __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message,
                                                         ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1]))) + ')');
                                             __LOG[2](String(this.optSet));
                                             __LOG[1]('SCRIPT END', __DBMAN.Name);
+
+                                            return Promise.resolve(false);
                                         });
                         }
     });

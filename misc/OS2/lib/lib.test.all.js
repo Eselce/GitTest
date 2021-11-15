@@ -908,9 +908,9 @@ Class.define(UnitTestOption, UnitTest, {
 
                                 const __MAIN = new Main(__TESTOPTCONFIG, null, __MANAGER);
 
-                                await __MAIN.run();
+                                const __RET = await __MAIN.run();
 
-                                return true;
+                                return __RET;
                             },
             'cleanup'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
                                 UNUSED(resultFun, tableId);
