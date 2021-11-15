@@ -25,59 +25,59 @@
         const __SHOWCOL = getValue(showCol, true);
         const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
 
-        const __BIRTHDAYS = getOptValue(optSet.birthdays, []).length;
-        const __TCLASSES = getOptValue(optSet.tClasses, []).length;
-        const __PROGRESSES = getOptValue(optSet.progresses, []).length;
+        const __BIRTHDAYS = optSet.getOptValue('birthdays', []).length;
+        const __TCLASSES = optSet.getOptValue('tClasses', []).length;
+        const __PROGRESSES = optSet.getOptValue('progresses', []).length;
 
-        const __ZATAGES = getOptValue(optSet.zatAges, []).length;
-        const __TRAINIERT = getOptValue(optSet.trainiert, []).length;
-        const __POSITIONS = getOptValue(optSet.positions, []).length;
+        const __ZATAGES = optSet.getOptValue('zatAges', []).length;
+        const __TRAINIERT = optSet.getOptValue('trainiert', []).length;
+        const __POSITIONS = optSet.getOptValue('positions', []).length;
 
-        const __EINZELSKILLS = getOptValue(optSet.skills, []).length;
+        const __EINZELSKILLS = optSet.getOptValue('skills', []).length;
         const __PROJECTION = (__EINZELSKILLS && __ZATAGES);
 
         this.colIdx = colIdx;
 
-        this.saison = getOptValue(optSet.saison);
-        this.gt = getOptValue(optSet.zeigeJahrgang);
-        this.gtUxx = getOptValue(optSet.zeigeUxx);
+        this.saison = optSet.getOptValue('saison');
+        this.gt = optSet.getOptValue('zeigeJahrgang');
+        this.gtUxx = optSet.getOptValue('zeigeUxx');
 
-        this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
-        this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && getOptValue(optSet.zeigeWarnung));
-        this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && getOptValue(optSet.zeigeWarnungMonat));
-        this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && getOptValue(optSet.zeigeWarnungHome));
-        this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && getOptValue(optSet.zeigeWarnungDialog));
-        this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && getOptValue(optSet.zeigeWarnungAufstieg));
-        this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && getOptValue(optSet.zeigeWarnungLegende));
-        this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && getOptValue(optSet.zeigeBalken));
-        this.barAbs = getOptValue(optSet.absBalken);
-        this.donor = getOptValue(optSet.foerderung);
-        this.geb = (__BIRTHDAYS && getValue(__SHOWCOL.zeigeGeb, __SHOWALL) && getOptValue(optSet.zeigeGeb));
-        this.tal = (__TCLASSES && getValue(__SHOWCOL.zeigeTal, __SHOWALL) && getOptValue(optSet.zeigeTal));
-        this.quo = (__ZATAGES && __TRAINIERT && getValue(__SHOWCOL.zeigeQuote, __SHOWALL) && getOptValue(optSet.zeigeQuote));
-        this.aufw = (__PROGRESSES && getValue(__SHOWCOL.zeigeAufw, __SHOWALL) && getOptValue(optSet.zeigeAufw));
-        this.substAge = (__ZATAGES && getValue(__SHOWCOL.ersetzeAlter, __SHOWALL) && getOptValue(optSet.ersetzeAlter));
-        this.alter = (__ZATAGES && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
-        this.fix = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeFixSkills, __SHOWALL) && getOptValue(optSet.zeigeFixSkills));
-        this.tr = (__EINZELSKILLS && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiert, __SHOWALL) && getOptValue(optSet.zeigeTrainiert));
-        this.zat = (__ZATAGES && getValue(__SHOWCOL.zeigeZatDone, __SHOWALL) && getOptValue(optSet.zeigeZatDone));
-        this.antHpt = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilPri, __SHOWALL) && getOptValue(optSet.zeigeAnteilPri));
-        this.antNeb = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilSec, __SHOWALL) && getOptValue(optSet.zeigeAnteilSec));
-        this.pri = (__EINZELSKILLS && getValue(__SHOWCOL.zeigePrios, __SHOWALL) && getOptValue(optSet.zeigePrios));
-        this.skill = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
-        this.pos = (__EINZELSKILLS && __POSITIONS && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
-        this.anzOpti = ((__EINZELSKILLS && getValue(__SHOWCOL.zeigeOpti, __SHOWALL)) ? getOptValue(optSet.anzahlOpti) : 0);
-        this.anzMw =  ((__PROJECTION && getValue(__SHOWCOL.zeigeMW, __SHOWALL)) ? getOptValue(optSet.anzahlMW) : 0);
-        this.substSkills = (__PROJECTION && getValue(__SHOWCOL.ersetzeSkills, __SHOWALL) && getOptValue(optSet.ersetzeSkills));
-        this.trE = (__PROJECTION && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiertEnde, __SHOWALL) && getOptValue(optSet.zeigeTrainiertEnde));
-        this.zatE = (__ZATAGES && getValue(__SHOWCOL.zeigeZatLeft, __SHOWALL) && getOptValue(optSet.zeigeZatLeft));
-        this.antHptE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilPriEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilPriEnde));
-        this.antNebE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilSecEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilSecEnde));
-        this.priE = (__PROJECTION && getValue(__SHOWCOL.zeigePriosEnde, __SHOWALL) && getOptValue(optSet.zeigePriosEnde));
-        this.skillE = (__PROJECTION && getValue(__SHOWCOL.zeigeSkillEnde, __SHOWALL) && getOptValue(optSet.zeigeSkillEnde));
-        this.anzOptiE = ((__PROJECTION && getValue(__SHOWCOL.zeigeOptiEnde, __SHOWALL)) ? getOptValue(optSet.anzahlOptiEnde) : 0);
-        this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? getOptValue(optSet.anzahlMWEnde) : 0);
-        this.kennzE = getOptValue(optSet.kennzeichenEnde);
+        this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && optSet.getOptValue('zeigeId'));
+        this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && optSet.getOptValue('zeigeWarnung'));
+        this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && optSet.getOptValue('zeigeWarnungMonat'));
+        this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && optSet.getOptValue('zeigeWarnungHome'));
+        this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && optSet.getOptValue('zeigeWarnungDialog'));
+        this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && optSet.getOptValue('zeigeWarnungAufstieg'));
+        this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && optSet.getOptValue('zeigeWarnungLegende'));
+        this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && optSet.getOptValue('zeigeBalken'));
+        this.barAbs = optSet.getOptValue('absBalken');
+        this.donor = optSet.getOptValue('foerderung');
+        this.geb = (__BIRTHDAYS && getValue(__SHOWCOL.zeigeGeb, __SHOWALL) && optSet.getOptValue('zeigeGeb'));
+        this.tal = (__TCLASSES && getValue(__SHOWCOL.zeigeTal, __SHOWALL) && optSet.getOptValue('zeigeTal'));
+        this.quo = (__ZATAGES && __TRAINIERT && getValue(__SHOWCOL.zeigeQuote, __SHOWALL) && optSet.getOptValue('zeigeQuote'));
+        this.aufw = (__PROGRESSES && getValue(__SHOWCOL.zeigeAufw, __SHOWALL) && optSet.getOptValue('zeigeAufw'));
+        this.substAge = (__ZATAGES && getValue(__SHOWCOL.ersetzeAlter, __SHOWALL) && optSet.getOptValue('ersetzeAlter'));
+        this.alter = (__ZATAGES && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && optSet.getOptValue('zeigeAlter'));
+        this.fix = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeFixSkills, __SHOWALL) && optSet.getOptValue('zeigeFixSkills'));
+        this.tr = (__EINZELSKILLS && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiert, __SHOWALL) && optSet.getOptValue('zeigeTrainiert'));
+        this.zat = (__ZATAGES && getValue(__SHOWCOL.zeigeZatDone, __SHOWALL) && optSet.getOptValue('zeigeZatDone'));
+        this.antHpt = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilPri, __SHOWALL) && optSet.getOptValue('zeigeAnteilPri'));
+        this.antNeb = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilSec, __SHOWALL) && optSet.getOptValue('zeigeAnteilSec'));
+        this.pri = (__EINZELSKILLS && getValue(__SHOWCOL.zeigePrios, __SHOWALL) && optSet.getOptValue('zeigePrios'));
+        this.skill = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && optSet.getOptValue('zeigeSkill'));
+        this.pos = (__EINZELSKILLS && __POSITIONS && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && optSet.getOptValue('zeigePosition'));
+        this.anzOpti = ((__EINZELSKILLS && getValue(__SHOWCOL.zeigeOpti, __SHOWALL)) ? optSet.getOptValue('anzahlOpti') : 0);
+        this.anzMw =  ((__PROJECTION && getValue(__SHOWCOL.zeigeMW, __SHOWALL)) ? optSet.getOptValue('anzahlMW') : 0);
+        this.substSkills = (__PROJECTION && getValue(__SHOWCOL.ersetzeSkills, __SHOWALL) && optSet.getOptValue('ersetzeSkills'));
+        this.trE = (__PROJECTION && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiertEnde, __SHOWALL) && optSet.getOptValue('zeigeTrainiertEnde'));
+        this.zatE = (__ZATAGES && getValue(__SHOWCOL.zeigeZatLeft, __SHOWALL) && optSet.getOptValue('zeigeZatLeft'));
+        this.antHptE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilPriEnde, __SHOWALL) && optSet.getOptValue('zeigeAnteilPriEnde'));
+        this.antNebE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilSecEnde, __SHOWALL) && optSet.getOptValue('zeigeAnteilSecEnde'));
+        this.priE = (__PROJECTION && getValue(__SHOWCOL.zeigePriosEnde, __SHOWALL) && optSet.getOptValue('zeigePriosEnde'));
+        this.skillE = (__PROJECTION && getValue(__SHOWCOL.zeigeSkillEnde, __SHOWALL) && optSet.getOptValue('zeigeSkillEnde'));
+        this.anzOptiE = ((__PROJECTION && getValue(__SHOWCOL.zeigeOptiEnde, __SHOWALL)) ? optSet.getOptValue('anzahlOptiEnde') : 0);
+        this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? optSet.getOptValue('anzahlMWEnde') : 0);
+        this.kennzE = optSet.getOptValue('kennzeichenEnde');
     }
 //}
 

@@ -139,7 +139,7 @@ const procErgebnisse = new PageManager("Ergebnisse", null, () => {
             };
     }, async optSet => {
         // Aktiviere Checkbox "Ergebnisse anzeigen" je nach Einstellung der Option
-        getElement("erganzeigen").checked = getOptValue(optSet.showErgs);
+        getElement('erganzeigen').checked = optSet.getOptValue('showErgs');
 
         return true;
     });

@@ -22,12 +22,12 @@
 
         //Object.call(this);
 
-        this.currSaison = getOptValue(optSet.aktuelleSaison);
+        this.currSaison = optSet.getOptValue('aktuelleSaison');
 
-        this.saison = getOptValue(optSet.saison);
-        this.land = getOptValue(optSet.land);
-        this.liga = getOptValue(optSet.liga);
-        this.tabTypNr = getOptValue(optSet.tabTypNr, 0);
+        this.saison = optSet.getOptValue('saison');
+        this.land = optSet.getOptValue('land');
+        this.liga = optSet.getOptValue('liga');
+        this.tabTypNr = optSet.getOptValue('tabTypNr', 0);
 
         this.colIdx = colIdx;
 

@@ -838,61 +838,61 @@ __LASTZATCLASS.optSelect = {
         const __SHOWCOL = getValue(showCol, true);
         const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
 
-        const __BIRTHDAYS = getOptValue(optSet.birthdays, []).length;
-        const __TCLASSES = getOptValue(optSet.tClasses, []).length;
-        const __PROGRESSES = getOptValue(optSet.progresses, []).length;
+        const __BIRTHDAYS = optSet.getOptValue('birthdays', []).length;
+        const __TCLASSES = optSet.getOptValue('tClasses', []).length;
+        const __PROGRESSES = optSet.getOptValue('progresses', []).length;
 
-        const __ZATAGES = getOptValue(optSet.zatAges, []).length;
-        const __TRAINIERT = getOptValue(optSet.trainiert, []).length;
-        const __POSITIONS = getOptValue(optSet.positions, []).length;
+        const __ZATAGES = optSet.getOptValue('zatAges', []).length;
+        const __TRAINIERT = optSet.getOptValue('trainiert', []).length;
+        const __POSITIONS = optSet.getOptValue('positions', []).length;
 
-        const __EINZELSKILLS = getOptValue(optSet.skills, []).length;
+        const __EINZELSKILLS = optSet.getOptValue('skills', []).length;
         const __PROJECTION = (__EINZELSKILLS && __ZATAGES);
 ***/
 
         this.colIdx = colIdx;
 
 /***
-        this.saison = getOptValue(optSet.saison);
-        this.gt = getOptValue(optSet.zeigeJahrgang);
-        this.gtUxx = getOptValue(optSet.zeigeUxx);
+        this.saison = optSet.getOptValue('saison');
+        this.gt = optSet.getOptValue('zeigeJahrgang');
+        this.gtUxx = optSet.getOptValue('zeigeUxx');
 
-        this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
-        this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && getOptValue(optSet.zeigeWarnung));
-        this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && getOptValue(optSet.zeigeWarnungMonat));
-        this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && getOptValue(optSet.zeigeWarnungHome));
-        this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && getOptValue(optSet.zeigeWarnungDialog));
-        this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && getOptValue(optSet.zeigeWarnungAufstieg));
-        this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && getOptValue(optSet.zeigeWarnungLegende));
-        this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && getOptValue(optSet.zeigeBalken));
-        this.barAbs = getOptValue(optSet.absBalken);
-        this.donor = getOptValue(optSet.foerderung);
-        this.geb = (__BIRTHDAYS && getValue(__SHOWCOL.zeigeGeb, __SHOWALL) && getOptValue(optSet.zeigeGeb));
-        this.tal = (__TCLASSES && getValue(__SHOWCOL.zeigeTal, __SHOWALL) && getOptValue(optSet.zeigeTal));
-        this.quo = (__ZATAGES && __TRAINIERT && getValue(__SHOWCOL.zeigeQuote, __SHOWALL) && getOptValue(optSet.zeigeQuote));
-        this.aufw = (__PROGRESSES && getValue(__SHOWCOL.zeigeAufw, __SHOWALL) && getOptValue(optSet.zeigeAufw));
-        this.substAge = (__ZATAGES && getValue(__SHOWCOL.ersetzeAlter, __SHOWALL) && getOptValue(optSet.ersetzeAlter));
-        this.alter = (__ZATAGES && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
-        this.fix = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeFixSkills, __SHOWALL) && getOptValue(optSet.zeigeFixSkills));
-        this.tr = (__EINZELSKILLS && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiert, __SHOWALL) && getOptValue(optSet.zeigeTrainiert));
-        this.zat = (__ZATAGES && getValue(__SHOWCOL.zeigeZatDone, __SHOWALL) && getOptValue(optSet.zeigeZatDone));
-        this.antHpt = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilPri, __SHOWALL) && getOptValue(optSet.zeigeAnteilPri));
-        this.antNeb = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilSec, __SHOWALL) && getOptValue(optSet.zeigeAnteilSec));
-        this.pri = (__EINZELSKILLS && getValue(__SHOWCOL.zeigePrios, __SHOWALL) && getOptValue(optSet.zeigePrios));
-        this.skill = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
-        this.pos = (__EINZELSKILLS && __POSITIONS && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
-        this.anzOpti = ((__EINZELSKILLS && getValue(__SHOWCOL.zeigeOpti, __SHOWALL)) ? getOptValue(optSet.anzahlOpti) : 0);
-        this.anzMw =  ((__PROJECTION && getValue(__SHOWCOL.zeigeMW, __SHOWALL)) ? getOptValue(optSet.anzahlMW) : 0);
-        this.substSkills = (__PROJECTION && getValue(__SHOWCOL.ersetzeSkills, __SHOWALL) && getOptValue(optSet.ersetzeSkills));
-        this.trE = (__PROJECTION && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiertEnde, __SHOWALL) && getOptValue(optSet.zeigeTrainiertEnde));
-        this.zatE = (__ZATAGES && getValue(__SHOWCOL.zeigeZatLeft, __SHOWALL) && getOptValue(optSet.zeigeZatLeft));
-        this.antHptE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilPriEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilPriEnde));
-        this.antNebE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilSecEnde, __SHOWALL) && getOptValue(optSet.zeigeAnteilSecEnde));
-        this.priE = (__PROJECTION && getValue(__SHOWCOL.zeigePriosEnde, __SHOWALL) && getOptValue(optSet.zeigePriosEnde));
-        this.skillE = (__PROJECTION && getValue(__SHOWCOL.zeigeSkillEnde, __SHOWALL) && getOptValue(optSet.zeigeSkillEnde));
-        this.anzOptiE = ((__PROJECTION && getValue(__SHOWCOL.zeigeOptiEnde, __SHOWALL)) ? getOptValue(optSet.anzahlOptiEnde) : 0);
-        this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? getOptValue(optSet.anzahlMWEnde) : 0);
-        this.kennzE = getOptValue(optSet.kennzeichenEnde);
+        this.fpId = (__BIRTHDAYS && __TCLASSES && __POSITIONS && getValue(__SHOWCOL.zeigeId, __SHOWALL) && optSet.getOptValue('zeigeId'));
+        this.warn = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnung, __SHOWALL) && optSet.getOptValue('zeigeWarnung'));
+        this.warnMonth = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungMonat, __SHOWALL) && optSet.getOptValue('zeigeWarnungMonat'));
+        this.warnHome = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungHome, __SHOWALL) && optSet.getOptValue('zeigeWarnungHome'));
+        this.warnDialog = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungDialog, __SHOWALL) && optSet.getOptValue('zeigeWarnungDialog'));
+        this.warnAufstieg = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungAufstieg, __SHOWALL) && optSet.getOptValue('zeigeWarnungAufstieg'));
+        this.warnLegende = (__ZATAGES && getValue(__SHOWCOL.zeigeWarnungLegende, __SHOWALL) && optSet.getOptValue('zeigeWarnungLegende'));
+        this.bar = (__PROJECTION && getValue(__SHOWCOL.zeigeBalken, __SHOWALL) && optSet.getOptValue('zeigeBalken'));
+        this.barAbs = optSet.getOptValue('absBalken');
+        this.donor = optSet.getOptValue('foerderung');
+        this.geb = (__BIRTHDAYS && getValue(__SHOWCOL.zeigeGeb, __SHOWALL) && optSet.getOptValue('zeigeGeb'));
+        this.tal = (__TCLASSES && getValue(__SHOWCOL.zeigeTal, __SHOWALL) && optSet.getOptValue('zeigeTal'));
+        this.quo = (__ZATAGES && __TRAINIERT && getValue(__SHOWCOL.zeigeQuote, __SHOWALL) && optSet.getOptValue('zeigeQuote'));
+        this.aufw = (__PROGRESSES && getValue(__SHOWCOL.zeigeAufw, __SHOWALL) && optSet.getOptValue('zeigeAufw'));
+        this.substAge = (__ZATAGES && getValue(__SHOWCOL.ersetzeAlter, __SHOWALL) && optSet.getOptValue('ersetzeAlter'));
+        this.alter = (__ZATAGES && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && optSet.getOptValue('zeigeAlter'));
+        this.fix = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeFixSkills, __SHOWALL) && optSet.getOptValue('zeigeFixSkills'));
+        this.tr = (__EINZELSKILLS && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiert, __SHOWALL) && optSet.getOptValue('zeigeTrainiert'));
+        this.zat = (__ZATAGES && getValue(__SHOWCOL.zeigeZatDone, __SHOWALL) && optSet.getOptValue('zeigeZatDone'));
+        this.antHpt = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilPri, __SHOWALL) && optSet.getOptValue('zeigeAnteilPri'));
+        this.antNeb = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeAnteilSec, __SHOWALL) && optSet.getOptValue('zeigeAnteilSec'));
+        this.pri = (__EINZELSKILLS && getValue(__SHOWCOL.zeigePrios, __SHOWALL) && optSet.getOptValue('zeigePrios'));
+        this.skill = (__EINZELSKILLS && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && optSet.getOptValue('zeigeSkill'));
+        this.pos = (__EINZELSKILLS && __POSITIONS && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && optSet.getOptValue('zeigePosition'));
+        this.anzOpti = ((__EINZELSKILLS && getValue(__SHOWCOL.zeigeOpti, __SHOWALL)) ? optSet.getOptValue('anzahlOpti') : 0);
+        this.anzMw =  ((__PROJECTION && getValue(__SHOWCOL.zeigeMW, __SHOWALL)) ? optSet.getOptValue('anzahlMW') : 0);
+        this.substSkills = (__PROJECTION && getValue(__SHOWCOL.ersetzeSkills, __SHOWALL) && optSet.getOptValue('ersetzeSkills'));
+        this.trE = (__PROJECTION && __TRAINIERT && getValue(__SHOWCOL.zeigeTrainiertEnde, __SHOWALL) && optSet.getOptValue('zeigeTrainiertEnde'));
+        this.zatE = (__ZATAGES && getValue(__SHOWCOL.zeigeZatLeft, __SHOWALL) && optSet.getOptValue('zeigeZatLeft'));
+        this.antHptE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilPriEnde, __SHOWALL) && optSet.getOptValue('zeigeAnteilPriEnde'));
+        this.antNebE = (__PROJECTION && getValue(__SHOWCOL.zeigeAnteilSecEnde, __SHOWALL) && optSet.getOptValue('zeigeAnteilSecEnde'));
+        this.priE = (__PROJECTION && getValue(__SHOWCOL.zeigePriosEnde, __SHOWALL) && optSet.getOptValue('zeigePriosEnde'));
+        this.skillE = (__PROJECTION && getValue(__SHOWCOL.zeigeSkillEnde, __SHOWALL) && optSet.getOptValue('zeigeSkillEnde'));
+        this.anzOptiE = ((__PROJECTION && getValue(__SHOWCOL.zeigeOptiEnde, __SHOWALL)) ? optSet.getOptValue('anzahlOptiEnde') : 0);
+        this.anzMwE = ((__PROJECTION && getValue(__SHOWCOL.zeigeMWEnde, __SHOWALL)) ? optSet.getOptValue('anzahlMWEnde') : 0);
+        this.kennzE = optSet.getOptValue('kennzeichenEnde');
 ***/
     }
 //}
@@ -986,9 +986,9 @@ Class.define(ColumnManagerBase, Object, {
         const __SHOWCOL = getValue(showCol, true);
         const __SHOWALL = ((__SHOWCOL === true) || (__SHOWCOL.Default === true));
 
-        const __SAISON = getOptValue(optSet.saison);
-        const __AKTZAT = getOptValue(optSet.aktuellerZat);
-        const __DATZAT = getOptValue(optSet.datenZat);
+        const __SAISON = optSet.getOptValue('saison');
+        const __AKTZAT = optSet.getOptValue('aktuellerZat');
+        const __DATZAT = optSet.getOptValue('datenZat');
         const __GEALTERT = ((__AKTZAT >= 72) ? true : false);
         const __CURRZAT = (__GEALTERT ? 0 : __AKTZAT);
 
@@ -998,11 +998,11 @@ Class.define(ColumnManagerBase, Object, {
         const __OLDSAISON = (__SAISONWECHSEL ? __SAISON - 1 : __SAISON);
         const __OLDZAT = (__SAISONWECHSEL ? 72 : __DATZAT);
 
-        const __TEAM = getOptValue(optSet.team, { });
+        const __TEAM = optSet.getOptValue('team', { });
 
-        const __IDS = eval(getOptValue(optSet.ids, []));
-        const __EINSAETZE = eval(getOptValue(optSet.einsaetze, []));
-        const __TSKILLS = eval(getOptValue(optSet.tSkills, []));
+        const __IDS = eval(optSet.getOptValue('ids', []));
+        const __EINSAETZE = eval(optSet.getOptValue('einsaetze', []));
+        const __TSKILLS = eval(optSet.getOptValue('tSkills', []));
         const __TEAMDATA = __IDS.length;
         const __EINSDATA = __EINSAETZE.length;
         const __TRAIDATA = __TSKILLS.length;
@@ -1018,25 +1018,25 @@ Class.define(ColumnManagerBase, Object, {
         __LOG[4]("Aktuell:", __SAISON, __CURRZAT);
         __LOG[4]("Altdaten:", __OLDSAISON, __OLDZAT);
 
-        this.id = (getValue(__SHOWCOL.zeigeId, __SHOWALL) && getOptValue(optSet.zeigeId));
-        this.alter = (__TEAMDATA && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && getOptValue(optSet.zeigeAlter));
-        this.pos = (__TEAMDATA && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && getOptValue(optSet.zeigePosition));
-        this.goalie = (__TEAMDATA && getValue(__SHOWCOL.zeigeTOR, __SHOWALL) && getOptValue(optSet.zeigeTOR));
-        this.opti = (__TEAMDATA && getValue(__SHOWCOL.zeigeOpti, __SHOWALL) && getOptValue(optSet.zeigeOpti));
-        this.verl = (__TEAMDATA && getValue(__SHOWCOL.zeigeVerletzung, __SHOWALL) && getOptValue(optSet.zeigeVerletzung));
-        this.blessur = (getValue(__SHOWCOL.zeigeBlessur, __SHOWALL) && getOptValue(optSet.zeigeBlessur));
-        this.skillPos = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkillPos, __SHOWALL) && getOptValue(optSet.zeigeSkillPos));
-        this.skill = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && getOptValue(optSet.zeigeSkill));
-        this.skillUp = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkillUp, __SHOWALL) && getOptValue(optSet.zeigeSkillUp));
-        this.tSkill = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeTSkill, __SHOWALL) && getOptValue(optSet.zeigeTSkill));
-        this.tNr = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeTNr, __SHOWALL) && getOptValue(optSet.zeigeTNr));
-        this.prio = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigePrio, __SHOWALL) && getOptValue(optSet.zeigePrio));
-        this.eins = (__TEAMDATA && __EINSDATA && __LASTZAT && getValue(__SHOWCOL.zeigeEinsatz, __SHOWALL) && getOptValue(optSet.zeigeEinsatz));
-        this.proz = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeProzent, __SHOWALL) && getOptValue(optSet.zeigeProzent));
-        this.prozB = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeProzentBalken, __SHOWALL) && getOptValue(optSet.zeigeProzentBalken));
-        this.erw = (__LASTZAT && getValue(__SHOWCOL.zeigeErwartung, __SHOWALL) && getOptValue(optSet.zeigeErwartung));
-        this.erwB = (__LASTZAT && getValue(__SHOWCOL.zeigeErwartungBalken, __SHOWALL) && getOptValue(optSet.zeigeErwartungBalken));
-        this.erf = (__LASTZAT && getValue(__SHOWCOL.zeigeErfolg, __SHOWALL) && getOptValue(optSet.zeigeErfolg));
+        this.id = (getValue(__SHOWCOL.zeigeId, __SHOWALL) && optSet.getOptValue('zeigeId'));
+        this.alter = (__TEAMDATA && getValue(__SHOWCOL.zeigeAlter, __SHOWALL) && optSet.getOptValue('zeigeAlter'));
+        this.pos = (__TEAMDATA && getValue(__SHOWCOL.zeigePosition, __SHOWALL) && optSet.getOptValue('zeigePosition'));
+        this.goalie = (__TEAMDATA && getValue(__SHOWCOL.zeigeTOR, __SHOWALL) && optSet.getOptValue('zeigeTOR'));
+        this.opti = (__TEAMDATA && getValue(__SHOWCOL.zeigeOpti, __SHOWALL) && optSet.getOptValue('zeigeOpti'));
+        this.verl = (__TEAMDATA && getValue(__SHOWCOL.zeigeVerletzung, __SHOWALL) && optSet.getOptValue('zeigeVerletzung'));
+        this.blessur = (getValue(__SHOWCOL.zeigeBlessur, __SHOWALL) && optSet.getOptValue('zeigeBlessur'));
+        this.skillPos = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkillPos, __SHOWALL) && optSet.getOptValue('zeigeSkillPos'));
+        this.skill = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkill, __SHOWALL) && optSet.getOptValue('zeigeSkill'));
+        this.skillUp = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigeSkillUp, __SHOWALL) && optSet.getOptValue('zeigeSkillUp'));
+        this.tSkill = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeTSkill, __SHOWALL) && optSet.getOptValue('zeigeTSkill'));
+        this.tNr = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeTNr, __SHOWALL) && optSet.getOptValue('zeigeTNr'));
+        this.prio = (__TEAMDATA && __LASTZAT && getValue(__SHOWCOL.zeigePrio, __SHOWALL) && optSet.getOptValue('zeigePrio'));
+        this.eins = (__TEAMDATA && __EINSDATA && __LASTZAT && getValue(__SHOWCOL.zeigeEinsatz, __SHOWALL) && optSet.getOptValue('zeigeEinsatz'));
+        this.proz = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeProzent, __SHOWALL) && optSet.getOptValue('zeigeProzent'));
+        this.prozB = (__TRAIDATA && __LASTZAT && getValue(__SHOWCOL.zeigeProzentBalken, __SHOWALL) && optSet.getOptValue('zeigeProzentBalken'));
+        this.erw = (__LASTZAT && getValue(__SHOWCOL.zeigeErwartung, __SHOWALL) && optSet.getOptValue('zeigeErwartung'));
+        this.erwB = (__LASTZAT && getValue(__SHOWCOL.zeigeErwartungBalken, __SHOWALL) && optSet.getOptValue('zeigeErwartungBalken'));
+        this.erf = (__LASTZAT && getValue(__SHOWCOL.zeigeErfolg, __SHOWALL) && optSet.getOptValue('zeigeErfolg'));
     }
 //}
 
@@ -2113,13 +2113,13 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", null, () => {
         const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;
-        const __DATAZAT = getOptValue(optSet.datenZat);
+        const __DATAZAT = optSet.getOptValue('datenZat');
 
         if (__CURRZAT >= 0) {
             __LOG[2]("Aktueller ZAT: " + __CURRZAT);
 
             // Neuen aktuellen ZAT speichern...
-            setOpt(optSet.aktuellerZat, __CURRZAT, false);
+            optSet.setOpt('aktuellerZat', __CURRZAT, false);
 
             if (__CURRZAT !== __DATAZAT) {
                 __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
@@ -2150,10 +2150,10 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", null, () => {
                 await __CLASSIFICATION.saveOptions();
 
                 // Stand der alten Daten merken...
-                setOpt(optSet.oldDatenZat, __DATAZAT, false);
+                optSet.setOpt('oldDatenZat', __DATAZAT, false);
 
                 // Neuen Daten-ZAT speichern...
-                setOpt(optSet.datenZat, __CURRZAT, false);
+                optSet.setOpt('datenZat', __CURRZAT, false);
             }
         }
 
@@ -2206,23 +2206,23 @@ const procAufstellung = new PageManager("Zugabgabe - Aufstellung", null, () => {
             };
 
         // Gespeicherte Daten...
-        //const __TRAINER = getOptValue(optSet.trainer, []);
-        const __IDS = getOptValue(optSet.ids, []);
-        const __NAMES = getOptValue(optSet.names, []);
-        const __AGES = getOptValue(optSet.ages, []);
-        const __POSITIONS = getOptValue(optSet.positions, []);
-        const __OPTI27 = getOptValue(optSet.opti27, []);
-        //const __VERLETZT = getOptValue(optSet.verletzt, []);
-        //const __SKILLS = getOptValue(optSet.skills, []);
-        //const __TSKILLS = getOptValue(optSet.tSkills, []);
-        //const __TRAINIERT = getOptValue(optSet.trainiert, []);
-        //const __SKILLPOS = getOptValue(optSet.skillPos, []);
-        //const __ISPRIO = getOptValue(optSet.isPrio, []);
-        const __EINSAETZE = getOptValue(optSet.einsaetze, []);
-        //const __PROZENTE = getOptValue(optSet.prozente, []);
-        //const __EW = getOptValue(optSet.erwartungen, []);
-        //const __ERFOLGE = getOptValue(optSet.erfolge, []);
-        //const __BLESSUREN = getOptValue(optSet.blessuren, []);
+        //const __TRAINER = optSet.getOptValue('trainer', []);
+        const __IDS = optSet.getOptValue('ids', []);
+        const __NAMES = optSet.getOptValue('names', []);
+        const __AGES = optSet.getOptValue('ages', []);
+        const __POSITIONS = optSet.getOptValue('positions', []);
+        const __OPTI27 = optSet.getOptValue('opti27', []);
+        //const __VERLETZT = optSet.getOptValue('verletzt', []);
+        //const __SKILLS = optSet.getOptValue('skills', []);
+        //const __TSKILLS = optSet.getOptValue('tSkills', []);
+        //const __TRAINIERT = optSet.getOptValue('trainiert', []);
+        //const __SKILLPOS = optSet.getOptValue('skillPos', []);
+        //const __ISPRIO = optSet.getOptValue('isPrio', []);
+        const __EINSAETZE = optSet.getOptValue('einsaetze', []);
+        //const __PROZENTE = optSet.getOptValue('prozente', []);
+        //const __EW = optSet.getOptValue('erwartungen', []);
+        //const __ERFOLGE = optSet.getOptValue('erfolge', []);
+        //const __BLESSUREN = optSet.getOptValue('blessuren', []);
 
         const __ROWS = getRows(4);
         //const __HEADERS = __ROWS[0];
@@ -2267,26 +2267,26 @@ const procAufstellung = new PageManager("Zugabgabe - Aufstellung", null, () => {
         }
 
         if (newID) {
-            setOpt(optSet.ids, __IDS, false);
-            setOpt(optSet.names, __NAMES, false);
-            setOpt(optSet.ages, __AGES, false);
-            setOpt(optSet.positions, __POSITIONS, false);
-            setOpt(optSet.opti27, __OPTI27, false);
+            optSet.setOpt('ids', __IDS, false);
+            optSet.setOpt('names', __NAMES, false);
+            optSet.setOpt('ages', __AGES, false);
+            optSet.setOpt('positions', __POSITIONS, false);
+            optSet.setOpt('opti27', __OPTI27, false);
         }
 
-        setOpt(optSet.einsaetze, __EINSAETZE, false);
+        optSet.setOpt('einsaetze', __EINSAETZE, false);
 
-        //setOpt(optSet.trainer, __TRAINER, false);
-        //setOpt(optSet.verletzt, __VERLETZT, false);
-        //setOpt(optSet.skills, __SKILLS, false);
-        //setOpt(optSet.tSkills, __TSKILLS, false);
-        //setOpt(optSet.trainiert, __TRAINIERT, false);
-        //setOpt(optSet.skillPos, __SKILLPOS, false);
-        //setOpt(optSet.isPrio, __ISPRIO, false);
-        //setOpt(optSet.prozente, __PROZENTE, false);
-        //setOpt(optSet.erwartungen, __EW, false);
-        //setOpt(optSet.erfolge, __ERFOLGE, false);
-        //setOpt(optSet.blessuren, __BLESSUREN, false);
+        //optSet.setOpt('trainer', __TRAINER, false);
+        //optSet.setOpt('verletzt', __VERLETZT, false);
+        //optSet.setOpt('skills', __SKILLS, false);
+        //optSet.setOpt('tSkills', __TSKILLS, false);
+        //optSet.setOpt('trainiert', __TRAINIERT, false);
+        //optSet.setOpt('skillPos', __SKILLPOS, false);
+        //optSet.setOpt('isPrio', __ISPRIO, false);
+        //optSet.setOpt('prozente', __PROZENTE, false);
+        //optSet.setOpt('erwartungen', __EW, false);
+        //optSet.setOpt('erfolge', __ERFOLGE, false);
+        //optSet.setOpt('blessuren', __BLESSUREN, false);
 
         return true;
     });
@@ -2451,24 +2451,24 @@ const procTraining = new PageManager("Training", null, () => {
             };
 
         // Gespeicherte Daten...
-        const __TRAINER = [];  // neu aufbauen! getOptValue(optSet.trainer, []);
-        const __TANZAHL = [0, 0, 0, 0, 0, 0];  // neu aufbauen! getOptValue(optSet.tAnzahlen, []);
-        const __IDS = getOptValue(optSet.ids, []);
-        const __NAMES = getOptValue(optSet.names, []);
-        const __AGES = getOptValue(optSet.ages, []);
-        const __POSITIONS = getOptValue(optSet.positions, []);
-        const __OPTI27 = getOptValue(optSet.opti27, []);
-        //const __VERLETZT = getOptValue(optSet.verletzt, []);
-        const __SKILLS = getOptValue(optSet.skills, []);
-        const __TSKILLS = getOptValue(optSet.tSkills, []);
-        const __TRAINIERT = getOptValue(optSet.trainiert, []);
-        const __SKILLPOS = getOptValue(optSet.skillPos, []);
-        const __ISPRIO = getOptValue(optSet.isPrio, []);
-        const __EINSAETZE = getOptValue(optSet.einsaetze, []);
-        const __PROZENTE = getOptValue(optSet.prozente, []);
-        const __EW = getOptValue(optSet.erwartungen, []);
-        const __ERFOLGE = getOptValue(optSet.erfolge, []);
-        const __BLESSUREN = getOptValue(optSet.blessuren, []);
+        const __TRAINER = [];  // neu aufbauen! optSet.getOptValue('trainer', []);
+        const __TANZAHL = [0, 0, 0, 0, 0, 0];  // neu aufbauen! optSet.getOptValue('tAnzahlen', []);
+        const __IDS = optSet.getOptValue('ids', []);
+        const __NAMES = optSet.getOptValue('names', []);
+        const __AGES = optSet.getOptValue('ages', []);
+        const __POSITIONS = optSet.getOptValue('positions', []);
+        const __OPTI27 = optSet.getOptValue('opti27', []);
+        //const __VERLETZT = optSet.getOptValue('verletzt', []);
+        const __SKILLS = optSet.getOptValue('skills', []);
+        const __TSKILLS = optSet.getOptValue('tSkills', []);
+        const __TRAINIERT = optSet.getOptValue('trainiert', []);
+        const __SKILLPOS = optSet.getOptValue('skillPos', []);
+        const __ISPRIO = optSet.getOptValue('isPrio', []);
+        const __EINSAETZE = optSet.getOptValue('einsaetze', []);
+        const __PROZENTE = optSet.getOptValue('prozente', []);
+        const __EW = optSet.getOptValue('erwartungen', []);
+        const __ERFOLGE = optSet.getOptValue('erfolge', []);
+        const __BLESSUREN = optSet.getOptValue('blessuren', []);
 
         const __EINSMAP = { };
 
@@ -2613,24 +2613,24 @@ const procTraining = new PageManager("Training", null, () => {
         const __NEWCELL2 = appendCell(__TABLE.insertRow(-1), __WARN2 /* , '#FFFF00' */);
         __NEWCELL2.setAttribute('colspan', 3, false);
 
-        setOpt(optSet.trainer, __TRAINER, false);
-        setOpt(optSet.tAnzahlen, __TANZAHL, false);
-        setOpt(optSet.ids, __IDS, false);
-        setOpt(optSet.names, __NAMES, false);
-        setOpt(optSet.ages, __AGES, false);
-        setOpt(optSet.positions, __POSITIONS, false);
-        setOpt(optSet.opti27, __OPTI27, false);
-        //setOpt(optSet.verletzt, __VERLETZT, false);
-        setOpt(optSet.skills, __SKILLS, false);
-        setOpt(optSet.tSkills, __TSKILLS, false);
-        setOpt(optSet.trainiert, __TRAINIERT, false);
-        setOpt(optSet.skillPos, __SKILLPOS, false);
-        setOpt(optSet.isPrio, __ISPRIO, false);
-        setOpt(optSet.einsaetze, __EINSAETZE, false);
-        setOpt(optSet.prozente, __PROZENTE, false);
-        setOpt(optSet.erwartungen, __EW, false);
-        //setOpt(optSet.erfolge, __ERFOLGE, false);
-        //setOpt(optSet.blessuren, __BLESSUREN, false);
+        optSet.setOpt('trainer', __TRAINER, false);
+        optSet.setOpt('tAnzahlen', __TANZAHL, false);
+        optSet.setOpt('ids', __IDS, false);
+        optSet.setOpt('names', __NAMES, false);
+        optSet.setOpt('ages', __AGES, false);
+        optSet.setOpt('positions', __POSITIONS, false);
+        optSet.setOpt('opti27', __OPTI27, false);
+        //optSet.setOpt('verletzt', __VERLETZT, false);
+        optSet.setOpt('skills', __SKILLS, false);
+        optSet.setOpt('tSkills', __TSKILLS, false);
+        optSet.setOpt('trainiert', __TRAINIERT, false);
+        optSet.setOpt('skillPos', __SKILLPOS, false);
+        optSet.setOpt('isPrio', __ISPRIO, false);
+        optSet.setOpt('einsaetze', __EINSAETZE, false);
+        optSet.setOpt('prozente', __PROZENTE, false);
+        optSet.setOpt('erwartungen', __EW, false);
+        //optSet.setOpt('erfolge', __ERFOLGE, false);
+        //optSet.setOpt('blessuren', __BLESSUREN, false);
 
         return true;
     });
@@ -2688,22 +2688,22 @@ const procZatReport = new PageManager("ZAT-Report", null, () => {
             };
 
         // Gespeicherte Daten...
-        const __IDS = getOptValue(optSet.ids, []);
-        //const __NAMES = getOptValue(optSet.names, []);
-        const __AGES = getOptValue(optSet.ages, []);
-        const __POSITIONS = getOptValue(optSet.positions, []);
-        const __OPTI27 = getOptValue(optSet.opti27, []);
-        const __VERLETZT = getOptValue(optSet.verletzt, []);
-        const __SKILLS = getOptValue(optSet.skills, []);
-        const __TSKILLS = getOptValue(optSet.tSkills, []);
-        const __TRAINIERT = getOptValue(optSet.trainiert, []);
-        const __SKILLPOS = getOptValue(optSet.skillPos, []);
-        const __ISPRIO = getOptValue(optSet.isPrio, []);
-        const __EINSAETZE = getOptValue(optSet.einsaetze, []);
-        const __PROZENTE = getOptValue(optSet.prozente, []);
-        const __EW = getOptValue(optSet.erwartungen, []);
-        const __ERFOLGE = [];  // neu aufbauen! getOptValue(optSet.erfolge, []);
-        const __BLESSUREN = [];  // neu aufbauen! getOptValue(optSet.blessuren, []);
+        const __IDS = optSet.getOptValue('ids', []);
+        //const __NAMES = optSet.getOptValue('names', []);
+        const __AGES = optSet.getOptValue('ages', []);
+        const __POSITIONS = optSet.getOptValue('positions', []);
+        const __OPTI27 = optSet.getOptValue('opti27', []);
+        const __VERLETZT = optSet.getOptValue('verletzt', []);
+        const __SKILLS = optSet.getOptValue('skills', []);
+        const __TSKILLS = optSet.getOptValue('tSkills', []);
+        const __TRAINIERT = optSet.getOptValue('trainiert', []);
+        const __SKILLPOS = optSet.getOptValue('skillPos', []);
+        const __ISPRIO = optSet.getOptValue('isPrio', []);
+        const __EINSAETZE = optSet.getOptValue('einsaetze', []);
+        const __PROZENTE = optSet.getOptValue('prozente', []);
+        const __EW = optSet.getOptValue('erwartungen', []);
+        const __ERFOLGE = [];  // neu aufbauen! optSet.getOptValue('erfolge', []);
+        const __BLESSUREN = [];  // neu aufbauen! optSet.getOptValue('blessuren', []);
 
         const __PLAYERS = [];  // init(__ROWS, optSet, __COLUMNINDEX, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 1);
         const __COLMAN = new ColumnManagerZatReport(optSet, __COLUMNINDEX, {
@@ -2799,24 +2799,24 @@ const procZatReport = new PageManager("ZAT-Report", null, () => {
 
         __LOG[0]("Erwartung vs. Aufwertungen", sumErwartung.toFixed(2), sumAufwertung.toFixed(2));
 
-        //setOpt(optSet.trainer, __TRAINER, false);
-        //setOpt(optSet.tAnzahlen, __TANZAHL, false);
-        //setOpt(optSet.ids, __IDS, false);
-        //setOpt(optSet.names, __NAMES, false);
-        //setOpt(optSet.ages, __AGES, false);
-        //setOpt(optSet.positions, __POSITIONS, false);
-        //setOpt(optSet.opti27, __OPTI27, false);
-        //setOpt(optSet.verletzt, __VERLETZT, false);
-        //setOpt(optSet.skills, __SKILLS, false);
-        //setOpt(optSet.tSkills, __TSKILLS, false);
-        //setOpt(optSet.trainiert, __TRAINIERT, false);
-        //setOpt(optSet.skillPos, __SKILLPOS, false);
-        //setOpt(optSet.isPrio, __ISPRIO, false);
-        //setOpt(optSet.einsaetze, __EINSAETZE, false);
-        //setOpt(optSet.prozente, __PROZENTE, false);
-        //setOpt(optSet.erwartungen, __EW, false);
-        setOpt(optSet.erfolge, __ERFOLGE, false);
-        setOpt(optSet.blessuren, __BLESSUREN, false);
+        //optSet.setOpt('trainer', __TRAINER, false);
+        //optSet.setOpt('tAnzahlen', __TANZAHL, false);
+        //optSet.setOpt('ids', __IDS, false);
+        //optSet.setOpt('names', __NAMES, false);
+        //optSet.setOpt('ages', __AGES, false);
+        //optSet.setOpt('positions', __POSITIONS, false);
+        //optSet.setOpt('opti27', __OPTI27, false);
+        //optSet.setOpt('verletzt', __VERLETZT, false);
+        //optSet.setOpt('skills', __SKILLS, false);
+        //optSet.setOpt('tSkills', __TSKILLS, false);
+        //optSet.setOpt('trainiert', __TRAINIERT, false);
+        //optSet.setOpt('skillPos', __SKILLPOS, false);
+        //optSet.setOpt('isPrio', __ISPRIO, false);
+        //optSet.setOpt('einsaetze', __EINSAETZE, false);
+        //optSet.setOpt('prozente', __PROZENTE, false);
+        //optSet.setOpt('erwartungen', __EW, false);
+        optSet.setOpt('erfolge', __ERFOLGE, false);
+        optSet.setOpt('blessuren', __BLESSUREN, false);
 
         return true;
     });

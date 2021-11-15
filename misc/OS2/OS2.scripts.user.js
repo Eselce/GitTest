@@ -285,9 +285,9 @@ const procScript = new PageManager("Script-Ansicht bei GitHub", null, () => {
         const __TABLE = getTable(1);  // um 1 verschoben wegen Options-Form
         const __SCRIPT = getScriptFromHTML('path', __TABLE);
         const __LIB = __SCRIPT.libname;
-        const __LIBS = getOptValue(optSet.libs, { });
-        const __FUNS = getOptValue(optSet.funs, { });
-        const __DEPS = getOptValue(optSet.deps, { });
+        const __LIBS = optSet.getOptValue('libs', { });
+        const __FUNS = optSet.getOptValue('funs', { });
+        const __DEPS = optSet.getOptValue('deps', { });
 
         if (__SCRIPT.filename && ! __SCRIPT.filename.endsWith(".user.js")) {
             __LIBS[__LIB] = __SCRIPT.funs;
@@ -304,10 +304,10 @@ const procScript = new PageManager("Script-Ansicht bei GitHub", null, () => {
         console.error(__CALLS);
         console.error(__DEPS);
 
-        setOpt(optSet.libs, __LIBS, false);
-        setOpt(optSet.funs, __FUNS, false);
-        setOpt(optSet.calls, __CALLS, false);
-        setOpt(optSet.deps, __DEPS, false);
+        optSet.setOpt('libs', __LIBS, false);
+        optSet.setOpt('funs', __FUNS, false);
+        optSet.setOpt('calls', __CALLS, false);
+        optSet.setOpt('deps', __DEPS, false);
     });
 
 // ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================

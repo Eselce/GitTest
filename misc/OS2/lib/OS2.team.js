@@ -129,10 +129,10 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
         __LOG[2]("Ermittelt: " + safeStringify(myTeam));
         // ... und abspeichern, falls erweunscht...
         if (optSet && optSet.team) {
-            setOpt(optSet.team, myTeam, false);
+            optSet.setOpt('team', myTeam, false);
         }
     } else {
-        const __TEAM = ((optSet && optSet.team) ? getOptValue(optSet.team) : undefined);  // Gespeicherte Parameter
+        const __TEAM = ((optSet && optSet.team) ? optSet.getOptValue('team') : undefined);  // Gespeicherte Parameter
 
         if ((__TEAM !== undefined) && (__TEAM.Land !== undefined)) {
             addProps(myTeam, __TEAM, myTeam.__TEAMITEMS);
