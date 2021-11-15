@@ -64,7 +64,7 @@ async function invalidateOpts(optSet, force = false, reload = true) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf gesetzten Wert der gelandenen Option
 function loadOption(opt, force = false) {
-    const [ __CONFIG, __NAME ] = checkOpt(opt);
+    const [ __CONFIG, __NAME, __KEY ] = checkOpt(opt);
 
     if (! opt.Promise) {
         const __ISSHARED = getValue(__CONFIG.Shared, false, true);
@@ -92,18 +92,20 @@ function loadOption(opt, force = false) {
         opt.Promise = Promise.resolve(value).then(value => {
                 // Paranoide Sicherheitsabfrage (das sollte nie passieren!)...
                 if (opt.Loaded || ! opt.Promise) {
-                    showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", __LOG.info(opt, true, true));
+                    throw Error("Unerwarteter Widerspruch zwischen Loaded und Promise in Option " +
+                                    __LOG.info(__KEY, false) + " (" + __NAME + ')',
+                                    { 'cause' : __LOG.info(opt, true, true) });
                 }
                 __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value, true, true));
 
                 // Wert intern setzen...
-                const __VAL = setOptValue(opt, value);
+                const __VAL = setOptValue(opt, value, true);
 
                 // Wert als geladen markieren...
                 opt.Promise = undefined;
                 opt.Loaded = true;
 
-                return __VAL;
+                return Promise.resolve(__VAL);
             }, defaultCatch);
     }
 

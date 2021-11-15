@@ -220,17 +220,18 @@ function getOptName(opt) {
 // Setzt den Wert einer Option
 // opt: Config und Value der Option
 // value: Zu setzender Wert der Option
+// initialLoad (nur fuer loadOption!): Grundinitialisierung (auch Read-Only)
 // return Gesetzter Wert
-function setOptValue(opt, value) {
+function setOptValue(opt, value, initialLoad = false) {
     if (opt !== undefined) {
-        const [ , __NAME ] = checkOpt(opt);
+        const [ , __NAME, __KEY ] = checkOpt(opt);
 
-        if (! opt.ReadOnly) {
+        if (initialLoad || ! opt.ReadOnly) {
             __LOG[8](__NAME + ": " + __LOG.changed(opt.Value, value, true, false));
 
             opt.Value = value;
         } else {
-            throw TypeError("Can't modify read-only option " + __LOG.info(__NAME, false));
+            throw TypeError("Can't modify read-only option " + __LOG.info(__KEY, false) + " (" + __NAME + ')');
         }
 
         return opt.Value;
