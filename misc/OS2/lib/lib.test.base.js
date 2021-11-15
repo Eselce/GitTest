@@ -880,7 +880,7 @@ function UnitTestOption(name, desc, tests, load) {
 
 Class.define(UnitTestOption, UnitTest, {
             'prepare'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
-                                UNUSED(thisArg, resultObj, resultFun, tableId);
+                                UNUSED(resultObj, resultFun, tableId);
 
                                 __LOG[1]("prepare()", name, desc);
 
@@ -896,12 +896,12 @@ Class.define(UnitTestOption, UnitTest, {
                                                                 }
                                             };
                                     }, async optSet => {
-                                        UNUSED(optSet);
+                                        thisArg.optSet = optSet;
 
                                         return true;
                                     });
 
-                                const __MAIN = new Main(__OPTCONFIG, null, __MANAGER);
+                                const __MAIN = new Main(__TESTOPTCONFIG, null, __MANAGER);
 
                                 await __MAIN.run();
 
@@ -916,7 +916,7 @@ Class.define(UnitTestOption, UnitTest, {
 
                                 // Status loggen...
                                 __LOG[2](String(thisArg.optSet));
-                                __LOG[1]('OPTION TEST END', __DBMOD.Name, '(' + resultObj.countRunning + ')');
+                                __LOG[1]('OPTION TEST END', __DBMOD.Name, '(' + resultObj.countRunning + ')', '/', __DBMAN.Name);
 
                                 // Optionen aufraeumen...
                                 await resetOptions(this.optSet, __RELOAD);
