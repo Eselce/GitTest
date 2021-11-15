@@ -141,7 +141,59 @@ const __OPTCONFIG = {
                    'Hotkey'    : 'D',
                    'FormLabel' : "Dicke:|$"
                },
-    'saison' : {          // Laufende Saison
+    'liga' : {            // Name der Liga
+                   'Name'      : "liga",
+                   'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'String',
+                   'FreeValue' : true,
+                   'Hidden'    : true
+               },
+    'land' : {            // Name des Landes
+                   'Name'      : "land",
+                   'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'String',
+                   'FreeValue' : true,
+                   'Hidden'    : true
+               },
+    'tabTyp' : {          // Name des Anzeigetyps der Tabelle
+                   'Name'      : "tabTyp",
+                   'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'String',
+                   'FreeValue' : true,
+                   'Hidden'    : true
+               },
+    'Prunde' : {          // Name der Pokalrunde
+                   'Name'      : "Prunde",
+                   'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'String',
+                   'FreeValue' : true,
+                   'Hidden'    : true
+               },
+    'OSCrunde' : {        // Name der OSC-Runde
+                   'Name'      : "OSCrunde",
+                   'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'String',
+                   'FreeValue' : true,
+                   'Hidden'    : true
+               },
+    'OSErunde' : {        // Name der OSE-Runde
+                   'Name'      : "OSErunde",
+                   'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'String',
+                   'FreeValue' : true,
+                   'Hidden'    : true
+               },
+    'aktuelleSaison' : {  // Laufende Saison
+                   'Name'      : "aktuelleSaison",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'Number',
+                   'FreeValue' : true,
+                   'SelValue'  : false,
+                   'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ],
+                   'Default'   : 17,
+                   'Hidden'    : true
+               },
+    'saison' : {          // Angezeigte Saison
                    'Name'      : "saison",
                    'Type'      : __OPTTYPES.MC,
                    'ValType'   : 'Number',
@@ -151,7 +203,7 @@ const __OPTCONFIG = {
                    'Default'   : 17,
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Saison: $",
-                   'Hotkey'    : 'a',
+                   'Hotkey'    : 's',
                    'FormLabel' : "Saison:|$"
                },
     'ligaSize' : {        // Ligengroesse
@@ -178,6 +230,63 @@ const __OPTCONFIG = {
                    'Replace'   : null,
                    'Space'     : 1,
                    'Label'     : "Verein:"
+               },
+    'ligaNr' : {          // Rang der Liga
+                   'Name'      : "ligaNr",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'Number',
+                   'FreeValue' : false,
+                   'SelValue'  : false,
+                   'Choice'    : [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+                   'Default'   : 0,
+                   'Hidden'    : true
+               },
+    'landNr' : {          // ID des Landes
+                   'Name'      : "landNr",
+                   'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'Number',
+                   'FreeValue' : false,
+                   'SelValue'  : false,
+                   'Choice'    : Object.keys(__LAENDER),
+                   'Default'   : 0,
+                   'Hidden'    : true
+               },
+    'tabTypNr' : {        // Anzeigetyp der Tabelle
+                   'Name'      : "tabTypNr",
+                   'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'Number',
+                   'FreeValue' : true,
+                   'Hidden'    : true
+               },
+    'PrundenNr' : {       // Pokalrundennummer
+                   'Name'      : "PrundenNr",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'Number',
+                   'FreeValue' : false,
+                   'SelValue'  : false,
+                   'Choice'    : [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+                   'Default'   : 0,
+                   'Hidden'    : true
+               },
+    'OSCrundenNr' : {     // OSC-Rundennummer
+                   'Name'      : "OSCrundenNr",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'Number',
+                   'FreeValue' : false,
+                   'SelValue'  : false,
+                   'Choice'    : [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ],
+                   'Default'   : 0,
+                   'Hidden'    : true
+               },
+    'OSErundenNr' : {     // OSE-Rundennummer
+                   'Name'      : "OSErundenNr",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'Number',
+                   'FreeValue' : false,
+                   'SelValue'  : false,
+                   'Choice'    : [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ],
+                   'Default'   : 0,
+                   'Hidden'    : true
                },
     'reset' : {           // Optionen auf die "Werkseinstellungen" zuruecksetzen
                    'FormPrio'  : undefined,
@@ -248,6 +357,21 @@ __TEAMCLASS.optSelect = {
 const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
         const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHTEAM);  // Link mit Team, Liga, Land...
 
+        const __ROWOFFSETUPPER = 1;     // Header-Zeile
+        const __COLUMNINDEX = {
+                'ZAT' : 0,
+                'Art' : 1,
+                'Geg' : 2,
+                'Erg' : 3,
+                'Ber' : 4,
+                'Zus' : 5,
+                'Kom' : 6
+            };
+
+        // Fuer den Handler unten merken...
+        this.__ROWOFFSETUPPER = __ROWOFFSETUPPER;
+        this.__COLUMNINDEX = __COLUMNINDEX;
+
         return {
                 'Tab'         : getTable(2),
                 'Zei'         : __ROWOFFSETUPPER,
@@ -261,19 +385,10 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
                 'formBreak'   : 4
             };
     }, async optSet => {
-        const __ROWOFFSETUPPER = 1;     // Header-Zeile
-        const __ROWOFFSETLOWER = 0;
-        const __CLASSFREI = 'DMI';  // magenta
-
-        const __COLUMNINDEX = {
-                'ZAT' : 0,
-                'Art' : 1,
-                'Geg' : 2,
-                'Erg' : 3,
-                'Ber' : 4,
-                'Zus' : 5,
-                'Kom' : 6
-            };
+        const __COLUMNINDEX     = this.__COLUMNINDEX;       // von oben!
+        const __ROWOFFSETUPPER  = this.__ROWOFFSETUPPER;    // von oben!
+        const __ROWOFFSETLOWER  = 0;
+        const __CLASSFREI       = 'DMI';    // magenta
 
         const __ZAT = firstZAT(getOptValue(optSet.saison), getOptValue(optSet.ligaSize));
 
@@ -394,7 +509,7 @@ function prepareOptions(optSet, optParams) {
     const __PRUNDE = getSelection('stauswahl');
     const __OSCRUNDE = getSelection('runde');
     const __OSERUNDE = getSelection('runde');
-    const __DEFSAISON = getOptValue(optSet.aktuelleSaison);
+    const __DEFSAISON = getOptValueByName(optSet, 'aktuelleSaison');
     const __SAISONS = getSelectionArray('saauswahl', 'Number', getSelectedValue);
     const __CURRSAISON = (__SAISONS ? Math.max(... __SAISONS) : __DEFSAISON);
     const __SAISON = getSelection('saauswahl', 'Number', getSelectedValue);
@@ -406,20 +521,20 @@ function prepareOptions(optSet, optParams) {
     const __OSERUNDNR = getSelection('runde', 'Number', getSelectedValue);
 
     // ... und abspeichern...
-    setOpt(optSet.liga, __LIGA, false);
-    setOpt(optSet.land, __LAND, false);
-    setOpt(optSet.tabTyp, __TABTYP, false);
-    setOpt(optSet.Prunde, __PRUNDE, false);
-    setOpt(optSet.OSCrunde, __OSCRUNDE, false);
-    setOpt(optSet.OSErunde, __OSERUNDE, false);
-    setOpt(optSet.aktuelleSaison, __CURRSAISON, false);
-    setOpt(optSet.saison, __SAISON, false);
-    setOpt(optSet.ligaNr, __LIGANR, false);
-    setOpt(optSet.landNr, __LANDNR, false);
-    setOpt(optSet.tabTypNr, __TABTYPNR, false);
-    setOpt(optSet.PrundenNr, __PRUNDNR, false);
-    setOpt(optSet.OSCrundenNr, __OSCRUNDNR, false);
-    setOpt(optSet.OSErundenNr, __OSERUNDNR, false);
+    setOptByName(optSet, 'liga', __LIGA, false);
+    setOptByName(optSet, 'land', __LAND, false);
+    setOptByName(optSet, 'tabTyp', __TABTYP, false);
+    setOptByName(optSet, 'Prunde', __PRUNDE, false);
+    setOptByName(optSet, 'OSCrunde', __OSCRUNDE, false);
+    setOptByName(optSet, 'OSErunde', __OSERUNDE, false);
+    setOptByName(optSet, 'aktuelleSaison', __CURRSAISON, false);
+    setOptByName(optSet, 'saison', __SAISON, false);
+    setOptByName(optSet, 'ligaNr', __LIGANR, false);
+    setOptByName(optSet, 'landNr', __LANDNR, false);
+    setOptByName(optSet, 'tabTypNr', __TABTYPNR, false);
+    setOptByName(optSet, 'PrundenNr', __PRUNDNR, false);
+    setOptByName(optSet, 'OSCrundenNr', __OSCRUNDNR, false);
+    setOptByName(optSet, 'OSErundenNr', __OSERUNDNR, false);
 
     return optSet;
 }
@@ -457,7 +572,7 @@ const __ITEM = 's';
 // s=9: Leihhistorie
 const __MAIN = new Main(__OPTCONFIG, __MAINCONFIG, procSpielplan);
 
-__MAIN.run(getPageIdFromURL, __LEAFS);
+__MAIN.run(getPageIdFromURL, __LEAFS, __ITEM);
 
 // ==================== Ende Hauptprogramm ====================
 
