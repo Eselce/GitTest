@@ -899,20 +899,20 @@ __TEAMCLASS.optSelect = {
 function init(playerRows, optSet, colIdx, offsetUpper = 1, offsetLower = 0, page = 0) {
     storePlayerDataFromHTML(playerRows, optSet, colIdx, offsetUpper, offsetLower, page);
 
-    const __SAISON = getOptValue(optSet.saison);
-    const __AKTZAT = getOptValue(optSet.aktuellerZat);
+    const __SAISON = optSet.getOptValue('saison');
+    const __AKTZAT = optSet.getOptValue('aktuellerZat');
     const __GEALTERT = ((__AKTZAT >= 72) ? (getIntFromHTML(playerRows[playerRows.length - offsetLower - 1].cells, colIdx.Age) < 13) : false);
     const __CURRZAT = (__GEALTERT ? 0 : __AKTZAT);
     const __LGNR = __TEAMCLASS.team.LgNr;
     const __KLASSE = (__LGNR > 1) ? (__LGNR > 3) ? 3 : 2 : 1;
-    const __DONATION = getOptValue(optSet.foerderung);
-    const __BIRTHDAYS = getOptValue(optSet.birthdays, []);
-    const __TCLASSES = getOptValue(optSet.tClasses, []);
-    const __PROGRESSES = getOptValue(optSet.progresses, []);
-    const __ZATAGES = getOptValue(optSet.zatAges, []);
-    const __TRAINIERT = getOptValue(optSet.trainiert, []);
-    const __POSITIONS = getOptValue(optSet.positions, []);
-    const __SKILLS = getOptValue(optSet.skills, []);
+    const __DONATION = optSet.getOptValue('foerderung');
+    const __BIRTHDAYS = optSet.getOptValue('birthdays', []);
+    const __TCLASSES = optSet.getOptValue('tClasses', []);
+    const __PROGRESSES = optSet.getOptValue('progresses', []);
+    const __ZATAGES = optSet.getOptValue('zatAges', []);
+    const __TRAINIERT = optSet.getOptValue('trainiert', []);
+    const __POSITIONS = optSet.getOptValue('positions', []);
+    const __SKILLS = optSet.getOptValue('skills', []);
     const __ISSKILLPAGE = (page === 2);
     const __BASEDATA = [ __BIRTHDAYS, __TCLASSES, __PROGRESSES ];  // fuer initPlayer
     const __DATA = (__ISSKILLPAGE ? [ __SKILLS, __BASEDATA ] : [ __BASEDATA, __SKILLS ]);  // fuer initPlayer: [0] = von HTML-Seite, [1] = aus gespeicherten Daten
@@ -964,7 +964,7 @@ function init(playerRows, optSet, colIdx, offsetUpper = 1, offsetLower = 0, page
 
 // Berechnet die Identifikations-IDs (Fingerprints) der Spieler neu und speichert diese
 function getPlayerIdMap(optSet) {
-    const __FINGERPRINTS = getOptValue(optSet.fingerprints, []);
+    const __FINGERPRINTS = optSet.getOptValue('fingerprints', []);
     const __MAP = {
                       'ids'    : { },
                       'cats'   : [],
@@ -1005,7 +1005,7 @@ function storePlayerIds(players, optSet) {
         }
     }
 
-    setOpt(optSet.fingerprints, __FINGERPRINTS, false);
+    optSet.setOpt('fingerprints', __FINGERPRINTS, false);
 }
 
 // Sucht fuer den Spieler den Eintrag aus catIds heraus und gibt den (geloeschten) Index zurueck
@@ -1056,11 +1056,11 @@ function setPlayerData(players, optSet) {
         __POSITIONS[i] = __ZUSATZ.bestPos;
     }
 
-    setOpt(optSet.ziehAnz, __ZIEHANZAHL, false);
-    setOpt(optSet.ziehAnzAufstieg, ziehAnzAufstieg, false);
-    setOpt(optSet.zatAges, __ZATAGES, false);
-    setOpt(optSet.trainiert, __TRAINIERT, false);
-    setOpt(optSet.positions, __POSITIONS, false);
+    optSet.setOpt('ziehAnz', __ZIEHANZAHL, false);
+    optSet.setOpt('ziehAnzAufstieg', ziehAnzAufstieg, false);
+    optSet.setOpt('zatAges', __ZATAGES, false);
+    optSet.setOpt('trainiert', __TRAINIERT, false);
+    optSet.setOpt('positions', __POSITIONS, false);
 }
 
 // Berechnet die abgeleiteten Werte in den Spieler-Objekten neu und speichert diese
@@ -1081,9 +1081,9 @@ function calcPlayerData(players, optSet) {
         __POSITIONS[i] = __ZUSATZ.bestPos;
     }
 
-    setOpt(optSet.zatAges, __ZATAGES, false);
-    setOpt(optSet.trainiert, __TRAINIERT, false);
-    setOpt(optSet.positions, __POSITIONS, false);
+    optSet.setOpt('zatAges', __ZATAGES, false);
+    optSet.setOpt('trainiert', __TRAINIERT, false);
+    optSet.setOpt('positions', __POSITIONS, false);
 }
 
 // Ermittelt die fuer diese Seite relevanten Werte in den Spieler-Objekten aus den Daten der Seite und speichert diese
@@ -1097,7 +1097,7 @@ function storePlayerDataFromHTML(playerRows, optSet, colIdx, offsetUpper = 1, of
     const __COLDEFS = [ { }, {
                                 'birthdays'  : { 'name' : 'birthdays', 'getFun' : getIntFromHTML, 'params' : [ colIdx.Geb ] },
                                 'tClasses'   : { 'name' : 'tClasses', 'getFun' : getTalentFromHTML, 'params' : [ colIdx.Tal ] },
-                                'progresses' : { 'name' : 'progresses', 'getFun' : getAufwertFromHTML, 'params' : [ colIdx.Auf, getOptValue(optSet.shortAufw, true) ] }
+                                'progresses' : { 'name' : 'progresses', 'getFun' : getAufwertFromHTML, 'params' : [ colIdx.Auf, optSet.getOptValue('shortAufw', true) ] }
                             }, {
                                 'skills'     : { 'name' : 'skills', 'getFun' : getSkillsFromHTML, 'params' : [ colIdx ]}
                             } ][getValueIn(page, 1, 2, 0)];
@@ -1136,7 +1136,7 @@ function storePlayerDataColsFromHTML(playerRows, optSet, colDefs, offsetUpper = 
 
         __LOG[9]('Schreibe ' + __COLDEF.name + ': ' + __DATA[key]);
 
-        setOpt(optSet[__COLDEF.name], __DATA[key], false);
+        optSet.setOpt('__COLDEF.name]', __DATA[key], false);
     }
 }
 
@@ -1241,16 +1241,16 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
             const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
             const __CURRZAT = __NEXTZAT - 1;
-            const __DATAZAT = getOptValue(optSet.datenZat);
+            const __DATAZAT = optSet.getOptValue('datenZat');
 
             // Stand der alten Daten merken...
-            setOpt(optSet.oldDatenZat, __DATAZAT, false);
+            optSet.setOpt('oldDatenZat', __DATAZAT, false);
 
             if (__CURRZAT >= 0) {
                 __LOG[2]("Aktueller ZAT: " + __CURRZAT);
 
                 // Neuen aktuellen ZAT speichern...
-                setOpt(optSet.aktuellerZat, __CURRZAT, false);
+                optSet.setOpt('aktuellerZat', __CURRZAT, false);
 
                 if (__CURRZAT !== __DATAZAT) {
                     __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
@@ -1265,7 +1265,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
                                                 }).catch(defaultCatch);
 
                     // Neuen Daten-ZAT speichern...
-                    setOpt(optSet.datenZat, __CURRZAT, false);
+                    optSet.setOpt('datenZat', __CURRZAT, false);
                 }
             }
 
@@ -1409,12 +1409,12 @@ const procTeamuebersicht = new PageManager("Team\xFCbersicht", __TEAMCLASS, () =
 
             // Format der Trennlinie zwischen den Jahrgaengen...
             if (! __COLMAN.gt) {
-                const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
+                const __BORDERSTRING = optSet.getOptValue('sepStyle') + ' ' + optSet.getOptValue('sepColor') + ' ' + optSet.getOptValue('sepWidth');
 
                 separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
             }
 
-            const __CURRZAT = getOptValue(optSet.datenZat);
+            const __CURRZAT = optSet.getOptValue('datenZat');
             const __MSG = new WarnDrawMessage(optSet, __CURRZAT);
             const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(optSet, __CURRZAT);
             const __ANCHOR = getTable(0, 'div');
@@ -1520,7 +1520,7 @@ const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS
 
             // Format der Trennlinie zwischen den Jahrgaengen...
             if (! __COLMAN.gt) {
-                const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
+                const __BORDERSTRING = optSet.getOptValue('sepStyle') + ' ' + optSet.getOptValue('sepColor') + ' ' + optSet.getOptValue('sepWidth');
 
                 separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
             }
@@ -1632,7 +1632,7 @@ const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
 
             // Format der Trennlinie zwischen den Jahrgaengen...
             if (! __COLMAN.gt) {
-                const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
+                const __BORDERSTRING = optSet.getOptValue('sepStyle') + ' ' + optSet.getOptValue('sepColor') + ' ' + optSet.getOptValue('sepWidth');
 
                 separateGroups(__ROWS, __BORDERSTRING, __COLUMNINDEX.Land, __ROWOFFSETUPPER, __ROWOFFSETLOWER, 0, 0, existValue);
             }
@@ -1665,7 +1665,7 @@ function prepareOptions(optSet, optParams) {
         __LOG[4]("Jugendf\xF6rderung: " + __DONATION + " Euro");
 
         // ... und abspeichern...
-        setOpt(optSet.foerderung, __DONATION, false);
+        optSet.setOpt('foerderung', __DONATION, false);
     }
 
     return optSet;

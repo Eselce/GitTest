@@ -225,7 +225,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
                                 }
             };
     }, async optSet => {
-        const __ZAT = firstZAT(getOptValue(optSet.saison), getOptValue(optSet.ligaSize));
+        const __ZAT = firstZAT(optSet.getOptValue('saison'), optSet.getOptValue('ligaSize'));
         const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;

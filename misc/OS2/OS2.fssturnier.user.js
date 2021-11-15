@@ -3415,10 +3415,10 @@ function calcRanksFromTable(table, optSet) {
     const __TEAMRANKS = reverseMapping(__RANKIDS, x => Number(x));
 
     // Neuen Rangliste speichern...
-    setOpt(optSet.rankIds, __RANKIDS, false);
-    setOpt(optSet.teamRanks, __TEAMRANKS, false);
-    setOpt(optSet.teamIds, __TEAMIDS, false);
-    setOpt(optSet.teamNames, __TEAMNAMES, false);
+    optSet.setOpt('rankIds', __RANKIDS, false);
+    optSet.setOpt('teamRanks', __TEAMRANKS, false);
+    optSet.setOpt('teamIds', __TEAMIDS, false);
+    optSet.setOpt('teamNames', __TEAMNAMES, false);
 }
 
 // Ermittelt die IDs der herausgeforderten Teams aus der HTML-Tabelle und speichert diese
@@ -3445,7 +3445,7 @@ function calcChallengesFromHTML(page, optSet) {
 
         if (__CHALLIDS.length) {
             // Neuen Forderungsliste speichern...
-            setOpt(optSet.challIds, __CHALLIDS, false);
+            optSet.setOpt('challIds', __CHALLIDS, false);
         }
     }
 }
@@ -3468,7 +3468,7 @@ function calcGegner(games, optSet) {
     }
 
     // Neuen Rangliste speichern...
-    setOpt(optSet.gegner, __GEGNER, false);
+    optSet.setOpt('gegner', __GEGNER, false);
 }
 
 // Hilfsfunktion: Formatiert eine Box im Ranking
@@ -3495,11 +3495,11 @@ function formatRankBox(box, color, bgColor, substRank) {
 // optSet: Gesetzte Optionen
 function markChanges(table, optSet) {
     const __RANKBOXES = table.getElementsByTagName('span');
-    const __RANKIDS = getOptValue(optSet.rankIds);
-    const __OLDRANKIDS = getOptValue(optSet.oldRankIds);
-    const __TEAMRANKS = getOptValue(optSet.teamRanks);
+    const __RANKIDS = optSet.getOptValue('rankIds');
+    const __OLDRANKIDS = optSet.getOptValue('oldRankIds');
+    const __TEAMRANKS = optSet.getOptValue('teamRanks');
     const __OLDTEAMRANKS = reverseMapping(__OLDRANKIDS, x => Number(x));
-    const __GEGNER = getOptValue(optSet.gegner);
+    const __GEGNER = optSet.getOptValue('gegner');
 
     for (let team of __RANKBOXES) {
         const __TEXT = team.textContent;
@@ -3541,8 +3541,8 @@ function markChanges(table, optSet) {
 // teamName: Name des gegnerischen Teams
 function markTeam(table, optSet, teamName, gegnerName) {
     const __RANKBOXES = table.getElementsByTagName('span');
-    const __RANKIDS = getOptValue(optSet.rankIds);
-    const __CHALLIDS = getOptValue(optSet.challIds);
+    const __RANKIDS = optSet.getOptValue('rankIds');
+    const __CHALLIDS = optSet.getOptValue('challIds');
 
     for (let team of __RANKBOXES) {
         const __TEAMLINK = getTable(0, 'a', team);
@@ -3635,16 +3635,16 @@ const procHaupt = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
         const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;
-        const __DATAZAT = getOptValue(optSet.datenZat);
+        const __DATAZAT = optSet.getOptValue('datenZat');
 
         // Stand der alten Daten merken...
-        setOpt(optSet.oldDatenZat, __DATAZAT, false);
+        optSet.setOpt('oldDatenZat', __DATAZAT, false);
 
         if (__CURRZAT >= 0) {
             __LOG[2]("Aktueller ZAT: " + __CURRZAT);
 
             // Neuen aktuellen ZAT speichern...
-            setOpt(optSet.aktuellerZat, __CURRZAT, false);
+            optSet.setOpt('aktuellerZat', __CURRZAT, false);
 
             if (__CURRZAT !== __DATAZAT) {
                 __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
@@ -3656,7 +3656,7 @@ const procHaupt = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
                                           }).catch(defaultCatch);
 
                 // Neuen Daten-ZAT speichern...
-                setOpt(optSet.datenZat, __CURRZAT, false);
+                optSet.setOpt('datenZat', __CURRZAT, false);
             }
         }
 
@@ -3684,10 +3684,10 @@ const procOSFSSTurnier = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
             const __TAB4 = document.getElementById('d');
             const __TABLE = getTable(0, 'table', __TAB4);
             const __GAMELIST = getTable(0, 'ul', __TAB4);
-            const __MYTEAM = getOptValue(optSet.team);
-            const __GEGNER = getOptValue(optSet.gegner);
-            const __TEAMIDS = getOptValue(optSet.teamIds);
-            const __TEAMNAMES = getOptValue(optSet.teamNames);
+            const __MYTEAM = optSet.getOptValue('team');
+            const __GEGNER = optSet.getOptValue('gegner');
+            const __TEAMIDS = optSet.getOptValue('teamIds');
+            const __TEAMNAMES = optSet.getOptValue('teamNames');
 
             calcRanksFromTable(__TABLE, optSet);
             calcChallengesFromHTML(__TAB4, optSet);

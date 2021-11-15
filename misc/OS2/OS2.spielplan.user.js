@@ -390,7 +390,7 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
         const __ROWOFFSETLOWER  = 0;
         const __CLASSFREI       = 'DMI';    // magenta
 
-        const __ZAT = firstZAT(getOptValue(optSet.saison), getOptValue(optSet.ligaSize));
+        const __ZAT = firstZAT(optSet.getOptValue('saison'), optSet.getOptValue('ligaSize'));
 
         const __ROWS = getRows(2);
 
@@ -412,7 +412,7 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
             setSpielArtFromCell(__ZAT, __CELLS[__COLUMNINDEX.Art]);
             setErgebnisFromCell(__ZAT, __CELLS[__COLUMNINDEX.Erg]);
 
-            if (getOptValue(optSet.shortKom)) {
+            if (optSet.getOptValue('shortKom')) {
                 const __CELLKOM = __CELLS[__COLUMNINDEX.Kom];
                 const __CELLART = __CELLS[__COLUMNINDEX.Art];
 
@@ -433,27 +433,27 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
 
                 addBilanzLinkToCell(__CELLBER, __ZAT.gameType, "Bilanz");
 
-                if (getOptValue(optSet.shortKom)) {
+                if (optSet.getOptValue('shortKom')) {
                     __CELLBER.innerHTML = __CELLBER.innerHTML.replace("Klick", "(*)").replace("Bilanz", 'V').replace("Vorschau", 'V');
                 }
 
                 if (__ZAT.gameType === 'Liga') {
                     if (__ZAT.ZAT < 70) {
-                        stats = addResultToStats(ligaStats, getOptValue(optSet.longStats), __ZAT);
+                        stats = addResultToStats(ligaStats, optSet.getOptValue('longStats'), __ZAT);
                     }
                 } else if ((__ZAT.gameType === 'OSCQ') || (__ZAT.gameType === 'OSEQ') || (__ZAT.gameType === 'OSE')) {
                     if (__ZAT.hinRueck !== 1) {
                         euroStats = emptyStats();
                     }
-                    stats = addResultToStats(euroStats, getOptValue(optSet.longStats), __ZAT);
+                    stats = addResultToStats(euroStats, optSet.getOptValue('longStats'), __ZAT);
                 } else if (__ZAT.gameType === 'OSC') {
                     if ((__ZAT.hinRueck !== 1) && ((__ZAT.euroRunde >= 9) || ((__ZAT.euroRunde % 3) === 0))) {
                         euroStats = emptyStats();
                     }
-                    stats = addResultToStats(euroStats, getOptValue(optSet.longStats), __ZAT);
+                    stats = addResultToStats(euroStats, optSet.getOptValue('longStats'), __ZAT);
                 }
 
-                if (getOptValue(optSet.showStats)) {
+                if (optSet.getOptValue('showStats')) {
                     if (stats !== "") {
                         stats = ' ' + stats;
                     }
@@ -463,9 +463,9 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
                 __CELLS[__COLUMNINDEX.Zus].innerHTML = getZatLink(__ZAT, __TEAMCLASS.team, true) + addTableLink(__ZAT, __TEAMCLASS.team, stats, true);
             }
 
-            if (getOptValue(optSet.sepMonths) && (__ZAT.ZAT % __ZAT.anzZATpMonth === 0) && (i < __ROWS.length - __ROWOFFSETLOWER - 1)) {
+            if (optSet.getOptValue('sepMonths') && (__ZAT.ZAT % __ZAT.anzZATpMonth === 0) && (i < __ROWS.length - __ROWOFFSETLOWER - 1)) {
                 // Format der Trennlinie zwischen den Monaten...
-                const __BORDERSTRING = getOptValue(optSet.sepStyle) + ' ' + getOptValue(optSet.sepColor) + ' ' + getOptValue(optSet.sepWidth);
+                const __BORDERSTRING = optSet.getOptValue('sepStyle') + ' ' + optSet.getOptValue('sepColor') + ' ' + optSet.getOptValue('sepWidth');
 /*
                 for (let entry of __CELLS) {
                     entry.style.borderBottom = __BORDERSTRING;

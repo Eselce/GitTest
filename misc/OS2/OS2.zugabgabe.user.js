@@ -225,16 +225,16 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
         const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;
-        const __DATAZAT = getOptValue(optSet.datenZat);
+        const __DATAZAT = optSet.getOptValue('datenZat');
 
         // Stand der alten Daten merken...
-        setOpt(optSet.oldDatenZat, __DATAZAT, false);
+        optSet.setOpt('oldDatenZat', __DATAZAT, false);
 
         if (__CURRZAT >= 0) {
             __LOG[2]("Aktueller ZAT: " + __CURRZAT);
 
             // Neuen aktuellen ZAT speichern...
-            setOpt(optSet.aktuellerZat, __CURRZAT, false);
+            optSet.setOpt('aktuellerZat', __CURRZAT, false);
 
             if (__CURRZAT !== __DATAZAT) {
                 __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
@@ -246,7 +246,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
                                           }).catch(defaultCatch);
 
                 // Neuen Daten-ZAT speichern...
-                setOpt(optSet.datenZat, __CURRZAT, false);
+                optSet.setOpt('datenZat', __CURRZAT, false);
             }
         }
 

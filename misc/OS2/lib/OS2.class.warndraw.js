@@ -95,12 +95,12 @@ const __NOWARNDRAW = new WarnDrawPlayer(undefined, undefined);  // inaktives Obj
 
         this.optSet = optSet;
 
-        this.warn = getOptValue(this.optSet.zeigeWarnung, true);
-        this.warnMonth = getOptValue(this.optSet.zeigeWarnungMonat, true);
-        this.warnHome = getOptValue(this.optSet.zeigeWarnungHome, true);
-        this.warnDialog = getOptValue(this.optSet.zeigeWarnungDialog, false);
-        this.warnAufstieg = getOptValue(this.optSet.zeigeWarnungAufstieg, true);
-        this.warnLegende = getOptValue(this.optSet.zeigeWarnungLegende, true);
+        this.warn = this.optSet.getOptValue('zeigeWarnung', true);
+        this.warnMonth = this.optSet.getOptValue('zeigeWarnungMonat', true);
+        this.warnHome = this.optSet.getOptValue('zeigeWarnungHome', true);
+        this.warnDialog = this.optSet.getOptValue('zeigeWarnungDialog', false);
+        this.warnAufstieg = this.optSet.getOptValue('zeigeWarnungAufstieg', true);
+        this.warnLegende = this.optSet.getOptValue('zeigeWarnungLegende', true);
 
         this.out = {
                        'supertag' : true,
@@ -141,7 +141,7 @@ Class.define(WarnDrawMessage, Object, {
                                   this.warnOption = this.hasLegende();
                               },
         'configureZat'      : function() {
-                                  const __ZIEHANZAHL = getOptValue(this.optSet.ziehAnz, []);
+                                  const __ZIEHANZAHL = this.optSet.getOptValue('ziehAnz', []);
                                   const __INDEX = parseInt(this.currZAT / 6);
 
                                   this.abrZAT = (__INDEX + 1) * 6;
@@ -290,7 +290,7 @@ Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
 
 Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
         'configureZat'      : function() {
-                                  const __ZIEHANZAUFSTIEG = getOptValue(this.optSet.ziehAnzAufstieg, 0);
+                                  const __ZIEHANZAUFSTIEG = this.optSet.getOptValue('ziehAnzAufstieg', 0);
                                   const __INDEX = parseInt(this.currZAT / 6);
 
                                   this.abrZAT = (__INDEX + 1) * 6;

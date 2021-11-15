@@ -203,8 +203,8 @@ const procHaupt = new PageManager("Unit-Test Quellcode", null, () => {
                 'showForm'    : true
             };
     }, async optSet => {
-        const __MINLEVEL = getOptValue(optSet.minLevel);
-        const __LOADSCRIPT = getOptValue(optSet.loadScript);
+        const __MINLEVEL = optSet.getOptValue('minLevel');
+        const __LOADSCRIPT = optSet.getOptValue('loadScript');
         const __EVAL = (__LOADSCRIPT ? "" : document.body.textContent);
 
         document.body.innerHTML = '';  // Seite leeren
