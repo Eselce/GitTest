@@ -21,28 +21,6 @@
 
 // ==================== Abschnitt Operationen auf Optionen ====================
 
-// Prueft ein Objekt, ob es eine syntaktisch valide (ueber Menu) gesetzte Option ist
-// opt: Zu validierendes Options-Objekt
-// return [__CONFIG, __NAME, ...] Konfiguration und ggfs. Name der Option
-function checkOpt(opt) {
-    if (opt === undefined) {
-        throw Error("Option is undefined");
-    }
-
-    const __CONFIG = getOptConfig(opt);
-    const __NAME = getOptName(opt);
-
-    if (! opt.validOption) {
-        if (((typeof __NAME) !== 'undefined') && __NAME.length && ((typeof __CONFIG) === 'object')) {
-            opt.validOption = true;
-        } else {
-            throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
-        }
-    }
-
-    return [ __CONFIG, __NAME ];
-}
-
 // Invalidiert eine (ueber Menu) gesetzte Option
 // opt: Zu invalidierende Option
 // force: Invalidiert auch Optionen mit 'AutoReset'-Attribut
@@ -142,7 +120,7 @@ function loadOptions(optSet, force = false) {
     for (let opt in optSet) {
         const __OPT = optSet[opt];
 
-        if (! __OPT.Loaded) {
+        if (__OPT && ! __OPT.Loaded) {
             const __PROMISE = loadOption(__OPT, force).then(value => {
                     __LOG[6]("LOADED " + __LOG.info(opt, false) + " << " + __LOG.info(value, true));
 
@@ -298,7 +276,7 @@ async function renameOptions(optSet, optSelect, renameParam = undefined, renameF
         if (__OPT === undefined) {
             __LOG[1]("RENAME: Option", __LOG.info(opt, false), "nicht gefunden!");
         } else {
-            const __NAME = getOptName(__OPT);
+            const [ , __NAME ] = checkOpt(__OPT);
             const __NEWNAME = renameFun(__NAME, renameParam);
             const __ISSCALAR = ((typeof __OPTPARAMS) === 'boolean');
             // Laedt die unter dem neuen Namen gespeicherten Daten nach?

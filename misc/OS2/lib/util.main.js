@@ -36,14 +36,18 @@ Class.define(Main, Object, {
                             // page: ID fuer die aktuelle Seite
                             // return Promise auf die Durchfuehrung der Bearbeitung
                             const __SETUPMANAGER    = (this.setupManager || (page => this.pageManager[page]));
-                            const __MANAGER         = getValue(__SETUPMANAGER.call(this, page), { name : "Seite #" + page });
+                            const __MANAGER         = getValue(__SETUPMANAGER.call(this, page), { name : "Seite #" + page, params : [] });
                             const __SETUPOPTPARAMS  = (__MANAGER.setupOptParams || (() => ({ 'hideMenu' : false })));
                             const __OPTPARAMS       = __SETUPOPTPARAMS.call(__MANAGER, this.optSet, ... __MANAGER.params);
                             const __CHECKOPTPARAMS  = (this.checkOptParams || (optParams => !! optParams));
 
                             if (__CHECKOPTPARAMS(__OPTPARAMS, __MANAGER)) {
                                 const __CLASSIFICATION  = (__MANAGER.classification || (new Classification()));
-                                const __HANDLER         = (__MANAGER.handler || (() => Promise.resolve(false)));
+                                const __HANDLER         = __MANAGER.handler;
+
+                                if (! __HANDLER) {
+                                    return Promise.reject(`Kein Handler f\xFCr '${__MANAGER.name}' vorhanden!`);
+                                }
 
                                 // Klassifikation verknuepfen...
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
@@ -51,7 +55,7 @@ Class.define(Main, Object, {
                                 return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(
                                     async optSet => {
                                             const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || (optSet => optSet));
-                                            const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || (optSet => Object.values(optSet).forEach(checkOpt)));
+                                            const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || checkOptSet);
     
                                             return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
                                                                         optSet => Promise.resolve(showOptions(optSet, __OPTPARAMS)).then(
@@ -82,7 +86,8 @@ Class.define(Main, Object, {
                                             __LOG[2](String(this.optSet));
                                             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
                                         }, ex => {
-                                            __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message, ex[0] + ": " + ex[1])) + ')');
+                                            __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message,
+                                                        ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1]))) + ')');
                                             __LOG[2](String(this.optSet));
                                             __LOG[1]('SCRIPT END', __DBMAN.Name);
                                         });
