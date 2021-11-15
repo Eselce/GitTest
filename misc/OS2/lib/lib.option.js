@@ -1924,7 +1924,7 @@ function getOptionForm(optSet, optParams = { }) {
     const __FORMEND = '</tr></tbody></table></form>';
     const __FORMWIDTH = getValue(optParams.formWidth, 3);
     const __FORMBREAK = getValue(optParams.formBreak, __FORMWIDTH);
-    const __SHOWFORM = getOptValue(optSet.showForm, true) ? optParams.showForm : { 'showForm' : true };
+    const __SHOWFORM = optSet.getOptValue('showForm', true) ? optParams.showForm : { 'showForm' : true };
     const __PRIOOPTS = groupData(optSet, opt => getOptConfig(opt).FormPrio);
     let form = __FORM;
     let count = 0;   // Bisher angezeigte Optionen
