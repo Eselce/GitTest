@@ -458,6 +458,28 @@ function getValue(value, defValue = undefined, retValue = undefined) {
     return ((value === undefined) || (value === null)) ? defValue : (retValue === undefined) ? value : retValue;
 }
 
+// Gibt den Item-Wert eines Objektes zurueck. Ist dieser nicht definiert oder null, wird ein Alternativwert geliefert
+// Ist das Objekt selbst undefined, gibt es keinen Fehler, es wird jedoch undefined zurueckgegeben
+// obj: Das Objekt, dessen Item den Wert liefern soll
+// item: Ein Key. Ist der zugehoerige Wert nicht undefined oder null, wird er zurueckgeliefert (oder retValue)
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
+// retValue: Falls definiert, Rueckgabe-Wert fuer den Fall, dass value nicht undefined oder null ist
+// return Der Wert. Sind weder value noch defValue definiert, dann undefined
+function getObjValue(obj, item, defValue = undefined, retValue = undefined) {
+    return getValue(getValue(obj, { })[item], defValue, retValue);
+}
+
+// Gibt den Wert eines Arrays-Elements zurueck. Ist dieser nicht definiert oder null, wird ein Alternativwert geliefert
+// Ist das Array selbst undefined, gibt es keinen Fehler, es wird jedoch undefined zurueckgegeben
+// arr: Das Array, dessen Item den Wert liefern soll
+// index: Ein Key. Ist der zugehoerige Wert nicht undefined oder null, wird er zurueckgeliefert (oder retValue)
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
+// retValue: Falls definiert, Rueckgabe-Wert fuer den Fall, dass value nicht undefined oder null ist
+// return Der Wert. Sind weder value noch defValue definiert, dann undefined
+function getArrValue(arr, index, defValue = undefined, retValue = undefined) {
+    return getValue(getValue(arr, [])[index], defValue, retValue);
+}
+
 // Gibt einen Wert zurueck. Ist dieser nicht definiert, wird ein Alternativwert geliefert
 // value: Ein Wert. Ist dieser definiet und in den Grenzen, wird er zurueckgeliefert
 // minValue: Untere Grenze fuer den Wert, falls angegeben
@@ -1241,7 +1263,17 @@ function showException(label, ex, show = true) {
 function defaultCatch(error, show) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
     error = (error || new Error("Promise rejected!"));
-    if (error[2]) {  // Recatch...
+
+    if ((typeof error) === 'string') {
+        const __CODELINE = codeLine(true, false, true, false);
+        const [ __FILENAME, __LINECOLNUMBER ] = __CODELINE.match(/(.*?):(\d+(?::\d+))/).slice(1, 3);  // [1], [2]
+
+        error = {
+                    message     : error,
+                    fileName    : __FILENAME,
+                    lineNumber  : __LINECOLNUMBER
+                };
+    } else if (error[2]) {  // Recatch...
         return Promise.reject(error);
     }
 

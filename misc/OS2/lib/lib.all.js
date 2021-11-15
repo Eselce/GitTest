@@ -485,6 +485,28 @@ function getValue(value, defValue = undefined, retValue = undefined) {
     return ((value === undefined) || (value === null)) ? defValue : (retValue === undefined) ? value : retValue;
 }
 
+// Gibt den Item-Wert eines Objektes zurueck. Ist dieser nicht definiert oder null, wird ein Alternativwert geliefert
+// Ist das Objekt selbst undefined, gibt es keinen Fehler, es wird jedoch undefined zurueckgegeben
+// obj: Das Objekt, dessen Item den Wert liefern soll
+// item: Ein Key. Ist der zugehoerige Wert nicht undefined oder null, wird er zurueckgeliefert (oder retValue)
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
+// retValue: Falls definiert, Rueckgabe-Wert fuer den Fall, dass value nicht undefined oder null ist
+// return Der Wert. Sind weder value noch defValue definiert, dann undefined
+function getObjValue(obj, item, defValue = undefined, retValue = undefined) {
+    return getValue(getValue(obj, { })[item], defValue, retValue);
+}
+
+// Gibt den Wert eines Arrays-Elements zurueck. Ist dieser nicht definiert oder null, wird ein Alternativwert geliefert
+// Ist das Array selbst undefined, gibt es keinen Fehler, es wird jedoch undefined zurueckgegeben
+// arr: Das Array, dessen Item den Wert liefern soll
+// index: Ein Key. Ist der zugehoerige Wert nicht undefined oder null, wird er zurueckgeliefert (oder retValue)
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
+// retValue: Falls definiert, Rueckgabe-Wert fuer den Fall, dass value nicht undefined oder null ist
+// return Der Wert. Sind weder value noch defValue definiert, dann undefined
+function getArrValue(arr, index, defValue = undefined, retValue = undefined) {
+    return getValue(getValue(arr, [])[index], defValue, retValue);
+}
+
 // Gibt einen Wert zurueck. Ist dieser nicht definiert, wird ein Alternativwert geliefert
 // value: Ein Wert. Ist dieser definiet und in den Grenzen, wird er zurueckgeliefert
 // minValue: Untere Grenze fuer den Wert, falls angegeben
@@ -1268,7 +1290,17 @@ function showException(label, ex, show = true) {
 function defaultCatch(error, show) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
     error = (error || new Error("Promise rejected!"));
-    if (error[2]) {  // Recatch...
+
+    if ((typeof error) === 'string') {
+        const __CODELINE = codeLine(true, false, true, false);
+        const [ __FILENAME, __LINECOLNUMBER ] = __CODELINE.match(/(.*?):(\d+(?::\d+))/).slice(1, 3);  // [1], [2]
+
+        error = {
+                    message     : error,
+                    fileName    : __FILENAME,
+                    lineNumber  : __LINECOLNUMBER
+                };
+    } else if (error[2]) {  // Recatch...
         return Promise.reject(error);
     }
 
@@ -3075,7 +3107,7 @@ function getSharedRef(shared, item = undefined) {
     const __PROPS = [ 'namespace', 'module', 'item' ];
     const __DEFAULTS = [ __DBMOD.namespace, __DBMOD.name, item ];
 
-    for (let stage in __PROPS) {
+    for (let stage = 0; stage < __PROPS.length; stage++) {
         const __DEFAULT = __DEFAULTS[stage];
         const __PROP = __PROPS[stage];
         const __NAME = shared[__PROP];
@@ -3094,6 +3126,46 @@ function getSharedRef(shared, item = undefined) {
 
 // ==================== Abschnitt fuer Zugriff auf Options-Parameter ====================
 
+// Prueft ein Objekt, ob es eine syntaktisch valide (ueber Menu) gesetzte Option ist
+// opt: Zu validierendes Options-Objekt
+// key: Falls bekannt, der Item-Key dieser Option (wird auf Korrektheit ueberprueft)
+// return [__CONFIG, __NAME, __KEY, ...] Konfiguration und ggfs. Name und/oder Key der Option
+function checkOpt(opt, key = undefined) {
+    const __CONFIG = getOptConfig(opt);
+    const __NAME = getOptName(opt);
+    const __KEY = getOptKey(opt, false);  // NOTE Unbedingt strict auf false setzen, sonst zirkulaer!
+
+    if (__NAME === undefined) {  // NOTE opt === undefined liefert __NAME === undefined
+        __LOG[0]("chechOpt(): Error in " + codeLine(true, true, true, false));
+        throw Error("Unknown option " + __LOG.info(key, false));
+    }
+
+    if (((typeof key) !== 'undefined') && (key !== __KEY)) {
+        __LOG[0]("chechOpt(): Error in " + codeLine(true, true, true, false));
+        throw RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
+    }
+
+    if (! opt.validOption) {
+        if (((typeof __NAME) !== 'undefined') && __NAME.length && ((typeof __CONFIG) === 'object')) {
+            opt.validOption = true;
+        } else {
+            __LOG[0]("chechOpt(): Error in " + codeLine(true, true, true, false));
+            throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
+        }
+    }
+
+    return [ __CONFIG, __NAME, __KEY ];
+}
+
+// Prueft alle Objekt in einem optSet, ob sie syntaktisch valide (ueber Menu) gesetzte Optionen sind
+// optSet: Zu validierende Options-Objekte
+// return Das uebergeben optSet (falls alle Optionen valide sind)
+function checkOptSet(optSet) {
+    Object.entries(optSet).forEach(([item, opt]) => checkOpt(opt, item));
+
+    return optSet;
+}
+
 // Gibt eine Option sicher zurueck
 // opt: Config und Value der Option, ggfs. undefined
 // defOpt: Rueckgabewert, falls undefined
@@ -3108,11 +3180,18 @@ function getOpt(opt, defOpt = { }) {
 // defOpt: Rueckgabewert, falls nicht zu finden
 // return Daten zur Option (oder defOpt)
 function getOptByName(optSet, item, defOpt = { }) {
+    const __STRICT = true;
+    let opt = defOpt;
+
     if ((optSet !== undefined) && (item !== undefined)) {
-        return getOpt(optSet[item], defOpt);
-    } else {
-        return defOpt;
+        opt = getOpt(optSet[item], defOpt);
     }
+
+    if (__STRICT) {
+        checkOpt(opt, item);
+    }
+
+    return opt;
 }
 
 // Gibt die Konfigurationsdaten einer Option zurueck
@@ -3123,14 +3202,25 @@ function getOptConfig(opt, defConfig = { }) {
     return getValue(getOpt(opt).Config, defConfig);
 }
 
+// Gibt den Item-Key einer Option zurueck
+// opt: Config und Value der Option
+// strict: Ueberpruefen des Objektes?
+// return Item-Key der Option innerhalb von optSet
+function getOptKey(opt, strict = ! false) {
+    if (strict) {
+        checkOpt(opt)
+    }
+
+    return getValue(getOpt(opt).Item);
+}
+
 // Setzt den Namen einer Option
 // opt: Config und Value der Option
 // name: Zu setzender Name der Option
 // reload: Seite mit neuem Wert neu laden
 // return Gesetzter Name der Option
 function setOptName(opt, name) {
-    const __CONFIG = getOptConfig(opt);
-    const __NAME = getOptName(opt);
+    const [ __CONFIG, __NAME ] = checkOpt(opt);
 
     if (__NAME !== name) {
         __LOG[5]("RENAME " + __LOG.changed(__NAME, name, false, false));
@@ -3166,15 +3256,21 @@ function getOptName(opt) {
 
 // Setzt den Wert einer Option
 // opt: Config und Value der Option
-// name: Zu setzender Wert der Option
+// value: Zu setzender Wert der Option
+// initialLoad (nur fuer loadOption!): Grundinitialisierung (auch Read-Only)
 // return Gesetzter Wert
-function setOptValue(opt, value) {
+function setOptValue(opt, value, initialLoad = false) {
     if (opt !== undefined) {
-        if (! opt.ReadOnly) {
-            __LOG[8](getOptName(opt) + ": " + __LOG.changed(opt.Value, value, true, false));
+        const [ , __NAME, __KEY ] = checkOpt(opt);
+
+        if (initialLoad || ! opt.ReadOnly) {
+            __LOG[8](__NAME + ": " + __LOG.changed(opt.Value, value, true, false));
 
             opt.Value = value;
+        } else {
+            throw TypeError("Can't modify read-only option " + __LOG.info(__KEY, false) + " (" + __NAME + ')');
         }
+
         return opt.Value;
     } else {
         return undefined;
@@ -3186,13 +3282,29 @@ function setOptValue(opt, value) {
 // defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist (nur, falls geladen und nicht gesetzt!)
 // return Gesetzter Wert (falls geladen)
 function getOptValue(opt, defValue = undefined) {
+    const __STRICT = true;
     let value;
+
+    if (__STRICT) {
+        checkOpt(opt);
+    }
 
     if (opt /*&& opt.Loaded*/) {  // NOTE opt.Loaded steuert das Laden, aber opt.Value den Wert
         value = getValue(opt.Value, defValue);
     }
 
     return valueOf(value);
+}
+
+// Gibt den Wert einer Option zurueck, falls vorhanden
+// opt: Config und Value der Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist (nur, falls geladen und nicht gesetzt!)
+// return Gesetzter Wert (falls geladen)
+function getOptValueByName(optSet, item, defValue = undefined) {
+    // NOTE checkOpt(__OPT) wird in getOptByName() geprueft...
+    const __OPT = getOptByName(optSet, item);
+
+    return valueOf(getValue(__OPT.Value, defValue));
 }
 
 // ==================== Ende Abschnitt fuer Zugriff auf Options-Parameter ====================
@@ -3208,16 +3320,18 @@ function getOptValue(opt, defValue = undefined) {
 // onRejected: Reaktion auf Speicherung im reject-Fall (2. Promise.then()-Parameter)
 // return Gesetzter Wert
 function setOpt(opt, value, reload = false, onFulfilled = undefined, onRejected = undefined) {
-    return setOptValue(opt, setStored(getOptName(opt), value, reload, getOptConfig(opt).Serial, onFulfilled, onRejected));
+    const [ __CONFIG, __NAME ] = checkOpt(opt);
+
+    return setOptValue(opt, setStored(__NAME, value, reload, __CONFIG.Serial, onFulfilled, onRejected));
 }
 
 // Ermittelt die naechste moegliche Option
 // opt: Config und Value der Option
-// value: Ggfs. zu setzender Wert
+// defValue: Ggfs. zu setzender Wert
 // return Zu setzender Wert
-function getNextOpt(opt, value = undefined) {
-    const __CONFIG = getOptConfig(opt);
-    const __VALUE = getOptValue(opt, value);
+function getNextOpt(opt, defValue = undefined) {
+    const [ __CONFIG ] = checkOpt(opt);
+    const __VALUE = getOptValue(opt, defValue);
 
     switch (__CONFIG.Type) {
     case __OPTTYPES.MC : return getValue(value, getNextValue(__CONFIG.Choice, __VALUE));
@@ -3233,30 +3347,31 @@ function getNextOpt(opt, value = undefined) {
 
 // Setzt die naechste moegliche Option
 // opt: Config und Value der Option
-// value: Default fuer ggfs. zu setzenden Wert
+// defValue: Default fuer ggfs. zu setzenden Wert
 // reload: Seite mit neuem Wert neu laden
 // onFulfilled: Reaktion auf Speicherung im resolve-Fall (1. Promise.then()-Parameter)
 // onRejected: Reaktion auf Speicherung im reject-Fall (2. Promise.then()-Parameter)
 // return Gesetzter Wert
-function setNextOpt(opt, value = undefined, reload = false, onFulfilled = undefined, onRejected = undefined) {
-    return setOpt(opt, getNextOpt(opt, value), reload, onFulfilled, onRejected);
+function setNextOpt(opt, defValue = undefined, reload = false, onFulfilled = undefined, onRejected = undefined) {
+    // NOTE checkOpt(opt) wird in setOpt() und getNextOpt() geprueft...
+    return setOpt(opt, getNextOpt(opt, defValue), reload, onFulfilled, onRejected);
 }
 
 // Setzt die naechste moegliche Option oder fragt ab einer gewissen Anzahl interaktiv ab
 // opt: Config und Value der Option
-// value: Default fuer ggfs. zu setzenden Wert
+// defValue: Default fuer ggfs. zu setzenden Wert
 // reload: Seite mit neuem Wert neu laden
 // freeValue: Angabe, ob Freitext zugelassen ist (Default: false)
 // minChoice: Ab wievielen Auswahlmoeglichkeiten soll abgefragt werden? (Default: 3)
 // onFulfilled: Reaktion auf Speicherung im resolve-Fall (1. Promise.then()-Parameter)
 // onRejected: Reaktion auf Speicherung im reject-Fall (2. Promise.then()-Parameter)
 // return Gesetzter Wert
-function promptNextOpt(opt, value = undefined, reload = false, freeValue = false, selValue = true, minChoice = 3, onFulfilled = undefined, onRejected = undefined) {
-    const __CONFIG = getOptConfig(opt);
+function promptNextOpt(opt, defValue = undefined, reload = false, freeValue = false, selValue = true, minChoice = 3, onFulfilled = undefined, onRejected = undefined) {
+    const [ __CONFIG ] = checkOpt(opt);
     const __CHOICE = __CONFIG.Choice;
 
-    if (value || (! __CHOICE) || (__CHOICE.length < minChoice)) {
-        return setNextOpt(opt, value, reload, onFulfilled, onRejected);
+    if (defValue || (! __CHOICE) || (__CHOICE.length < minChoice)) {
+        return setNextOpt(opt, defValue, reload, onFulfilled, onRejected);
     }
 
     const __VALUE = getOptValue(opt, value);
@@ -3320,6 +3435,7 @@ function promptNextOpt(opt, value = undefined, reload = false, freeValue = false
 // onRejected: Reaktion auf Speicherung im reject-Fall (2. Promise.then()-Parameter)
 // return Gesetzter Wert
 function setOptByName(optSet, item, value, reload = false, onFulfilled = undefined, onRejected = undefined) {
+    // NOTE checkOpt(__OPT) wird in getOptByName() und setOpt() geprueft...
     const __OPT = getOptByName(optSet, item);
 
     return setOpt(__OPT, value, reload, onFulfilled, onRejected);
@@ -3328,42 +3444,45 @@ function setOptByName(optSet, item, value, reload = false, onFulfilled = undefin
 // Ermittelt die naechste moegliche Option (Version mit Key)
 // optSet: Platz fuer die gesetzten Optionen (und Config)
 // item: Key der Option
-// value: Default fuer ggfs. zu setzenden Wert
+// defValue: Default fuer ggfs. zu setzenden Wert
 // return Zu setzender Wert
-function getNextOptByName(optSet, item, value = undefined) {
+function getNextOptByName(optSet, item, defValue = undefined) {
+    // NOTE checkOpt(__OPT) wird in getOptByName() und getNextOpt() geprueft...
     const __OPT = getOptByName(optSet, item);
 
-    return getNextOpt(__OPT, value);
+    return getNextOpt(__OPT, defValue);
 }
 
 // Setzt die naechste moegliche Option (Version mit Key)
 // optSet: Platz fuer die gesetzten Optionen (und Config)
 // item: Key der Option
-// value: Default fuer ggfs. zu setzenden Wert
+// defValue: Default fuer ggfs. zu setzenden Wert
 // reload: Seite mit neuem Wert neu laden
 // onFulfilled: Reaktion auf Speicherung im resolve-Fall (1. Promise.then()-Parameter)
 // onRejected: Reaktion auf Speicherung im reject-Fall (2. Promise.then()-Parameter)
 // return Gesetzter Wert
-function setNextOptByName(optSet, item, value = undefined, reload = false, onFulfilled = undefined, onRejected = undefined) {
+function setNextOptByName(optSet, item, defValue = undefined, reload = false, onFulfilled = undefined, onRejected = undefined) {
+    // NOTE checkOpt(__OPT) wird in getOptByName() und setNextOpt() ueber setOpt() geprueft...
     const __OPT = getOptByName(optSet, item);
 
-    return setNextOpt(__OPT, value, reload, onFulfilled, onRejected);
+    return setNextOpt(__OPT, defValue, reload, onFulfilled, onRejected);
 }
 
 // Setzt die naechste moegliche Option oder fragt ab einer gewissen Anzahl interaktiv ab (Version mit Key)
 // optSet: Platz fuer die gesetzten Optionen (und Config)
 // item: Key der Option
-// value: Default fuer ggfs. zu setzenden Wert
+// defValue: Default fuer ggfs. zu setzenden Wert
 // reload: Seite mit neuem Wert neu laden
 // freeValue: Angabe, ob Freitext zugelassen ist (Default: false)
 // minChoice: Ab wievielen Auswahlmoeglichkeiten soll abgefragt werden? (Default: 3)
 // onFulfilled: Reaktion auf Speicherung im resolve-Fall (1. Promise.then()-Parameter)
 // onRejected: Reaktion auf Speicherung im reject-Fall (2. Promise.then()-Parameter)
 // return Gesetzter Wert
-function promptNextOptByName(optSet, item, value = undefined, reload = false, freeValue = false, selValue = true, minChoice = 3, onFulfilled = undefined, onRejected = undefined) {
+function promptNextOptByName(optSet, item, defValue = undefined, reload = false, freeValue = false, selValue = true, minChoice = 3, onFulfilled = undefined, onRejected = undefined) {
+    // NOTE checkOpt(__OPT) wird in getOptByName() und promptNextOpt() geprueft...
     const __OPT = getOptByName(optSet, item);
 
-    return promptNextOpt(__OPT, value, reload, freeValue, selValue, minChoice, onFulfilled, onRejected);
+    return promptNextOpt(__OPT, defValue, reload, freeValue, selValue, minChoice, onFulfilled, onRejected);
 }
 
 // ==================== Ende Abschnitt fuer Zugriff auf die Optionen ====================
@@ -3391,6 +3510,7 @@ function promptNextOptByName(optSet, item, value = undefined, reload = false, fr
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.type.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.data.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.class.options.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // ==/UserScript==
 
 // ECMAScript 6:
@@ -3408,40 +3528,76 @@ function Options(optConfig, optSetLabel) {
 }
 
 Class.define(Options, Object, {
-                    'checkKey' : function(key) {
-                        UNUSED(key);
-                        // Hier kann man Keys 'unsichtbar' machen...
-                        return true;
-                    },
-                    'toString' : function() {
-                        let retStr = this.setLabel + " = {  // " + __DBMOD.Name + " / " + __DBMAN.Name + '\n';
+        'checkKey'        : function(key) {
+                                UNUSED(key);
+                                // Hier kann man Keys 'unsichtbar' machen...
+                                return true;
+                            },
+        'toString'        : function() {
+                                let retStr = this.setLabel + " = {  // " + __DBMOD.Name + " / " + __DBMAN.Name + '\n';
 
-                        for (const [ __KEY, __OPT ] of Object.entries(this)) {
-                            if (this.checkKey(__KEY)) {
-                                const __CONFIG = getOptConfig(__OPT);
-                                const __SHAREDDATA = __CONFIG.SharedData;
-                                const __NAME = getOptName(__OPT);
+                                for (const [ __KEY, __OPT ] of Object.entries(this)) {
+                                    if (this.checkKey(__KEY)) {
+                                        const __CONFIG = getOptConfig(__OPT);
+                                        const __SHAREDDATA = __CONFIG.SharedData;
+                                        const __NAME = getOptName(__OPT);
 
-                                // Bei __SHAREDDATA unbedingt zyklische Referenzen vermeiden!
-                                // Daher nur die ObjRef anzeigen, ansonsten den gesetzten Wert...
-                                const __VAL = getValue(__SHAREDDATA, getOptValue(__OPT));
-                                const __OUT = [
-                                                  __LOG.info(__VAL, true),
-                                                  __LOG.info(__KEY, false),
-                                                  __LOG.info(__NAME, false),
-                                                  getValStr(__CONFIG.FormLabel),
-                                                  __LOG.info(__CONFIG.Default, true)
-                                    ];
+                                        // Bei __SHAREDDATA unbedingt zyklische Referenzen vermeiden!
+                                        // Daher nur die ObjRef anzeigen, ansonsten den gesetzten Wert...
+                                        const __VAL = getValue(__SHAREDDATA, getOptValue(__OPT));
+                                        const __OUT = [
+                                                          __LOG.info(__VAL, true),
+                                                          __LOG.info(__KEY, false),
+                                                          __LOG.info(__NAME, false),
+                                                          getValStr(__CONFIG.FormLabel),
+                                                          __LOG.info(__CONFIG.Default, true)
+                                            ];
 
-                                retStr += '\t' + __OUT.join('\t') + '\n';
+                                        retStr += '\t' + __OUT.join('\t') + '\n';
+                                    }
+                                }
+
+                                retStr += "}";
+
+                                return retStr;
+                            },
+        'getOpt'          : function(item, defOpt = { }) {
+                                return getOptByName(this, item, defOpt);
+                            },
+        'getOptValue'     : function(item, defValue = undefined) {
+                                return getOptValueByName(this, item, defValue);
+                            },
+        'setOpt'          : function(item, value, reload = false, onFulfilled = undefined, onRejected = undefined) {
+                                return setOptByName(this, item, value, reload, onFulfilled, onRejected);
+                            },
+        'getNextOpt'      : function(item, defValue = undefined) {
+                                return getNextOptByName(this, item, defValue);
+                            },
+        'setNextOpt'      : function(item, defValue = undefined, reload = false, onFulfilled = undefined, onRejected = undefined) {
+                                return setNextOptByName(this, item, defValue, reload, onFulfilled, onRejected);
+                            },
+        'promptNextOpt'   : function(item, defValue = undefined, reload = false, freeValue = false, selValue = true, minChoice = 3, onFulfilled = undefined, onRejected = undefined) {
+                                return promptNextOptByName(this, item, defValue, reload, freeValue, selValue, minChoice, onFulfilled, onRejected);
+                            },
+        'invalidate'      : async function(force = false, reload = true) {
+                                return invalidateOpts(this, force, reload);
+                            },
+        'load'            : function(force = false) {
+                                return loadOptions(this, force);
+                            },
+        'delete'          : async function(optSelect = undefined, force = false, reset = true) {
+                                return deleteOptions(this, optSelect, force, reset);
+                            },
+        'save'            : async function(optSelect = undefined) {
+                                return saveOptions(this, optSelect);
+                            },
+        'rename'          : async function(optSelect = undefined, renameParam = undefined, renameFun = undefined) {
+                                return renameOptions(this, optSelect, renameParam, renameFun);
+                            },
+        'reset'           : async function(reload = true) {
+                                return resetOptions(this, reload);
                             }
-                        }
-
-                        retStr += "}";
-
-                        return retStr;
-                    }
-                });
+    });
 
 // ==================== Ende Abschnitt fuer Klasse Options ====================
 
@@ -3473,28 +3629,6 @@ Class.define(Options, Object, {
 /* jshint moz: true */
 
 // ==================== Abschnitt Operationen auf Optionen ====================
-
-// Prueft ein Objekt, ob es eine syntaktisch valide (ueber Menu) gesetzte Option ist
-// opt: Zu validierendes Options-Objekt
-// return [__CONFIG, __NAME, ...] Konfiguration und ggfs. Name der Option
-function checkOpt(opt) {
-    if (opt === undefined) {
-        throw Error("Option is undefined");
-    }
-
-    const __CONFIG = getOptConfig(opt);
-    const __NAME = getOptName(opt);
-
-    if (! opt.validOption) {
-        if (((typeof __NAME) !== 'undefined') && __NAME.length && ((typeof __CONFIG) === 'object')) {
-            opt.validOption = true;
-        } else {
-            throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
-        }
-    }
-
-    return [ __CONFIG, __NAME ];
-}
 
 // Invalidiert eine (ueber Menu) gesetzte Option
 // opt: Zu invalidierende Option
@@ -3539,7 +3673,7 @@ async function invalidateOpts(optSet, force = false, reload = true) {
 // force: Laedt auch Optionen mit 'AutoReset'-Attribut
 // return Promise auf gesetzten Wert der gelandenen Option
 function loadOption(opt, force = false) {
-    const [ __CONFIG, __NAME ] = checkOpt(opt);
+    const [ __CONFIG, __NAME, __KEY ] = checkOpt(opt);
 
     if (! opt.Promise) {
         const __ISSHARED = getValue(__CONFIG.Shared, false, true);
@@ -3567,18 +3701,20 @@ function loadOption(opt, force = false) {
         opt.Promise = Promise.resolve(value).then(value => {
                 // Paranoide Sicherheitsabfrage (das sollte nie passieren!)...
                 if (opt.Loaded || ! opt.Promise) {
-                    showAlert("Error", "Unerwarteter Widerspruch zwischen opt.Loaded und opt.Promise", __LOG.info(opt, true, true));
+                    throw Error("Unerwarteter Widerspruch zwischen Loaded und Promise in Option " +
+                                    __LOG.info(__KEY, false) + " (" + __NAME + ')',
+                                    { 'cause' : __LOG.info(opt, true, true) });
                 }
                 __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value, true, true));
 
                 // Wert intern setzen...
-                const __VAL = setOptValue(opt, value);
+                const __VAL = setOptValue(opt, value, true);
 
                 // Wert als geladen markieren...
                 opt.Promise = undefined;
                 opt.Loaded = true;
 
-                return __VAL;
+                return Promise.resolve(__VAL);
             }, defaultCatch);
     }
 
@@ -3595,7 +3731,7 @@ function loadOptions(optSet, force = false) {
     for (let opt in optSet) {
         const __OPT = optSet[opt];
 
-        if (! __OPT.Loaded) {
+        if (__OPT && ! __OPT.Loaded) {
             const __PROMISE = loadOption(__OPT, force).then(value => {
                     __LOG[6]("LOADED " + __LOG.info(opt, false) + " << " + __LOG.info(value, true));
 
@@ -3751,7 +3887,7 @@ async function renameOptions(optSet, optSelect, renameParam = undefined, renameF
         if (__OPT === undefined) {
             __LOG[1]("RENAME: Option", __LOG.info(opt, false), "nicht gefunden!");
         } else {
-            const __NAME = getOptName(__OPT);
+            const [ , __NAME ] = checkOpt(__OPT);
             const __NEWNAME = renameFun(__NAME, renameParam);
             const __ISSCALAR = ((typeof __OPTPARAMS) === 'boolean');
             // Laedt die unter dem neuen Namen gespeicherten Daten nach?
@@ -5292,14 +5428,20 @@ Class.define(Main, Object, {
                             // page: ID fuer die aktuelle Seite
                             // return Promise auf die Durchfuehrung der Bearbeitung
                             const __SETUPMANAGER    = (this.setupManager || (page => this.pageManager[page]));
-                            const __MANAGER         = getValue(__SETUPMANAGER.call(this, page), { name : "Seite #" + page });
+                            const __MANAGER         = getValue(__SETUPMANAGER.call(this, page), { name : "Seite #" + page, params : [] });
                             const __SETUPOPTPARAMS  = (__MANAGER.setupOptParams || (() => ({ 'hideMenu' : false })));
                             const __OPTPARAMS       = __SETUPOPTPARAMS.call(__MANAGER, this.optSet, ... __MANAGER.params);
                             const __CHECKOPTPARAMS  = (this.checkOptParams || (optParams => !! optParams));
 
                             if (__CHECKOPTPARAMS(__OPTPARAMS, __MANAGER)) {
                                 const __CLASSIFICATION  = (__MANAGER.classification || (new Classification()));
-                                const __HANDLER         = (__MANAGER.handler || (() => Promise.resolve(false)));
+                                const __HANDLER         = __MANAGER.handler;
+
+                                if (! __HANDLER) {
+                                    return Promise.reject(`Kein Seiten-Handler f\xFCr '${__MANAGER.name}' vorhanden!`);
+                                }
+
+                                __LOG[2](`${__DBMOD.Name}: Starte Seiten-Verarbeitung f\xFCr '${__MANAGER.name}'...`);
 
                                 // Klassifikation verknuepfen...
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
@@ -5307,15 +5449,15 @@ Class.define(Main, Object, {
                                 return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(
                                     async optSet => {
                                             const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || (optSet => optSet));
-                                            const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || (optSet => Object.values(optSet).forEach(checkOpt)));
+                                            const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || checkOptSet);
     
                                             return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
                                                                         optSet => Promise.resolve(showOptions(optSet, __OPTPARAMS)).then(
                                                                         optSet => __VERIFYOPT(optSet, __OPTPARAMS)));
                                         }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
-                                                                ret => (ret ? 'OK' : ('FAILED ' + __MANAGER.name)));
+                                                                ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
                             } else {
-                                return Promise.reject(`Keine Options-Parameter f\xFCr '${__MANAGER.name}' vorhanden!`);
+                                return Promise.reject(`Keine Options-Parameter f\xFCr Seite '${__MANAGER.name}' vorhanden!`);
                             }
                         },
         'run'         : function(selector, ... selectorParams) {
@@ -5338,7 +5480,8 @@ Class.define(Main, Object, {
                                             __LOG[2](String(this.optSet));
                                             __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
                                         }, ex => {
-                                            __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message, ex[0] + ": " + ex[1])) + ')');
+                                            __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message,
+                                                        ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1]))) + ')');
                                             __LOG[2](String(this.optSet));
                                             __LOG[1]('SCRIPT END', __DBMAN.Name);
                                         });
@@ -5350,11 +5493,11 @@ Class.define(Main, Object, {
 // ==================== Abschnitt fuer Klasse PageManager ====================
 
 /*class*/ function PageManager /*{
-    constructor*/(pageName, classification, setupOptParams, handler, ... params) {
+    constructor*/(pageName, classification, setupOptParams, pageHandler, ... params) {
         this.name           = pageName;
         this.classification = classification;
         this.setupOptParams = setupOptParams;
-        this.handler        = handler;
+        this.handler        = pageHandler;
         this.params         = (params || []);
     }
 //}
@@ -5363,7 +5506,7 @@ Class.define(PageManager, Object, {
         'clone'       : function(... params) {
                             const __PARAMS = this.params.concat(params || []);
 
-                            return new PageManager(this.pageName + " (" + params.join(", ") + ')',
+                            return new PageManager(this.name + " (" + params.join(", ") + ')',
                                                     this.classification, this.setupOptParams,
                                                     this.handler, ... __PARAMS);
                         }
