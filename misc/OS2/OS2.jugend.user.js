@@ -1136,7 +1136,7 @@ function storePlayerDataColsFromHTML(playerRows, optSet, colDefs, offsetUpper = 
 
         __LOG[9]('Schreibe ' + __COLDEF.name + ': ' + __DATA[key]);
 
-        optSet.setOpt('__COLDEF.name]', __DATA[key], false);
+        optSet.setOpt(__COLDEF.name, __DATA[key], false);
     }
 }
 
