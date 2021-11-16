@@ -314,7 +314,7 @@ const procEinstellungen = new PageManager("Einstellungen", __TEAMCLASS, () => {
 function prepareOptions(optSet, optParams) {
     UNUSED(optParams);
 
-    // Werte aus der HTML-Seite ermitteln...
+    // TODO Werte aus der HTML-Seite ermitteln...
 
     // ... und abspeichern...
 
@@ -325,10 +325,12 @@ function prepareOptions(optSet, optParams) {
 
 // ==================== Hauptprogramm ====================
 
+// Konfiguration der Callback-Funktionen zum Hauptprogramm...
 const __MAINCONFIG = {
                         prepareOpt      : prepareOptions
                     };
 
+// Selektor (Seite bzw. Parameter) fuer den richtigen PageManager...
 const __LEAFS = {
                     'zugabgabe.php' :  0,   // Ansicht "Zugabgabe" (p = 0, 1, 2)
                     'haupt.php'     :  3,   // Ansicht "Haupt" (Managerbuero)

@@ -2856,12 +2856,13 @@ function checkOptParams(optParams, manager) {
 
 // ==================== Hauptprogramm ====================
 
-
+// Konfiguration der Callback-Funktionen zum Hauptprogramm...
 const __MAINCONFIG = {
                         checkOptParams  : checkOptParams,
                         prepareOpt      : prepareOptions
                     };
 
+// Selektor (Seite bzw. Parameter) fuer den richtigen PageManager...
 const __LEAFS = {
                     'zugabgabe.php' : 0,    // Ansicht "Zugabgabe" (p = 0, 1, 2)
                     'haupt.php'     : 3,    // Ansicht "Haupt" (Managerbuero)
