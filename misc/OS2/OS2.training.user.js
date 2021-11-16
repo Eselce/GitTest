@@ -5,11 +5,11 @@
 // @copyright    2013+
 // @author       Sven Loges (SLC) / Andreas Eckes (Strindheim BK)
 // @description  OS 2.0 - Berechnet die Trainingswahrscheinlichkeiten abhaengig von der Art des Einsatzes
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\S+)*)?$/
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/trainer\.php(\?\S+(&\S+)*)?$/
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/training\.php(\?\S+(&\S+)*)?$/
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zar\.php(\?\S+(&\S+)*)?$/
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zugabgabe\.php(\?\S+(&\S+)*)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?\w+)*)?(#\w+)?/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/trainer\.php(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/training\.php(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zar\.php(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zugabgabe\.php(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue

@@ -5,9 +5,9 @@
 // @copyright    2021+
 // @author       Sven Loges (SLC)
 // @description  Unittest-Script fuer Online Soccer 2.0
-// @include      /^https?://(www\.)?(eselce\.github\.io|raw\.githubusercontent\.com/Eselce)/(OS2\.scripts|GitTest(/master)?/misc/OS2)/test/\S+\.test\.js(\?\S+(&\S+)*)?$/
-// @include      /^https?://(www\.)?(eselce\.github\.io|raw\.githubusercontent\.com/Eselce)/(OS2\.scripts|GitTest(/master)?/misc/OS2)/test/lib\.\S+\.test\.js(\?\S+(&\S+)*)?$/
-// @include      /^file:///\w:(/\S+)*/GitHub/GitTest/misc/OS2/test/\S+\.test\.js(\?\S+(&\S+)*)?$/
+// @include      /^https?://(www\.)?(eselce\.github\.io|raw\.githubusercontent\.com/Eselce)/(OS2\.scripts|GitTest(/master)?/misc/OS2)/test/\S+\.test\.js(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?/
+// @include      /^https?://(www\.)?(eselce\.github\.io|raw\.githubusercontent\.com/Eselce)/(OS2\.scripts|GitTest(/master)?/misc/OS2)/test/lib\.\S+\.test\.js(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?/
+// @include      /^file:///\w:(/\S+)*/GitHub/GitTest/misc/OS2/test/\S+\.test\.js(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue

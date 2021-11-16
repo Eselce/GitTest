@@ -5,8 +5,8 @@
 // @copyright    2013+
 // @author       Sven Loges (SLC) / Andreas Eckes (Strindheim BK)
 // @description  Jugendteam-Script fuer Online Soccer 2.0
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\S+)*)?$/
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/ju\.php(\?page=\d+(&\S+)*)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?\w+)*)?(#\w+)?/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/ju\.php(\?page=\d+(&\w+=?\w+)*)?(#\w+)?/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue

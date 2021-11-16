@@ -5,7 +5,7 @@
 // @copyright    2016+
 // @author       Sven Loges (SLC)
 // @description  Managerbuero-Abschnitt aus dem Master-Script fuer Online Soccer 2.0
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\S+)*)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?\w+)*)?(#\w+)?/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue
