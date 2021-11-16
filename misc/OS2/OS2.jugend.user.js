@@ -1671,29 +1671,41 @@ function prepareOptions(optSet, optParams) {
     return optSet;
 }
 
+// Callback-Funktion fuer die Ermittlung des richtigen PageManagers
+// page: Die ueber den Selektor ermittelte Seitennummer
+// return Der zugehoerige PageManager (hier: 1-basiert)
+function setupManager(page) {
+    const __MAIN = this;
+
+    return __MAIN.pageManager[Math.max(0, page - 1)];
+}
+
 // ==================== Ende Spezialbehandlung der Startparameter ====================
 
 // ==================== Hauptprogramm ====================
 
+// Konfiguration der Callback-Funktionen zum Hauptprogramm...
 const __MAINCONFIG = {
-                        prepareOpt  : prepareOptions
+                        setupManager    : setupManager,
+                        prepareOpt      : prepareOptions
                     };
 
+// Selektor (Seite bzw. Parameter) fuer den richtigen PageManager...
 const __LEAFS = {
-                    'haupt.php' : 0,  // Ansicht "Haupt" (Managerbuero)
-                    'ju.php'    : 1   // Ansicht "Jugendteam" (page = 1, 2, 3, 4)
+                    'ju.php'    : 0,  // Ansicht "Jugendteam" (page = 1, 2, 3, 4)
+                    'haupt.php' : 5   // Ansicht "Haupt" (Managerbuero)
                 };
 const __ITEM = 'page';
 
-// URL-Legende:
-// page=0: Managerbuero
+// URL-Legende (1-basiert):
 // page=1: Jugend Teamuebersicht
 // page=2: Jugend Spielereinzelwerte
 // page=3: Jugend Opt. Skill
 // page=4: Jugend Optionen
+// page=5: Managerbuero
 const __MAIN = new Main(__OPTCONFIG, __MAINCONFIG,
-                        procHaupt, procTeamuebersicht, procSpielereinzelwerte,
-                        procOptSkill, procOptionen);
+                        procTeamuebersicht, procSpielereinzelwerte,
+                        procOptSkill, procOptionen, procHaupt);
 
 __MAIN.run(getPageIdFromURL, __LEAFS, __ITEM);
 

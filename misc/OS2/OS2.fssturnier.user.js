@@ -3711,30 +3711,9 @@ const procOSFSSTurnier = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
 
 // ==================== Ende Page-Manager fuer zu bearbeitende Seiten ====================
 
-// ==================== Spezialbehandlung der Startparameter ====================
-
-// Callback-Funktion fuer die Behandlung der Optionen und Laden des Benutzermenus
-// Diese Funktion erledigt nur Modifikationen und kann z.B. einfach optSet zurueckgeben!
-// optSet: Platz fuer die gesetzten Optionen
-// optParams: Eventuell notwendige Parameter zur Initialisierung
-// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
-// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
-// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
-// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
-// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
-// 'formWidth': Anzahl der Elemente pro Zeile
-// 'formBreak': Elementnummer des ersten Zeilenumbruchs
-// return Gefuelltes Objekt mit den gesetzten Optionen
-function prepareOptions(optSet, optParams) {
-    UNUSED(optParams);
-
-    return optSet;
-}
-
-// ==================== Ende Spezialbehandlung der Startparameter ====================
-
 // ==================== Hauptprogramm ====================
 
+// Selektor fuer den richtigen PageManager...
 const __LEAFS = {
                     'haupt.php'      : 0,  // Ansicht "Haupt" (Managerbuero)
                     'fssturnier.php' : 1   // Ansicht "FSS-Turniere" (offizielles FSS-Turnier)

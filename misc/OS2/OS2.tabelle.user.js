@@ -1492,10 +1492,12 @@ function prepareOptions(optSet, optParams) {
 
 // ==================== Hauptprogramm ====================
 
+// Konfiguration der Callback-Funktionen zum Hauptprogramm...
 const __MAINCONFIG = {
                         prepareOpt  : prepareOptions
                     };
 
+// Selektor fuer den richtigen PageManager...
 const __LEAFS = {
                     'haupt.php' : 0,    // Ansicht "Haupt" (Managerbuero)
                     'lp.php'    : 1,    // Ansicht "Landespokale" (Pokalfinale)

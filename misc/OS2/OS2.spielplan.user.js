@@ -539,6 +539,10 @@ function prepareOptions(optSet, optParams) {
     return optSet;
 }
 
+
+// Callback-Funktion fuer die Ermittlung des richtigen PageManagers
+// page: Die ueber den Selektor ermittelte Seitennummer (hier: nur 6 gueltig)
+// return Der zugehoerige PageManager (hier: 0)
 function setupManager(page) {
     const __MAIN = this;
 
@@ -549,10 +553,13 @@ function setupManager(page) {
 
 // ==================== Hauptprogramm ====================
 
+// Konfiguration der Callback-Funktionen zum Hauptprogramm...
 const __MAINCONFIG = {
                         setupManager    : setupManager,
                         prepareOpt      : prepareOptions
                     };
+
+// Selektor (Seite bzw. Parameter) fuer den richtigen PageManager...
 const __LEAFS = {
                     'showteam.php' : 0, // Teamansicht Hauptfenster
                     'st.php'       : 0  // Teamansicht Popupfenster
@@ -566,7 +573,7 @@ const __ITEM = 's';
 // s=3: Statistik Saison
 // s=4: Statistik Gesamt
 // s=5: Teaminfo
-// s=6: Saisonplan (*) s=6 wird ersetzt durch Selection 0
+// s=6: Saisonplan (*) s=6 wird behandelt durch PageManager #0
 // s=7: Vereinshistorie
 // s=8: Transferhistorie
 // s=9: Leihhistorie
