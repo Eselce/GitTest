@@ -5,7 +5,7 @@
 // @copyright    2017+
 // @author       Sven Loges (SLC)
 // @description  XMR-Test-Script for Greasemonkey 4.0
-// @include      /^https?://wiki\.greasespot\.net/Main_Page(\?\S+(&\S+)*)?(#\S+)?$/
+// @include      /^https?://wiki\.greasespot\.net/Main_Page(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?$/
 // @grant        GM.xmlHttpRequest
 // _require      https://arantius.com/misc/greasemonkey/imports/greasemonkey4-polyfill.js (buggy!)
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
