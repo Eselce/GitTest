@@ -245,7 +245,7 @@ function Requirements(path, ext, libs) {
                     const __LIBS = (libs || []);
 
                     for (let i = 0; i < __LIBS.length; i++) {
-                        const __URL = (this.libPath + __LIBS[i] + this.libExt);
+                        const __URL = (this.srcPath + __LIBS[i] + this.srcExt);
                         const __REQUEST = __XHR.browse(__URL);
 
                         __PROMISES.push(__REQUEST);
@@ -257,11 +257,11 @@ function Requirements(path, ext, libs) {
                     return this;
                 };
 
-    this.appendPre = function(anchor, doc) {
+    this.appendPre = async function(anchor, doc) {
                          const __DOCUMENT = (doc || document);
                          const __ANCHOR = (anchor || document.body);
 
-                         return this.docs.then(docs => {
+                         return await this.docs.then(docs => {
                                  for (let i = 0; i < docs.length; i++) {
                                      const __DOC = docs[i];
 
@@ -269,9 +269,9 @@ function Requirements(path, ext, libs) {
 
                                      const __PRE = __DOCUMENT.createElement('pre');
 
-                                     __PRE.textContent = "/*** Modul " + this.libs[i] + this.libExt + " ***/\n\n"
+                                     __PRE.textContent = "/*** Modul " + this.libs[i] + this.srcExt + " ***/\n\n"
                                                          + __DOC.replaceAll('\r\n', '\n') + '\n'
-                                                         + "/*** Ende Modul " + this.libs[i] + this.libExt + " ***/\n\n";
+                                                         + "/*** Ende Modul " + this.libs[i] + this.srcExt + " ***/\n\n";
 
                                      __ANCHOR.appendChild(__PRE);
                                  }
@@ -282,8 +282,8 @@ function Requirements(path, ext, libs) {
                              });
                      };
 
-    this.libPath = (path || "https://eselce.github.io/OS2.scripts/lib/");
-    this.libExt = (ext || '.js');
+    this.srcPath = (path || "https://eselce.github.io/OS2.scripts/lib/");
+    this.srcExt = (ext || '.js');
 
     this.open(libs);
 }
@@ -439,8 +439,8 @@ const __BUILDLIB = (async (libNumber) => {
     const __PKGFUNS = __PKGLIBS.map(libsKey => __LIBSDEF[libsKey].reqs.open(__LIBSDEF[libsKey].libs).appendPre(document.body));
 
     document.body.innerHTML = "<pre>/****** JavaScript-Bibliothek " + __LOG.info(__LIBNAME, false) + ' ' + __LOG.info(__PKGLIBS, false) + " ******/\n\n"
-                            + __PKGLIBS.reduce((pre, libsKey) => pre + __LIBSDEF[libsKey].libs.map(libName => (libName + __LIBSDEF[libsKey].reqs.libExt)
-                                    ).reduce((pre, lib) => pre + "\n//\t" + lib, "\n// " + __LIBSDEF[libsKey].reqs.libPath + '&lt;' + libsKey + "&gt;: "),
+                            + __PKGLIBS.reduce((pre, libsKey) => pre + __LIBSDEF[libsKey].libs.map(libName => (libName + __LIBSDEF[libsKey].reqs.srcExt)
+                                    ).reduce((pre, lib) => pre + "\n//\t" + lib, "\n// " + __LIBSDEF[libsKey].reqs.srcPath + '&lt;' + libsKey + "&gt;: "),
                                 "// Inhaltsverzeichnis:") + "</pre>";
 
     // Promise-Chain abarbeiten...
