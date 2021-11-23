@@ -21,8 +21,7 @@ const __XHR = (() => {
     const __GM4REQUEST = (('undefined' !== typeof GM)                ? GM.xmlHttpRequest : undefined);  // GM 4.0+
     const __CHECKFUN   = (fun => (('function' === typeof fun) ? fun : undefined));
 
-    const __GM_REQUEST = (__CHECKFUN(__GM4REQUEST) || __CHECKFUN(__GM3REQUEST));
-    const __XMLREQUEST = XMLHttpRequest || __GM_REQUEST;
+    const __XMLREQUEST = (__CHECKFUN(__GM4REQUEST) || __CHECKFUN(__GM4REQUEST));
 
     const __DETAILS = {
         'GET'     : {
@@ -35,15 +34,15 @@ const __XHR = (() => {
 
     const __HEADERS = {
         'FORM'    : {
-                        'Content-Type'    : 'application/x-www-form-urlencoded; charset=UTF-8'
+                        'Content-Type'    : "application/x-www-form-urlencoded"
                     },
         'ACC'     : {
-                        'Accept'          : "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-                        'Accept-Language' : "de,en;q=0.9,fr;q=0.7,ja;q=0.6,zh;q=0.4,zh-CN;q=0.3,en-US;q=0.1",
+                        'Accept'          : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                        'Accept-Language' : "de,en-US;q=0.7,en;q=0.3",
                         'Accept-Encoding' : "gzip, deflate, br"
                     },
         'FF58'    : {
-                        'User-Agent'      : 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0'
+                        'User-Agent'      : 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0'
                     }
         };
 
@@ -56,7 +55,7 @@ const __XHR = (() => {
     function runCallback(result) {
         const __CALLBACK = __CALLBACKS[result.status];
 
-        console.log(result.status, __CALLBACK);
+        console.log(__CALLBACK);
 
         return (__CALLBACK ? __CALLBACK(result) : null);
     }
@@ -75,26 +74,19 @@ const __XHR = (() => {
                 Object.assign(__D, d);
 
                 __D.onload = (result => {
-                        const __RESULT = result.target;
-                        const __RET = __ONLOAD(__RESULT);
+                        const __RET = __ONLOAD(result);
 
-                        if (__RESULT.statusText === 'OK') {
+                        if (result.statusText === 'OK') {
                             resolve(__RET);
                         } else {
-                            reject(__RESULT.statusText);
+                            reject(result.statusText);
                         }
                     });
 
-                const __REQUEST = new __XMLREQUEST();
-
-                if (__REQUEST) {
+                if (__XMLREQUEST) {
                     console.log('Fetching', d.url, '...');
 
-                    __REQUEST.addEventListener('load', __D.onload);
-                    __REQUEST.open(__D.method, __D.url, false);
-                    __REQUEST.send();
-
-                    const __RET = __REQUEST;
+                    const __RET = __XMLREQUEST(__D);
 
                     if (__RET !== undefined) {
                         resolve(__RET);
@@ -112,9 +104,7 @@ const __XHR = (() => {
 
         Object.assign(__D, d, __DETAILS.GET);
 
-        const __RET = xmlRequest(__D);
-
-        return __RET;
+        return xmlRequest(__D);
     }
 
     function putRequest(d) {
@@ -124,9 +114,7 @@ const __XHR = (() => {
         Object.assign(__H, __HEADERS.FORM, __HEADERS.ACC, __HEADERS.FF58, d.headers);
         Object.assign(__D, d, { 'headers' : __H }, __DETAILS.PUT);
 
-        const __RET = xmlRequest(__D);
-
-        return __RET;
+        return xmlRequest(__D);
     }
 
     function browse(url, headers = { }, onload = onloadByStatus) {
@@ -147,22 +135,15 @@ const __XHR = (() => {
             let doc;
 
             try {
-                if (result.responseHeaders) {
-                    let match = result.responseHeaders.match(/^Content-Type:\s+((\S+)\/(\S+))$/m);
-                    contentType = (match ? match[1] : 'application/xml');
-                    console.log(contentType);
+                let match = result.responseHeaders.match(/^Content-Type:\s+((\S+)\/(\S+))$/m);
+                contentType = (match ? match[1] : 'application/xml');
+                console.log(contentType);
 
-                    doc = parser.parseFromString(result.responseText, contentType);
+                doc = parser.parseFromString(result.responseText, contentType);
 
-                    console.log("Parsed:", doc);
-                } else {
-                    console.log("Raw document", result.responseType);
-
-                    doc = result.response;
-
-                    //console.log("Parsed:", doc.slice(0, 256), '\n...\n', doc.slice(-256));
-                }
-            } catch (ex) {
+                console.log("Parsed:", doc);
+            }
+            catch(ex) {
                 console.error("Parse error:", ex);
             }
 
