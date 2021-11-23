@@ -33,15 +33,10 @@
 // throw Wirft im Fehlerfall eine AssertionFailed-Exception
 // return Ein Promise-Objekt mit dem Endresultat
 async function callPromiseChain(startValue, ... funs) {
-    if (startValue !== undefined) {
-        if (((typeof startValue) !== 'object') || ! (startValue instanceof Promise)) {
-            throw TypeError("callPromiseChain(): startValue should be a Promise!");
-        }
-    }
+    checkObjClass(startValue, Promise, false, "callPromiseChain()", "startValue", 'Promise')
+
     funs.forEach((fun, index) => {
-            if ((typeof fun) !== 'function') {
-                throw TypeError("callPromiseChain(): Parameter #" + (index + 1) + " should be a Function!");
-            }
+            checkType(fun, 'function', true, "callPromiseChain()", "Parameter #" + (index + 1), 'Function');
         });
 
     return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun, ex => assertionCatch(ex, {
@@ -65,6 +60,51 @@ async function callPromiseArray(... promises) {
 }
 
 // ==================== Ende Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen  ====================
+
+// ==================== Hilfsfunktionen fuer ASSERT-Funktionen ====================
+
+// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
+// obj: Das zu ueberpruefende Objekt
+// cls: Klasse, die Basisklasse sein muss
+// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
+// label: Prefix fuer die Fehlerzeile
+// objName: Name des Wertes oder der Variablen
+// className: Name der Basisklasse
+// throw Wirft im Fehlerfall einen TypeError
+// return true, falls kein Error geworfen wurde
+function checkObjClass(obj, cls, strict = false, label = "", objName = undefined, className = undefined) {
+    const __TYPE = (className || cls);
+    const __OBJ = (objName || "Object");
+    const __LABEL = (label || "Error");
+
+    return ((obj instanceof cls) || checkType(obj, 'object', strict, __LABEL, __OBJ, __TYPE));
+}
+
+// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
+// value: Der zu pruefende Wert
+// type: Erforderlicher Typ
+// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
+// label: Prefix fuer die Fehlerzeile
+// valName: Name des Wertes oder der Variablen
+// typeName: Name des Typs fuer die Fehlermeldung
+// throw Wirft im Fehlerfall (also, wenn der Typ nicht stimmt) einen TypeError
+// return true, falls kein Error geworfen wurde
+function checkType(value, type, strict = false, label = "", valName = undefined, typeName = undefined) {
+    const __TYPE = (typeName || type);
+    const __VAL = (valName || "Value");
+    const __LABEL = (label || "Error");
+
+    if (strict || (value !== undefined)) {
+        if ((typeof value) !== type) {
+            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                            __LOG.info(value, true, true) + ' ' + String(value));
+        }
+    }
+
+    return true;
+}
+
+// ==================== Ende Hilfsfunktionen fuer ASSERT-Funktionen ====================
 
 // ==================== Abschnitt fuer Klasse AssertionFailed ====================
 
@@ -252,14 +292,23 @@ const ASSERT_NOT_GREATER = function(erg, exp, msg, thisArg, ... params) {
 }
 
 const ASSERT_IN_DELTA = function(erg, exp, delta, msg, thisArg, ... params) {
+    checkType(erg, 'number', true, 'ASSERT_IN_DELTA', "erg", 'Number');
+    checkType(exp, 'number', true, 'ASSERT_IN_DELTA', "exp", 'Number');
+
     return ASSERT(Math.abs(erg - exp) <= delta, __LOG.info(erg, true, true) + " != " + __LOG.info(exp, true, true) + " +/- " + delta, msg, thisArg, ... params);
 }
 
 const ASSERT_NOT_IN_DELTA = function(erg, exp, delta, msg, thisArg, ... params) {
+    checkType(erg, 'number', true, 'ASSERT_NOT_IN_DELTA', "erg", 'Number');
+    checkType(exp, 'number', true, 'ASSERT_NOT_IN_DELTA', "exp", 'Number');
+
     return ASSERT(Math.abs(erg - exp) > delta, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- " + delta, msg, thisArg, ... params);
 }
 
 const ASSERT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILON, msg, thisArg, ... params) {
+    checkType(erg, 'number', true, 'ASSERT_IN_EPSILON', "erg", 'Number');
+    checkType(exp, 'number', true, 'ASSERT_IN_EPSILON', "exp", 'Number');
+
     const __EPSILON = scale * epsilon;
     const __PROZENT = 100 * __EPSILON;
     const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
@@ -268,6 +317,9 @@ const ASSERT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILO
 }
 
 const ASSERT_NOT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILON, msg, thisArg, ... params) {
+    checkType(erg, 'number', true, 'ASSERT_NOT_IN_EPSILON', "erg", 'Number');
+    checkType(exp, 'number', true, 'ASSERT_NOT_IN_EPSILON', "exp", 'Number');
+
     const __EPSILON = scale * epsilon;
     const __PROZENT = 100 * __EPSILON;
     const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
@@ -276,38 +328,56 @@ const ASSERT_NOT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEP
 }
 
 const ASSERT_OFTYPE = function(obj, type, msg, thisArg, ... params) {
+    checkType(type, 'string', true, 'ASSERT_OFTYPE', "type", 'String');
+
     return ASSERT((typeOf(obj) === type), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(type, false), msg, thisArg, ... params);
 }
 
 const ASSERT_NOT_OFTYPE = function(obj, type, msg, thisArg, ... params) {
+    checkType(type, 'string', true, 'ASSERT_NOT_OFTYPE', "type", 'String');
+
     return ASSERT((typeOf(obj) !== type), __LOG.info(obj, true, true) + " ist " + __LOG.info(type, false), msg, thisArg, ... params);
 }
 
 const ASSERT_TYPEOF = function(obj, type, msg, thisArg, ... params) {
+    checkType(type, 'string', true, 'ASSERT_TYPEOF', "type", 'String');
+
     return ASSERT(((typeof obj) === type), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(type, false), msg, thisArg, ... params);
 }
 
 const ASSERT_NOT_TYPEOF = function(obj, type, msg, thisArg, ... params) {
+    checkType(type, 'string', true, 'ASSERT_NOT_TYPEOF', "type", 'String');
+
     return ASSERT(((typeof obj) !== type), __LOG.info(obj, true, true) + " ist " + __LOG.info(type, false), msg, thisArg, ... params);
 }
 
 const ASSERT_INSTANCEOF = function(obj, cls, msg, thisArg, ... params) {
+    checkType(cls, 'function', true, 'ASSERT_INSTANCEOF', "cls", 'Function');
+
     const __CLASSNAME = (cls || { }).name;
 
     return ASSERT((obj instanceof cls), __LOG.info(obj, true, true) + " ist kein " + __LOG.info(__CLASSNAME, false), msg, thisArg, ... params);
 }
 
 const ASSERT_NOT_INSTANCEOF = function(obj, cls, msg, thisArg, ... params) {
+    checkType(cls, 'function', true, 'ASSERT_NOT_INSTANCEOF', "cls", 'Function');
+
     const __CLASSNAME = (cls || { }).name;
 
     return ASSERT(! (obj instanceof cls), __LOG.info(obj, true, true) + " ist " + __LOG.info(__CLASSNAME, false), msg, thisArg, ... params);
 }
 
 const ASSERT_MATCH = function(str, pattern, msg, thisArg, ... params) {
+    checkType(str, 'string', false, 'ASSERT_MATCH', "str", 'String');
+    checkObjClass(pattern, RegExp, true, 'ASSERT_MATCH', "pattern", 'RegExp');
+
     return ASSERT((str || "").match(pattern), __LOG.info(str, true, true) + " hat nicht das Muster " + String(pattern), msg, thisArg, ... params);
 }
 
 const ASSERT_NOT_MATCH = function(str, pattern, msg, thisArg, ... params) {
+    checkType(str, 'string', false, 'ASSERT_NOT_MATCH', "str", 'String');
+    checkObjClass(pattern, RegExp, true, 'ASSERT_NOT_MATCH', "pattern", 'RegExp');
+
     return ASSERT(! (str || "").match(pattern), __LOG.info(str, true, true) + " hat das Muster " + String(pattern), msg, thisArg, ... params);
 }
 
@@ -477,7 +547,7 @@ Class.define(UnitTest, Object, {
                                             if (ex instanceof AssertionFailed) {
                                                 __LOG[4]("Test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "failed:", __RESULT.sum());
                                             } else {
-                                                __LOG[1]("Exception", ex, "in test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + ':', __RESULT.sum());
+                                                __LOG[1]("Exception", ex, "in test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + ':', __RESULT.sum());
                                             }
                                         }
 
@@ -580,7 +650,7 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
                     resultFun.call(__THIS, null, tableId, document);  // Leerzeile
                 }
             }
-        } catch(ex) {
+        } catch (ex) {
             // Fehler im Framework der UnitTests und Module...
             __ALLRESULTS.checkException(ex);
 
@@ -595,7 +665,7 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
         // Endergebnis eintragen...
         resultFun.call(thisArg, null, tableId, document);  // Leerzeile
         resultFun.call(thisArg, __ALLRESULTS, tableId, document);
-    } catch(ex) {
+    } catch (ex) {
         // Fehler bei der Anzeige des Ergebnisses...
         __ALLRESULTS.checkException(ex);
     }

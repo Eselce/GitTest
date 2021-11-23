@@ -1894,7 +1894,7 @@ function getOptionElement(opt) {
 // sortFun: function(a, b), nach der die Kriterien sortiert werden. Default: Array.sort()
 // return Neues Object mit Eintraegen der Form <Kriterium> : [ <alle Keys zu diesem Kriterium> ]
 function groupData(data, byFun, filterFun, sortFun) {
-    const __BYFUN = (byFun || (val => val));
+    const __BYFUN = (byFun || sameValue);
     const __FILTERFUN = (filterFun || ((key, index, arr) => (arr[index] === key)));
     const __KEYS = Object.keys(data);
     const __VALS = Object.values(data);
@@ -2472,7 +2472,7 @@ Class.define(Main, Object, {
 
                                 return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(
                                     async optSet => {
-                                            const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || (optSet => optSet));
+                                            const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || sameValue);
                                             const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || checkOptSet);
     
                                             return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
