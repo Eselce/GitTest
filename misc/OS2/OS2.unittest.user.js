@@ -12,12 +12,14 @@
 // @grant        GM.setValue
 // @grant        GM.deleteValue
 // @grant        GM.registerMenuCommand
+// @grant        GM.xmlHttpRequest
 // @grant        GM.info
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
 // @grant        GM_registerMenuCommand
+// @grant        GM_xmlhttpRequest
 // @grant        GM_info
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
