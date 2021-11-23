@@ -27,18 +27,22 @@ const __XHR = XHRfactory('XHR handler', XMLHttpRequest, openXMLHttpRequest);
 // - async: true/false, ob asynchrone Verbindung
 // - ...
 // return Antwort-Promise auf die Verbindung
-function openXMLHttpRequest(XMLrequest, details) {
-    const __REQUEST = XMLrequest;
-    const __D = details;
+async function openXMLHttpRequest(XMLrequest, details) {
+    try {
+        const __REQUEST = XMLrequest;
+        const __D = details;
 
-    // TODO klaeren!
-    __D.async = false;
+        // TODO klaeren!
+        __D.async = false;
 
-    __REQUEST.addEventListener('load', __D.onload);
-    __REQUEST.open(__D.method, __D.url, __D.async, __D.user, __D.password);
-    __REQUEST.send(__D.data);
+        await __REQUEST.addEventListener('load', __D.onload);
+        await __REQUEST.open(__D.method, __D.url, __D.async, __D.user, __D.password);
+        await __REQUEST.send(__D.data);
 
-    return __REQUEST;
+        return Promise.resolve(__REQUEST);
+    } catch (ex) {
+        return Promise.reject(ex);
+    }
 }
 
 // ==================== Ende Default XHR-Handler ====================
@@ -70,7 +74,9 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
     if ((typeof XHRopenFun) === 'function') {
         __LOG[2]("Initializing", XHRname, '...');
     } else {
-        throw TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
+        __LOG[1]("Can't initialize", XHRname, "with", __LOG.info(XHRopenFun));
+        //throw TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
+        return null;
     }
 
     const __XMLREQUEST = XHRrequestClass;
@@ -101,6 +107,9 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
                     },
         'FF95'    : {
                         'User-Agent'      : 'Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:95.0) Gecko/20100101 Firefox/95.0'
+                    },
+        'SCRIPT'  : {
+                        'User-Agent'      : `${XHRname}`  // `${DBMOD.Name} (${DBMAN.Name}) ${XHRname}`
                     }
         };
 
@@ -126,92 +135,106 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
 
     function xmlRequest(details) {
         return new Promise(function(resolve, reject) {
-                const __ONLOAD = details.onload;
-                const __D = { };
+                try {
+                    const __ONLOAD = (details.onload || sameValue);
+                    const __ONERROR = (details.onerror || sameValue);
+                    const __D = { };
 
-                Object.assign(__D, details);
+                    Object.assign(__D, details);
 
-                __D.onload = (result => {
-                        const __RESULT = (result.target || result);
-                        const __RET = __ONLOAD(__RESULT);
+                    __D.onload = (result => {
+                            try {
+                                const __RESULT = (result.target || result);
+                                const __RET = __ONLOAD(__RESULT);
 
-                        if (__RESULT.statusText === 'OK') {
-                            resolve(__RET);
-                        } else {
-                            reject(__RESULT.statusText);
-                        }
-                    });
+                                if (__RESULT.statusText === 'OK') {
+                                    resolve(__RET);
+                                } else {
+                                    reject(__RESULT.statusText);
+                                }
+                            } catch (ex) {
+                                __LOG[1]("Error in onload():", ex);
+                                reject(ex);
+                            }
+                        });
 
-                const __REQUEST = new __XMLREQUEST();
+                    __D.error = (error => {
+                            __LOG[1]("onerror():", error);
 
-                if (__REQUEST) {
-                    __LOG[2]('Fetching', details.url, '...');
+                            reject(error);
+                        });
 
-                    const __RET = XHRopenFun(__REQUEST, __D);
+                    const __REQUEST = new __XMLREQUEST();
 
-                    if (__RET !== undefined) {
+                    if (__REQUEST && XHRopenFun) {
+                        __LOG[2]('Fetching', details.url, '...');
+
+                        const __RET = Promise.resolve(XHRopenFun(__REQUEST, __D)).catch(reject);
+
                         return __RET;
                     }
+
+                    __LOG[1]('Tried to fetch', details.url, '...');
+
+                    reject(XHRname + " is missing!");
+                } catch (ex) {
+                    reject(ex);
                 }
-
-                __LOG[1]('Tried to fetch', details.url, '...');
-
-                reject(XHRname + " is missing!");
             });
     }
 
-    function getRequest(details) {
+    async function getRequest(details) {
+        const __H = { };
         const __D = { };
 
-        Object.assign(__D, details, __DETAILS.GET);
+        Object.assign(__H, __HEADERS.FORM, __HEADERS.ACC, __HEADERS.SCRIPT, details.headers);
+        Object.assign(__D, details, { 'headers' : __H }, __DETAILS.GET);
 
-        const __RET = xmlRequest(__D);
+        const __RET = await xmlRequest(__D);
 
         return __RET;
     }
 
-    function putRequest(details) {
+    async function putRequest(details) {
         const __H = { };
         const __D = { };
 
-        Object.assign(__H, __HEADERS.FORM, __HEADERS.ACC, __HEADERS.FF95, details.headers);
+        Object.assign(__H, __HEADERS.FORM, __HEADERS.ACC, __HEADERS.SCRIPT, details.headers);
         Object.assign(__D, details, { 'headers' : __H }, __DETAILS.PUT);
 
-        const __RET = xmlRequest(__D);
+        const __RET = await xmlRequest(__D);
 
         return __RET;
     }
 
-    function postRequest(details) {
+    async function postRequest(details) {
         const __H = { };
         const __D = { };
 
-        Object.assign(__H, __HEADERS.FORM, __HEADERS.ACC, __HEADERS.FF95, details.headers);
+        Object.assign(__H, __HEADERS.FORM, __HEADERS.ACC, __HEADERS.SCRIPT, details.headers);
         Object.assign(__D, details, { 'headers' : __H }, __DETAILS.PUT);
 
-        const __RET = xmlRequest(__D);
+        const __RET = await xmlRequest(__D);
 
         return __RET;
     }
 
-    function headRequest(details) {
+    async function headRequest(details) {
+        const __H = { };
         const __D = { };
 
-        Object.assign(__D, details, __DETAILS.HEAD);
+        Object.assign(__H, __HEADERS.FORM, __HEADERS.ACC, __HEADERS.SCRIPT, details.headers);
+        Object.assign(__D, details, { 'headers' : __H }, __DETAILS.HEAD);
 
-        const __RET = xmlRequest(__D);
+        const __RET = await xmlRequest(__D);
 
         return __RET;
     }
 
-    function browse(url, headers = { }, onload = onloadByStatus) {
-        const __H = { };
-
-        Object.assign(__H, __HEADERS.ACC, __HEADERS.FF95, headers);
-
-        return getRequest({
+    async function browse(url, headers = { }, onload = onloadByStatus) {
+        return await getRequest({
                 'url'     : url,
-                'headers' : __H,
+                'headers' : headers,
                 'onload'  : onload
             });
     }
@@ -237,8 +260,7 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
 
                     //__LOG[6]("Parsed:", doc.slice(0, 256), '\n...\n', doc.slice(-256));
                 }
-            }
-            catch(ex) {
+            } catch (ex) {
                 __LOG[1]("Parse error:", ex);
             }
 
