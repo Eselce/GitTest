@@ -22,7 +22,7 @@
 
 (() => {
 
-// ==================== Abschnitt Operationen auf Optionen ====================
+// ==================== Abschnitt Versuch eines Verbindungsaufbaus ====================
 
     const __THIS = __GM_XHR;
     const __LABEL = "[GM_XHR] ";
@@ -40,7 +40,7 @@
 
     const __TESTDATA = {
             'browseXML'     : [ "https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.js",                    /^\/\/ ==UserScript==([^]*)\n+\/\/ _name         util\.xhr$/m  ],
-            'browseXMLCORS' : [ "https://os.ongapo.com/spv.php?action=getListByName&term=Volodimir Oleynikov",  ""  ]
+            'browseXMLCORS' : [ "https://os.ongapo.com/spv.php?action=getListByName&term=Volodimir Oleynikov",  /.*/    ]
         };
 
     new UnitTestOption('util.xhr.gm', "Schnittstelle zum GM Verbindungsaufbau", {
@@ -116,7 +116,7 @@
                                     }
         });
 
-// ==================== Ende Abschnitt Operationen auf Optionen ====================
+// ==================== Ende Abschnitt Versuch eines Verbindungsaufbaus ====================
 
 })();
 
