@@ -15,9 +15,6 @@
 
 // ==================== Default XHR-Handler ====================
 
-// Der XHR-Handler...
-const __XHR = XHRfactory('XHR handler', XMLHttpRequest, openXMLHttpRequest);
-
 // openXMLHttpRequest(XHRrequest, details): Aufbau einer Verbindung ueber Verbindungsdetails
 // XHRrequest: Verbindungs-Objekt
 // details: Verbindungsdetails zur Verbindung
@@ -44,6 +41,9 @@ async function openXMLHttpRequest(XMLrequest, details) {
         return Promise.reject(ex);
     }
 }
+
+// Der XHR-Handler...
+const __XHR = XHRfactory('XHR handler', XMLHttpRequest, openXMLHttpRequest);
 
 // ==================== Ende Default XHR-Handler ====================
 

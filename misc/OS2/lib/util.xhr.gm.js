@@ -26,9 +26,6 @@ const __GMREQUEST = (__CHECKFUN(__GM4REQUEST) || __CHECKFUN(__GM3REQUEST));
 
 // ==================== Greasemonkey XHR-Handler ====================
 
-// Der Greasemonkey XHR-Handler...
-const __GM_XHR = XHRfactory('Greasemonkey XHR handler', GMXMLHttpRequest, this.openGMXMLHttpRequest);
-
 if (__GMREQUEST !== undefined) {
     // openGMXMLHttpRequest(XHRrequest, details): Aufbau einer Verbindung ueber Verbindungsdetails
     // XHRrequest: Verbindungs-Objekt
@@ -49,7 +46,10 @@ if (__GMREQUEST !== undefined) {
     }
 }
 
-// ==================== Ende Default XHR-Handler ====================
+// Der Greasemonkey XHR-Handler...
+const __GM_XHR = XHRfactory('Greasemonkey XHR handler', GMXMLHttpRequest, this.openGMXMLHttpRequest);
+
+// ==================== Ende Greasemonkey XHR-Handler ====================
 
 // ==================== Abschnitt fuer Klasse GMXMLHttpRequest ====================
 

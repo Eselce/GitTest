@@ -1707,9 +1707,6 @@ function setNextStored(arr, name, value, reload = false, serial = false, onFulfi
 
 // ==================== Default XHR-Handler ====================
 
-// Der XHR-Handler...
-const __XHR = XHRfactory('XHR handler', XMLHttpRequest, openXMLHttpRequest);
-
 // openXMLHttpRequest(XHRrequest, details): Aufbau einer Verbindung ueber Verbindungsdetails
 // XHRrequest: Verbindungs-Objekt
 // details: Verbindungsdetails zur Verbindung
@@ -1736,6 +1733,9 @@ async function openXMLHttpRequest(XMLrequest, details) {
         return Promise.reject(ex);
     }
 }
+
+// Der XHR-Handler...
+const __XHR = XHRfactory('XHR handler', XMLHttpRequest, openXMLHttpRequest);
 
 // ==================== Ende Default XHR-Handler ====================
 
@@ -2007,9 +2007,6 @@ const __GMREQUEST = (__CHECKFUN(__GM4REQUEST) || __CHECKFUN(__GM3REQUEST));
 
 // ==================== Greasemonkey XHR-Handler ====================
 
-// Der Greasemonkey XHR-Handler...
-const __GM_XHR = XHRfactory('Greasemonkey XHR handler', GMXMLHttpRequest, this.openGMXMLHttpRequest);
-
 if (__GMREQUEST !== undefined) {
     // openGMXMLHttpRequest(XHRrequest, details): Aufbau einer Verbindung ueber Verbindungsdetails
     // XHRrequest: Verbindungs-Objekt
@@ -2030,7 +2027,10 @@ if (__GMREQUEST !== undefined) {
     }
 }
 
-// ==================== Ende Default XHR-Handler ====================
+// Der Greasemonkey XHR-Handler...
+const __GM_XHR = XHRfactory('Greasemonkey XHR handler', GMXMLHttpRequest, this.openGMXMLHttpRequest);
+
+// ==================== Ende Greasemonkey XHR-Handler ====================
 
 // ==================== Abschnitt fuer Klasse GMXMLHttpRequest ====================
 
