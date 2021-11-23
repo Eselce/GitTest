@@ -1230,7 +1230,7 @@ function substParam(text, par1) {
 // show: Angabe, ob neben Logs auch noch ein alert-Dialog aufpoppen soll (Default: true)
 // return Liefert die Parameter zurueck
 function showAlert(label, message, data = undefined, show = true) {
-    __LOG[0](label + ": " + message);
+    __LOG[1](label + ": " + message);
 
     if (data !== undefined) {
         __LOG[2](data);

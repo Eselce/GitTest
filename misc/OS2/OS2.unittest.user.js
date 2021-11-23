@@ -28,6 +28,8 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.gm.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.script.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js

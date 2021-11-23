@@ -160,12 +160,12 @@ function checkOpt(opt, key = undefined) {
     const __KEY = getOptKey(opt, false);  // NOTE Unbedingt strict auf false setzen, sonst zirkulaer!
 
     if (__NAME === undefined) {  // NOTE opt === undefined liefert __NAME === undefined
-        __LOG[0]("chechOpt(): Error in " + codeLine(true, true, true, false));
+        __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
         throw Error("Unknown option " + __LOG.info(key, false));
     }
 
     if (((typeof key) !== 'undefined') && (key !== __KEY)) {
-        __LOG[0]("chechOpt(): Error in " + codeLine(true, true, true, false));
+        __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
         throw RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
     }
 
@@ -173,7 +173,7 @@ function checkOpt(opt, key = undefined) {
         if (((typeof __NAME) !== 'undefined') && __NAME.length && ((typeof __CONFIG) === 'object')) {
             opt.validOption = true;
         } else {
-            __LOG[0]("chechOpt(): Error in " + codeLine(true, true, true, false));
+            __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
             throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
         }
     }
