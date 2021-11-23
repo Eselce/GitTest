@@ -148,7 +148,7 @@ Class.define(UnitTest, Object, {
                                             if (ex instanceof AssertionFailed) {
                                                 __LOG[4]("Test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false), "failed:", __RESULT.sum());
                                             } else {
-                                                __LOG[1]("Exception", ex, "in test",__LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + ':', __RESULT.sum());
+                                                __LOG[1]("Exception", ex, "in test", __LOG.info(name, false) + "->" + __LOG.info(__NAME, false) + ':', __RESULT.sum());
                                             }
                                         }
 
@@ -251,7 +251,7 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
                     resultFun.call(__THIS, null, tableId, document);  // Leerzeile
                 }
             }
-        } catch(ex) {
+        } catch (ex) {
             // Fehler im Framework der UnitTests und Module...
             __ALLRESULTS.checkException(ex);
 
@@ -266,7 +266,7 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
         // Endergebnis eintragen...
         resultFun.call(thisArg, null, tableId, document);  // Leerzeile
         resultFun.call(thisArg, __ALLRESULTS, tableId, document);
-    } catch(ex) {
+    } catch (ex) {
         // Fehler bei der Anzeige des Ergebnisses...
         __ALLRESULTS.checkException(ex);
     }

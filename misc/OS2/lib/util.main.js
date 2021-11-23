@@ -56,7 +56,7 @@ Class.define(Main, Object, {
 
                                 return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(
                                     async optSet => {
-                                            const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || (optSet => optSet));
+                                            const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || sameValue);
                                             const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || checkOptSet);
     
                                             return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(

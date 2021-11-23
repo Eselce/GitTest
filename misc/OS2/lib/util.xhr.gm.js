@@ -27,24 +27,26 @@ const __GMREQUEST = (__CHECKFUN(__GM4REQUEST) || __CHECKFUN(__GM3REQUEST));
 // ==================== Greasemonkey XHR-Handler ====================
 
 // Der Greasemonkey XHR-Handler...
-const __GM_XHR = XHRfactory('Greasemonkey XHR handler', GMXMLHttpRequest, openGMXMLHttpRequest);
+const __GM_XHR = XHRfactory('Greasemonkey XHR handler', GMXMLHttpRequest, this.openGMXMLHttpRequest);
 
-// openGMXMLHttpRequest(XHRrequest, details): Aufbau einer Verbindung ueber Verbindungsdetails
-// XHRrequest: Verbindungs-Objekt
-// details: Verbindungsdetails zur Verbindung
-// - method: Art der Verbindung ('GET', 'POST', 'PUT', 'HEAD', 'DELETE'...)
-// - url: Ziel der Verbindung
-// - onload: Event-Listener fuer das Laden
-// - async: true/false, ob asynchrone Verbindung
-// - ...
-// return Antwort-Promise auf die Verbindung
-async function openGMXMLHttpRequest(XMLrequest, details) {
-    const __REQUEST = XMLrequest;
-    const __D = details;
+if (__GMREQUEST !== undefined) {
+    // openGMXMLHttpRequest(XHRrequest, details): Aufbau einer Verbindung ueber Verbindungsdetails
+    // XHRrequest: Verbindungs-Objekt
+    // details: Verbindungsdetails zur Verbindung
+    // - method: Art der Verbindung ('GET', 'POST', 'PUT', 'HEAD', 'DELETE'...)
+    // - url: Ziel der Verbindung
+    // - onload: Event-Listener fuer das Laden
+    // - async: true/false, ob asynchrone Verbindung
+    // - ...
+    // return Antwort-Promise auf die Verbindung
+    this.openGMXMLHttpRequest = async function(XMLrequest, details) {
+        const __REQUEST = XMLrequest;
+        const __D = details;
 
-    __REQUEST;
+        __REQUEST;
 
-    return await __GMREQUEST(__D);
+        return await __GMREQUEST(__D);
+    }
 }
 
 // ==================== Ende Default XHR-Handler ====================

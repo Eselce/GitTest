@@ -95,7 +95,7 @@ function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = f
         let nameLine;
         let funName;
 
-        for (let i = 1 /* ohne codeLine() selber */; i < __STACK.length; i++) {
+        for (let i = 0; i < __STACK.length; i++) {
             const __LINE = __STACK[i];
             if (! __LINE) { break; }
             const [ __FUNNAME, __LOCATION ] = __LINE.split('@', 2);
@@ -133,9 +133,10 @@ function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = f
 // ignoreLibs (empfohlen): Ueberspringen von lib*.js-Eintraegen (ausser beim untersten Aufruf)
 // return Liefert Dateiname:Zeilennummer des Aufrufers als String
 function codeLine(longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
+    const __IGNORECALLER = Number(ignoreCaller) + 1;   // codeLine() selber ignorieren!
     const __EX = Error();
 
-    return codeLineFor(__EX, longForm, showFunName, ignoreCaller, ignoreLibs);
+    return codeLineFor(__EX, longForm, showFunName, __IGNORECALLER, ignoreLibs);
 }
 
 // ==================== Ende Abschnitt fuer Debugging, Error-Handling ====================

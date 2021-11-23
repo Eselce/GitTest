@@ -27,7 +27,7 @@
 // sortFun: function(a, b), nach der die Kriterien sortiert werden. Default: Array.sort()
 // return Neues Object mit Eintraegen der Form <Kriterium> : [ <alle Keys zu diesem Kriterium> ]
 function groupData(data, byFun, filterFun, sortFun) {
-    const __BYFUN = (byFun || (val => val));
+    const __BYFUN = (byFun || sameValue);
     const __FILTERFUN = (filterFun || ((key, index, arr) => (arr[index] === key)));
     const __KEYS = Object.keys(data);
     const __VALS = Object.values(data);
