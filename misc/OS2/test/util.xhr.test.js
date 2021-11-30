@@ -68,7 +68,7 @@
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
 
                                         return new Promise(function(resolve, reject) {
-                                                __THIS.browse(__URL, null, request => {
+                                                return __THIS.browse(__URL, null, request => {
                                                         try {
                                                             const __DOC = request.response;
                                                             const __RET = request.responseText;
@@ -79,38 +79,63 @@
 
                                                             return resolve(true);
                                                         } catch (ex) {
-                                                            reject(ex);
+                                                            return reject(ex);
                                                         }
+                                                        // NOTE Unreachable...
                                                     }).catch(reject);
                                             });
                                     },
             'browseXMLCORS'       : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
+                                        const __ERRORMSG = "A network error occurred.";
+                                        const __ERRORTYPE = 'NetworkError';
+                                        const __ERRORRESULT = 2152923155;
 
                                         return callPromiseChain(__THIS.browse(__URL), doc => {
                                                 const __RET = doc;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "browseXMLCORS() sollte XML-Daten liefern");
+                                                return ASSERT_NOT_EQUAL(__RET, __EXP, "browseXMLCORS() sollte keine XML-Daten liefern, sondern blockiert werden");
+                                            }).catch(async ex => {
+                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                ASSERT_EQUAL(ex.name, __ERRORTYPE, "Fehlertyp in Error falsch");
+
+                                                return ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
                                             });
                                     },
             'browseXMLCORSonload' : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
+                                        const __ERRORMSG = "A network error occurred.";
+                                        const __ERRORTYPE = 'NetworkError';
+                                        const __ERRORRESULT = 2152923155;
 
                                         return new Promise(function(resolve, reject) {
-                                                __THIS.browse(__URL, null, request => {
+                                                return __THIS.browse(__URL, null, request => {
                                                         try {
                                                             const __DOC = request.response;
                                                             const __RET = request.responseText;
 
-                                                            ASSERT_MATCH(__DOC, __EXP, "browseXMLCORSonload() response sollte XML-Daten liefern");
+                                                            ASSERT_NOT_MATCH(__DOC, __EXP, "browseXMLCORSonload() response sollte keine XML-Daten liefern, sondern blockiert werden");
 
-                                                            ASSERT_MATCH(__RET, __EXP, "browseXMLCORSonload() responseText sollte XML-Daten liefern");
+                                                            ASSERT_NOT_MATCH(__RET, __EXP, "browseXMLCORSonload() responseText sollte keine XML-Daten liefern, sondern blockiert werden");
 
-                                                            return resolve(true);
+                                                            return reject();
                                                         } catch (ex) {
-                                                            reject(ex);
+                                                            return reject(ex);
                                                         }
-                                                    }).catch(reject);
+                                                        // NOTE Unreachable...
+                                                    }).catch(ex => {
+                                                            try {
+                                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                                ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                                ASSERT_EQUAL(ex.name, __ERRORTYPE, "Fehlertyp in Error falsch");
+                                                                ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
+
+                                                                return resolve(true);
+                                                            } catch (ex) {
+                                                                return reject(ex);
+                                                            }
+                                                        });
                                             });
                                     }
         });

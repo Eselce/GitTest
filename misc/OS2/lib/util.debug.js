@@ -88,14 +88,15 @@ function defaultCatch(error, show) {
 // return Liefert Dateiname:Zeilennummer des Aufrufers als String
 function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
     try {
-        const __EX = (ex || { stack : "" });
+        const __EX = (ex || Error());
         const __STACK = __EX.stack.split("\n");
+        const __START = (ex ? 0 : 1);  // Falls __EX hier produziert wurde, codeLineFor() selbst ignorieren!
         let countCaller = Number(ignoreCaller);  // Normalerweise 0 oder 1, bei 2 wird auch der naechste Aufrufer ignoriert!
         let ret;
         let nameLine;
         let funName;
 
-        for (let i = 0; i < __STACK.length; i++) {
+        for (let i = __START; i < __STACK.length; i++) {
             const __LINE = __STACK[i];
             if (! __LINE) { break; }
             const [ __FUNNAME, __LOCATION ] = __LINE.split('@', 2);
@@ -103,6 +104,11 @@ function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = f
 
             if (countCaller-- > 0) {
                 // Aufrufer wird ignoriert...
+                continue;
+            }
+
+            if (! checkCodeLineBlacklist(__FUNNAME, __NAMELINE)) {
+                // Eintrag steht auf einer Blacklist und wird ignoriert... 
                 continue;
             }
 
@@ -138,6 +144,64 @@ function codeLine(longForm = false, showFunName = false, ignoreCaller = false, i
 
     return codeLineFor(__EX, longForm, showFunName, __IGNORECALLER, ignoreLibs);
 }
+
+// Prueft, ob die uebergebene Kombination aus Funktions- und Dateinamen auf keiner Blacklist steht
+// Grundlage dafuer sind die beiden Objekte __CODELINEBLACKLIST und __CODELINEBLACKLISTREGEXP
+// funName: Zu pruefender Funktions-Name (Zusaetze wie 'promise callback*', 'async*' oder '/<' werden vorher entfernt)
+// fileName: Name der pruefenden Datei, in der die Funktion vorkommt (Endung '.js' und Zeilen-/Spaltennummer entfernt)
+// return: true, wenn gueltig; false, wenn auf einer Blacklist gefuehrt
+function checkCodeLineBlacklist(funName, fileName, strictFileName = false) {
+    checkType(funName, 'string', true, 'checkCodeLineBlacklist()', "funName", 'String');
+    checkType(fileName, 'string', true, 'checkCodeLineBlacklist()', "fileName", 'String');
+
+    const __FILEMATCH = fileName.match(/^([\.\w]+)\.js:/);
+
+    if ((! __FILEMATCH) || (__FILEMATCH.length < 2)) {
+        // Kein regulaerer Filename, der auf die Blacklist gesetzt werden kann...
+        return true;
+    }
+
+    const __FUNNAME = funName.replace(/^[ \w]+\*/, "").replace(/\/<$/, "");
+    const __FILENAME = __FILEMATCH[1];
+    const __ENTRY = __CODELINEBLACKLIST[__FUNNAME];
+    const __REGEXPKEYS = Object.keys(__CODELINEBLACKLISTREGEXP);
+
+    if ((__FILENAME === __ENTRY) || (__ENTRY && ! strictFileName)) {
+        // Statischer Blacklist-Eintrag...
+        return false;
+    }
+
+    for (let key of __REGEXPKEYS) {
+        if (__FUNNAME.match(key)) {
+            const __VALUE = __CODELINEBLACKLISTREGEXP[key];
+
+            if (__FILENAME === __VALUE) {  // ohne strictFileName!
+                // Dynamischer Blacklist-Eintrag...
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+// Funktionen-Blacklist fuer codeLine() - Funktion vs. Modul (ggfs. strict)...
+const __CODELINEBLACKLIST = {
+        'ASSERT'            :   'test.assert',
+        'ASSERT_NOT'        :   'test.assert',
+        'assertionCatch'    :   'test.assert',
+        'callPromiseChain'  :   'test.assert',
+        'promiseCatch'      :   'test.assert',
+        'promiseChainCatch' :   'test.assert',
+        'codeLine'          :   'util.debug',
+        'defaultCatch'      :   'util.debug',
+        'checkOpt'          :   'util.option.data'
+    };
+
+// Funktionen-Blacklist fuer codeLine() - Funktionsmuster vs. Modul (immer strict)...
+const __CODELINEBLACKLISTREGEXP = {
+        'ASSERT_\\w+'       :   'test.assert'
+    };
 
 // ==================== Ende Abschnitt fuer Debugging, Error-Handling ====================
 
