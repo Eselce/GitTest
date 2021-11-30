@@ -39,12 +39,10 @@ async function callPromiseChain(startValue, ... funs) {
             checkType(fun, 'function', true, "callPromiseChain()", "Parameter #" + (index + 1), 'Function');
         });
 
-    return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun, ex => assertionCatch(ex, {
-            'function'  : fun,
-            'param'     : prom,
-            'array'     : arr,
-            'index'     : idx
-        })), startValue);
+    return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun).catch(
+                                    ex => promiseChainCatch(ex, fun, prom, idx, arr)),
+                                startValue.catch(ex => promiseCatch(ex, startValue))
+                            ).catch(promiseChainFinalCatch);
 }
 
 // Funktion zum parallelen Aufruf eines Arrays von Promises bzw. Promise-basierten Funktionen
@@ -52,11 +50,83 @@ async function callPromiseChain(startValue, ... funs) {
 // throw Wirft im Fehlerfall eine AssertionFailed-Exception
 // return Ein Promise-Objekt mit einem Array von Einzelergebnissen als Endresultat
 async function callPromiseArray(... promises) {
-    return Promise.all(promises.flat(1).map((val, idx, arr) => Promise.resolve(val).catch(ex => assertionCatch(ex, {
-            'promise'   : value,
-            'array'     : arr,
-            'index'     : idx
-        }))));
+    return Promise.all(promises.flat(1).map(
+            (val, idx, arr) => Promise.resolve(val).catch(
+                ex => promiseCatch(ex, prom, idx, arr))));
+}
+
+// Parametrisierte Catch-Funktion fuer einen gegebenen Promise-Wert, ggfs. mit Angabe der Herkunft
+// ex: Die zu catchende Exception
+// prom: Promise (rejeted) zum betroffenen Wert
+// idx: Index innerhalb des Werte-Arrays
+// arr: Werte-Array mit den Promises
+// return Liefert eine Assertion und die showAlert()-Parameter zurueck, ergaenzt durch die Attribute
+function promiseCatch(ex, prom, idx = undefined, arr = undefined) {
+    checkObjClass(prom, Promise, true, "promiseCatch()", "prom", 'Promise');
+    checkType(idx, 'number', false, "promiseCatch()", "idx", 'Number');
+    checkObjClass(arr, Array, false, "promiseCatch()", "arr", 'Array');
+
+    const __CODELINE = codeLine(false, true, 3, false);
+    const __ATTRIB = {
+            'promise'   : prom,
+            'location'  : __CODELINE
+        };
+
+    ((idx !== undefined) && (__ATTRIB['index'] = idx));
+    ((arr !== undefined) && (__ATTRIB['array'] = arr));
+
+    __LOG[2]("CATCH:", ex, prom, __LOG.info(__ATTRIB, true, false));
+
+    const __RET = assertionCatch(ex, __LOG.info(__ATTRIB));
+
+    return __RET;
+}
+
+// Parametrisierte Catch-Funktion fuer einen gegebenen Promise-Wert einer Chain, ggfs. mit Angabe der Herkunft
+// ex: Die zu catchende Exception
+// fun: betroffene Funktion innerhalb der Promise-Chain (die eine rejected Rueckgabe produziert)
+// prom: Parameter-Promise zur betroffenen Funktion
+// idx: Index innerhalb des Funktions-Arrays
+// arr: Funktions-Array mit den Promises
+// return Liefert eine Assertion und die showAlert()-Parameter zurueck, ergaenzt durch die Attribute
+function promiseChainCatch(ex, fun, prom = undefined, idx = undefined, arr = undefined) {
+    checkType(fun, 'function', true, "promiseChainCatch()", "fun", 'Function');
+    checkObjClass(prom, Promise, true, "promiseChainCatch()", "Parameter", 'Promise');
+    checkType(idx, 'number', false, "promiseChainCatch()", "idx", 'Number');
+    checkObjClass(arr, Array, false, "promiseChainCatch()", "arr", 'Array');
+
+    // Ist prom nicht rejected oder nicht vorhanden, liefere neue Exception,
+    // ansonsten einfach alten Fehler durchreichen (jeweils rejected)...
+    return (prom || Promise.resolve()).then(() => {
+            const __CODELINE = codeLine(false, true, 3, false);
+            const __ATTRIB = {
+                    'function'  : fun,
+                    'location'  : __CODELINE
+                };
+
+            ((prom !== undefined) && (__ATTRIB['param'] = prom));
+            ((idx  !== undefined) && (__ATTRIB['index'] = idx));
+            ((arr  !== undefined) && (__ATTRIB['array'] = arr));
+
+            __LOG[2]("CATCH[" + idx + "]:", ex, prom, __LOG.info(__ATTRIB, true, false));
+
+            const __RET = assertionCatch(ex, __ATTRIB);
+
+            return __RET;
+        });
+}
+
+// Catch-Funktion, die in einer Chain die Behandlung der Fehler abschliesst
+// ex: Die zu catchende Exception
+// return Liefert eine Rejection mit der richtigen Exception zurueck
+async function promiseChainFinalCatch(ex) {
+    const __EX = ex;
+
+    // TODO Unklar, ob es benoetigt wird!
+
+    const __RET = __EX;
+
+    return Promise.reject(__RET);
 }
 
 // ==================== Ende Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen  ====================
@@ -152,11 +222,18 @@ Class.define(AssertionFailed, Object, {
 // return Liefert eine Assertion und die showAlert()-Parameter zurueck
 function assertionCatch(error, ... attribs) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
-    error = (error || new Error("Promise rejected!"));
+    if (error === undefined) {
+        error = new Error("Promise rejected!");
+    }
 
     try {
-        const __LABEL = `[${error.lineNumber}] ${__DBMOD.Name}`;
-        const __ERROR = Object.assign(error, ... attribs);
+        const __ISOBJ = ((typeof error) === 'object');  // Error-Objekt (true) oder skalarer Rueckgabewert (false)?
+        const __CODELINE = codeLine(true, false, true, false);
+        const __MATCH = __CODELINE.match(/(.*?):(\d+(?::\d+)?)/);
+        const __LINECOLNUMBER = __MATCH[2];
+        const __LINENUM = (error.lineNumber || __LINECOLNUMBER);
+        const __LABEL = `[${__LINENUM}] ${__DBMOD.Name}`;
+        const __ERROR = (__ISOBJ ? Object.assign(error, ... attribs) : error);
         const __RET = showException(__LABEL, __ERROR, false);
 
         UNUSED(__RET);
@@ -220,11 +297,11 @@ const ASSERT_NOT = function(test, whatFailed, msg, thisArg, ... params) {
 // ==================== Abschnitt fuer sonstige ASSERT-Funktionen ====================
 
 const ASSERT_TRUE = function(test, msg, thisArg, ... params) {
-    return ASSERT(test, "false", msg, thisArg, ... params);
+    return ASSERT(test === true, __LOG.info(test, true, true) + " !== true", msg, thisArg, ... params);
 }
 
 const ASSERT_FALSE = function(test, msg, thisArg, ... params) {
-    return ASSERT(! test, "true", msg, thisArg, ... params);
+    return ASSERT(test === false, __LOG.info(test, true, true) + " !== false", msg, thisArg, ... params);
 }
 
 const ASSERT_NULL = function(test, msg, thisArg, ... params) {

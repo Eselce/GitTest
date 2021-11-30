@@ -46,12 +46,10 @@ async function callPromiseChain(startValue, ... funs) {
             checkType(fun, 'function', true, "callPromiseChain()", "Parameter #" + (index + 1), 'Function');
         });
 
-    return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun, ex => assertionCatch(ex, {
-            'function'  : fun,
-            'param'     : prom,
-            'array'     : arr,
-            'index'     : idx
-        })), startValue);
+    return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun).catch(
+                                    ex => promiseChainCatch(ex, fun, prom, idx, arr)),
+                                startValue.catch(ex => promiseCatch(ex, startValue))
+                            ).catch(promiseChainFinalCatch);
 }
 
 // Funktion zum parallelen Aufruf eines Arrays von Promises bzw. Promise-basierten Funktionen
@@ -59,11 +57,83 @@ async function callPromiseChain(startValue, ... funs) {
 // throw Wirft im Fehlerfall eine AssertionFailed-Exception
 // return Ein Promise-Objekt mit einem Array von Einzelergebnissen als Endresultat
 async function callPromiseArray(... promises) {
-    return Promise.all(promises.flat(1).map((val, idx, arr) => Promise.resolve(val).catch(ex => assertionCatch(ex, {
-            'promise'   : value,
-            'array'     : arr,
-            'index'     : idx
-        }))));
+    return Promise.all(promises.flat(1).map(
+            (val, idx, arr) => Promise.resolve(val).catch(
+                ex => promiseCatch(ex, prom, idx, arr))));
+}
+
+// Parametrisierte Catch-Funktion fuer einen gegebenen Promise-Wert, ggfs. mit Angabe der Herkunft
+// ex: Die zu catchende Exception
+// prom: Promise (rejeted) zum betroffenen Wert
+// idx: Index innerhalb des Werte-Arrays
+// arr: Werte-Array mit den Promises
+// return Liefert eine Assertion und die showAlert()-Parameter zurueck, ergaenzt durch die Attribute
+function promiseCatch(ex, prom, idx = undefined, arr = undefined) {
+    checkObjClass(prom, Promise, true, "promiseCatch()", "prom", 'Promise');
+    checkType(idx, 'number', false, "promiseCatch()", "idx", 'Number');
+    checkObjClass(arr, Array, false, "promiseCatch()", "arr", 'Array');
+
+    const __CODELINE = codeLine(false, true, 3, false);
+    const __ATTRIB = {
+            'promise'   : prom,
+            'location'  : __CODELINE
+        };
+
+    ((idx !== undefined) && (__ATTRIB['index'] = idx));
+    ((arr !== undefined) && (__ATTRIB['array'] = arr));
+
+    __LOG[2]("CATCH:", ex, prom, __LOG.info(__ATTRIB, true, false));
+
+    const __RET = assertionCatch(ex, __LOG.info(__ATTRIB));
+
+    return __RET;
+}
+
+// Parametrisierte Catch-Funktion fuer einen gegebenen Promise-Wert einer Chain, ggfs. mit Angabe der Herkunft
+// ex: Die zu catchende Exception
+// fun: betroffene Funktion innerhalb der Promise-Chain (die eine rejected Rueckgabe produziert)
+// prom: Parameter-Promise zur betroffenen Funktion
+// idx: Index innerhalb des Funktions-Arrays
+// arr: Funktions-Array mit den Promises
+// return Liefert eine Assertion und die showAlert()-Parameter zurueck, ergaenzt durch die Attribute
+function promiseChainCatch(ex, fun, prom = undefined, idx = undefined, arr = undefined) {
+    checkType(fun, 'function', true, "promiseChainCatch()", "fun", 'Function');
+    checkObjClass(prom, Promise, true, "promiseChainCatch()", "Parameter", 'Promise');
+    checkType(idx, 'number', false, "promiseChainCatch()", "idx", 'Number');
+    checkObjClass(arr, Array, false, "promiseChainCatch()", "arr", 'Array');
+
+    // Ist prom nicht rejected oder nicht vorhanden, liefere neue Exception,
+    // ansonsten einfach alten Fehler durchreichen (jeweils rejected)...
+    return (prom || Promise.resolve()).then(() => {
+            const __CODELINE = codeLine(false, true, 3, false);
+            const __ATTRIB = {
+                    'function'  : fun,
+                    'location'  : __CODELINE
+                };
+
+            ((prom !== undefined) && (__ATTRIB['param'] = prom));
+            ((idx  !== undefined) && (__ATTRIB['index'] = idx));
+            ((arr  !== undefined) && (__ATTRIB['array'] = arr));
+
+            __LOG[2]("CATCH[" + idx + "]:", ex, prom, __LOG.info(__ATTRIB, true, false));
+
+            const __RET = assertionCatch(ex, __ATTRIB);
+
+            return __RET;
+        });
+}
+
+// Catch-Funktion, die in einer Chain die Behandlung der Fehler abschliesst
+// ex: Die zu catchende Exception
+// return Liefert eine Rejection mit der richtigen Exception zurueck
+async function promiseChainFinalCatch(ex) {
+    const __EX = ex;
+
+    // TODO Unklar, ob es benoetigt wird!
+
+    const __RET = __EX;
+
+    return Promise.reject(__RET);
 }
 
 // ==================== Ende Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen  ====================
@@ -159,11 +229,18 @@ Class.define(AssertionFailed, Object, {
 // return Liefert eine Assertion und die showAlert()-Parameter zurueck
 function assertionCatch(error, ... attribs) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
-    error = (error || new Error("Promise rejected!"));
+    if (error === undefined) {
+        error = new Error("Promise rejected!");
+    }
 
     try {
-        const __LABEL = `[${error.lineNumber}] ${__DBMOD.Name}`;
-        const __ERROR = Object.assign(error, ... attribs);
+        const __ISOBJ = ((typeof error) === 'object');  // Error-Objekt (true) oder skalarer Rueckgabewert (false)?
+        const __CODELINE = codeLine(true, false, true, false);
+        const __MATCH = __CODELINE.match(/(.*?):(\d+(?::\d+)?)/);
+        const __LINECOLNUMBER = __MATCH[2];
+        const __LINENUM = (error.lineNumber || __LINECOLNUMBER);
+        const __LABEL = `[${__LINENUM}] ${__DBMOD.Name}`;
+        const __ERROR = (__ISOBJ ? Object.assign(error, ... attribs) : error);
         const __RET = showException(__LABEL, __ERROR, false);
 
         UNUSED(__RET);
@@ -227,11 +304,11 @@ const ASSERT_NOT = function(test, whatFailed, msg, thisArg, ... params) {
 // ==================== Abschnitt fuer sonstige ASSERT-Funktionen ====================
 
 const ASSERT_TRUE = function(test, msg, thisArg, ... params) {
-    return ASSERT(test, "false", msg, thisArg, ... params);
+    return ASSERT(test === true, __LOG.info(test, true, true) + " !== true", msg, thisArg, ... params);
 }
 
 const ASSERT_FALSE = function(test, msg, thisArg, ... params) {
-    return ASSERT(! test, "true", msg, thisArg, ... params);
+    return ASSERT(test === false, __LOG.info(test, true, true) + " !== false", msg, thisArg, ... params);
 }
 
 const ASSERT_NULL = function(test, msg, thisArg, ... params) {
@@ -1168,6 +1245,146 @@ __TESTTEAMCLASS.optSelect = {
 
 (() => {
 
+// ==================== Abschnitt fuer Test-Werkzeuge ====================
+
+    const __RESOLVED = Promise.resolve(true);
+    const __REJECTED = Promise.reject(false);  // NOTE "Uncaught (in promise) false"
+    const __ERRORMSG = "Erroneous";
+    const __ERRONEOUS = function() { throw Error(__ERRORMSG); };
+    const __USEDCASE = sameValue;
+
+    // Funktionalitaet der ASSERT-Funktionen...
+    new UnitTest('test.assert.js Tools', "Test-Werkzeuge", {
+            'callPromiseChainSimpleOK'        : function() {
+                                                    return callPromiseChain(__RESOLVED).then(value => {
+                                                            return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
+                                                        }, ex => {
+                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
+                                                        });
+                                                },
+            'callPromiseChainSimpleFAIL'      : function() {
+                                                    return callPromiseChain(__REJECTED).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainUsedCaseOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED, __USEDCASE).then(value => {
+                                                            return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
+                                                        }, ex => {
+                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
+                                                        });
+                                                },
+            'callPromiseChainUsedCaseFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainErroneousOK'     : function() {
+                                                    return callPromiseChain(__RESOLVED, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 1, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainErroneousFAIL'   : function() {
+                                                    return callPromiseChain(__REJECTED, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainUsedUsedOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED, __USEDCASE, __USEDCASE).then(value => {
+                                                            return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
+                                                        }, ex => {
+                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
+                                                        });
+                                                },
+            'callPromiseChainUsedUsedFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED, __USEDCASE, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainUsedFailOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED, __USEDCASE, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 1, "Fehler in zweiter Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in zweiter Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array, [ __USEDCASE, __ERRONEOUS ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe f\xFCr Promise-Parameter")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainUsedFailFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED, __USEDCASE, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainFailUsedOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED, __ERRONEOUS, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS, __USEDCASE ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe f\xFCr Promise-Parameter")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainFailUsedFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED, __ERRONEOUS, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainFailFailOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED, __ERRONEOUS, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS, __ERRONEOUS ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe f\xFCr Promise-Parameter")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainFailFailFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED, __ERRONEOUS, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+        });
+
+// ==================== Ende Abschnitt fuer Test-Werkzeuge ====================
+
 // ==================== Abschnitt fuer ASSERT-Funktionen ====================
 
     // Funktionalitaet der ASSERT-Funktionen...
@@ -1294,7 +1511,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "ASSERT_TRUE failed (false)", "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT_TRUE failed (Boolean false !== true)", "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -1312,7 +1529,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (false)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Boolean false !== true)", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -1332,7 +1549,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (false)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Boolean false !== true)", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -1350,7 +1567,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "ASSERT_FALSE failed (true)", "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT_FALSE failed (Boolean true !== false)", "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -1368,7 +1585,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (true)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Boolean true !== false)", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -1388,7 +1605,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (true)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Boolean true !== false)", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -5671,7 +5888,7 @@ __TESTTEAMCLASS.optSelect = {
 
 (() => {
 
-// ==================== Abschnitt Operationen auf Optionen ====================
+// ==================== Abschnitt Versuch eines Verbindungsaufbaus ====================
 
     const __THIS = __XHR;
     const __LABEL = "[XHR] ";
@@ -5689,7 +5906,7 @@ __TESTTEAMCLASS.optSelect = {
 
     const __TESTDATA = {
             'browseXML'     : [ "https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.js",                    /^\/\/ ==UserScript==([^]*)\n+\/\/ _name         util\.xhr$/m  ],
-            'browseXMLCORS' : [ "https://os.ongapo.com/spv.php?action=getListByName&term=Volodimir Oleynikov",  ""  ]
+            'browseXMLCORS' : [ "https://os.ongapo.com/spv.php?action=getListByName&term=Volodimir Oleynikov",  /.*/    ]
         };
 
     new UnitTestOption('util.xhr', "Schnittstelle zum Verbindungsaufbau", {
@@ -5718,7 +5935,7 @@ __TESTTEAMCLASS.optSelect = {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
 
                                         return new Promise(function(resolve, reject) {
-                                                __THIS.browse(__URL, null, request => {
+                                                return __THIS.browse(__URL, null, request => {
                                                         try {
                                                             const __DOC = request.response;
                                                             const __RET = request.responseText;
@@ -5729,43 +5946,68 @@ __TESTTEAMCLASS.optSelect = {
 
                                                             return resolve(true);
                                                         } catch (ex) {
-                                                            reject(ex);
+                                                            return reject(ex);
                                                         }
+                                                        // NOTE Unreachable...
                                                     }).catch(reject);
                                             });
                                     },
             'browseXMLCORS'       : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
+                                        const __ERRORMSG = "A network error occurred.";
+                                        const __ERRORTYPE = 'NetworkError';
+                                        const __ERRORRESULT = 2152923155;
 
                                         return callPromiseChain(__THIS.browse(__URL), doc => {
                                                 const __RET = doc;
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "browseXMLCORS() sollte XML-Daten liefern");
+                                                return ASSERT_NOT_EQUAL(__RET, __EXP, "browseXMLCORS() sollte keine XML-Daten liefern, sondern blockiert werden");
+                                            }).catch(async ex => {
+                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                ASSERT_EQUAL(ex.name, __ERRORTYPE, "Fehlertyp in Error falsch");
+
+                                                return ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
                                             });
                                     },
             'browseXMLCORSonload' : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
+                                        const __ERRORMSG = "A network error occurred.";
+                                        const __ERRORTYPE = 'NetworkError';
+                                        const __ERRORRESULT = 2152923155;
 
                                         return new Promise(function(resolve, reject) {
-                                                __THIS.browse(__URL, null, request => {
+                                                return __THIS.browse(__URL, null, request => {
                                                         try {
                                                             const __DOC = request.response;
                                                             const __RET = request.responseText;
 
-                                                            ASSERT_MATCH(__DOC, __EXP, "browseXMLCORSonload() response sollte XML-Daten liefern");
+                                                            ASSERT_NOT_MATCH(__DOC, __EXP, "browseXMLCORSonload() response sollte keine XML-Daten liefern, sondern blockiert werden");
 
-                                                            ASSERT_MATCH(__RET, __EXP, "browseXMLCORSonload() responseText sollte XML-Daten liefern");
+                                                            ASSERT_NOT_MATCH(__RET, __EXP, "browseXMLCORSonload() responseText sollte keine XML-Daten liefern, sondern blockiert werden");
 
-                                                            return resolve(true);
+                                                            return reject();
                                                         } catch (ex) {
-                                                            reject(ex);
+                                                            return reject(ex);
                                                         }
-                                                    }).catch(reject);
+                                                        // NOTE Unreachable...
+                                                    }).catch(ex => {
+                                                            try {
+                                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                                ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                                ASSERT_EQUAL(ex.name, __ERRORTYPE, "Fehlertyp in Error falsch");
+                                                                ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
+
+                                                                return resolve(true);
+                                                            } catch (ex) {
+                                                                return reject(ex);
+                                                            }
+                                                        });
                                             });
                                     }
         });
 
-// ==================== Ende Abschnitt Operationen auf Optionen ====================
+// ==================== Ende Abschnitt Versuch eines Verbindungsaufbaus ====================
 
 })();
 
@@ -5801,7 +6043,7 @@ __TESTTEAMCLASS.optSelect = {
 
 (() => {
 
-// ==================== Abschnitt Operationen auf Optionen ====================
+// ==================== Abschnitt Versuch eines Verbindungsaufbaus ====================
 
     const __THIS = __GM_XHR;
     const __LABEL = "[GM_XHR] ";
@@ -5819,12 +6061,12 @@ __TESTTEAMCLASS.optSelect = {
 
     const __TESTDATA = {
             'browseXML'     : [ "https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.js",                    /^\/\/ ==UserScript==([^]*)\n+\/\/ _name         util\.xhr$/m  ],
-            'browseXMLCORS' : [ "https://os.ongapo.com/spv.php?action=getListByName&term=Volodimir Oleynikov",  ""  ]
+            'browseXMLCORS' : [ "https://os.ongapo.com/spv.php?action=getListByName&term=Volodimir Oleynikov",  /.*/    ]
         };
 
     new UnitTestOption('util.xhr.gm', "Schnittstelle zum GM Verbindungsaufbau", {
             'handlerExists'       : function() {
-                                        return ASSERT_SET(__THIS, __LABEL + "Handler nicht gefunden!");
+                                        return ASSERT_SET(__THIS, __LABEL + "Handler nicht gefunden");
                                     },
             'memberFuns'          : function() {
                                         for (let testFun of __TESTFUNS) {
@@ -5848,7 +6090,7 @@ __TESTTEAMCLASS.optSelect = {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
 
                                         return new Promise(function(resolve, reject) {
-                                                __THIS.browse(__URL, null, request => {
+                                                return __THIS.browse(__URL, null, request => {
                                                         try {
                                                             const __DOC = request.response;
                                                             const __RET = request.responseText;
@@ -5859,8 +6101,9 @@ __TESTTEAMCLASS.optSelect = {
 
                                                             return resolve(true);
                                                         } catch (ex) {
-                                                            reject(ex);
+                                                            return reject(ex);
                                                         }
+                                                        // NOTE Unreachable...
                                                     }).catch(reject);
                                             });
                                     },
@@ -5877,7 +6120,7 @@ __TESTTEAMCLASS.optSelect = {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
 
                                         return new Promise(function(resolve, reject) {
-                                                __THIS.browse(__URL, null, request => {
+                                                return __THIS.browse(__URL, null, request => {
                                                         try {
                                                             const __DOC = request.response;
                                                             const __RET = request.responseText;
@@ -5888,14 +6131,15 @@ __TESTTEAMCLASS.optSelect = {
 
                                                             return resolve(true);
                                                         } catch (ex) {
-                                                            reject(ex);
+                                                            return reject(ex);
                                                         }
+                                                        // NOTE Unreachable...
                                                     }).catch(reject);
                                             });
                                     }
         });
 
-// ==================== Ende Abschnitt Operationen auf Optionen ====================
+// ==================== Ende Abschnitt Versuch eines Verbindungsaufbaus ====================
 
 })();
 
