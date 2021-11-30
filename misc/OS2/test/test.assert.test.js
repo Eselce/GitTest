@@ -20,6 +20,146 @@
 
 (() => {
 
+// ==================== Abschnitt fuer Test-Werkzeuge ====================
+
+    const __RESOLVED = Promise.resolve(true);
+    const __REJECTED = Promise.reject(false);  // NOTE "Uncaught (in promise) false"
+    const __ERRORMSG = "Erroneous";
+    const __ERRONEOUS = function() { throw Error(__ERRORMSG); };
+    const __USEDCASE = sameValue;
+
+    // Funktionalitaet der ASSERT-Funktionen...
+    new UnitTest('test.assert.js Tools', "Test-Werkzeuge", {
+            'callPromiseChainSimpleOK'        : function() {
+                                                    return callPromiseChain(__RESOLVED).then(value => {
+                                                            return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
+                                                        }, ex => {
+                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
+                                                        });
+                                                },
+            'callPromiseChainSimpleFAIL'      : function() {
+                                                    return callPromiseChain(__REJECTED).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainUsedCaseOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED, __USEDCASE).then(value => {
+                                                            return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
+                                                        }, ex => {
+                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
+                                                        });
+                                                },
+            'callPromiseChainUsedCaseFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainErroneousOK'     : function() {
+                                                    return callPromiseChain(__RESOLVED, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 1, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainErroneousFAIL'   : function() {
+                                                    return callPromiseChain(__REJECTED, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainUsedUsedOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED, __USEDCASE, __USEDCASE).then(value => {
+                                                            return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
+                                                        }, ex => {
+                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
+                                                        });
+                                                },
+            'callPromiseChainUsedUsedFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED, __USEDCASE, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainUsedFailOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED, __USEDCASE, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 1, "Fehler in zweiter Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in zweiter Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array, [ __USEDCASE, __ERRONEOUS ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe f\xFCr Promise-Parameter")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainUsedFailFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED, __USEDCASE, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainFailUsedOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED, __ERRONEOUS, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS, __USEDCASE ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe f\xFCr Promise-Parameter")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainFailUsedFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED, __ERRONEOUS, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainFailFailOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED, __ERRONEOUS, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS, __ERRONEOUS ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe f\xFCr Promise-Parameter")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainFailFailFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED, __ERRONEOUS, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                        });
+                                                },
+        });
+
+// ==================== Ende Abschnitt fuer Test-Werkzeuge ====================
+
 // ==================== Abschnitt fuer ASSERT-Funktionen ====================
 
     // Funktionalitaet der ASSERT-Funktionen...
@@ -146,7 +286,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "ASSERT_TRUE failed (false)", "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT_TRUE failed (Boolean false !== true)", "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -164,7 +304,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (false)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Boolean false !== true)", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -184,7 +324,7 @@
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (false)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Boolean false !== true)", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -202,7 +342,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "ASSERT_FALSE failed (true)", "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT_FALSE failed (Boolean true !== false)", "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -220,7 +360,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (true)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "42 ist die Wahrheit (Boolean true !== false)", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -240,7 +380,7 @@
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (true)", "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, "ASSERT-Funktionen ist die Wahrheit (Boolean true !== false)", "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;

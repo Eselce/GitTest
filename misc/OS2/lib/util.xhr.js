@@ -71,15 +71,15 @@ const __XHR = XHRfactory('XHR handler', XMLHttpRequest, openXMLHttpRequest);
 // - registerCallback(rc, fun): Registrierung fuer Behandlung verschiedener Response-Codes
 // - __XMLREQUEST: Klasse des Verbindungs-Objekts, siehe XHRrequestClass
 function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
+    const __XMLREQUEST = XHRrequestClass;
+
     if ((typeof XHRopenFun) === 'function') {
         __LOG[2]("Initializing", XHRname, '...');
     } else {
         __LOG[1]("Can't initialize", XHRname, "with", __LOG.info(XHRopenFun));
         //throw TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
-        return null;
+        return { __XMLREQUEST };
     }
-
-    const __XMLREQUEST = XHRrequestClass;
 
     const __DETAILS = {
         'GET'     : {
@@ -133,6 +133,12 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
         return runCallback(result);
     }
 
+    function onerrorDefault(error) {
+        __LOG[1]("onerrorDefault():", error);
+
+        return defaultCatch(error);
+    }
+
     function xmlRequest(details) {
         return new Promise(function(resolve, reject) {
                 try {
@@ -176,10 +182,11 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
 
                     __LOG[1]('Tried to fetch', details.url, '...');
 
-                    reject(XHRname + " is missing!");
+                    return reject(XHRname + " is missing!");
                 } catch (ex) {
-                    reject(ex);
+                    return reject(ex);
                 }
+                // NOTE Unreachable...
             });
     }
 
@@ -231,11 +238,12 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
         return __RET;
     }
 
-    async function browse(url, headers = { }, onload = onloadByStatus) {
+    async function browse(url, headers = { }, onload = onloadByStatus, onerror = onerrorDefault) {
         return await getRequest({
                 'url'     : url,
                 'headers' : headers,
-                'onload'  : onload
+                'onload'  : onload,
+                'onerror' : onerror
             });
     }
 

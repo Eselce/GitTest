@@ -45,7 +45,7 @@
 
     new UnitTestOption('util.xhr.gm', "Schnittstelle zum GM Verbindungsaufbau", {
             'handlerExists'       : function() {
-                                        return ASSERT_SET(__THIS, __LABEL + "Handler nicht gefunden!");
+                                        return ASSERT_SET(__THIS, __LABEL + "Handler nicht gefunden");
                                     },
             'memberFuns'          : function() {
                                         for (let testFun of __TESTFUNS) {
@@ -69,7 +69,7 @@
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
 
                                         return new Promise(function(resolve, reject) {
-                                                __THIS.browse(__URL, null, request => {
+                                                return __THIS.browse(__URL, null, request => {
                                                         try {
                                                             const __DOC = request.response;
                                                             const __RET = request.responseText;
@@ -80,8 +80,9 @@
 
                                                             return resolve(true);
                                                         } catch (ex) {
-                                                            reject(ex);
+                                                            return reject(ex);
                                                         }
+                                                        // NOTE Unreachable...
                                                     }).catch(reject);
                                             });
                                     },
@@ -98,7 +99,7 @@
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
 
                                         return new Promise(function(resolve, reject) {
-                                                __THIS.browse(__URL, null, request => {
+                                                return __THIS.browse(__URL, null, request => {
                                                         try {
                                                             const __DOC = request.response;
                                                             const __RET = request.responseText;
@@ -109,8 +110,9 @@
 
                                                             return resolve(true);
                                                         } catch (ex) {
-                                                            reject(ex);
+                                                            return reject(ex);
                                                         }
+                                                        // NOTE Unreachable...
                                                     }).catch(reject);
                                             });
                                     }
