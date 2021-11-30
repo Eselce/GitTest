@@ -65,6 +65,11 @@
 
 // ==================== Abschnitt fuer Logging ====================
 
+// Polyfill fuer console.exception() (fehlt etwa bei Opera)...
+if ((typeof console.exception) === 'undefined') {
+    console.exception = console.error;
+}
+
 // Ein Satz von Logfunktionen, die je nach Loglevel zur Verfuegung stehen. Aufruf: __LOG[level](text)
 const __LOG = {
                   'logFun'    : [
