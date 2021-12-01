@@ -38,9 +38,14 @@
 
 // ==================== Abschnitt fuer Logging ====================
 
-// Polyfill fuer console.exception() (fehlt etwa bei Opera)...
-if ((typeof console.exception) === 'undefined') {
+// Polyfill fuer console.exception() (wenn es kein Firefox ist)...
+if ((typeof console.exception) === 'undefined') {  // Chrome, Edge, Opera, ...
     console.exception = console.error;
+    console.dirlog = console.log;
+    console.verbose = console.table;
+} else {  // Firefox, ...
+    console.dirlog = console.dir;
+    console.verbose = console.log;
 }
 
 // Ein Satz von Logfunktionen, die je nach Loglevel zur Verfuegung stehen. Aufruf: __LOG[level](text)
@@ -50,10 +55,10 @@ const __LOG = {
                                     console.error,      // [1] Error: Error
                                     console.warn,       // [2] Warn:  Warning
                                     console.trace,      // [3] Log:   Release
-                                    console.dir,        // [4] Log:   Info
+                                    console.dirlog,     // [4] Log:   Info
                                     console.log,        // [5] Log:   Log
                                     console.dirxml,     // [6] Log:   Debug
-                                    console.table,      // [7] Log:   Verbose
+                                    console.verbose,    // [7] Log:   Verbose
                                     console.info,       // [8] Info:  Very verbose
                                     console.debug       // [9] Debug: Testing
                                 ],                      // [""] Log:  Table
@@ -63,15 +68,15 @@ const __LOG = {
                                     // prototypejs 1.6.0.3 macht Function.bind() untauglich (dadurch gibt es falsche Zeilennummern)...
                                     const __NOBIND = (((typeof Prototype) !== 'undefined') ? (Prototype.Version === '1.6.0.3') : false);
                                     //const __NOBIND = ([true].reduce(() => false, true));  // Heuristik ueber Array.prototype.reduce
+                                    const __BINDTO = (__NOBIND ? null : (win ? win.console : console));
 
                                     for (let level = 0; level < this.logFun.length; level++) {
-                                        this[level] = ((level > logLevel) ? function() { } : (__NOBIND ? this.logFun[level] :
-                                                                this.logFun[level].bind(win.console, '[' + level + ']')));
+                                        this.createFun(level, ((level > logLevel) ? null : this.logFun[level]), __BINDTO);
                                     }
-                                    this[""]    = this.logFun[7];   // console.table
-                                    this["!"]   = console.assert;   // console.assert(cond, ...)
-                                    this[true]  = console.group;    // console.group(name)
-                                    this[false] = console.groupEnd; // console.groupEnd
+                                    this.createFun('""',    console.table);     // console.table
+                                    this.createFun("!",     console.assert);    // console.assert(cond, ...)
+                                    this.createFun(true,    console.group);     // console.group(name)
+                                    this.createFun(false,   console.groupEnd);  // console.groupEnd
 
                                     if (this.__NOBIND === undefined) {
                                         this.__NOBIND = __NOBIND;
@@ -86,6 +91,21 @@ const __LOG = {
                                     }
 
                                     return this.__LOGLEVEL;
+                                },
+                  'createFun' : function(name, fun, bindTo = undefined) {
+                                    let ret;
+
+                                    if (! fun) {
+                                        ret = function() { };
+                                    } else {
+                                        if (bindTo) {
+                                            ret = fun.bind(bindTo, '[' + name + ']');
+                                        } else {
+                                            ret = fun;
+                                        }
+                                    }
+
+                                    return (this[name] = ret);
                                 },
                   'stringify' : safeStringify,      // JSON.stringify
                   'info'      : function(obj, showType = true, elementType = false) {
