@@ -1323,12 +1323,24 @@ function defaultCatch(error, show) {
 function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
     try {
         const __EX = (ex || Error());
-        const __STACK = __EX.stack.split("\n");
+        const __EXSTACK = getValue(__EX.stack, "");
+        const __STACK = __EXSTACK.split("\n");
+        const __CHROMESTYLE = (~ __EXSTACK.indexOf('@'));  // "at" statt '@'-Stil (Chrome, Edge, Opera)
         const __START = (ex ? 0 : 1);  // Falls __EX hier produziert wurde, codeLineFor() selbst ignorieren!
         let countCaller = Number(ignoreCaller);  // Normalerweise 0 oder 1, bei 2 wird auch der naechste Aufrufer ignoriert!
         let ret;
         let nameLine;
         let funName;
+
+        if (__CHROMESTYLE) {
+            // In diesem Stil steht in der ersten Zeile des Stacks der Fehlertext drin...
+            (__STACK.length && __STACK.shift());
+
+            // Umformatierung auf Firefox-Stil...
+            for (let i = 0; i < __STACK.length; i++) {
+                __STACK[i] = __STACK[i].replace(/^    at (\w+) \((\S+)\)$/, "$1@$2").replace(/^    at (\S+)$/, "@$1");
+            }
+        }
 
         for (let i = __START; i < __STACK.length; i++) {
             const __LINE = __STACK[i];
@@ -1360,7 +1372,7 @@ function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = f
             ret = nameLine;
         }
 
-        return ret + (showFunName ? (':' + funName) : "");
+        return getValue(ret, "") + (showFunName ? (':' + funName) : "");
     } catch (ex) {
         return showException("Error in codeLine()", ex);
     }
