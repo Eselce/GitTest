@@ -228,9 +228,17 @@ function assertionCatch(error, ... attribs) {
 
     try {
         const __ISOBJ = ((typeof error) === 'object');  // Error-Objekt (true) oder skalarer Rueckgabewert (false)?
-        const __CODELINE = codeLine(true, false, true, false);
+        const __CODELINE = codeLineFor(error, true, false, true, false);
+
+        //__LOG[9]("CODELINE:", __CODELINE);
+
         const __MATCH = __CODELINE.match(/(.*?):(\d+(?::\d+)?)/);
-        const __LINECOLNUMBER = __MATCH[2];
+
+        if (! __CODELINE) {
+            __LOG[1]('assertionCatch():', "codeLine() is empty for error", error);
+        }
+
+        const __LINECOLNUMBER = (__CODELINE ? __MATCH[2] : null);
         const __LINENUM = (error.lineNumber || __LINECOLNUMBER);
         const __LABEL = `[${__LINENUM}] ${__DBMOD.Name}`;
         const __ERROR = (__ISOBJ ? Object.assign(error, ... attribs) : error);

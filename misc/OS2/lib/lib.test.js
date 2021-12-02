@@ -35,8 +35,8 @@
 
 // ==================== Abschnitt fuer Test-Werkzeuge ====================
 
-    const __RESOLVED = Promise.resolve(true);
-    const __REJECTED = Promise.reject(false);  // NOTE "Uncaught (in promise) false"
+    const __RESOLVED = (() => Promise.resolve(true));
+    const __REJECTED = (() => Promise.reject(false));
     const __ERRORMSG = "Erroneous";
     const __ERRONEOUS = function() { throw Error(__ERRORMSG); };
     const __USEDCASE = sameValue;
@@ -44,35 +44,35 @@
     // Funktionalitaet der ASSERT-Funktionen...
     new UnitTest('test.assert.js Tools', "Test-Werkzeuge", {
             'callPromiseChainSimpleOK'        : function() {
-                                                    return callPromiseChain(__RESOLVED).then(value => {
+                                                    return callPromiseChain(__RESOLVED()).then(value => {
                                                             return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
                                                         }, ex => {
                                                             return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
                                                         });
                                                 },
             'callPromiseChainSimpleFAIL'      : function() {
-                                                    return callPromiseChain(__REJECTED).then(value => {
+                                                    return callPromiseChain(__REJECTED()).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
                                                             return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainUsedCaseOK'      : function() {
-                                                    return callPromiseChain(__RESOLVED, __USEDCASE).then(value => {
+                                                    return callPromiseChain(__RESOLVED(), __USEDCASE).then(value => {
                                                             return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
                                                         }, ex => {
                                                             return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
                                                         });
                                                 },
             'callPromiseChainUsedCaseFAIL'    : function() {
-                                                    return callPromiseChain(__REJECTED, __USEDCASE).then(value => {
+                                                    return callPromiseChain(__REJECTED(), __USEDCASE).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
                                                             return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainErroneousOK'     : function() {
-                                                    return callPromiseChain(__RESOLVED, __ERRONEOUS).then(value => {
+                                                    return callPromiseChain(__RESOLVED(), __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, async ex => {
                                                             ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
@@ -86,28 +86,28 @@
                                                         });
                                                 },
             'callPromiseChainErroneousFAIL'   : function() {
-                                                    return callPromiseChain(__REJECTED, __ERRONEOUS).then(value => {
+                                                    return callPromiseChain(__REJECTED(), __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
                                                             return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainUsedUsedOK'      : function() {
-                                                    return callPromiseChain(__RESOLVED, __USEDCASE, __USEDCASE).then(value => {
+                                                    return callPromiseChain(__RESOLVED(), __USEDCASE, __USEDCASE).then(value => {
                                                             return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
                                                         }, ex => {
                                                             return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
                                                         });
                                                 },
             'callPromiseChainUsedUsedFAIL'    : function() {
-                                                    return callPromiseChain(__REJECTED, __USEDCASE, __USEDCASE).then(value => {
+                                                    return callPromiseChain(__REJECTED(), __USEDCASE, __USEDCASE).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
                                                             return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainUsedFailOK'      : function() {
-                                                    return callPromiseChain(__RESOLVED, __USEDCASE, __ERRONEOUS).then(value => {
+                                                    return callPromiseChain(__RESOLVED(), __USEDCASE, __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, async ex => {
                                                             ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
@@ -121,14 +121,14 @@
                                                         });
                                                 },
             'callPromiseChainUsedFailFAIL'    : function() {
-                                                    return callPromiseChain(__REJECTED, __USEDCASE, __ERRONEOUS).then(value => {
+                                                    return callPromiseChain(__REJECTED(), __USEDCASE, __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
                                                             return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainFailUsedOK'      : function() {
-                                                    return callPromiseChain(__RESOLVED, __ERRONEOUS, __USEDCASE).then(value => {
+                                                    return callPromiseChain(__RESOLVED(), __ERRONEOUS, __USEDCASE).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, async ex => {
                                                             ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
@@ -142,14 +142,14 @@
                                                         });
                                                 },
             'callPromiseChainFailUsedFAIL'    : function() {
-                                                    return callPromiseChain(__REJECTED, __ERRONEOUS, __USEDCASE).then(value => {
+                                                    return callPromiseChain(__REJECTED(), __ERRONEOUS, __USEDCASE).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
                                                             return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainFailFailOK'      : function() {
-                                                    return callPromiseChain(__RESOLVED, __ERRONEOUS, __ERRONEOUS).then(value => {
+                                                    return callPromiseChain(__RESOLVED(), __ERRONEOUS, __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, async ex => {
                                                             ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
@@ -163,7 +163,7 @@
                                                         });
                                                 },
             'callPromiseChainFailFailFAIL'    : function() {
-                                                    return callPromiseChain(__REJECTED, __ERRONEOUS, __ERRONEOUS).then(value => {
+                                                    return callPromiseChain(__REJECTED(), __ERRONEOUS, __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
                                                             return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
@@ -4742,7 +4742,8 @@
                                     },
             'browseXMLCORS'       : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
-                                        const __ERRORMSG = "A network error occurred.";
+                                        const __ERRORMSG1 = "A network error occurred.";
+                                        const __ERRORMSG2 = "Failed to execute 'send' on 'XMLHttpRequest': Failed to load '" + __URL.replaceAll(' ', "%20") + "'.";
                                         const __ERRORTYPE = 'NetworkError';
                                         const __ERRORRESULT = 2152923155;
 
@@ -4752,15 +4753,20 @@
                                                 return ASSERT_NOT_EQUAL(__RET, __EXP, "browseXMLCORS() sollte keine XML-Daten liefern, sondern blockiert werden");
                                             }).catch(async ex => {
                                                 ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
-                                                ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
-                                                ASSERT_EQUAL(ex.name, __ERRORTYPE, "Fehlertyp in Error falsch");
+                                                if (ex.message === __ERRORMSG1) {
+                                                    ASSERT_EQUAL(ex.message, __ERRORMSG1, "Fehlertext in Error falsch");
+                                                    ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
+                                                } else {
+                                                    ASSERT_EQUAL(ex.message, __ERRORMSG2, "Fehlertext in Error falsch");
+                                                }
 
-                                                return ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
+                                                return ASSERT_EQUAL(ex.name, __ERRORTYPE, "Fehlertyp in Error falsch");
                                             });
                                     },
             'browseXMLCORSonload' : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
-                                        const __ERRORMSG = "A network error occurred.";
+                                        const __ERRORMSG1 = "A network error occurred.";
+                                        const __ERRORMSG2 = "Failed to execute 'send' on 'XMLHttpRequest': Failed to load '" + __URL.replaceAll(' ', "%20") + "'.";
                                         const __ERRORTYPE = 'NetworkError';
                                         const __ERRORRESULT = 2152923155;
 
@@ -4782,9 +4788,13 @@
                                                     }).catch(ex => {
                                                             try {
                                                                 ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
-                                                                ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                                if (ex.message === __ERRORMSG1) {
+                                                                    ASSERT_EQUAL(ex.message, __ERRORMSG1, "Fehlertext in Error falsch");
+                                                                    ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
+                                                                } else {
+                                                                    ASSERT_EQUAL(ex.message, __ERRORMSG2, "Fehlertext in Error falsch");
+                                                                }
                                                                 ASSERT_EQUAL(ex.name, __ERRORTYPE, "Fehlertyp in Error falsch");
-                                                                ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
 
                                                                 return resolve(true);
                                                             } catch (ex) {

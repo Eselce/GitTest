@@ -87,7 +87,8 @@
                                     },
             'browseXMLCORS'       : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
-                                        const __ERRORMSG = "A network error occurred.";
+                                        const __ERRORMSG1 = "A network error occurred.";
+                                        const __ERRORMSG2 = "Failed to execute 'send' on 'XMLHttpRequest': Failed to load '" + __URL.replaceAll(' ', "%20") + "'.";
                                         const __ERRORTYPE = 'NetworkError';
                                         const __ERRORRESULT = 2152923155;
 
@@ -97,15 +98,20 @@
                                                 return ASSERT_NOT_EQUAL(__RET, __EXP, "browseXMLCORS() sollte keine XML-Daten liefern, sondern blockiert werden");
                                             }).catch(async ex => {
                                                 ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
-                                                ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
-                                                ASSERT_EQUAL(ex.name, __ERRORTYPE, "Fehlertyp in Error falsch");
+                                                if (ex.message === __ERRORMSG1) {
+                                                    ASSERT_EQUAL(ex.message, __ERRORMSG1, "Fehlertext in Error falsch");
+                                                    ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
+                                                } else {
+                                                    ASSERT_EQUAL(ex.message, __ERRORMSG2, "Fehlertext in Error falsch");
+                                                }
 
-                                                return ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
+                                                return ASSERT_EQUAL(ex.name, __ERRORTYPE, "Fehlertyp in Error falsch");
                                             });
                                     },
             'browseXMLCORSonload' : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
-                                        const __ERRORMSG = "A network error occurred.";
+                                        const __ERRORMSG1 = "A network error occurred.";
+                                        const __ERRORMSG2 = "Failed to execute 'send' on 'XMLHttpRequest': Failed to load '" + __URL.replaceAll(' ', "%20") + "'.";
                                         const __ERRORTYPE = 'NetworkError';
                                         const __ERRORRESULT = 2152923155;
 
@@ -127,9 +133,13 @@
                                                     }).catch(ex => {
                                                             try {
                                                                 ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
-                                                                ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                                if (ex.message === __ERRORMSG1) {
+                                                                    ASSERT_EQUAL(ex.message, __ERRORMSG1, "Fehlertext in Error falsch");
+                                                                    ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
+                                                                } else {
+                                                                    ASSERT_EQUAL(ex.message, __ERRORMSG2, "Fehlertext in Error falsch");
+                                                                }
                                                                 ASSERT_EQUAL(ex.name, __ERRORTYPE, "Fehlertyp in Error falsch");
-                                                                ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
 
                                                                 return resolve(true);
                                                             } catch (ex) {
