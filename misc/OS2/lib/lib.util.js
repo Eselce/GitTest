@@ -1322,10 +1322,10 @@ function defaultCatch(error, show) {
 // return Liefert Dateiname:Zeilennummer des Aufrufers als String
 function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
     try {
-        const __EX = (ex || Error());
-        const __EXSTACK = getValue(__EX.stack, "");
+        const __EX = ((ex && ex.stack) ? ex : Error());
+        const __EXSTACK = __EX.stack;
         const __STACK = __EXSTACK.split("\n");
-        const __CHROMESTYLE = (~ __EXSTACK.indexOf('@'));  // "at" statt '@'-Stil (Chrome, Edge, Opera)
+        const __CHROMESTYLE = ! (~ __EXSTACK.indexOf('@'));  // "at" statt '@'-Stil (Chrome, Edge, Opera)
         const __START = (ex ? 0 : 1);  // Falls __EX hier produziert wurde, codeLineFor() selbst ignorieren!
         let countCaller = Number(ignoreCaller);  // Normalerweise 0 oder 1, bei 2 wird auch der naechste Aufrufer ignoriert!
         let ret;
@@ -1338,13 +1338,19 @@ function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = f
 
             // Umformatierung auf Firefox-Stil...
             for (let i = 0; i < __STACK.length; i++) {
-                __STACK[i] = __STACK[i].replace(/^    at (\w+) \((\S+)\)$/, "$1@$2").replace(/^    at (\S+)$/, "@$1");
+                __STACK[i] = __STACK[i].replace(
+                                    /^    at async /, "    at async*").replace(
+                                    /^    at ([ \.\*\w]+) \((\S+)\)$/, "$1@$2").replace(
+                                    /^    at (\S+)$/, "@$1");
             }
         }
 
         for (let i = __START; i < __STACK.length; i++) {
             const __LINE = __STACK[i];
+
+            //__LOG[9]("STACK[" + i + "]:", __LINE.replace('@', " @ "));
             if (! __LINE) { break; }
+
             const [ __FUNNAME, __LOCATION ] = __LINE.split('@', 2);
             const __NAMELINE = getValue(__LOCATION, "").replace(/.*\//, ""); 
 
@@ -1407,7 +1413,7 @@ function checkCodeLineBlacklist(funName, fileName, strictFileName = false) {
         return true;
     }
 
-    const __FUNNAME = funName.replace(/^[ \w]+\*/, "").replace(/\/<$/, "");
+    const __FUNNAME = funName.replace(/^[ \w]+\*/, "").replace(/(\/<)+$/, "");
     const __FILENAME = __FILEMATCH[1];
     const __ENTRY = __CODELINEBLACKLIST[__FUNNAME];
     const __REGEXPKEYS = Object.keys(__CODELINEBLACKLISTREGEXP);
@@ -1918,8 +1924,10 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
                             try {
                                 const __RESULT = (result.target || result);
                                 const __RET = __ONLOAD(__RESULT);
+                                const __OK = ((__RESULT.statusText === 'OK')
+                                            || (__RESULT.statusText === ""));
 
-                                if (__RESULT.statusText === 'OK') {
+                                if (__OK && (__RESULT.status === 200)) {
                                     resolve(__RET);
                                 } else {
                                     reject(__RESULT.statusText);
@@ -1933,7 +1941,9 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
                     __D.error = (error => {
                             __LOG[1]("onerror():", error);
 
-                            reject(error);
+                            const __RET = __ONERROR(error);
+
+                            reject(__RET || error);
                         });
 
                     const __REQUEST = new __XMLREQUEST();

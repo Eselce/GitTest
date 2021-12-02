@@ -152,8 +152,10 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
                             try {
                                 const __RESULT = (result.target || result);
                                 const __RET = __ONLOAD(__RESULT);
+                                const __OK = ((__RESULT.statusText === 'OK')
+                                            || (__RESULT.statusText === ""));
 
-                                if (__RESULT.statusText === 'OK') {
+                                if (__OK && (__RESULT.status === 200)) {
                                     resolve(__RET);
                                 } else {
                                     reject(__RESULT.statusText);
@@ -167,7 +169,9 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
                     __D.error = (error => {
                             __LOG[1]("onerror():", error);
 
-                            reject(error);
+                            const __RET = __ONERROR(error);
+
+                            reject(__RET || error);
                         });
 
                     const __REQUEST = new __XMLREQUEST();
