@@ -1,11 +1,14 @@
 // ==UserScript==
 // @name         mainchat.test
 // @namespace    http://mainchat.net/
-// @version      0.10
+// @version      0.11
 // @copyright    2019+
 // @author       Sven Loges (SLC)
 // @description  OS2 Mainchat-Test-Script for Greasemonkey 4.0
 // @include      /^https?://\S+\.mainchat\.net/interaktiv.php(\S+)?$/
+// @include      /^https?://\S+\.mainchat\.net/chat.php(\S+)?$/
+// @include      /^https?://os\.ongapo\.com/chat/interaktiv.php(\S+)?$/
+// @include      /^https?://os\.ongapo\.com/chat/chat.php(\S+)?$/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue
@@ -42,7 +45,6 @@
 // _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
 // _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
-
 // _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
 // _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
@@ -51,6 +53,8 @@
 // ECMAScript 9:
 /* jshint esversion: 9 */
 
+/* eslint no-multi-spaces: "off" */
+
 // ==================== Abschnitt fuer Bugfixes ====================
 // Nur einmal js hint ganz oben
 // util.value, util.dom: 2x Number.isNaN() statt isNaN()
@@ -58,7 +62,7 @@
 // util.value, util.mem.db, util.option.page.node, util.option.page: getValue(), initScriptDB(), getOptionCheckbox(), getOptionButton(), addForm(): Klammern
 // util.value, util.proto, util.dom, util.class.URI, util.option.data: getNumberString(), reverseString(), getAllProperties(), getStyleFromElements(),
 //     getSelectionFromComboBox(), convertArrayFromHTML(), URI.parseParams(), promptNextOpt(): for -> while
-// util.log: __LOG.init(): überarbeitet
+// util.log: __LOG.init(): ueberarbeitet
 // util.value: : Klammern
 // util.value: String.prototype.format(): \{, \} in RegExp
 // util.value, util.class: Function.prototype.name(): auskommentiert
@@ -66,7 +70,7 @@
 // util.mem.mod: ScriptModule: __NEWDBMOD statt __DBMOD
 // util.option.data, util.option.page.action, mainchat.test: \u00## statt \x##
 // util.log, util.value, util.class.uri, util.option.data, util.option.page.node, util.option.page: serializer(), floorValue(), URI, promptNextOpt(),
-//     getOptionSelect(), getForm(): Boolean-Cast für ~
+//     getOptionSelect(), getForm(): Boolean-Cast fuer ~
 // util.prop, util.mem.mod, util.dom, util.class, util.class.path, util.class.uri, -util.option.data, util.option.api, util.mem, util.mem.db,
 //     util.option.menu, util.option.run: addProps(), delProps(), substParam(), addInputField(), Object.setConst(), Directory.chDir(), ObjRef.valueOf(),
 //     formatParams(), -getSharedRef(), invalidateOpts(), loadOptions(), deleteOptions(), renameOptions(), getMemUsage(), initScriptDB(), buildMenu(),
@@ -84,7 +88,7 @@
 // util.option.run: showOptions(): Form OK
 // util.class: Leerzeile vor // ==================== Abschnitt fuer Klasse Class ====================
 // BUGGY?
-// Überprüfen: const __BASEINIT = __BASEOBJ.init; / this.init = initFun; -> ggfs. __init! / was ist mit this.name?
+// Ueberpruefen: const __BASEINIT = __BASEOBJ.init; / this.init = initFun; -> ggfs. __init! / was ist mit this.name?
 // 1758: Class.define(ObjRef, Directory, { 'valueOf' ...
 // 2105: getSharedRef()
 // 2289: promptNextOpt()
@@ -218,7 +222,7 @@ function replaceArraySimple(key, value) {
 // return Fuer Arrays eine kompakte Darstellung, sonst derselbe Wert
 function replaceArray(key, value) {
     if (Array.isArray(value)) {
-        __RET = value.map(function(element) {
+        let __RET = value.map(function(element) {
                               return safeStringify(element, replaceArray, 0);
                           });
 
@@ -452,7 +456,8 @@ function instanceOf(obj, base) {
             return true;
         }
         if ((typeof obj) === 'xml') {  // Sonderfall mit Selbstbezug
-            return (base.prototype === XML.prototype);
+            //return (base.prototype === XML.prototype);
+            return (base.prototype === XMLDocument.prototype);  // Notloesung!
         }
         obj = Object.getPrototypeOf(obj);
     }
@@ -2445,11 +2450,11 @@ function loadOption(opt, force = false) {
         let value;
 
         if (opt.Loaded && ! __ISSHARED) {
-            const __ERROR = "Error: Oprion '" + __NAME + "' bereits geladen!";
+            const __ERROR = "Error: Option '" + __NAME + "' bereits geladen!";
 
-            __LOG[0](__MESSAGE);
+            __LOG[0](__ERROR);
 
-            return Promise.reject(__MESSAGE);
+            return Promise.reject(__ERROR);
         }
 
         if (opt.ReadOnly || __ISSHARED) {
@@ -4673,7 +4678,7 @@ function procChat() {
     const __WPARENT = parent.wrappedJSObject;
     const __WCHAT = __WPARENT && __WPARENT.chat;
 
-    if (__WCHAT && (__WCHAT.document === undefined)) {
+    if ((! __WCHAT) || (__WCHAT.document === undefined)) {
         __LOG[2]("Diese Seite ist ohne Chat nicht verf\u00FCgbar!");
     } else {
         return buildOptions(__OPTCONFIG, __OPTSET, {
@@ -4684,16 +4689,20 @@ function procChat() {
                                                    'sepWidth'      : true
                                                },
                                 'formWidth'  : 1
-                            }).then(function(optSet) {
+                            }).then(optSet => {
                 const __DOC = __WCHAT.document;
                 const __BODY = getTable(0, 'body', __DOC);
                 const __CHAT = __DOC.getElementsByTagName('font');
 
-                // Format der Trennlinie...
-                const __BORDERSTRING = getOptValue(__OPTSET.sepStyle) + ' ' + getOptValue(__OPTSET.sepColor) + ' ' + getOptValue(__OPTSET.sepWidth);
+                if (__BODY && __BODY.style) {
+                    // Format der Trennlinie...
+                    const __BORDERSTRING = getOptValue(optSet.sepStyle)
+                                    + ' ' + getOptValue(optSet.sepColor)
+                                    + ' ' + getOptValue(optSet.sepWidth);
 
-                __BODY.style.border = __BORDERSTRING;
-                //__BODY.style.backgroundColor = "darkgrey";
+                    __BODY.style.border = __BORDERSTRING;
+                    __BODY.style.backgroundColor = 'blue';  // 'darkgrey';
+                }
 
                 patchLinks(__CHAT);
             });
