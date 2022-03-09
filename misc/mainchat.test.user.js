@@ -4701,7 +4701,7 @@ function procChat() {
                                     + ' ' + getOptValue(optSet.sepWidth);
 
                     __BODY.style.border = __BORDERSTRING;
-                    __BODY.style.backgroundColor = 'blue';  // 'darkgrey';
+                    //__BODY.style.backgroundColor = 'blue';
                 }
 
                 patchLinks(__CHAT);
