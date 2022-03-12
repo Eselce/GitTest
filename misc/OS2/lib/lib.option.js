@@ -2471,15 +2471,15 @@ Class.define(Main, Object, {
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
 
                                 return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(
-                                    async optSet => {
-                                            const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || sameValue);
-                                            const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || checkOptSet);
-    
-                                            return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
-                                                                        optSet => Promise.resolve(showOptions(optSet, __OPTPARAMS)).then(
-                                                                        optSet => __VERIFYOPT(optSet, __OPTPARAMS)));
-                                        }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
-                                                                ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
+                                        async optSet => {
+                                                const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || sameValue);
+                                                const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || checkOptSet);
+
+                                                return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
+                                                                            optSet => Promise.resolve(showOptions(optSet, __OPTPARAMS)).then(
+                                                                            optSet => __VERIFYOPT(optSet, __OPTPARAMS)));
+                                            }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
+                                                                    ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
                             } else {
                                 return Promise.reject(`Keine Options-Parameter f\xFCr Seite '${__MANAGER.name}' vorhanden!`);
                             }
@@ -2490,29 +2490,29 @@ Class.define(Main, Object, {
                             // selectorParams: Weitere Parameter fuer selector(URL, ...)
                             // return Promise auf die Durchfuehrung der Bearbeitung im Hauptprogramm
                             return await startMain().then(
-                                async () => {
-                                        try {
-                                            const __SELECTOR = (selector || (() => 0));
-                                            const __SELECTORPARAMS = selectorParams;
-                                            const __PAGE = __SELECTOR(window.location.href, ... __SELECTORPARAMS);
+                                    async () => {
+                                            try {
+                                                const __SELECTOR = (selector || (() => 0));
+                                                const __SELECTORPARAMS = selectorParams;
+                                                const __PAGE = __SELECTOR(window.location.href, ... __SELECTORPARAMS);
 
-                                            return this.handlePage(__PAGE).catch(defaultCatch);
-                                        } catch (ex) {
-                                            return Promise.reject(defaultCatch(ex));
-                                        }
-                                    }).then(rc => {
-                                            __LOG[2](String(this.optSet));
-                                            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
+                                                return this.handlePage(__PAGE).catch(defaultCatch);
+                                            } catch (ex) {
+                                                return defaultCatch(ex);
+                                            }
+                                        }).then(rc => {
+                                                __LOG[2](String(this.optSet));
+                                                __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
 
-                                            return Promise.resolve(true);
-                                        }, ex => {
-                                            __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message,
-                                                        ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1]))) + ')');
-                                            __LOG[2](String(this.optSet));
-                                            __LOG[1]('SCRIPT END', __DBMAN.Name);
+                                                return Promise.resolve(true);
+                                            }, ex => {
+                                                __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message,
+                                                            ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1]))) + ')');
+                                                __LOG[2](String(this.optSet));
+                                                __LOG[1]('SCRIPT END', __DBMAN.Name);
 
-                                            return Promise.resolve(false);
-                                        });
+                                                return Promise.resolve(false);
+                                            });
                         }
     });
 

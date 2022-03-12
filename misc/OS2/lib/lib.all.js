@@ -2212,7 +2212,7 @@ function addHiddenField(form, props) {
 
 // Hilfsfunktion fuer alle Browser: Fuegt fuer ein Event eine Reaktion ein
 // obj: Betroffenes Objekt, z.B. ein Eingabeelement
-// type: Name des Events, z.B. "click"
+// type: Name des Events, z.B. 'click'
 // callback: Funktion als Reaktion
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
@@ -2231,7 +2231,7 @@ function addEvent(obj, type, callback, capture = false) {
 
 // Hilfsfunktion fuer alle Browser: Entfernt eine Reaktion fuer ein Event
 // obj: Betroffenes Objekt, z.B. ein Eingabeelement
-// type: Name des Events, z.B. "click"
+// type: Name des Events, z.B. 'click'
 // callback: Funktion als Reaktion
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
@@ -2250,7 +2250,7 @@ function removeEvent(obj, type, callback, capture = false) {
 
 // Hilfsfunktion fuer alle Browser: Fuegt fuer ein Event eine Reaktion ein
 // id: ID des betroffenen Eingabeelements
-// type: Name des Events, z.B. "click"
+// type: Name des Events, z.B. 'click'
 // callback: Funktion als Reaktion
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
@@ -2262,7 +2262,7 @@ function addDocEvent(id, type, callback, capture = false) {
 
 // Hilfsfunktion fuer alle Browser: Entfernt eine Reaktion fuer ein Event
 // id: ID des betroffenen Eingabeelements
-// type: Name des Events, z.B. "click"
+// type: Name des Events, z.B. 'click'
 // callback: Funktion als Reaktion
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
@@ -2286,7 +2286,7 @@ function getElement(name, index = 0, doc = document) {
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
-// tag: Tag des Elements ("table")
+// tag: Tag des Elements ('table')
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
 function getTable(index, tag = 'table', doc = document) {
@@ -5925,15 +5925,15 @@ Class.define(Main, Object, {
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
 
                                 return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(
-                                    async optSet => {
-                                            const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || sameValue);
-                                            const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || checkOptSet);
-    
-                                            return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
-                                                                        optSet => Promise.resolve(showOptions(optSet, __OPTPARAMS)).then(
-                                                                        optSet => __VERIFYOPT(optSet, __OPTPARAMS)));
-                                        }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
-                                                                ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
+                                        async optSet => {
+                                                const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || sameValue);
+                                                const __VERIFYOPT   = (__OPTPARAMS.verifyOpt || this.verifyOpt || checkOptSet);
+
+                                                return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
+                                                                            optSet => Promise.resolve(showOptions(optSet, __OPTPARAMS)).then(
+                                                                            optSet => __VERIFYOPT(optSet, __OPTPARAMS)));
+                                            }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
+                                                                    ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
                             } else {
                                 return Promise.reject(`Keine Options-Parameter f\xFCr Seite '${__MANAGER.name}' vorhanden!`);
                             }
@@ -5944,29 +5944,29 @@ Class.define(Main, Object, {
                             // selectorParams: Weitere Parameter fuer selector(URL, ...)
                             // return Promise auf die Durchfuehrung der Bearbeitung im Hauptprogramm
                             return await startMain().then(
-                                async () => {
-                                        try {
-                                            const __SELECTOR = (selector || (() => 0));
-                                            const __SELECTORPARAMS = selectorParams;
-                                            const __PAGE = __SELECTOR(window.location.href, ... __SELECTORPARAMS);
+                                    async () => {
+                                            try {
+                                                const __SELECTOR = (selector || (() => 0));
+                                                const __SELECTORPARAMS = selectorParams;
+                                                const __PAGE = __SELECTOR(window.location.href, ... __SELECTORPARAMS);
 
-                                            return this.handlePage(__PAGE).catch(defaultCatch);
-                                        } catch (ex) {
-                                            return Promise.reject(defaultCatch(ex));
-                                        }
-                                    }).then(rc => {
-                                            __LOG[2](String(this.optSet));
-                                            __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
+                                                return this.handlePage(__PAGE).catch(defaultCatch);
+                                            } catch (ex) {
+                                                return defaultCatch(ex);
+                                            }
+                                        }).then(rc => {
+                                                __LOG[2](String(this.optSet));
+                                                __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
 
-                                            return Promise.resolve(true);
-                                        }, ex => {
-                                            __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message,
-                                                        ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1]))) + ')');
-                                            __LOG[2](String(this.optSet));
-                                            __LOG[1]('SCRIPT END', __DBMAN.Name);
+                                                return Promise.resolve(true);
+                                            }, ex => {
+                                                __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message,
+                                                            ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1]))) + ')');
+                                                __LOG[2](String(this.optSet));
+                                                __LOG[1]('SCRIPT END', __DBMAN.Name);
 
-                                            return Promise.resolve(false);
-                                        });
+                                                return Promise.resolve(false);
+                                            });
                         }
     });
 
@@ -6442,12 +6442,13 @@ Class.define(TeamClassification, Classification, {
 // Klasse fuer Teamdaten
 
 /*class*/ function Team /*{
-    constructor*/(team, land, liga) {
+    constructor*/(team, land, liga, teamId) {
         'use strict';
 
         this.Team = team;
         this.Land = land;
         this.Liga = liga;
+        this.TmNr = (teamId || 0);
         this.LdNr = getLandNr(land);
         this.LgNr = getLigaNr(liga);
     }
@@ -6458,6 +6459,7 @@ Class.define(Team, Object, {
                                         'Team' : true,
                                         'Liga' : true,
                                         'Land' : true,
+                                        'TmNr' : true,
                                         'LdNr' : true,
                                         'LgNr' : true
                                     }
@@ -6470,12 +6472,11 @@ Class.define(Team, Object, {
 // Klasse fuer Vereinsdaten
 
 /*class*/ function Verein /*extends Team {
-    constructor*/(team, land, liga, id, manager, flags) {
+    constructor*/(team, land, liga, teamId, manager, flags) {
         'use strict';
 
-        Team.call(this, team, land, liga);
+        Team.call(this, team, land, liga, teamId);
 
-        this.ID = id;
         this.Manager = manager;
         this.Flags = (flags || []);
     }
@@ -6486,9 +6487,9 @@ Class.define(Verein, Team, {
                                         'Team'    : true,
                                         'Liga'    : true,
                                         'Land'    : true,
+                                        'TmNr'    : true,
                                         'LdNr'    : true,
                                         'LgNr'    : true,
-                                        'ID'      : true,
                                         'Manager' : true,
                                         'Flags'   : true
                                     }
@@ -6500,7 +6501,7 @@ Class.define(Verein, Team, {
 
 // Gibt die Teamdaten zurueck und aktualisiert sie ggfs. in der Option
 // optSet: Platz fuer die gesetzten Optionen
-// teamParams: Dynamisch ermittelte Teamdaten ('Team', 'Liga', 'Land', 'LdNr' und 'LgNr')
+// teamParams: Dynamisch ermittelte Teamdaten ('Team', 'Liga', 'Land', 'TmNr', 'LdNr' und 'LgNr')
 // myTeam: Objekt fuer die Teamdaten
 // return Die Teamdaten oder undefined bei Fehler
 function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team()) {
@@ -6550,35 +6551,58 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
 // ==================== Abschnitt fuer Ermittlung des Teams von einer OS2-Seite ====================
 
 const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uuml;ro von TEAM</b><br>LIGA LAND<a href=..."
-        'Zeile'  : 0,
-        'Spalte' : 1,
-        'start'  : " von ",
-        'middle' : "</b><br>",
-        'liga'   : ". Liga",
-        'land'   : ' ',
-        'end'    : "<a href="
+        'Tabelle'   : 1,
+        'Zeile'     : 0,
+        'Spalte'    : 1,
+        'start'     : " von ",
+        'middle'    : "</b><br>",
+        'liga'      : ". Liga",
+        'land'      : ' ',
+        'end'       : "<a href="
     };
 
 const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LAND</a></b>"
-        'Zeile'  : 0,
-        'Spalte' : 0,
-        'start'  : "<b>",
-        'middle' : " - ",
-        'liga'   : ". Liga",
-        'land'   : 'target="_blank">',
-        'end'    : "</a></b>"
+        'Tabelle'   : 1,
+        'Zeile'     : 0,
+        'Spalte'    : 0,
+        'start'     : "<b>",
+        'middle'    : " - ",
+        'liga'      : ". Liga",
+        'land'      : 'target="_blank">',
+        'end'       : "</a></b>"
+    };
+
+const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>...<a href="livegame/index.php?spiele=TEAMID,0">LIVEGAME</a>"
+        'Tabelle'   : 0,
+        'Zeile'     : 6,
+        'Spalte'    : 0,
+        'start'     : '<a href="livegame/index.php?spiele=',
+        'end'       : ',0">LIVEGAME</a>'
+    };
+
+const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>...<a href="livegame/index.php?spiele=TEAMID,0">LIVEGAME</a>"
+        'Tabelle'   : 0,
+        'Zeile'     : 1,
+        'Spalte'    : 1,
+        'start'     : '<a hspace="20" href="javascript:tabellenplatz(',
+        'end'       : ')">Tabellenpl\xE4tze</a>'
     };
 
 // Ermittelt, wie das eigene Team heisst und aus welchem Land bzw. Liga es kommt (zur Unterscheidung von Erst- und Zweitteam)
-// cell: Tabellenzelle mit den Parametern zum Team "startTEAMmiddleLIGA...landLANDend", LIGA = "#liga[ (A|B|C|D)]"
-// teamSeach: Muster fuer die Suche, die Eintraege fuer 'start', 'middle', 'liga', 'land' und 'end' enthaelt
-// return Im Beispiel { 'Team' : "TEAM", 'Liga' : "LIGA", 'Land' : "LAND", 'LdNr' : LAND-NUMMER, 'LgNr' : LIGA-NUMMER },
-//        z.B. { 'Team' : "Choromonets Odessa", 'Liga' : "1. Liga", 'Land' : "Ukraine", 'LdNr' : 20, 'LgNr' : 1 }
-function getTeamParamsFromTable(table, teamSearch = undefined) {
+// teamSearch: Muster fuer die Suche nach Team, die Eintraege fuer 'start', 'middle', 'liga', 'land' und 'end' enthaelt, ausserdem die
+//              Adresse der Tabellenzelle mit den Parametern zum Team "startTEAMmiddleLIGA...landLANDend", LIGA = "#liga[ (A|B|C|D)]"
+// teamIdSearch: Muster fuer die Suche nach Team-ID, die Eintraege fuer 'start' und 'end' enthaelt, ausserdem die
+//              Adresse der Tabellenzelle mit den Parametern zur Team-ID "startTEAMIDend"
+// doc: Optionale Angabe des Dokuments, in dem die Tabelle gesucht wird  (Default: document)
+// return Im Beispiel { 'Team' : "TEAM", 'Liga' : "LIGA", 'Land' : "LAND", 'TmNr' : TEAMID, 'LdNr' : LAND-NUMMER, 'LgNr' : LIGA-NUMMER },
+//        z.B. { 'Team' : "Choromonets Odessa", 'Liga' : "1. Liga", 'Land' : "Ukraine", 'TmNr' : 930, 'LdNr' : 20, 'LgNr' : 1 }
+function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
+    // Ermittlung von Team, Liga und Land...
     const __TEAMSEARCH   = getValue(teamSearch, __TEAMSEARCHHAUPT);
+    const __TEAMTABLE    = getTable(getValue(__TEAMSEARCH.Tabelle, 1), 'table', doc);
     const __TEAMCELLROW  = getValue(__TEAMSEARCH.Zeile, 0);
     const __TEAMCELLCOL  = getValue(__TEAMSEARCH.Spalte, 0);
-    const __TEAMCELLSTR  = (table === undefined) ? "" : table.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
+    const __TEAMCELLSTR  = (__TEAMTABLE === undefined) ? "" : __TEAMTABLE.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
     const __SEARCHSTART  = __TEAMSEARCH.start;
     const __SEARCHMIDDLE = __TEAMSEARCH.middle;
     const __SEARCHLIGA   = __TEAMSEARCH.liga;
@@ -6608,7 +6632,20 @@ function getTeamParamsFromTable(table, teamSearch = undefined) {
         }
     }
 
-    const __TEAM = new Team(__TEAMNAME, land, liga);
+    // Ermittlung der Team-ID (indirekt ueber den Livegame- bzw. Tabellenplatz-Link)...
+    const __TEAMIDSEARCH   = getValue(teamIdSearch, __TEAMIDSEARCHHAUPT);
+    const __TEAMIDTABLE    = getTable(getValue(__TEAMIDSEARCH.Tabelle, 0), 'table', doc);
+    const __TEAMIDCELLROW  = getValue(__TEAMIDSEARCH.Zeile, 6);
+    const __TEAMIDCELLCOL  = getValue(__TEAMIDSEARCH.Spalte, 0);
+    const __TEAMIDCELLSTR  = (__TEAMIDTABLE === undefined) ? "" : __TEAMIDTABLE.rows[__TEAMIDCELLROW].cells[__TEAMIDCELLCOL].innerHTML;
+    const __SEARCHIDSTART  = __TEAMIDSEARCH.start;
+    const __SEARCHIDEND    = __TEAMIDSEARCH.end;
+    const __INDEXIDSTART   = __TEAMIDCELLSTR.indexOf(__SEARCHIDSTART);
+    const __INDEXIDEND     = __TEAMIDCELLSTR.indexOf(__SEARCHIDEND);
+    const __TEAMIDSTR      = __TEAMIDCELLSTR.substring(__INDEXIDSTART + __SEARCHIDSTART.length, __INDEXIDEND);
+    const __TEAMID         = Number.parseInt(__TEAMIDSTR, 10);
+
+    const __TEAM = new Team(__TEAMNAME, land, liga, __TEAMID);
 
     return __TEAM;
 }
@@ -6777,6 +6814,7 @@ Class.define(RundenLink, Object, {
         'setTeam'      : function(team) {
                              this.uri.setQueryPar('landauswahl', team.LdNr);
                              this.uri.setQueryPar('ligaauswahl', team.LgNr);
+                             this.uri.setQueryPar('hl',          team.TmNr);
                          },
         'setPage'      : function(page, label) {
                              this.uri.home();

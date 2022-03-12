@@ -1116,7 +1116,7 @@ const __TESTOPTCONFIG = {
                    'FreeValue' : true,
                    'SelValue'  : false,
                    'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ],
-                   'Default'   : 17,
+                   'Default'   : 18,
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Saison: $",
                    'Hotkey'    : 'a',
@@ -1156,7 +1156,7 @@ const __TESTOPTCONFIG = {
                    'Hidden'    : true,
                    'Serial'    : true,
                    'Permanent' : true,
-                   'Default'   : undefined,  // new Team() // { 'Team' : undefined, 'Liga' : undefined, 'Land' : undefined, 'LdNr' : 0, 'LgNr' : 0 }
+                   'Default'   : undefined,  // new Team() // { 'Team' : undefined, 'Liga' : undefined, 'Land' : undefined, 'TmNr' : 0, 'LdNr' : 0, 'LgNr' : 0 }
                    'Submit'    : undefined,
                    'Cols'      : 36,
                    'Rows'      : 6,
