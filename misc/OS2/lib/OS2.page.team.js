@@ -15,35 +15,58 @@
 // ==================== Abschnitt fuer Ermittlung des Teams von einer OS2-Seite ====================
 
 const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uuml;ro von TEAM</b><br>LIGA LAND<a href=..."
-        'Zeile'  : 0,
-        'Spalte' : 1,
-        'start'  : " von ",
-        'middle' : "</b><br>",
-        'liga'   : ". Liga",
-        'land'   : ' ',
-        'end'    : "<a href="
+        'Tabelle'   : 1,
+        'Zeile'     : 0,
+        'Spalte'    : 1,
+        'start'     : " von ",
+        'middle'    : "</b><br>",
+        'liga'      : ". Liga",
+        'land'      : ' ',
+        'end'       : "<a href="
     };
 
 const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LAND</a></b>"
-        'Zeile'  : 0,
-        'Spalte' : 0,
-        'start'  : "<b>",
-        'middle' : " - ",
-        'liga'   : ". Liga",
-        'land'   : 'target="_blank">',
-        'end'    : "</a></b>"
+        'Tabelle'   : 1,
+        'Zeile'     : 0,
+        'Spalte'    : 0,
+        'start'     : "<b>",
+        'middle'    : " - ",
+        'liga'      : ". Liga",
+        'land'      : 'target="_blank">',
+        'end'       : "</a></b>"
+    };
+
+const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>...<a href="livegame/index.php?spiele=TEAMID,0">LIVEGAME</a>"
+        'Tabelle'   : 0,
+        'Zeile'     : 6,
+        'Spalte'    : 0,
+        'start'     : '<a href="livegame/index.php?spiele=',
+        'end'       : ',0">LIVEGAME</a>'
+    };
+
+const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>...<a href="livegame/index.php?spiele=TEAMID,0">LIVEGAME</a>"
+        'Tabelle'   : 0,
+        'Zeile'     : 1,
+        'Spalte'    : 1,
+        'start'     : '<a hspace="20" href="javascript:tabellenplatz(',
+        'end'       : ')">Tabellenpl\xE4tze</a>'
     };
 
 // Ermittelt, wie das eigene Team heisst und aus welchem Land bzw. Liga es kommt (zur Unterscheidung von Erst- und Zweitteam)
-// cell: Tabellenzelle mit den Parametern zum Team "startTEAMmiddleLIGA...landLANDend", LIGA = "#liga[ (A|B|C|D)]"
-// teamSeach: Muster fuer die Suche, die Eintraege fuer 'start', 'middle', 'liga', 'land' und 'end' enthaelt
-// return Im Beispiel { 'Team' : "TEAM", 'Liga' : "LIGA", 'Land' : "LAND", 'LdNr' : LAND-NUMMER, 'LgNr' : LIGA-NUMMER },
-//        z.B. { 'Team' : "Choromonets Odessa", 'Liga' : "1. Liga", 'Land' : "Ukraine", 'LdNr' : 20, 'LgNr' : 1 }
-function getTeamParamsFromTable(table, teamSearch = undefined) {
+// teamSearch: Muster fuer die Suche nach Team, die Eintraege fuer 'start', 'middle', 'liga', 'land' und 'end' enthaelt, ausserdem die
+//              Adresse der Tabellenzelle mit den Parametern zum Team "startTEAMmiddleLIGA...landLANDend", LIGA = "#liga[ (A|B|C|D)]"
+// teamIdSearch: Muster fuer die Suche nach Team-ID, die Eintraege fuer 'start' und 'end' enthaelt, ausserdem die
+//              Adresse der Tabellenzelle mit den Parametern zur Team-ID "startTEAMIDend"
+// doc: Optionale Angabe des Dokuments, in dem die Tabelle gesucht wird  (Default: document)
+// return Im Beispiel { 'Team' : "TEAM", 'Liga' : "LIGA", 'Land' : "LAND", 'TmNr' : TEAMID, 'LdNr' : LAND-NUMMER, 'LgNr' : LIGA-NUMMER },
+//        z.B. { 'Team' : "Choromonets Odessa", 'Liga' : "1. Liga", 'Land' : "Ukraine", 'TmNr' : 930, 'LdNr' : 20, 'LgNr' : 1 }
+function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
+    // Ermittlung von Team, Liga und Land...
     const __TEAMSEARCH   = getValue(teamSearch, __TEAMSEARCHHAUPT);
+    const __TEAMTABLE    = getTable(__TEAMSEARCH.Tabelle, 'table', doc);
     const __TEAMCELLROW  = getValue(__TEAMSEARCH.Zeile, 0);
     const __TEAMCELLCOL  = getValue(__TEAMSEARCH.Spalte, 0);
-    const __TEAMCELLSTR  = (table === undefined) ? "" : table.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
+    const __TEAMCELLSTR  = (__TEAMTABLE === undefined) ? "" : __TEAMTABLE.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
     const __SEARCHSTART  = __TEAMSEARCH.start;
     const __SEARCHMIDDLE = __TEAMSEARCH.middle;
     const __SEARCHLIGA   = __TEAMSEARCH.liga;
@@ -73,7 +96,20 @@ function getTeamParamsFromTable(table, teamSearch = undefined) {
         }
     }
 
-    const __TEAM = new Team(__TEAMNAME, land, liga);
+    // Ermittlung der Team-ID (indirekt über den Livegame- bzw. Tabellenplatz-Link)...
+    const __TEAMIDSEARCH   = getValue(teamIdSearch, __TEAMIDSEARCHHAUPT);
+    const __TEAMIDTABLE    = getTable(__TEAMIDSEARCH.Tabelle, 'table', doc);
+    const __TEAMIDCELLROW  = getValue(__TEAMIDSEARCH.Zeile, 6);
+    const __TEAMIDCELLCOL  = getValue(__TEAMIDSEARCH.Spalte, 0);
+    const __TEAMIDCELLSTR  = (__TEAMIDTABLE === undefined) ? "" : __TEAMIDTABLE.rows[__TEAMIDCELLROW].cells[__TEAMIDCELLCOL].innerHTML;
+    const __SEARCHIDSTART  = __TEAMIDSEARCH.start;
+    const __SEARCHIDEND    = __TEAMIDSEARCH.end;
+    const __INDEXIDSTART   = __TEAMIDCELLSTR.indexOf(__SEARCHIDSTART);
+    const __INDEXIDEND     = __TEAMIDCELLSTR.indexOf(__SEARCHIDEND);
+    const __TEAMIDSTR      = __TEAMIDCELLSTR.substring(__INDEXIDSTART + __SEARCHIDSTART.length, __INDEXIDEND);
+    const __TEAMID         = Number.parseInt(__TEAMIDSTR, 10);
+
+    const __TEAM = new Team(__TEAMNAME, land, liga, __TEAMID);
 
     return __TEAM;
 }
