@@ -63,7 +63,7 @@ const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>..
 function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
     // Ermittlung von Team, Liga und Land...
     const __TEAMSEARCH   = getValue(teamSearch, __TEAMSEARCHHAUPT);
-    const __TEAMTABLE    = getTable(__TEAMSEARCH.Tabelle, 'table', doc);
+    const __TEAMTABLE    = getTable(getValue(__TEAMSEARCH.Tabelle, 1), 'table', doc);
     const __TEAMCELLROW  = getValue(__TEAMSEARCH.Zeile, 0);
     const __TEAMCELLCOL  = getValue(__TEAMSEARCH.Spalte, 0);
     const __TEAMCELLSTR  = (__TEAMTABLE === undefined) ? "" : __TEAMTABLE.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
@@ -96,9 +96,9 @@ function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
         }
     }
 
-    // Ermittlung der Team-ID (indirekt über den Livegame- bzw. Tabellenplatz-Link)...
+    // Ermittlung der Team-ID (indirekt ueber den Livegame- bzw. Tabellenplatz-Link)...
     const __TEAMIDSEARCH   = getValue(teamIdSearch, __TEAMIDSEARCHHAUPT);
-    const __TEAMIDTABLE    = getTable(__TEAMIDSEARCH.Tabelle, 'table', doc);
+    const __TEAMIDTABLE    = getTable(getValue(__TEAMIDSEARCH.Tabelle, 0), 'table', doc);
     const __TEAMIDCELLROW  = getValue(__TEAMIDSEARCH.Zeile, 6);
     const __TEAMIDCELLCOL  = getValue(__TEAMIDSEARCH.Spalte, 0);
     const __TEAMIDCELLSTR  = (__TEAMIDTABLE === undefined) ? "" : __TEAMIDTABLE.rows[__TEAMIDCELLROW].cells[__TEAMIDCELLCOL].innerHTML;
