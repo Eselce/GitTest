@@ -5,8 +5,8 @@
 // @copyright    2017+
 // @author       Sven Loges (SLC)
 // @description  Zugabgabe-Script fuer Online Soccer 2.0
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?\w+)*)?(#\w+)?$/
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zugabgabe\.php(\?p=\d+(&\w+=?\w+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zugabgabe\.php(\?p=\d+(&\w+=?[+\w]+)*)?(#\w+)?$/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue

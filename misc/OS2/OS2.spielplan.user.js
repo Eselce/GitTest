@@ -5,7 +5,7 @@
 // @copyright    2013+
 // @author       Sven Loges (SLC)
 // @description  Spielplan-Abschnitt aus dem Master-Script fuer Online Soccer 2.0
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(st|showteam)\.php\?s=6(&\w+=?\w+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(st|showteam)\.php\?s=6(&\w+=?[+\w]+)*(#\w+)?$/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue
