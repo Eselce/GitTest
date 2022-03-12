@@ -62,12 +62,13 @@ Class.define(TeamClassification, Classification, {
 // Klasse fuer Teamdaten
 
 /*class*/ function Team /*{
-    constructor*/(team, land, liga) {
+    constructor*/(team, land, liga, teamId) {
         'use strict';
 
         this.Team = team;
         this.Land = land;
         this.Liga = liga;
+        this.TmNr = (teamId || 0);
         this.LdNr = getLandNr(land);
         this.LgNr = getLigaNr(liga);
     }
@@ -78,6 +79,7 @@ Class.define(Team, Object, {
                                         'Team' : true,
                                         'Liga' : true,
                                         'Land' : true,
+                                        'TmNr' : true,
                                         'LdNr' : true,
                                         'LgNr' : true
                                     }
@@ -90,12 +92,11 @@ Class.define(Team, Object, {
 // Klasse fuer Vereinsdaten
 
 /*class*/ function Verein /*extends Team {
-    constructor*/(team, land, liga, id, manager, flags) {
+    constructor*/(team, land, liga, teamId, manager, flags) {
         'use strict';
 
-        Team.call(this, team, land, liga);
+        Team.call(this, team, land, liga, teamId);
 
-        this.ID = id;
         this.Manager = manager;
         this.Flags = (flags || []);
     }
@@ -106,9 +107,9 @@ Class.define(Verein, Team, {
                                         'Team'    : true,
                                         'Liga'    : true,
                                         'Land'    : true,
+                                        'TmNr'    : true,
                                         'LdNr'    : true,
                                         'LgNr'    : true,
-                                        'ID'      : true,
                                         'Manager' : true,
                                         'Flags'   : true
                                     }
@@ -120,7 +121,7 @@ Class.define(Verein, Team, {
 
 // Gibt die Teamdaten zurueck und aktualisiert sie ggfs. in der Option
 // optSet: Platz fuer die gesetzten Optionen
-// teamParams: Dynamisch ermittelte Teamdaten ('Team', 'Liga', 'Land', 'LdNr' und 'LgNr')
+// teamParams: Dynamisch ermittelte Teamdaten ('Team', 'Liga', 'Land', 'TmNr', 'LdNr' und 'LgNr')
 // myTeam: Objekt fuer die Teamdaten
 // return Die Teamdaten oder undefined bei Fehler
 function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team()) {
