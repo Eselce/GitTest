@@ -617,7 +617,7 @@ const __OPTCONFIG = {
                    'Hidden'    : false,
                    'Serial'    : true,
                    'Permanent' : true,
-                   'Default'   : undefined,  // new Team() // { 'Team' : undefined, 'Liga' : undefined, 'Land' : undefined, 'LdNr' : 0, 'LgNr' : 0 }
+                   'Default'   : undefined,  // new Team() // { 'Team' : undefined, 'Liga' : undefined, 'Land' : undefined, 'TmNr' : 0, 'LdNr' : 0, 'LgNr' : 0 }
                    'Submit'    : undefined,
                    'Cols'      : 36,
                    'Rows'      : 6,
@@ -1220,7 +1220,7 @@ function getAufwertFromHTML(cells, colIdxAuf, shortForm = true) {
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
 const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
-        const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHHAUPT);  // Link mit Team, Liga, Land...
+        const __TEAMPARAMS = getTeamParamsFromTable(__TEAMSEARCHHAUPT, __TEAMIDSEARCHHAUPT);
 
         return {
                 'teamParams' : __TEAMPARAMS,

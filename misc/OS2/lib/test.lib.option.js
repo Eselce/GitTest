@@ -146,7 +146,7 @@ const __TESTOPTCONFIG = {
                    'Hidden'    : true,
                    'Serial'    : true,
                    'Permanent' : true,
-                   'Default'   : undefined,  // new Team() // { 'Team' : undefined, 'Liga' : undefined, 'Land' : undefined, 'LdNr' : 0, 'LgNr' : 0 }
+                   'Default'   : undefined,  // new Team() // { 'Team' : undefined, 'Liga' : undefined, 'Land' : undefined, 'TmNr' : 0, 'LdNr' : 0, 'LgNr' : 0 }
                    'Submit'    : undefined,
                    'Cols'      : 36,
                    'Rows'      : 6,

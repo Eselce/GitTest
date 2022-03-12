@@ -223,7 +223,7 @@ const __OPTCONFIG = {
                    'Hidden'    : false,
                    'Serial'    : true,
                    'Permanent' : true,
-                   'Default'   : undefined,  // new Team() // { 'Team' : undefined, 'Liga' : undefined, 'Land' : undefined, 'LdNr' : 0, 'LgNr' : 0 }
+                   'Default'   : undefined,  // new Team() // { 'Team' : undefined, 'Liga' : undefined, 'Land' : undefined, 'TmNr' : 0, 'LdNr' : 0, 'LgNr' : 0 }
                    'Submit'    : undefined,
                    'Cols'      : 36,
                    'Rows'      : 6,
@@ -355,7 +355,7 @@ __TEAMCLASS.optSelect = {
 
 // Verarbeitet Ansicht "Saisonplan"
 const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
-        const __TEAMPARAMS = getTeamParamsFromTable(getTable(1), __TEAMSEARCHTEAM);  // Link mit Team, Liga, Land...
+        const __TEAMPARAMS = getTeamParamsFromTable(__TEAMSEARCHTEAM, __TEAMIDSEARCHTEAM);
 
         const __ROWOFFSETUPPER = 1;     // Header-Zeile
         const __COLUMNINDEX = {
