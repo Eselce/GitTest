@@ -50,6 +50,7 @@ Class.define(RundenLink, Object, {
         'setTeam'      : function(team) {
                              this.uri.setQueryPar('landauswahl', team.LdNr);
                              this.uri.setQueryPar('ligaauswahl', team.LgNr);
+                             this.uri.setQueryPar('hl',          team.TmNr);
                          },
         'setPage'      : function(page, label) {
                              this.uri.home();
