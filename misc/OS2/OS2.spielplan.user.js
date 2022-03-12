@@ -500,45 +500,17 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
 // return Gefuelltes Objekt mit den gesetzten Optionen
 function prepareOptions(optSet, optParams) {
-    UNUSED(optParams);
-
     // Werte aus der HTML-Seite ermitteln...
-    const __LIGA = getSelection('ligaauswahl');
-    const __LAND = getSelection('landauswahl');
-    const __TABTYP = getSelection('tabauswahl');
-    const __PRUNDE = getSelection('stauswahl');
-    const __OSCRUNDE = getSelection('runde');
-    const __OSERUNDE = getSelection('runde');
-    const __DEFSAISON = getOptValueByName(optSet, 'aktuelleSaison');
-    const __SAISONS = getSelectionArray('saauswahl', 'Number', getSelectedValue);
-    const __CURRSAISON = (__SAISONS ? Math.max(... __SAISONS) : __DEFSAISON);
-    const __SAISON = getSelection('saauswahl', 'Number', getSelectedValue);
-    const __LIGANR = getSelection('ligaauswahl', 'Number', getSelectedValue);
-    const __LANDNR = getSelection('landauswahl', 'Number', getSelectedValue);
-    const __TABTYPNR = getSelection('tabauswahl', 'Number', getSelectedValue);
-    const __PRUNDNR = getSelection('stauswahl', 'Number', getSelectedValue);
-    const __OSCRUNDNR = getSelection('runde', 'Number', getSelectedValue);
-    const __OSERUNDNR = getSelection('runde', 'Number', getSelectedValue);
+    const __BOXSAISONS = document.getElementsByTagName('option');
+    const __SAISON = getSelectionFromComboBox(__BOXSAISONS, 0, 'Number');
+    const __LIGASIZE = (optParams.Tab ? getLigaSizeFromSpielplan(optParams.Tab.rows, optParams.Zei, optParams.Spa, getOptValue(optSet.saison)) : undefined);
 
     // ... und abspeichern...
-    setOptByName(optSet, 'liga', __LIGA, false);
-    setOptByName(optSet, 'land', __LAND, false);
-    setOptByName(optSet, 'tabTyp', __TABTYP, false);
-    setOptByName(optSet, 'Prunde', __PRUNDE, false);
-    setOptByName(optSet, 'OSCrunde', __OSCRUNDE, false);
-    setOptByName(optSet, 'OSErunde', __OSERUNDE, false);
-    setOptByName(optSet, 'aktuelleSaison', __CURRSAISON, false);
-    setOptByName(optSet, 'saison', __SAISON, false);
-    setOptByName(optSet, 'ligaNr', __LIGANR, false);
-    setOptByName(optSet, 'landNr', __LANDNR, false);
-    setOptByName(optSet, 'tabTypNr', __TABTYPNR, false);
-    setOptByName(optSet, 'PrundenNr', __PRUNDNR, false);
-    setOptByName(optSet, 'OSCrundenNr', __OSCRUNDNR, false);
-    setOptByName(optSet, 'OSErundenNr', __OSERUNDNR, false);
+    setOpt(optSet.saison, __SAISON, false);
+    setOpt(optSet.ligaSize, __LIGASIZE, false);
 
     return optSet;
 }
-
 
 // Callback-Funktion fuer die Ermittlung des richtigen PageManagers
 // page: Die ueber den Selektor ermittelte Seitennummer (hier: nur 6 gueltig)
