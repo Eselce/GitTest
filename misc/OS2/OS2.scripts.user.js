@@ -5,7 +5,7 @@
 // @copyright    2017+
 // @author       Sven Loges (SLC)
 // @description  Analysiert die Scripts auf GitHub
-// @include      /^https?://(www\.)?github\.com/Eselce/(GitTest|OS2\.scripts)/(tree/|blob/)?master/(misc/OS2/)?(lib/.*\.js|.*\.user\.js)(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?github\.com/Eselce/(GitTest|OS2\.scripts)/(tree/|blob/)?master/(misc/OS2/)?(lib/.*\.js|.*\.user\.js)(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue

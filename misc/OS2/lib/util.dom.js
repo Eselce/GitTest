@@ -45,7 +45,7 @@ function addHiddenField(form, props) {
 
 // Hilfsfunktion fuer alle Browser: Fuegt fuer ein Event eine Reaktion ein
 // obj: Betroffenes Objekt, z.B. ein Eingabeelement
-// type: Name des Events, z.B. "click"
+// type: Name des Events, z.B. 'click'
 // callback: Funktion als Reaktion
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
@@ -64,7 +64,7 @@ function addEvent(obj, type, callback, capture = false) {
 
 // Hilfsfunktion fuer alle Browser: Entfernt eine Reaktion fuer ein Event
 // obj: Betroffenes Objekt, z.B. ein Eingabeelement
-// type: Name des Events, z.B. "click"
+// type: Name des Events, z.B. 'click'
 // callback: Funktion als Reaktion
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
@@ -83,7 +83,7 @@ function removeEvent(obj, type, callback, capture = false) {
 
 // Hilfsfunktion fuer alle Browser: Fuegt fuer ein Event eine Reaktion ein
 // id: ID des betroffenen Eingabeelements
-// type: Name des Events, z.B. "click"
+// type: Name des Events, z.B. 'click'
 // callback: Funktion als Reaktion
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
@@ -95,7 +95,7 @@ function addDocEvent(id, type, callback, capture = false) {
 
 // Hilfsfunktion fuer alle Browser: Entfernt eine Reaktion fuer ein Event
 // id: ID des betroffenen Eingabeelements
-// type: Name des Events, z.B. "click"
+// type: Name des Events, z.B. 'click'
 // callback: Funktion als Reaktion
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
@@ -119,7 +119,7 @@ function getElement(name, index = 0, doc = document) {
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
-// tag: Tag des Elements ("table")
+// tag: Tag des Elements ('table')
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
 function getTable(index, tag = 'table', doc = document) {

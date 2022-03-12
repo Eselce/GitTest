@@ -5,8 +5,8 @@
 // @copyright    2016+
 // @author       Sven Loges (SLC)
 // @description  Tabellen-Script fuer Online Soccer 2.0
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?\w+)*)?(#\w+)?$/
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(l[pt]|os(cfr|e)|fpt)\.php(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(l[pt]|os(cfr|e)|fpt)\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue
@@ -135,8 +135,8 @@ const __OPTCONFIG = {
                    'ValType'   : 'Number',
                    'FreeValue' : true,
                    'SelValue'  : false,
-                   'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 ],
-                   'Default'   : 11,
+                   'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ],
+                   'Default'   : 18,
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Aktuelle Saison: $",
                    'Hotkey'    : 'A',
@@ -149,7 +149,7 @@ const __OPTCONFIG = {
                    'FreeValue' : true,
                    'SelValue'  : false,
                    'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ],
-                   'Default'   : 17,
+                   'Default'   : 18,
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Saison: $",
                    'Hotkey'    : 'S',
@@ -729,7 +729,8 @@ function initFairplayData(data, laender) {
                          13 : [  919, 1270,  442 ],
                          14 : [  191,  466, 1352 ],
                          15 : [  346, 1756,  754 ],
-                         16 : [  927, 1608, 1466 ]
+                         16 : [  927, 1608, 1466 ],
+                         17 : [  266,  346,  693 ]
                      };
 
     for (let saison in __FPDATA) {
@@ -1458,7 +1459,7 @@ function prepareOptions(optSet, optParams) {
     const __PRUNDE = getSelection('stauswahl');
     const __OSCRUNDE = getSelection('runde');
     const __OSERUNDE = getSelection('runde');
-    const __DEFSAISON = optSet.getOptValue('aktuelleSaison');
+    const __DEFSAISON = getOptValueByName(optSet, 'aktuelleSaison');
     const __SAISONS = getSelectionArray('saauswahl', 'Number', getSelectedValue);
     const __CURRSAISON = (__SAISONS ? Math.max(... __SAISONS) : __DEFSAISON);
     const __SAISON = getSelection('saauswahl', 'Number', getSelectedValue);
@@ -1470,20 +1471,20 @@ function prepareOptions(optSet, optParams) {
     const __OSERUNDNR = getSelection('runde', 'Number', getSelectedValue);
 
     // ... und abspeichern...
-    optSet.setOpt('liga', __LIGA, false);
-    optSet.setOpt('land', __LAND, false);
-    optSet.setOpt('tabTyp', __TABTYP, false);
-    optSet.setOpt('Prunde', __PRUNDE, false);
-    optSet.setOpt('OSCrunde', __OSCRUNDE, false);
-    optSet.setOpt('OSErunde', __OSERUNDE, false);
-    optSet.setOpt('aktuelleSaison', __CURRSAISON, false);
-    optSet.setOpt('saison', __SAISON, false);
-    optSet.setOpt('ligaNr', __LIGANR, false);
-    optSet.setOpt('landNr', __LANDNR, false);
-    optSet.setOpt('tabTypNr', __TABTYPNR, false);
-    optSet.setOpt('PrundenNr', __PRUNDNR, false);
-    optSet.setOpt('OSCrundenNr', __OSCRUNDNR, false);
-    optSet.setOpt('OSErundenNr', __OSERUNDNR, false);
+    setOptByName(optSet, 'liga', __LIGA, false);
+    setOptByName(optSet, 'land', __LAND, false);
+    setOptByName(optSet, 'tabTyp', __TABTYP, false);
+    setOptByName(optSet, 'Prunde', __PRUNDE, false);
+    setOptByName(optSet, 'OSCrunde', __OSCRUNDE, false);
+    setOptByName(optSet, 'OSErunde', __OSERUNDE, false);
+    setOptByName(optSet, 'aktuelleSaison', __CURRSAISON, false);
+    setOptByName(optSet, 'saison', __SAISON, false);
+    setOptByName(optSet, 'ligaNr', __LIGANR, false);
+    setOptByName(optSet, 'landNr', __LANDNR, false);
+    setOptByName(optSet, 'tabTypNr', __TABTYPNR, false);
+    setOptByName(optSet, 'PrundenNr', __PRUNDNR, false);
+    setOptByName(optSet, 'OSCrundenNr', __OSCRUNDNR, false);
+    setOptByName(optSet, 'OSErundenNr', __OSERUNDNR, false);
 
     return optSet;
 }

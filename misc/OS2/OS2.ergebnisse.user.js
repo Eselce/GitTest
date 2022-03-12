@@ -5,7 +5,7 @@
 // @copyright    2016+
 // @author       Sven Loges (SLC)
 // @description  Aktiviert als Standard die Option "Ergebnisse anzeigen" fuer Online Soccer 2.0
-// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(l[sp]|os(eq?|c(q|[hzf]r))|supercup|zer)\.php(\?\w+=?\w+(&\w+=?\w+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(l[sp]|os(eq?|c(q|[hzf]r))|supercup|zer)\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue
