@@ -4497,12 +4497,12 @@ const __OPTMEM = {
 // Namen des Default-, Temporaer- und Null-Memories...
 const __MEMNORMAL   = 'normal';
 const __MEMSESSION  = 'begrenzt';
-const __MEMINAKTIVE = 'inaktiv';
+const __MEMINACTIVE = 'inaktiv';
 
 // Definition des Default-, Dauer- und Null-Memories...
 const __OPTMEMNORMAL   = __OPTMEM[__MEMNORMAL];
 const __OPTMEMSESSION  = __OPTMEM[__MEMSESSION];
-const __OPTMEMINAKTIVE = __OPTMEM[__MEMINAKTIVE];
+const __OPTMEMINACTIVE = __OPTMEM[__MEMINACTIVE];
 
 // Medium fuer die Datenbank (Speicher)
 let myOptMem = __OPTMEMNORMAL;
@@ -4613,8 +4613,8 @@ function startMemoryByOpt(opt, saveOpt = undefined, onFulfilled = undefined, onR
     let optMem = __OPTMEM[storage];
 
     if (! canUseMemory(optMem)) {
-        if (storage !== __MEMINAKTIVE) {
-            storage = __MEMINAKTIVE;
+        if (storage !== __MEMINACTIVE) {
+            storage = __MEMINACTIVE;
             optMem = __OPTMEM[storage];
         }
     }
@@ -5872,7 +5872,7 @@ function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
     }
 
     // Anzeige auf der Seite...
-    if ((optParams.menuAnchor !== undefined) && (myOptMem !== __OPTMEMINAKTIVE)) {
+    if ((optParams.menuAnchor !== undefined) && (myOptMem !== __OPTMEMINACTIVE)) {
         buildOptionForm(optParams.menuAnchor, optSet, optParams);
     }
 

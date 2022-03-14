@@ -377,7 +377,7 @@ function showOptions(optSet = undefined, optParams = { 'hideMenu' : false }) {
     }
 
     // Anzeige auf der Seite...
-    if ((optParams.menuAnchor !== undefined) && (myOptMem !== __OPTMEMINAKTIVE)) {
+    if ((optParams.menuAnchor !== undefined) && (myOptMem !== __OPTMEMINACTIVE)) {
         buildOptionForm(optParams.menuAnchor, optSet, optParams);
     }
 
