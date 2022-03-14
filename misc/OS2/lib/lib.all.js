@@ -1516,23 +1516,45 @@ const __SCRIPTINIT = [];
 
 // Registrierung eine Startfunktion
 // startFun: Auszufuehrende Funktion
-// return void
+// return Promise auf void
 async function registerStartFun(startFun) {
     return __SCRIPTINIT.push(startFun);
 }
 
 // Funktion zum sequentiellen Aufruf der Startroutinen in __SCRIPTINIT ueber Promises
-// return Ein Promise-Objekt fuer den Programmstart
+// return Ein Promise-Objekt fuer den Programmstart (Inhalt: Anzahl der Startfunktionen)
 async function startMain() {
     return __SCRIPTINIT.Reduce((prom, fun) => prom.then(fun, defaultCatch),
-            Promise.resolve(true)).then(__SCRIPTINIT.length = 0);
+            Promise.resolve(true)).then(() => {
+                    const __LEN = __SCRIPTINIT.length;
+
+                    // Liste wurde korrekt verarbeitet, jetzt die Liste loeschen...
+                    __SCRIPTINIT.length = 0;
+
+                    // Liefert die Anzahl der verarbeiteten Startfunktionen...
+                    return __LEN;
+                }, defaultCatch);
+}
+
+// ==================== Abschnitt Meldung Schreibstatus ====================
+
+// Ausgabe auf die Konsole, ob __GMWRITE gesetzt ist (also Optionen beschreibbar sind)
+// return Promise auf void
+async function GM_showOptionsWritable() {
+    if (__GMWRITE) {
+        __LOG[8]("Schreiben von Optionen wurde AKTIVIERT!");
+    } else {
+        __LOG[8]("Schreiben von Optionen wurde DEAKTIVIERT!");
+    }
 }
 
 // ==================== Abschnitt Lesefilter und zugehoerigen Hilfsfunktionen ====================
 
-// Modifikationen fuer Kompatibilitaet (z.B. "undefined" statt undefined bei Tampermonkey)
+// Modifikationen fuer Kompatibilitaet (z.B. 'undefined' statt undefined bei Tampermonkey)
 const __GMREADFILTER = [];
 
+// Hilfsfunktion zur Ermittlung, ob der Tampermonkey-Bug vorliegt, dass undefined als 'undefined' gespeichert wird
+// return Angabe, ob der Tampermonkey-Bug vorliegt
 async function GM_checkForTampermonkeyBug() {
     const __TESTNAME = 'GM_checkForTampermonkeyBug';
     const __TESTVALUE = undefined;
@@ -1597,7 +1619,7 @@ async function GM_TampermonkeyFilter(value, name, defValue) {
     return value;
 }
 
-// ==================== Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
+// ==================== Abschnitt mit Hilfsroutine zur Kapselung von GM-Funktionen (GM.getValue, GM.setValue, GM.deleteValue, GM.listValues) ====================
 
 // Generator-Funktion: Liefert eine ausgewaehlte GM-Funktion
 // action: Name der Funktion im GM-Objekt
@@ -1618,26 +1640,23 @@ function GM_function(action, label, condition = true, altAction = undefined, lev
         };
 }
 
+// ==================== Abschnitt zur Kapselung von GM-Funktionen (GM.getValue, GM.setValue, GM.deleteValue, GM.listValues) und Start-Initialisierungen ====================
+
 // Umlenkung von Speicherung und Loeschung auf nicht-inversible 'getValue'-Funktion.
 // Falls __GMWRITE false ist, wird nicht geschrieben, bei true werden Optionen gespeichert.
-// TODO: Dynamische Variante
+// TODO: Dynamische Variante (bei Laufzeit umstellbar)
 const __GETVALUE = GM_function('getValue', 'GET');
 const __SETVALUE = GM_function('setValue', 'SET', __GMWRITE, 'getValue');
 const __DELETEVALUE = GM_function('deleteValue', 'DELETE', __GMWRITE, 'getValue');
 const __LISTVALUES = GM_function('listValues', 'KEYS');
 
-registerStartFun(async () => {
-        if (__GMWRITE) {
-            __LOG[8]("Schreiben von Optionen wurde AKTIVIERT!");
-        } else {
-            __LOG[8]("Schreiben von Optionen wurde DEAKTIVIERT!");
-        }
-    });
+// Anzeigen, ob Optionen beschreibbar sind (verzoegert)...
+registerStartFun(GM_showOptionsWritable);
 
-// GGfs. GM_TampermonkeyFilter aktivieren...
+// GGfs. GM_TampermonkeyFilter aktivieren (verzoegert)...
 registerStartFun(GM_checkForTampermonkeyBug);
 
-// ==================== Ende Invarianter Abschnitt zur Speicherung (GM.setValue, GM.deleteValue) ====================
+// ==================== Ende Abschnitt zur Kapselung von GM-Funktionen (GM.getValue, GM.setValue, GM.deleteValue, GM.listValues) und Start-Initialisierungen ====================
 
 // ==================== Abschnitt fuer die Sicherung und das Laden von Daten ====================
 
