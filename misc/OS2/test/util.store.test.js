@@ -28,15 +28,19 @@
                                         return ASSERT_TRUE(__GMWRITE, "Schreiben von Daten nicht aktiviert");
                                     },
             '__SCRIPTINIT'        : async function() {
+                                        __SCRIPTINIT.length = 0;  // Starterliste leeren...
+
                                         return callPromiseChain(startMain(), value => {
                                                 const __RET = value;
 
-                                                ASSERT_ZERO(__RET, "startMain() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ZERO(__RET, "startMain() darf keinen Eintrag verarbeiten");
 
                                                 return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer! Eventuell startMain() nicht ausgef\xFChrt?");
                                             }).catch(startMain);
                                     },
             'registerStartFun'    : async function() {
+                                        __SCRIPTINIT.length = 0;  // Starterliste leeren...
+
                                         return callPromiseChain(registerStartFun(() => undefined), value => {
                                                 const __RET = value;
 
@@ -46,24 +50,93 @@
                                             }, startMain, value => {
                                                 const __RET = value;
 
-                                                ASSERT_ZERO(__RET, "startMain() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "startMain() muss genau einen Eintrag verarbeiten");
 
                                                 return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer!");
                                             }).catch(startMain);
                                     },
+            'GM_WRITE'            : function() {
+                                        __SCRIPTINIT.length = 0;  // Starterliste leeren...
+
+                                        return callPromiseChain(registerStartFun(GM_showOptionsWritable), value => {
+                                                const __RET = value;
+
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+
+                                                return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
+                                            }, startMain, value => {
+                                                const __RET = value;
+
+                                                ASSERT_ONE(__RET, "startMain() muss genau einen Eintrag verarbeiten");
+
+                                                return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer!");
+                                            });
+                                    },
+            'GM_checkTMbug'       : function() {
+                                        __SCRIPTINIT.length = 0;  // Starterliste leeren...
+
+                                        return callPromiseChain(registerStartFun(GM_checkForTampermonkeyBug), value => {
+                                                const __RET = value;
+
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+
+                                                return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
+                                            }, startMain, value => {
+                                                const __RET = value;
+
+                                                ASSERT_ONE(__RET, "startMain() muss genau einen Eintrag verarbeiten");
+
+                                                return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer!");
+                                            });
+                                    },
             'startMain'           : function() {
+                                        __SCRIPTINIT.length = 0;  // Starterliste leeren...
+
                                         return callPromiseChain(registerStartFun(value => {
                                                 const __RET = value;
 
                                                 ASSERT_TRUE(__RET, "startMain() muss mit true starten");
 
-                                                // TODO ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
-
                                                 return 42;
-                                            }), startMain, value => {
+                                            }), value => {
                                                 const __RET = value;
 
-                                                ASSERT_EQUAL(__RET, 42, "startMain() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+
+                                                return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
+                                            }, startMain, value => {
+                                                const __RET = value;
+
+                                                ASSERT_ONE(__RET, "startMain() muss genau einen Eintrag verarbeiten");
+
+                                                return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer!");
+                                            });
+                                    },
+            'startMainAll'        : function() {
+                                        __SCRIPTINIT.length = 0;  // Starterliste leeren...
+
+                                        return callPromiseChain(
+                                            registerStartFun(GM_showOptionsWritable),
+                                            value => {
+                                                const __RET = value;
+
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+
+                                                return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
+                                            },
+                                            () => registerStartFun(GM_checkForTampermonkeyBug),
+                                            value => {
+                                                const __RET = value;
+
+                                                ASSERT_EQUAL(__RET, 2, "registerStartFun() lieferte falschen R\xFCckgabewert");
+
+                                                ASSERT_EQUAL(__SCRIPTINIT.length, 2, "__SCRIPTINIT muss genau zwei Eintr\xE4ge haben");
+                                            },
+                                            startMain,
+                                            value => {
+                                                const __RET = value;
+
+                                                ASSERT_EQUAL(__RET, 2, "startMain() muss genau zwei Eintr\xE4ge verarbeiten");
 
                                                 return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer!");
                                             });
