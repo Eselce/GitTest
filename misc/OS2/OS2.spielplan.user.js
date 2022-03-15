@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.spielplan
 // @namespace    http://os.ongapo.com/
-// @version      0.72+lib
+// @version      0.73+lib
 // @copyright    2013+
 // @author       Sven Loges (SLC)
 // @description  Spielplan-Abschnitt aus dem Master-Script fuer Online Soccer 2.0
