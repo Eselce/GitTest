@@ -114,19 +114,33 @@ Object.defineProperty(Array.prototype, 'Reduce', {
     'configurable'    : true,
     'enumerable'      : false,
     'value'           : function(reduceFun, value) {
-        if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-            throw TypeError("Invalid reduce() function!");
-        }
+        try {
+            if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
+                throw TypeError("Invalid reduce() function!");
+            }
 
-        const __LEN = this.length;
-        const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
+            const __LEN = this.length;
+            const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
 
-        if (__DOSHIFT) {
-            value = this[0];
-        }
+            if (__DOSHIFT) {
+                value = this[0];
+            }
 
-        for (let i = (__DOSHIFT ? 1 : 0); i < __LEN; i++) {
-            value = reduceFun.call(this, value, this[i], i, this);
+            for (let i = (__DOSHIFT ? 1 : 0); i < __LEN; i++) {
+                __LOG[9](i, value, this[i]);
+                if (value instanceof Promise) {
+                    value.then(val => __LOG[9](i, 'value', val), err => __LOG[1]('error', err));
+                }
+
+                value = reduceFun.call(this, value, this[i], i, this);
+            }
+
+            __LOG[8](__LEN, value, reduceFun);
+            if (value instanceof Promise) {
+                value.then(ret => __LOG[8]('return', ret), err => __LOG[1]('error', err));
+            }
+        } catch (ex) {
+            showException('[' + (ex && ex.lineNumber) + "] Reduce()", ex);
         }
 
         return value;
@@ -145,19 +159,33 @@ Object.defineProperty(Array.prototype, 'ReduceRight', {
     'configurable'    : true,
     'enumerable'      : false,
     'value'           : function(reduceFun, value) {
-        if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-            throw TypeError("Invalid reduceRight() function!");
-        }
+        try {
+            if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
+                throw TypeError("Invalid reduceRight() function!");
+            }
 
-        const __LEN = this.length;
-        const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
+            const __LEN = this.length;
+            const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
 
-        if (__DOSHIFT) {
-            value = this[__LEN - 1];
-        }
+            if (__DOSHIFT) {
+                value = this[__LEN - 1];
+            }
 
-        for (let i = __LEN - (__DOSHIFT ? 2 : 1); i >= 0; i--) {
-            value = reduceFun.call(this, value, this[i], i, this);
+            for (let i = __LEN - (__DOSHIFT ? 2 : 1); i >= 0; i--) {
+                __LOG[9](i, value, this[i]);
+                if (value instanceof Promise) {
+                    value.then(val => __LOG[9](i, 'value', val), err => __LOG[1]('error', err));
+                }
+
+                value = reduceFun.call(this, value, this[i], i, this);
+            }
+
+            __LOG[8](__LEN, value, reduceFun);
+            if (value instanceof Promise) {
+                value.then(ret => __LOG[8]('return', ret), err => __LOG[1]('error', err));
+            }
+        } catch (ex) {
+            showException('[' + (ex && ex.lineNumber) + "] ReduceRight()", ex);
         }
 
         return value;
