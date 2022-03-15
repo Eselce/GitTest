@@ -41,7 +41,7 @@ async function startMain() {
 
                     // Liefert die Anzahl der verarbeiteten Startfunktionen...
                     return __LEN;
-                }, defaultCatch);
+                }, defaultCatch).catch(defaultCatch);
 }
 
 // ==================== Abschnitt Meldung Schreibstatus ====================
@@ -71,7 +71,8 @@ async function GM_checkForTampermonkeyBug() {
     const __TESTFILTER = GM_TampermonkeyFilter;
 
     return __SETVALUE(__TESTNAME, __TESTVALUE).then(
-        __GETVALUE(__TESTNAME, __TESTDEFAULT), defaultCatch).then(value => {
+            () => __GETVALUE(__TESTNAME, __TESTDEFAULT), defaultCatch).then(
+            value => {
                 const __RET = (value !== __TESTDEFAULT);
 
                 __LOG[8]("__GETVALUE() lieferte", __LOG.info(value, false), '-', __RET);
@@ -90,7 +91,7 @@ async function GM_checkForTampermonkeyBug() {
                 }
 
                 return __RET;
-            }, defaultCatch);
+            }, defaultCatch).catch(defaultCatch);
 }
 
 // Funktion zum sequentiellen Aufruf der Filter in __GMREADFILTER ueber Promises
@@ -101,7 +102,7 @@ async function GM_checkForTampermonkeyBug() {
 async function useReadFilter(startValue, name, defValue) {
     return __GMREADFILTER.Reduce((prom, fun) => prom.then(
             value => fun(value, name, defValue), defaultCatch),
-            Promise.resolve(startValue));
+            Promise.resolve(startValue)).catch(defaultCatch);
 }
 
 // Kompatibilitionsfunktion gegen den undefined-Bug von Tampermonkey
