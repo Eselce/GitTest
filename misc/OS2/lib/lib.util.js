@@ -859,19 +859,33 @@ Object.defineProperty(Array.prototype, 'Reduce', {
     'configurable'    : true,
     'enumerable'      : false,
     'value'           : function(reduceFun, value) {
-        if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-            throw TypeError("Invalid reduce() function!");
-        }
+        try {
+            if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
+                throw TypeError("Invalid reduce() function!");
+            }
 
-        const __LEN = this.length;
-        const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
+            const __LEN = this.length;
+            const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
 
-        if (__DOSHIFT) {
-            value = this[0];
-        }
+            if (__DOSHIFT) {
+                value = this[0];
+            }
 
-        for (let i = (__DOSHIFT ? 1 : 0); i < __LEN; i++) {
-            value = reduceFun.call(this, value, this[i], i, this);
+            for (let i = (__DOSHIFT ? 1 : 0); i < __LEN; i++) {
+                __LOG[9](i, value, this[i]);
+                if (value instanceof Promise) {
+                    value.then(val => __LOG[9](i, 'value', val), err => __LOG[1]('error', err));
+                }
+
+                value = reduceFun.call(this, value, this[i], i, this);
+            }
+
+            __LOG[8](__LEN, value, reduceFun);
+            if (value instanceof Promise) {
+                value.then(ret => __LOG[8]('return', ret), err => __LOG[1]('error', err));
+            }
+        } catch (ex) {
+            showException('[' + (ex && ex.lineNumber) + "] Reduce()", ex);
         }
 
         return value;
@@ -890,19 +904,33 @@ Object.defineProperty(Array.prototype, 'ReduceRight', {
     'configurable'    : true,
     'enumerable'      : false,
     'value'           : function(reduceFun, value) {
-        if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-            throw TypeError("Invalid reduceRight() function!");
-        }
+        try {
+            if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
+                throw TypeError("Invalid reduceRight() function!");
+            }
 
-        const __LEN = this.length;
-        const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
+            const __LEN = this.length;
+            const __DOSHIFT = (((typeof value) === 'undefined') || (value === null));
 
-        if (__DOSHIFT) {
-            value = this[__LEN - 1];
-        }
+            if (__DOSHIFT) {
+                value = this[__LEN - 1];
+            }
 
-        for (let i = __LEN - (__DOSHIFT ? 2 : 1); i >= 0; i--) {
-            value = reduceFun.call(this, value, this[i], i, this);
+            for (let i = __LEN - (__DOSHIFT ? 2 : 1); i >= 0; i--) {
+                __LOG[9](i, value, this[i]);
+                if (value instanceof Promise) {
+                    value.then(val => __LOG[9](i, 'value', val), err => __LOG[1]('error', err));
+                }
+
+                value = reduceFun.call(this, value, this[i], i, this);
+            }
+
+            __LOG[8](__LEN, value, reduceFun);
+            if (value instanceof Promise) {
+                value.then(ret => __LOG[8]('return', ret), err => __LOG[1]('error', err));
+            }
+        } catch (ex) {
+            showException('[' + (ex && ex.lineNumber) + "] ReduceRight()", ex);
         }
 
         return value;
@@ -1506,7 +1534,7 @@ async function startMain() {
 
                     // Liefert die Anzahl der verarbeiteten Startfunktionen...
                     return __LEN;
-                }, defaultCatch);
+                }, defaultCatch).catch(defaultCatch);
 }
 
 // ==================== Abschnitt Meldung Schreibstatus ====================
@@ -1536,7 +1564,8 @@ async function GM_checkForTampermonkeyBug() {
     const __TESTFILTER = GM_TampermonkeyFilter;
 
     return __SETVALUE(__TESTNAME, __TESTVALUE).then(
-        __GETVALUE(__TESTNAME, __TESTDEFAULT), defaultCatch).then(value => {
+            () => __GETVALUE(__TESTNAME, __TESTDEFAULT), defaultCatch).then(
+            value => {
                 const __RET = (value !== __TESTDEFAULT);
 
                 __LOG[8]("__GETVALUE() lieferte", __LOG.info(value, false), '-', __RET);
@@ -1555,7 +1584,7 @@ async function GM_checkForTampermonkeyBug() {
                 }
 
                 return __RET;
-            }, defaultCatch);
+            }, defaultCatch).catch(defaultCatch);
 }
 
 // Funktion zum sequentiellen Aufruf der Filter in __GMREADFILTER ueber Promises
@@ -1566,7 +1595,7 @@ async function GM_checkForTampermonkeyBug() {
 async function useReadFilter(startValue, name, defValue) {
     return __GMREADFILTER.Reduce((prom, fun) => prom.then(
             value => fun(value, name, defValue), defaultCatch),
-            Promise.resolve(startValue));
+            Promise.resolve(startValue)).catch(defaultCatch);
 }
 
 // Kompatibilitionsfunktion gegen den undefined-Bug von Tampermonkey
