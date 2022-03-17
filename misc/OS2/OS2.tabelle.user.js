@@ -1033,7 +1033,7 @@ const procEuropa = new PageManager("Internationales Finale", __TEAMCLASS, (optSe
 
         const __RUNDE = optSet.getOptValue(typ + 'rundenNr');
         const __FINALE = (__RUNDE === finale);
-        const __ROWS = getRows('table#kader1.sortable');  // #0: Die Ligatabelle
+        const __ROWS = getRows();  // #0: Die OSE- oder OSC-Finale
 
         if (__FINALE && __ROWS.length) {
             const __CELLS = __ROWS[0].cells;  // Finalspiel
@@ -1118,7 +1118,7 @@ const procPokal = new PageManager("Landespokalfinale", __TEAMCLASS, (optSet, fin
             };
         const __RUNDE = optSet.getOptValue('PrundenNr');
         const __FINALE = (__RUNDE === finale);
-        const __ROWS = getRows('table#kader1.sortable');  // #0: Die Ligatabelle
+        const __ROWS = getRows();  // #0: Das Pokalfinale
 
         if (__FINALE && __ROWS.length) {
             const __CELLS = __ROWS[0].cells;  // Finalspiel
@@ -1201,7 +1201,7 @@ const procTabelle = new PageManager("Ligatabelle", __TEAMCLASS, () => {
                 'Punkte' : 10
             };
 
-        const __TABLEMAN = new TableManager(optSet, __COLUMNINDEX, getRowsById('kader1'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
+        const __TABLEMAN = new TableManager(optSet, __COLUMNINDEX, getRows('table#kader1.sortable'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
 
         const __SAISON = __TABLEMAN.saison;
         const __LAND = __TABLEMAN.land;
