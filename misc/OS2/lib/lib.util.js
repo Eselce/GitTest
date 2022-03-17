@@ -1341,6 +1341,51 @@ function defaultCatch(error, show) {
     }
 }
 
+// ==================== Hilfsfunktionen fuer Typueberpruefungen ====================
+
+// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
+// obj: Das zu ueberpruefende Objekt
+// cls: Klasse, die Basisklasse sein muss
+// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
+// label: Prefix fuer die Fehlerzeile
+// objName: Name des Wertes oder der Variablen
+// className: Name der Basisklasse
+// throw Wirft im Fehlerfall einen TypeError
+// return true, falls kein Error geworfen wurde
+function checkObjClass(obj, cls, strict = false, label = "", objName = undefined, className = undefined) {
+    const __TYPE = (className || cls);
+    const __OBJ = (objName || "Object");
+    const __LABEL = (label || "Error");
+
+    return ((obj instanceof cls) || checkType(obj, 'object', strict, __LABEL, __OBJ, __TYPE));
+}
+
+// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
+// value: Der zu pruefende Wert
+// type: Erforderlicher Typ
+// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
+// label: Prefix fuer die Fehlerzeile
+// valName: Name des Wertes oder der Variablen
+// typeName: Name des Typs fuer die Fehlermeldung
+// throw Wirft im Fehlerfall (also, wenn der Typ nicht stimmt) einen TypeError
+// return true, falls kein Error geworfen wurde
+function checkType(value, type, strict = false, label = "", valName = undefined, typeName = undefined) {
+    const __TYPE = (typeName || type);
+    const __VAL = (valName || "Value");
+    const __LABEL = (label || "Error");
+
+    if (strict || (value !== undefined)) {
+        if ((typeof value) !== type) {
+            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                            __LOG.info(value, true, true) + ' ' + String(value));
+        }
+    }
+
+    return true;
+}
+
+// ==================== Ende Hilfsfunktionen fuer Typueberpruefungens ====================
+
 // Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
 // ex: Exception, Error o.ae. mit 'stack' Eigenschaft, die ein Stacktrace enthaelt
 // longForm: Ausgabe des vollen Pfades anstelle von nur dem Dateinamen und der Zeilennummer
@@ -2293,16 +2338,38 @@ function removeDocEvent(id, type, callback, capture = false) {
     return removeEvent(__OBJ, type, callback, capture);
 }
 
-// Hilfsfunktion fuer die Ermittlung eines Elements der Seite
+// Hilfsfunktion fuer die Ermittlung aller Elements desselben Typs auf der Seite ueber CSS Selector (Default: Tabelle)
+// selector: CSS Selector des Elements ('table')
+// doc: Dokument (document)
+// return Kollektion aller gesuchten Elemente oder leer
+function getElements(selector = 'table', doc = document) {
+    const __ELEMENTS = doc.querySelectorAll(selector);
+
+    return __ELEMENTS;
+}
+
+// Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber CSS Selector (Default: Tabelle)
+// selector: CSS Selector des Elements ('table')
+// index: Laufende Nummer des Elements (0-based), Default: 0
+// doc: Dokument (document)
+// return Gesuchtes Element oder undefined (falls nicht gefunden)
+function getElement(selector = 'table', index = 0, doc = document) {
+    const __ELEMENTS = doc.querySelectorAll(selector);
+    const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
+
+    return __ELEMENT;
+}
+
+// Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber den Namen
 // name: Name des Elements (siehe "name=")
 // index: Laufende Nummer des Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchtes Element mit der lfd. Nummer index oder undefined (falls nicht gefunden)
-function getElement(name, index = 0, doc = document) {
-    const __TAGS = doc.getElementsByName(name);
-    const __TABLE = (__TAGS ? __TAGS[index] : undefined);
+function getElementByName(name, index = 0, doc = document) {
+    const __ELEMENTS = doc.getElementsByName(name);
+    const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
 
-    return __TABLE;
+    return __ELEMENT;
 }
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
@@ -2317,13 +2384,25 @@ function getTable(index, tag = 'table', doc = document) {
     return __TABLE;
 }
 
-// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle
+// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle ueber den Namen
 // name: Name des Tabellen-Elements (siehe "name=")
 // index: Laufende Nummer des Tabellen-Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getElementRows(name, index = 0, doc = document) {
-    const __TABLE = getElement(name, index, doc);
+function getRowsByName(name, index = 0, doc = document) {
+    const __TABLE = getElementByName(name, index, doc);
+    const __ROWS = (__TABLE ? __TABLE.rows : undefined);
+
+    return __ROWS;
+}
+
+// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle ueber CSS Selector (Default: Tabelle)
+// selector: CSS Selector des Elements ('table')
+// index: Laufende Nummer des Tabellen-Elements (0-based), Default: 0
+// doc: Dokument (document)
+// return Gesuchte Zeilen oder undefined (falls nicht gefunden)
+function getRows(selector = 'table', index = 0, doc = document) {
+    const __TABLE = getElement(selector, index, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
     return __ROWS;
@@ -2333,7 +2412,7 @@ function getElementRows(name, index = 0, doc = document) {
 // index: Laufende Nummer des Elements (0-based)
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getRows(index, doc = document) {
+function getTableRows(index, doc = document) {
     const __TABLE = getTable(index, 'table', doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 

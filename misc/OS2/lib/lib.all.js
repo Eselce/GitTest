@@ -1368,6 +1368,51 @@ function defaultCatch(error, show) {
     }
 }
 
+// ==================== Hilfsfunktionen fuer Typueberpruefungen ====================
+
+// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
+// obj: Das zu ueberpruefende Objekt
+// cls: Klasse, die Basisklasse sein muss
+// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
+// label: Prefix fuer die Fehlerzeile
+// objName: Name des Wertes oder der Variablen
+// className: Name der Basisklasse
+// throw Wirft im Fehlerfall einen TypeError
+// return true, falls kein Error geworfen wurde
+function checkObjClass(obj, cls, strict = false, label = "", objName = undefined, className = undefined) {
+    const __TYPE = (className || cls);
+    const __OBJ = (objName || "Object");
+    const __LABEL = (label || "Error");
+
+    return ((obj instanceof cls) || checkType(obj, 'object', strict, __LABEL, __OBJ, __TYPE));
+}
+
+// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
+// value: Der zu pruefende Wert
+// type: Erforderlicher Typ
+// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
+// label: Prefix fuer die Fehlerzeile
+// valName: Name des Wertes oder der Variablen
+// typeName: Name des Typs fuer die Fehlermeldung
+// throw Wirft im Fehlerfall (also, wenn der Typ nicht stimmt) einen TypeError
+// return true, falls kein Error geworfen wurde
+function checkType(value, type, strict = false, label = "", valName = undefined, typeName = undefined) {
+    const __TYPE = (typeName || type);
+    const __VAL = (valName || "Value");
+    const __LABEL = (label || "Error");
+
+    if (strict || (value !== undefined)) {
+        if ((typeof value) !== type) {
+            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                            __LOG.info(value, true, true) + ' ' + String(value));
+        }
+    }
+
+    return true;
+}
+
+// ==================== Ende Hilfsfunktionen fuer Typueberpruefungens ====================
+
 // Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
 // ex: Exception, Error o.ae. mit 'stack' Eigenschaft, die ein Stacktrace enthaelt
 // longForm: Ausgabe des vollen Pfades anstelle von nur dem Dateinamen und der Zeilennummer
@@ -2320,16 +2365,38 @@ function removeDocEvent(id, type, callback, capture = false) {
     return removeEvent(__OBJ, type, callback, capture);
 }
 
-// Hilfsfunktion fuer die Ermittlung eines Elements der Seite
+// Hilfsfunktion fuer die Ermittlung aller Elements desselben Typs auf der Seite ueber CSS Selector (Default: Tabelle)
+// selector: CSS Selector des Elements ('table')
+// doc: Dokument (document)
+// return Kollektion aller gesuchten Elemente oder leer
+function getElements(selector = 'table', doc = document) {
+    const __ELEMENTS = doc.querySelectorAll(selector);
+
+    return __ELEMENTS;
+}
+
+// Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber CSS Selector (Default: Tabelle)
+// selector: CSS Selector des Elements ('table')
+// index: Laufende Nummer des Elements (0-based), Default: 0
+// doc: Dokument (document)
+// return Gesuchtes Element oder undefined (falls nicht gefunden)
+function getElement(selector = 'table', index = 0, doc = document) {
+    const __ELEMENTS = doc.querySelectorAll(selector);
+    const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
+
+    return __ELEMENT;
+}
+
+// Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber den Namen
 // name: Name des Elements (siehe "name=")
 // index: Laufende Nummer des Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchtes Element mit der lfd. Nummer index oder undefined (falls nicht gefunden)
-function getElement(name, index = 0, doc = document) {
-    const __TAGS = doc.getElementsByName(name);
-    const __TABLE = (__TAGS ? __TAGS[index] : undefined);
+function getElementByName(name, index = 0, doc = document) {
+    const __ELEMENTS = doc.getElementsByName(name);
+    const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
 
-    return __TABLE;
+    return __ELEMENT;
 }
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
@@ -2344,13 +2411,25 @@ function getTable(index, tag = 'table', doc = document) {
     return __TABLE;
 }
 
-// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle
+// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle ueber den Namen
 // name: Name des Tabellen-Elements (siehe "name=")
 // index: Laufende Nummer des Tabellen-Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getElementRows(name, index = 0, doc = document) {
-    const __TABLE = getElement(name, index, doc);
+function getRowsByName(name, index = 0, doc = document) {
+    const __TABLE = getElementByName(name, index, doc);
+    const __ROWS = (__TABLE ? __TABLE.rows : undefined);
+
+    return __ROWS;
+}
+
+// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle ueber CSS Selector (Default: Tabelle)
+// selector: CSS Selector des Elements ('table')
+// index: Laufende Nummer des Tabellen-Elements (0-based), Default: 0
+// doc: Dokument (document)
+// return Gesuchte Zeilen oder undefined (falls nicht gefunden)
+function getRows(selector = 'table', index = 0, doc = document) {
+    const __TABLE = getElement(selector, index, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
     return __ROWS;
@@ -2360,7 +2439,7 @@ function getElementRows(name, index = 0, doc = document) {
 // index: Laufende Nummer des Elements (0-based)
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getRows(index, doc = document) {
+function getTableRows(index, doc = document) {
     const __TABLE = getTable(index, 'table', doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -6599,7 +6678,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
 // ==================== Abschnitt fuer Ermittlung des Teams von einer OS2-Seite ====================
 
 const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uuml;ro von TEAM</b><br>LIGA LAND<a href=..."
-        'Tabelle'   : 1,
+        'Tabelle'   : 'table table',  // Erste Tabelle innerhalb einer Tabelle...
         'Zeile'     : 0,
         'Spalte'    : 1,
         'start'     : " von ",
@@ -6610,7 +6689,7 @@ const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uu
     };
 
 const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LAND</a></b>"
-        'Tabelle'   : 1,
+        'Tabelle'   : 'table table',  // Erste Tabelle innerhalb einer Tabelle...
         'Zeile'     : 0,
         'Spalte'    : 0,
         'start'     : "<b>",
@@ -6621,15 +6700,15 @@ const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LA
     };
 
 const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>...<a href="livegame/index.php?spiele=TEAMID,0">LIVEGAME</a>"
-        'Tabelle'   : 0,
+        'Tabelle'   : 'table',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #6 "Deine Spiele in")...
         'Zeile'     : 6,
         'Spalte'    : 0,
         'start'     : '<a href="livegame/index.php?spiele=',
         'end'       : ',0">LIVEGAME</a>'
     };
 
-const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>...<a href="livegame/index.php?spiele=TEAMID,0">LIVEGAME</a>"
-        'Tabelle'   : 0,
+const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="javascript:tabellenplatz(TEAMID)">Tabellenpl\xE4tze</a>"
+        'Tabelle'   : 'table',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #1/Spalte #1 "Tabellenplaetze")...
         'Zeile'     : 1,
         'Spalte'    : 1,
         'start'     : '<a hspace="20" href="javascript:tabellenplatz(',
@@ -6647,7 +6726,7 @@ const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>..
 function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
     // Ermittlung von Team, Liga und Land...
     const __TEAMSEARCH   = getValue(teamSearch, __TEAMSEARCHHAUPT);
-    const __TEAMTABLE    = getTable(getValue(__TEAMSEARCH.Tabelle, 1), 'table', doc);
+    const __TEAMTABLE    = getElement(getValue(__TEAMSEARCH.Tabelle, 'table table'), 0, doc);
     const __TEAMCELLROW  = getValue(__TEAMSEARCH.Zeile, 0);
     const __TEAMCELLCOL  = getValue(__TEAMSEARCH.Spalte, 0);
     const __TEAMCELLSTR  = (__TEAMTABLE === undefined) ? "" : __TEAMTABLE.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
@@ -6682,9 +6761,9 @@ function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
 
     // Ermittlung der Team-ID (indirekt ueber den Livegame- bzw. Tabellenplatz-Link)...
     const __TEAMIDSEARCH   = getValue(teamIdSearch, __TEAMIDSEARCHHAUPT);
-    const __TEAMIDTABLE    = getTable(getValue(__TEAMIDSEARCH.Tabelle, 0), 'table', doc);
+    const __TEAMIDTABLE    = getElement(getValue(__TEAMIDSEARCH.Tabelle, 'table'), 0, doc);
     const __TEAMIDCELLROW  = getValue(__TEAMIDSEARCH.Zeile, 6);
-    const __TEAMIDCELLCOL  = getValue(__TEAMIDSEARCH.Spalte, 0);
+    const __TEAMIDCELLCOL  = getValue(__TEAMIDSEARCH.Spalte, 0);  // Alternativ: 'a[href^=livegame]' (outerHTML)
     const __TEAMIDCELLSTR  = (__TEAMIDTABLE === undefined) ? "" : __TEAMIDTABLE.rows[__TEAMIDCELLROW].cells[__TEAMIDCELLCOL].innerHTML;
     const __SEARCHIDSTART  = __TEAMIDSEARCH.start;
     const __SEARCHIDEND    = __TEAMIDSEARCH.end;

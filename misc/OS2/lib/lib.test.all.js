@@ -138,51 +138,6 @@ async function promiseChainFinalCatch(ex) {
 
 // ==================== Ende Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen  ====================
 
-// ==================== Hilfsfunktionen fuer ASSERT-Funktionen ====================
-
-// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
-// obj: Das zu ueberpruefende Objekt
-// cls: Klasse, die Basisklasse sein muss
-// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
-// label: Prefix fuer die Fehlerzeile
-// objName: Name des Wertes oder der Variablen
-// className: Name der Basisklasse
-// throw Wirft im Fehlerfall einen TypeError
-// return true, falls kein Error geworfen wurde
-function checkObjClass(obj, cls, strict = false, label = "", objName = undefined, className = undefined) {
-    const __TYPE = (className || cls);
-    const __OBJ = (objName || "Object");
-    const __LABEL = (label || "Error");
-
-    return ((obj instanceof cls) || checkType(obj, 'object', strict, __LABEL, __OBJ, __TYPE));
-}
-
-// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
-// value: Der zu pruefende Wert
-// type: Erforderlicher Typ
-// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
-// label: Prefix fuer die Fehlerzeile
-// valName: Name des Wertes oder der Variablen
-// typeName: Name des Typs fuer die Fehlermeldung
-// throw Wirft im Fehlerfall (also, wenn der Typ nicht stimmt) einen TypeError
-// return true, falls kein Error geworfen wurde
-function checkType(value, type, strict = false, label = "", valName = undefined, typeName = undefined) {
-    const __TYPE = (typeName || type);
-    const __VAL = (valName || "Value");
-    const __LABEL = (label || "Error");
-
-    if (strict || (value !== undefined)) {
-        if ((typeof value) !== type) {
-            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
-                            __LOG.info(value, true, true) + ' ' + String(value));
-        }
-    }
-
-    return true;
-}
-
-// ==================== Ende Hilfsfunktionen fuer ASSERT-Funktionen ====================
-
 // ==================== Abschnitt fuer Klasse AssertionFailed ====================
 
 // Basisklasse fuer eine spezielle Exception fuer Assertions
@@ -1051,7 +1006,7 @@ Class.define(UnitTestOption, UnitTest, {
                                 const __MANAGER = new PageManager("Test-Umgebung", __TESTTEAMCLASS, () => {
                                         return {
                                                 'teamParams'  : __TEAMPARAMS,
-                                                'menuAnchor'  : getTable(1, 'div'),
+                                                'menuAnchor'  : getElement('div', 1),
                                                 'hideMenu'    : true,
                                                 'hideForm'    : {
                                                                     'team'  : true
