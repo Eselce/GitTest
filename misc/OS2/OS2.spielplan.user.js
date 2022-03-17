@@ -373,11 +373,11 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
         this.__COLUMNINDEX = __COLUMNINDEX;
 
         return {
-                'Tab'         : getTable(2),
+                'Tab'         : getElement('form+table'),  // #2: Tabelle direkt hinter der Saisonauswahl
                 'Zei'         : __ROWOFFSETUPPER,
                 'Spa'         : __COLUMNINDEX.Art,
                 'teamParams'  : __TEAMPARAMS,
-                'menuAnchor'  : getTable(0, 'div'),
+                'menuAnchor'  : getElement('div'),
                 'hideForm'    : {
                                     'team'  : true
                                 },
@@ -390,9 +390,12 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
         const __ROWOFFSETLOWER  = 0;
         const __CLASSFREI       = 'DMI';    // magenta
 
+        // Format der Trennlinie zwischen den Monaten...
+        const __BORDERSTRING = optSet.getOptValue('sepStyle') + ' ' + optSet.getOptValue('sepColor') + ' ' + optSet.getOptValue('sepWidth');
+
         const __ZAT = firstZAT(optSet.getOptValue('saison'), optSet.getOptValue('ligaSize'));
 
-        const __ROWS = getRows(2);
+        const __ROWS = getRows('form+table');  // #2: Tabelle direkt hinter der Saisonauswahl
 
         if (! __ROWS) {
             __LOG[1]("Kein Spielplan vorhanden!");
@@ -464,16 +467,14 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
             }
 
             if (optSet.getOptValue('sepMonths') && (__ZAT.ZAT % __ZAT.anzZATpMonth === 0) && (i < __ROWS.length - __ROWOFFSETLOWER - 1)) {
-                // Format der Trennlinie zwischen den Monaten...
-                const __BORDERSTRING = optSet.getOptValue('sepStyle') + ' ' + optSet.getOptValue('sepColor') + ' ' + optSet.getOptValue('sepWidth');
+                Array.from(__CELLS).forEach(cell => {
+                        cell.style.borderBottom = __BORDERSTRING;
+                    });
 /*
-                for (let entry of __CELLS) {
-                    entry.style.borderBottom = __BORDERSTRING;
-                }
-*/
                 for (let j = 0; j < __CELLS.length; j++) {
                     __CELLS[j].style.borderBottom = __BORDERSTRING;
                 }
+*/
             }
         }
 
@@ -503,7 +504,7 @@ function prepareOptions(optSet, optParams) {
     // Werte aus der HTML-Seite ermitteln...
     const __BOXSAISONS = document.getElementsByTagName('option');
     const __SAISON = getSelectionFromComboBox(__BOXSAISONS, 0, 'Number');
-    const __LIGASIZE = (optParams.Tab ? getLigaSizeFromSpielplan(optParams.Tab.rows, optParams.Zei, optParams.Spa, getOptValue(optSet.saison)) : undefined);
+    const __LIGASIZE = (optParams.Tab ? getLigaSizeFromSpielplan(optParams.Tab.rows, optParams.Zei, optParams.Spa, optSet.getOptValue('saison')) : undefined);
 
     // ... und abspeichern...
     setOpt(optSet.saison, __SAISON, false);
@@ -549,6 +550,7 @@ const __ITEM = 's';
 // s=7: Vereinshistorie
 // s=8: Transferhistorie
 // s=9: Leihhistorie
+// s=10: Saisonhistorie
 const __MAIN = new Main(__OPTCONFIG, __MAINCONFIG, procSpielplan);
 
 __MAIN.run(getPageIdFromURL, __LEAFS, __ITEM);
