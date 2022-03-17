@@ -105,16 +105,38 @@ function removeDocEvent(id, type, callback, capture = false) {
     return removeEvent(__OBJ, type, callback, capture);
 }
 
-// Hilfsfunktion fuer die Ermittlung eines Elements der Seite
+// Hilfsfunktion fuer die Ermittlung aller Elements desselben Typs auf der Seite ueber CSS Selector (Default: Tabelle)
+// selector: CSS Selector des Elements ('table')
+// doc: Dokument (document)
+// return Kollektion aller gesuchten Elemente oder leer
+function getElements(selector = 'table', doc = document) {
+    const __ELEMENTS = doc.querySelectorAll(selector);
+
+    return __ELEMENTS;
+}
+
+// Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber CSS Selector (Default: Tabelle)
+// selector: CSS Selector des Elements ('table')
+// index: Laufende Nummer des Elements (0-based), Default: 0
+// doc: Dokument (document)
+// return Gesuchtes Element oder undefined (falls nicht gefunden)
+function getElement(selector = 'table', index = 0, doc = document) {
+    const __ELEMENTS = doc.querySelectorAll(selector);
+    const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
+
+    return __ELEMENT;
+}
+
+// Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber den Namen
 // name: Name des Elements (siehe "name=")
 // index: Laufende Nummer des Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchtes Element mit der lfd. Nummer index oder undefined (falls nicht gefunden)
-function getElement(name, index = 0, doc = document) {
-    const __TAGS = doc.getElementsByName(name);
-    const __TABLE = (__TAGS ? __TAGS[index] : undefined);
+function getElementByName(name, index = 0, doc = document) {
+    const __ELEMENTS = doc.getElementsByName(name);
+    const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
 
-    return __TABLE;
+    return __ELEMENT;
 }
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
@@ -129,13 +151,25 @@ function getTable(index, tag = 'table', doc = document) {
     return __TABLE;
 }
 
-// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle
+// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle ueber den Namen
 // name: Name des Tabellen-Elements (siehe "name=")
 // index: Laufende Nummer des Tabellen-Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getElementRows(name, index = 0, doc = document) {
-    const __TABLE = getElement(name, index, doc);
+function getRowsByName(name, index = 0, doc = document) {
+    const __TABLE = getElementByName(name, index, doc);
+    const __ROWS = (__TABLE ? __TABLE.rows : undefined);
+
+    return __ROWS;
+}
+
+// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle ueber CSS Selector (Default: Tabelle)
+// selector: CSS Selector des Elements ('table')
+// index: Laufende Nummer des Tabellen-Elements (0-based), Default: 0
+// doc: Dokument (document)
+// return Gesuchte Zeilen oder undefined (falls nicht gefunden)
+function getRows(selector = 'table', index = 0, doc = document) {
+    const __TABLE = getElement(selector, index, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
     return __ROWS;
@@ -145,7 +179,7 @@ function getElementRows(name, index = 0, doc = document) {
 // index: Laufende Nummer des Elements (0-based)
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getRows(index, doc = document) {
+function getTableRows(index, doc = document) {
     const __TABLE = getTable(index, 'table', doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
