@@ -1531,7 +1531,7 @@ const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS
 
 // Verarbeitet Ansicht "Opt. Skill"
 const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
-        if (getRows('table[border.align.cellspacing]') === undefined) {  // #1: Tabelle mit speziellen Attributen
+        if (getRows('table[border][align][cellspacing]') === undefined) {  // #1: Tabelle mit speziellen Attributen
             __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
         } else {
             return {
@@ -1610,7 +1610,7 @@ const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
                     'Zus'   : 11     // Zusaetze hinter den OptSkills
                 };
 
-            const __ROWS = getRows('table[border.align.cellspacing]');  // #1: Tabelle mit speziellen Attributen
+            const __ROWS = getRows('table[border][align][cellspacing]');  // #1: Tabelle mit speziellen Attributen
             const __HEADERS = __ROWS[0];
             const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
