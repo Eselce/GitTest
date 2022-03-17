@@ -222,7 +222,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
                 'hideMenu'    : true
             };
     }, async optSet => {
-        //const __ZATCELL = getProp(getProp(getTableRows(0), 2), 'cells', { })[0];
+        //const __ZATCELL = getProp(getProp(getRows(), 2), 'cells', { })[0];
         const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;
