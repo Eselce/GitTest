@@ -1001,16 +1001,16 @@ function removeDocEvent(id, type, callback, capture = false) {
     return removeEvent(__OBJ, type, callback, capture);
 }
 
-// Hilfsfunktion fuer die Ermittlung eines Elements der Seite
+// Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber den Namen
 // name: Name des Elements (siehe "name=")
 // index: Laufende Nummer des Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchtes Element mit der lfd. Nummer index oder undefined (falls nicht gefunden)
-function getElement(name, index = 0, doc = document) {
-    const __TAGS = doc.getElementsByName(name);
-    const __TABLE = (__TAGS ? __TAGS[index] : undefined);
+function getElementByName(name, index = 0, doc = document) {
+    const __ELEMENTS = doc.getElementsByName(name);
+    const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
 
-    return __TABLE;
+    return __ELEMENT;
 }
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
@@ -1030,8 +1030,8 @@ function getTable(index, tag = 'table', doc = document) {
 // index: Laufende Nummer des Tabellen-Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getElementRows(name, index = 0, doc = document) {
-    const __TABLE = getElement(name, index, doc);
+function getRowsByName(name, index = 0, doc = document) {
+    const __TABLE = getElementByName(name, index, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
     return __ROWS;
@@ -1041,7 +1041,7 @@ function getElementRows(name, index = 0, doc = document) {
 // index: Laufende Nummer des Elements (0-based)
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getRows(index, doc = document) {
+function getTableRows(index, doc = document) {
     const __TABLE = getTable(index, 'table', doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
