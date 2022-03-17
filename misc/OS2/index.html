@@ -98,7 +98,7 @@
                                 //  '<input type="hidden" name="scriptid" value="' + id + '" />' +
                                     '<input type="submit" value="Installieren" /></form></td>';
                     colText1.push('<img src="img/geschlossen.gif" style="cursor: help;" onclick=' + openclose + ' id="openclose_' + id + '" />\n' +
-                                    '<a href="https://github.com/Eselce/GitTest/misc/OS2/blob/master/' + filename + '">' + name + '</a>');
+                                    '<a href="https://github.com/Eselce/GitTest/blob/master/misc/OS2/' + filename + '">' + name + '</a>');
                     colText1.push(version);
                     colText1.push(desc);
                     colText1.push(author);
@@ -150,6 +150,7 @@
 //  OS2.master.user.js
 //  OS2.osec.user.js
 //  OS2.report.user.js
+//  OS2.saisonhistorie.user.js
 //  OS2.scripts.user.js
 //  OS2.spielbericht.user.js
 //  OS2.spielbericht.XXL.user.js
@@ -289,7 +290,7 @@
 // ==UserScript==
 // @name         OS2.haupt
 // @namespace    http://os.ongapo.com/
-// @version      0.41+lib
+// @version      0.42+lib
 // @copyright    2016+
 // @author       Sven Loges (SLC)
 // @description  Managerbuero-Abschnitt aus dem Master-Script fuer Online Soccer 2.0
@@ -422,6 +423,62 @@
 // ==/UserScript==
                     `,
 
+                    'saisonhistorie' : String.raw`
+// ==UserScript==
+// @name         OS2.saisonhistorie
+// @namespace    http://os.ongapo.com/
+// @version      0.10+lib
+// @copyright    2022+
+// @author       Sven Loges (SLC)
+// @description  Saisonhistorie-Abschnitt aus dem Master-Script fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(st|showteam)\.php\?s=10(&\w+=?[+\w]+)*(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// ==/UserScript==
+                    `,
+
                     'scripts' : String.raw`
 // ==UserScript==
 // @name         OS2.scripts
@@ -526,7 +583,7 @@
 // ==UserScript==
 // @name         OS2.spielplan
 // @namespace    http://os.ongapo.com/
-// @version      0.72+lib
+// @version      0.73+lib
 // @copyright    2013+
 // @author       Sven Loges (SLC)
 // @description  Spielplan-Abschnitt aus dem Master-Script fuer Online Soccer 2.0
@@ -853,6 +910,7 @@
                         'master',
                     //  'osec',
                     //  'report',
+                        'saisonhistorie',
                     //  'scripts',
                         'spielbericht',
                         'spielbericht.XXL',
@@ -876,7 +934,7 @@
                 }
             </script>
 
-            <h3>Standard-Spielwiesen-Benutzerscripts für Online-Soccer 2.0 unter dem Greasemonkey AddOn</h3>
+            <h3>Standard-Spielwiesen-Benutzerscripts f&uuml;r Online-Soccer 2.0 unter dem Greasemonkey AddOn</h3>
             <table id="scripts" class="script"></table>
 
             <h3>Experimentelle Spielwiesen-Scripts (Benutzung auf eigenes Risiko)</h3>
