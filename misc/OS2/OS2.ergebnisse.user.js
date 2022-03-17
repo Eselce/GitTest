@@ -133,12 +133,13 @@ __LOG.init(window, __LOGLEVEL);
 // Verarbeitet eine Ergebnis-Ansicht
 const procErgebnisse = new PageManager("Ergebnisse", null, () => {
         return {
-                'menuAnchor' : getTable(0, 'div'),
+                'menuAnchor' : getElement('div'),
                 'formWidth'  : 2
             };
     }, async optSet => {
         // Aktiviere Checkbox "Ergebnisse anzeigen" je nach Einstellung der Option
-        getElement('erganzeigen').checked = optSet.getOptValue('showErgs');
+        getElementByName('erganzeigen').checked = optSet.getOptValue('showErgs');
+        // alternativ: getElement("input[name='erganzeigen']")...
 
         return true;
     });

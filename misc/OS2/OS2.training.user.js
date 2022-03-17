@@ -2102,7 +2102,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", null, () => {
 
         return {
                 'teamParams'  : __TEAMPARAMS,
-//                'menuAnchor'  : getTable(0, 'div'),
+//                'menuAnchor'  : getElement('div'),
                 'hideMenu'    : true,
                 'oldData'     : false,
                 'showForm'    : {
@@ -2110,7 +2110,8 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", null, () => {
                                 }
             };
     }, async optSet => {
-        const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
+        //const __ZATCELL = getProp(getProp(getRows(), 2), 'cells', { })[0];
+        const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;
         const __DATAZAT = optSet.getOptValue('datenZat');
@@ -2162,11 +2163,11 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", null, () => {
 
 // Verarbeitet Ansicht "Zugabgabe - Aufstellung"
 const procAufstellung = new PageManager("Zugabgabe - Aufstellung", null, () => {
-        if (getRows(4) === undefined) {
+        if (getRows('table+table') === undefined) {  // #4: Tabelle mit Spieleraufstellung direkt hinter der Tabelle mit Raster
             __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
         } else {
             return {
-//                    'menuAnchor'  : getTable(0, 'div'),
+//                    'menuAnchor'  : getElement('div'),
                     'oldData'     : false,
                     'showForm'    : {
                                         'saison'        : true,
@@ -2224,7 +2225,7 @@ const procAufstellung = new PageManager("Zugabgabe - Aufstellung", null, () => {
         //const __ERFOLGE = optSet.getOptValue('erfolge', []);
         //const __BLESSUREN = optSet.getOptValue('blessuren', []);
 
-        const __ROWS = getRows(4);
+        const __ROWS = getRows('table+table');  // #4: Tabelle mit Spieleraufstellung direkt hinter der Tabelle mit Raster
         //const __HEADERS = __ROWS[0];
         const __SLENGTH = __ROWS.length - 6;
         //const __TLENGTH = 6;
@@ -2293,11 +2294,11 @@ const procAufstellung = new PageManager("Zugabgabe - Aufstellung", null, () => {
 
 // Verarbeitet Ansicht "Zugabgabe - Aktionen"
 const procAktionen = new PageManager("Zugabgabe - Aktionen", null, () => {
-        if (getRows(1) === undefined) {
+        if (getRows() === undefined) {
             __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
         } else {
             return {
-                    'menuAnchor'  : getTable(0, 'div'),
+                    'menuAnchor'  : getElement('div'),
                     'oldData'     : false,
                     'showForm'    : {
                                         'saison'        : true,
@@ -2313,18 +2314,18 @@ const procAktionen = new PageManager("Zugabgabe - Aktionen", null, () => {
         return false;
     }, async optSet => {
             UNUSED(optSet);
-            //const __ROWS = getRows(1);
+            //const __ROWS = getRows();
             //const __HEADERS = __ROWS[0];
             //return true;
         });
 
 // Verarbeitet Ansicht "Zugabgabe - Einstellungen"
 const procEinstellungen = new PageManager("Zugabgabe - Einstellungen", null, () => {
-    if (getRows(1) === undefined) {
+    if (getRows() === undefined) {
         __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
         } else {
             return {
-                    'menuAnchor'  : getTable(0, 'div'),
+                    'menuAnchor'  : getElement('div'),
                     'oldData'     : false,
                     'showForm'    : {
                                         'saison'        : true,
@@ -2340,18 +2341,18 @@ const procEinstellungen = new PageManager("Zugabgabe - Einstellungen", null, () 
         return false;
     }, async optSet => {
             UNUSED(optSet);
-            //const __ROWS = getRows(1);
+            //const __ROWS = getRows();
             //const __HEADERS = __ROWS[0];
             //return true;
         });
 
 // Verarbeitet Ansicht "Trainer"
 const procTrainer = new PageManager("Trainer", null, () => {
-//        if (getRows(1) === undefined) {
+//        if (getRows() === undefined) {
 //            __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
 //        } else {
             return {
-                    'menuAnchor'  : getTable(0, 'div'),
+                    'menuAnchor'  : getElement('div'),
                     'oldData'     : false,
                     'showForm'    : {
                                         'saison'        : true,
@@ -2367,18 +2368,18 @@ const procTrainer = new PageManager("Trainer", null, () => {
 //        return false;
     }, async optSet => {
             UNUSED(optSet);
-            //const __ROWS = getRows(1);
+            //const __ROWS = getRows();
             //const __HEADERS = __ROWS[0];
             //return true;
         });
 
 // Verarbeitet Ansicht "Training"
 const procTraining = new PageManager("Training", null, () => {
-        if (getRows(2) === undefined) {
+        if (getRows('form table') === undefined) {  // #2: Tabelle innerhalb des Forms zur Trainingseinstellung
             __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
         } else {
             return {
-                    'menuAnchor'  : getTable(0, 'div'),
+                    'menuAnchor'  : getElement('div'),
                     'oldData'     : false,
                     'showForm'    : {
                                         'sepStyle'      : true,
@@ -2476,7 +2477,7 @@ const procTraining = new PageManager("Training", null, () => {
         __IDS.map((id, index) => (__EINSMAP[id] = __EINSAETZE[index]));
         __EINSAETZE.length = 0;  // vorerst alle loeschen und spaeter wieder einfuegen!
 
-        const __ROWS = getRows(2);
+        const __ROWS = getRows('form table');  // #2: Tabelle innerhalb des Forms zur Trainingseinstellung
         const __HEADERS = __ROWS[0];
 
         // Ueberschriften hinzufuegen
@@ -2607,7 +2608,7 @@ const procTraining = new PageManager("Training", null, () => {
                         "\" angegebenen Wahrscheinlichkeiten dienen nur zur Orientierung!";
         const __WARN2 = "Die maximale Wahrscheinlichkeit einer Aufwertung ist immer 99.00 %! Zu erwartende Aufwertungen = " + sum.toFixed(2).toString();
 
-        const __TABLE = getTable(1);
+        const __TABLE = getElement('table', 1);  // #1: Tabelle mit "Achtung!"-Anleitungstext ueber dem Form zur Trainingseinstellung
         const __NEWCELL1 = appendCell(__TABLE.insertRow(-1), __WARN1 /* , '#FFFF00' */);
         __NEWCELL1.setAttribute('colspan', 4, false);
         const __NEWCELL2 = appendCell(__TABLE.insertRow(-1), __WARN2 /* , '#FFFF00' */);
@@ -2637,11 +2638,11 @@ const procTraining = new PageManager("Training", null, () => {
 
 // Verarbeitet Ansicht "ZAT-Report"
 const procZatReport = new PageManager("ZAT-Report", null, () => {
-        if (getRows(1) === undefined) {
+        if (getRows('table~table') === undefined) {  // #1: Tabelle (Trainingserfolge) mit Geschwistertabelle (Einnahmen / Ausgaben) davor
             __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
         } else {
             return {
-                    'menuAnchor'  : getTable(0, 'div'),
+                    'menuAnchor'  : getElement('div'),
                     'oldData'     : true,
                     'showForm'    : {
                                         'zeigeId'               : true,
@@ -2711,7 +2712,7 @@ const procZatReport = new PageManager("ZAT-Report", null, () => {
                                             'zeigeErfahrung'     : false
                                         });
 
-        const __TABLE = getTable(1);
+        const __TABLE = getElement('table~table');  // #1: Tabelle (Trainingserfolge) mit Geschwistertabelle (Einnahmen / Ausgaben) davor
         const __ROWS = __TABLE.rows;
         const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
         const __DATA = [ 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60 ];

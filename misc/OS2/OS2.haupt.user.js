@@ -219,19 +219,20 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
 
         return {
                 'teamParams'  : __TEAMPARAMS,
-                'menuAnchor'  : getTable(1, 'div'),
+                'menuAnchor'  : getElement('div#a'),
                 'hideForm'    : {
                                     'team'  : true
                                 }
             };
     }, async optSet => {
         const __ZAT = firstZAT(optSet.getOptValue('saison'), optSet.getOptValue('ligaSize'));
-        const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
+        //const __ZATCELL = getProp(getProp(getRows(), 2), 'cells', { })[0];
+        const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;
 
-        addZusatz(getProp(getRows(2), 0), __ZAT, __CURRZAT, true);  // "Dein letztes Spiel:" (+ __CURRZAT)
-        addZusatz(getProp(getRows(3), 0), __ZAT);                   // "Dein naechstes Spiel:" (+ 1 ZAT)
+        addZusatz(getProp(getTableRows(2), 0), __ZAT, __CURRZAT, true);  // #2: "Dein letztes Spiel:" (+ __CURRZAT)
+        addZusatz(getProp(getTableRows(3), 0), __ZAT);                   // #3: "Dein naechstes Spiel:" (+ 1 ZAT)
 
         return true;
     });

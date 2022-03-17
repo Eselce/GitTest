@@ -222,7 +222,8 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
                 'hideMenu'    : true
             };
     }, async optSet => {
-        const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
+        //const __ZATCELL = getProp(getProp(getTableRows(0), 2), 'cells', { })[0];
+        const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;
         const __DATAZAT = optSet.getOptValue('datenZat');
@@ -256,7 +257,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
 // Verarbeitet Ansicht "Aufstellung"
 const procAufstellung = new PageManager("Aufstellung", __TEAMCLASS, () => {
         return {
-                'menuAnchor'  : getTable(0, 'div'),
+                'menuAnchor'  : getElement('div'),
                 'formWidth'   : 1
             };
     }, async optSet => {
@@ -270,7 +271,7 @@ const procAufstellung = new PageManager("Aufstellung", __TEAMCLASS, () => {
 // Verarbeitet Ansicht "Aktionen"
 const procAktionen = new PageManager("Aktionen", __TEAMCLASS, () => {
         return {
-                'menuAnchor'  : getTable(0, 'div'),
+                'menuAnchor'  : getElement('div'),
                 'formWidth'   : 1
             };
     }, async optSet => {
@@ -284,7 +285,7 @@ const procAktionen = new PageManager("Aktionen", __TEAMCLASS, () => {
 // Verarbeitet Ansicht "Einstellungen"
 const procEinstellungen = new PageManager("Einstellungen", __TEAMCLASS, () => {
         return {
-                'menuAnchor'  : getTable(0, 'div'),
+                'menuAnchor'  : getElement('div'),
                 'formWidth'   : 1
             };
     }, async optSet => {

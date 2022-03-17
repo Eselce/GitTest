@@ -1224,7 +1224,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
 
         return {
                 'teamParams' : __TEAMPARAMS,
-//                'menuAnchor' : getTable(0, 'div'),
+//                'menuAnchor' : getElement('div'),
                 'hideMenu'   : true,
                 'showForm'   : {
                                    'zeigeWarnung'         : true,
@@ -1238,7 +1238,8 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
                                }
             };
     }, async optSet => {
-            const __ZATCELL = getProp(getProp(getRows(0), 2), 'cells', { })[0];
+            //const __ZATCELL = getProp(getProp(getRows(), 2), 'cells', { })[0];
+            const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
             const __CURRZAT = __NEXTZAT - 1;
             const __DATAZAT = optSet.getOptValue('datenZat');
@@ -1271,7 +1272,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
 
             const __MSG = new WarnDrawMessage(optSet, __CURRZAT);
             const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(optSet, __CURRZAT);
-            const __ANCHOR = getTable(0, 'tbody');
+            const __ANCHOR = getElement('tbody');
 
             __MSG.showMessage(__ANCHOR, 'tr', true);
             __MSG.showDialog(showAlert);
@@ -1283,7 +1284,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
 // Verarbeitet Ansicht "Optionen" zur Ermittlung der Jugendfoerderung
 const procOptionen = new PageManager("Optionen", __TEAMCLASS, () => {
         return {
-                'menuAnchor'  : getTable(0, 'div'),
+                'menuAnchor'  : getElement('div'),
                 'hideMenu'    : true,
                 'getDonation' : true,
                 'showForm'    : {
@@ -1305,13 +1306,13 @@ const procOptionen = new PageManager("Optionen", __TEAMCLASS, () => {
 
 // Verarbeitet Ansicht "Teamuebersicht"
 const procTeamuebersicht = new PageManager("Team\xFCbersicht", __TEAMCLASS, () => {
-        if (getElement('transfer') !== undefined) {
+        if (getElementByName('transfer') !== undefined) {  // getElement("input[name='transfer']")...
             __LOG[1]("Ziehen-Seite");
-        } else if (getRows(1) === undefined) {
+        } else if (getRows('form table') === undefined) {  // #1: Tabelle innerhalb des Forms zum Ziehen
             __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
         } else {
             return {
-                    'menuAnchor' : getTable(0, 'div'),
+                    'menuAnchor' : getElement('div'),
                     'showForm'   : {
                                        'kennzeichenEnde'      : true,
                                        'shortAufw'            : true,
@@ -1383,7 +1384,7 @@ const procTeamuebersicht = new PageManager("Team\xFCbersicht", __TEAMCLASS, () =
                     'Zus'   : 9
                 };
 
-            const __ROWS = getRows(1);
+            const __ROWS = getRows('form table');  // #1: Tabelle innerhalb des Forms zum Ziehen
             const __HEADERS = __ROWS[0];
             const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
@@ -1417,7 +1418,7 @@ const procTeamuebersicht = new PageManager("Team\xFCbersicht", __TEAMCLASS, () =
             const __CURRZAT = optSet.getOptValue('datenZat');
             const __MSG = new WarnDrawMessage(optSet, __CURRZAT);
             const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(optSet, __CURRZAT);
-            const __ANCHOR = getTable(0, 'div');
+            const __ANCHOR = getElement('div');
             const __SEARCH = '<form method="POST">';
 
             // Kompaktere Darstellung und ohne Links...
@@ -1440,11 +1441,11 @@ const procTeamuebersicht = new PageManager("Team\xFCbersicht", __TEAMCLASS, () =
 
 // Verarbeitet Ansicht "Spielereinzelwerte"
 const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS, () => {
-        if (getRows(1) === undefined) {
+        if (getRows('table.jugend') === undefined) {  // #1:  Tabelle mit Klasse 'jugend'
             __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
         } else {
             return {
-                    'menuAnchor' : getTable(0, 'div'),
+                    'menuAnchor' : getElement('div'),
                     'hideForm'   : {
                                        'zeigeWarnung'         : false,
                                        'zeigeWarnungMonat'    : false,
@@ -1501,7 +1502,7 @@ const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS
                     'Zus'   : 22     // Zusaetze hinter den Einzelskills
                 };
 
-            const __ROWS = getRows(1);
+            const __ROWS = getRows('table.jugend');  // #1:  Tabelle mit Klasse 'jugend'
             const __HEADERS = __ROWS[0];
             const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
@@ -1530,11 +1531,11 @@ const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS
 
 // Verarbeitet Ansicht "Opt. Skill"
 const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
-        if (getRows(1) === undefined) {
+        if (getRows('table[border.align.cellspacing]') === undefined) {  // #1: Tabelle mit speziellen Attributen
             __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
         } else {
             return {
-                    'menuAnchor' : getTable(0, 'div'),
+                    'menuAnchor' : getElement('div'),
                     'showForm'   : {
                                        'kennzeichenEnde'      : true,
                                        'sepStyle'             : true,
@@ -1609,7 +1610,7 @@ const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
                     'Zus'   : 11     // Zusaetze hinter den OptSkills
                 };
 
-            const __ROWS = getRows(1);
+            const __ROWS = getRows('table[border.align.cellspacing]');  // #1: Tabelle mit speziellen Attributen
             const __HEADERS = __ROWS[0];
             const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
