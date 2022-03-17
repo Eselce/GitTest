@@ -854,7 +854,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
 // Verarbeitet Ansicht "Fairplaytabelle"
 const procFairplay = new PageManager("Fairplaytabelle", __TEAMCLASS, () => {
         return {
-                'menuAnchor' : getTable(0, 'div'),
+                'menuAnchor' : getElement('div'),
                 'hideForm'   : {
                                    'saison'        : true,
                                    'liga'          : true,
@@ -991,7 +991,7 @@ const procEuropa = new PageManager("Internationales Finale", __TEAMCLASS, (optSe
         UNUSED(optSet, finale);
 
         return {
-                'menuAnchor' : getTable(0, 'div'),
+                'menuAnchor' : getElement('div'),
                 'hideForm'   : {
                                    'land'          : true,
                                    'liga'          : true,
@@ -1033,7 +1033,7 @@ const procEuropa = new PageManager("Internationales Finale", __TEAMCLASS, (optSe
 
         const __RUNDE = optSet.getOptValue(typ + 'rundenNr');
         const __FINALE = (__RUNDE === finale);
-        const __ROWS = getRows(0);
+        const __ROWS = getRows('table#kader1.sortable');  // #0: Die Ligatabelle
 
         if (__FINALE && __ROWS.length) {
             const __CELLS = __ROWS[0].cells;  // Finalspiel
@@ -1088,7 +1088,7 @@ const procPokal = new PageManager("Landespokalfinale", __TEAMCLASS, (optSet, fin
         UNUSED(optSet, finale);
 
         return {
-                'menuAnchor' : getTable(0, 'div'),
+                'menuAnchor' : getElement('div'),
                 'hideForm'   : {
                                    'liga'          : true,
                                    'tabTyp'        : true,
@@ -1118,7 +1118,7 @@ const procPokal = new PageManager("Landespokalfinale", __TEAMCLASS, (optSet, fin
             };
         const __RUNDE = optSet.getOptValue('PrundenNr');
         const __FINALE = (__RUNDE === finale);
-        const __ROWS = getRows(0);
+        const __ROWS = getRows('table#kader1.sortable');  // #0: Die Ligatabelle
 
         if (__FINALE && __ROWS.length) {
             const __CELLS = __ROWS[0].cells;  // Finalspiel
@@ -1172,7 +1172,7 @@ console.log(__ERGEBNIS);
 // Verarbeitet Ansicht "Ligatabelle"
 const procTabelle = new PageManager("Ligatabelle", __TEAMCLASS, () => {
         return {
-                'menuAnchor' : getTable(0, 'div'),
+                'menuAnchor' : getElement('div'),
                 'hideForm'   : {
                                    'Prunde'        : true,
                                    'OSCrunde'      : true,
@@ -1293,7 +1293,7 @@ const procTabelle = new PageManager("Ligatabelle", __TEAMCLASS, () => {
             const __TITEL = { };
             const __LTITEL = { };
 
-            const __LEGENDE = getTable(1);
+            const __LEGENDE = getElement('br+table');  // #1: Legenden-Tabelle hinter <br>-Abschnitt, der von der Ligatabelle absetzt
             const __ROWS = (__LEGENDE ? __LEGENDE.getElementsByTagName("tr") : { });
             const __TABCOLORS = getStyleFromElements(__ROWS, "backgroundColor", getUpperClassNameFromElement);  // Faerbungen aus Legende ermitteln
 /*
@@ -1459,7 +1459,7 @@ function prepareOptions(optSet, optParams) {
     const __PRUNDE = getSelection('stauswahl');
     const __OSCRUNDE = getSelection('runde');
     const __OSERUNDE = getSelection('runde');
-    const __DEFSAISON = getOptValueByName(optSet, 'aktuelleSaison');
+    const __DEFSAISON = optSet.getOptValue('aktuelleSaison');
     const __SAISONS = getSelectionArray('saauswahl', 'Number', getSelectedValue);
     const __CURRSAISON = (__SAISONS ? Math.max(... __SAISONS) : __DEFSAISON);
     const __SAISON = getSelection('saauswahl', 'Number', getSelectedValue);
