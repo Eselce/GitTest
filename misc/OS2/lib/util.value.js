@@ -80,7 +80,7 @@ function getNextValue(arr, value) {
 // digits: Anzahl der Stellen nach dem Komma fuer das Produkt (Default: 0)
 // defValue: Default-Wert fuer den Fall, dass ein Multiplikant nicht gesetzt ist (Default: NaN)
 // return Das Produkt auf digits Stellen genau. Ist dieses nicht definiert, dann defValue
-function getMulValue(valueA, valueB, digits = 0, defValue = NaN) {
+function getMulValue(valueA, valueB, digits = 0, defValue = Number.NaN) {
     let product = defValue;
 
     if ((valueA !== undefined) && (valueB !== undefined)) {
@@ -102,6 +102,42 @@ function getOrdinal(value, defValue = '*') {
     return getValue(value, defValue, value + '.');
 }
 
+// Wandelt einen String in eine Zahl um.
+// Prozentzahlen werden als Anteil eines Ganzen interpretiert (d.h. "100%" -> 1).
+// Ganze Zahlen mit Tausenderpunkten werden erkannt, wenn sie mit '.' gefolgt von 3 Ziffern enden.
+// Dezimalzahlen werden erkannt, wenn sie mit '.' gefolgt von beliebig vielen Ziffern enden.
+// Da zuerst auf ganze Zahlen geprueft wird, koennen Dezimalzahlen nicht 3 Nachkommaziffern haben.
+// numberString: Dezimalzahl als String
+// return Numerischer Wert der Zahl im String
+function getNumber(numberString) {
+    const __STR = (numberString || "");
+    // Ist es eine Prozentzahl?
+    const __PERCENT = (__STR.indexOf('%') > -1);
+    // Buchstaben und '%' entfernen;
+    // Whitespaces vorne und hintenentfernen...
+    const str = __STR.replace(/[a-zA-Z%]/g, "").trim();
+    const __REGEXPINT     = /^\d+$/;
+    const __REGEXPINTDOTS = /^\d+(\.\d{3}){1,}$/;
+    const __REGEXPNUMBER  = /^\d*\.\d{1,}$/;
+    let ret = Number.NaN;
+
+    // parseXXX interpretiert einen Punkt immer als Dezimaltrennzeichen!
+    if (__REGEXPINT.test(str)) {
+        // Einfache ganze Zahl...
+        ret = Number.parseInt(str, 10);
+    } else if (__REGEXPINTDOTS.test(str)) {
+        // Ganze Zahl mit Tausenderpunkten...
+        ret = Number.parseInt(str.replace(/\./g, ""), 10);
+    } else if (__REGEXPNUMBER.test(str)) {
+        // Dezimalzahl mit Punkt als Trennzeichen...
+        ret = Number.parseFloat(str);
+    } else {
+        // Kein gueltiger String
+    }
+
+    return (__PERCENT ? (ret / 100) : ret);
+}
+
 // Fuegt in die uebergebene Zahl Tausender-Trennpunkte ein
 // Wandelt einen etwaig vorhandenen Dezimalpunkt in ein Komma um
 // numberString: Dezimalzahl als String
@@ -120,7 +156,7 @@ function getNumberString(numberString) {
         let result = "";
 
         for (let i = 0; i < __TEMP.length; i++) {
-            if ((i > 0) && (i % 3 === 0)) {
+            if ((i > 0) && ((i % 3) === 0)) {
                 result += '.';
             }
             result += __TEMP.substr(i, 1);
