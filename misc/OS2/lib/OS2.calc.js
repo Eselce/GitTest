@@ -88,10 +88,10 @@ function calcPotential(dezAlter, skills) {
                 return res;
             }, [0, 0]);                         // Start-Werte fuer [ __TRAINIERT, __EQ19 ]
 
-    const __ALTER = Math.min(39, Math.floor(age));      // Ganzzahliger Anteil des Alters (max 39)
-    const __RESTZAT = Math.round(__SAISONZATS * (age - __ALTER)); // Tage seit dem (max. 39.) Geburtstag des Spielers
+    const __ALTER = Math.min(39, Math.floor(dezAlter));                 // Ganzzahliger Anteil des Alters (max 39)
+    const __RESTZAT = Math.round(__SAISONZATS * (dezAlter - __ALTER));  // Tage seit dem (max. 39.) Geburtstag des Spielers
     const __BASISERWARTUNG = __TAGE[__ALTER] + Math.round((__RESTZAT * __FAKTOR[__ALTER]) / 100);  // Erwartete Profi-Trainingsleistung
-    const __POTENTIAL = __EQ19 - __BASISERWARTUNG;      // Trainingsleistung oberhalb des Trainings eines 19j Spielers ohne Skillpunkte
+    const __POTENTIAL = __EQ19 - __BASISERWARTUNG;                      // Trainingsleistung oberhalb des Trainings eines 19j Spielers ohne Skillpunkte
 
     return [ __TRAINIERT, __POTENTIAL ];
 }
