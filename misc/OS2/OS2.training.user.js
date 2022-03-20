@@ -51,6 +51,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
@@ -210,11 +211,11 @@ const __OPTCONFIG = {
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : true,
                    'Action'    : __OPTACTION.NXT,
-                   'Label'     : "Prim\xE4rskill ein",
+                   'Label'     : "Prim\u00E4rskill ein",
                    'Hotkey'    : 'p',
-                   'AltLabel'  : "Prim\xE4rskill aus",
+                   'AltLabel'  : "Prim\u00E4rskill aus",
                    'AltHotkey' : 'p',
-                   'FormLabel' : "Prim\xE4rskill?"
+                   'FormLabel' : "Prim\u00E4rskill?"
                },
     'zeigeEinsatz' : {    // Spaltenauswahl fuer Spielereinsatz der trainierten Spieler (true = anzeigen, false = nicht anzeigen)
                    'Name'      : "showEins",
@@ -427,7 +428,7 @@ const __OPTCONFIG = {
                    'Rows'      : 2,
                    'Replace'   : null,
                    'Space'     : 0,
-                   'Label'     : "Trainer-Geh\xE4lter:"
+                   'Label'     : "Trainer-Geh\u00E4lter:"
                },
     'tVertraege' : {      // Datenspeicher fuer Laengen der Trainer-Vertraege aller Trainer
                    'Name'      : "tVertraege",
@@ -442,7 +443,7 @@ const __OPTCONFIG = {
                    'Rows'      : 2,
                    'Replace'   : null,
                    'Space'     : 0,
-                   'Label'     : "Trainer-Vertr\xE4ge:"
+                   'Label'     : "Trainer-Vertr\u00E4ge:"
                },
     'tReste' : {          // Datenspeicher fuer Rest-Laengen der Trainer-Vertraege aller Trainer
                    'Name'      : "tReste",
@@ -753,7 +754,7 @@ const __OPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Optionen anzeigen",
                    'Hotkey'    : 'O',
-                   'AltTitle'  : "$V schlie\xDFen",
+                   'AltTitle'  : "$V schlie\u00DFen",
                    'AltLabel'  : "Optionen verbergen",
                    'AltHotkey' : 'O',
                    'FormLabel' : ""
@@ -989,14 +990,14 @@ Class.define(ColumnManagerBase, Object, {
         const __SAISON = optSet.getOptValue('saison');
         const __AKTZAT = optSet.getOptValue('aktuellerZat');
         const __DATZAT = optSet.getOptValue('datenZat');
-        const __GEALTERT = ((__AKTZAT >= 72) ? true : false);
+        const __GEALTERT = ((__AKTZAT >= __SAISONZATS) ? true : false);
         const __CURRZAT = (__GEALTERT ? 0 : __AKTZAT);
 
         const __REPSAISON = getSelection('saison', 'Number');
         const __REPZAT = getSelection('zat', 'Number');
         const __SAISONWECHSEL = ((__DATZAT === 0) ? true : false);
         const __OLDSAISON = (__SAISONWECHSEL ? __SAISON - 1 : __SAISON);
-        const __OLDZAT = (__SAISONWECHSEL ? 72 : __DATZAT);
+        const __OLDZAT = (__SAISONWECHSEL ? __SAISONZATS : __DATZAT);
 
         const __TEAM = optSet.getOptValue('team', { });
 
@@ -1465,12 +1466,12 @@ Class.define(PlayerRecordTraining, Object, {
                                       if (ziehmich) {
                                           const __LASTZAT = this.currZAT + this.getZatLeft();
 
-                                          if (__LASTZAT < 72) {  // U19
+                                          if (__LASTZAT < __SAISONZATS) {  // U19
                                               this.warnDraw = new WarnDrawPlayer(this, getColor('STU'));  // rot
                                               __LOG[5](this.getAge().toFixed(2), "rot");
-                                          } else if (__LASTZAT < Math.max(2, klasse) * 72) {  // Rest bis inkl. U18 (Liga 1 und 2) bzw. U17 (Liga 3)
+                                          } else if (__LASTZAT < Math.max(2, klasse) * __SAISONZATS) {  // Rest bis inkl. U18 (Liga 1 und 2) bzw. U17 (Liga 3)
                                               // do nothing
-                                          } else if (__LASTZAT < (klasse + 1) * 72) {  // U17/U16 je nach Liga 2/3
+                                          } else if (__LASTZAT < (klasse + 1) * __SAISONZATS) {  // U17/U16 je nach Liga 2/3
                                               this.warnDrawAufstieg = new WarnDrawPlayer(this, getColor('OMI'));  // magenta
                                               this.warnDrawAufstieg.setAufstieg();
                                               __LOG[5](this.getAge().toFixed(2), "magenta");
@@ -1510,7 +1511,7 @@ Class.define(PlayerRecordTraining, Object, {
 
                                           if (isTrainableSkill(i)) {
                                               // Auf ganze Zahl runden und parseInt(), da das sonst irgendwie als String interpretiert wird
-                                              const __ADDSKILL = Math.min(99 - progSkill, getMulValue(__ADDRATIO, __SKILL, 0, NaN));
+                                              const __ADDSKILL = Math.min(99 - progSkill, getMulValue(__ADDRATIO, __SKILL, 0, Number.NaN));
 
                                               progSkill += __ADDSKILL;
                                               addSkill -= __ADDSKILL;
@@ -1546,13 +1547,13 @@ Class.define(PlayerRecordTraining, Object, {
         'setGeb'                : function(gebZAT) {
                                       this.zatGeb = gebZAT;
                                       this.zatAge = this.calcZatAge(this.currZAT);
-                                      this.birth = (36 + this.saison) * 72 + this.currZAT - this.zatAge;
+                                      this.birth = (36 + this.saison) * __SAISONZATS + this.currZAT - this.zatAge;
                                   },
         'calcZatAge'            : function(currZAT) {
                                       let zatAge;
 
                                       if (this.zatGeb !== undefined) {
-                                          let ZATs = 72 * (this.age - ((currZAT < this.zatGeb) ? 12 : 13));  // Basiszeit fuer die Jahre seit Jahrgang 13
+                                          let ZATs = __SAISONZATS * (this.age - ((currZAT < this.zatGeb) ? 12 : 13));  // Basiszeit fuer die Jahre seit Jahrgang 13
 
                                           if (this.zatGeb < 0) {
                                               zatAge = ZATs + currZAT;  // Zaehlung begann Anfang der Saison (und der Geburtstag wird erst nach dem Ziehen bestimmt)
@@ -1565,13 +1566,13 @@ Class.define(PlayerRecordTraining, Object, {
                                   },
         'getZatAge'             : function(when = this.__TIME.now) {
                                       if (when === this.__TIME.end) {
-                                          return (18 - 12) * 72 - 1;  // (max.) Trainings-ZATs bis Ende 18
+                                          return (18 - 12) * __SAISONZATS - 1;  // (max.) Trainings-ZATs bis Ende 18
                                       } else if (this.zatAge !== undefined) {
                                           return this.zatAge;
                                       } else {
                                           __LOG[3]("Empty getZatAge()");
 
-                                          return NaN;
+                                          return Number.NaN;
                                       }
                                   },
         'getZatDone'            : function(when = this.__TIME.now) {
@@ -1597,7 +1598,7 @@ Class.define(PlayerRecordTraining, Object, {
                                       if (this.mwFormel === this.__MWFORMEL.alt) {
                                           return (when === this.__TIME.end) ? 18 : this.age;
                                       } else {  // Geburtstage ab Saison 10...
-                                          return (13.00 + this.getZatAge(when) / 72);
+                                          return (13.00 + this.getZatAge(when) / __SAISONZATS);
                                       }
                                   },
         'getTrainiert'          : function(recalc = false) {
@@ -1790,7 +1791,7 @@ if (this.zatGeb === 24) {
                                       return (fingerprint ? floorValue((fingerprint.slice(0, 3) - 1) / 12) : undefined);
                                   },
         'getCat'                : function() {
-                                      return (this.birth ? floorValue((this.birth - 1) / 72) : undefined);
+                                      return (this.birth ? floorValue((this.birth - 1) / __SAISONZATS) : undefined);
                                   },
         'findInFingerPrints'    : function(fingerprints) {
                                       const __MYFINGERPRINT = this.getFingerPrint();  // ggfs. unvollstaendiger Fingerprint
@@ -1936,32 +1937,6 @@ function isPrimarySkill(pos, skill) {
 
 // Hilfsfunktionen fuer das Training **********************************************************************
 
-// Konstante 0.99 ^ 99
-const __099HOCH99 = 0.36972963764972677265718790562881;
-
-const __FACTORS = [ 1.00, 1.10, 1.25, 1.35 ];  // Tribuene, Bank, teilweise, durchgehend
-
-// Gibt die Trainingswahrscheinlichkeit zurueck
-// Format der Rueckgabe: "aaa.bb %", "aa.bb %" bzw. "a.bb %" (keine Deckelung bei 99.00 %)
-// probStr: Basis-Wahrscheinlichkeit (= Tribuene) als Prozent-String
-// mode: Art des Einsatzes: 0 - Tribuene, 1 - Bank, 2 - Teilweiser Einsatz, 3 - Volleinsatz
-// unit: Einheitensymbol (Default: " %")
-// fixed: Nachkommastellen (Default: 2)
-// limit: Obere Grenze, z.B. 99.0 (Default: aus)
-function getProbabilityStr(probStr, mode, unit = " %", fixed = 2, limit = undefined) {
-    if ((probStr == "0.00 %") || (probStr == "Trainerskill zu niedrig!")) {
-        return "";
-    } else {
-        let ret = parseFloat(probStr) * __FACTORS[mode];
-
-        if (limit) {
-            ret = Math.min(limit, ret);
-        }
-
-        return ret.toFixed(fixed).toString() + unit;
-    }
-}
-
 // Gibt die Position dieser Zeile zurueck
 function getPos(row, colIdxChance) {
     const __CLASSNAME = row.cells[colIdxChance].className;
@@ -2046,58 +2021,12 @@ function getTrainerNr(row, colIdxTrainer) {
     return __TRAINERNR;
 }
 
-// Gibt das Gehalt eines Trainers zurueck
-// tSkill: Trainer-Skill (60, 62.5, ..., 97.5, 99.5)
-// tZATs: Trainer-Vertragslänge (6, 12, ..., 90, 96)
-// return Trainer-Gehalt eines Trainers von bestimmtem Skill
-function calcTGehalt(tSkill = 99.5, tZATs = 96) {
-    const __OLDTSKILL = parseInt((2 * tSkill - 100.5).toFixed(0), 10);
-    const __SKILLFACT = Math.pow(__OLDTSKILL - 16.34, 1.26);
-    const __ZATFACT = (596 - tZATs) / 500;
-    const __GEHALT = 1950 * __SKILLFACT * __ZATFACT;
-
-    return __GEHALT;
-}
-
-// Gibt die Wahrscheinlichkeit fuer ein Training zurueck
-// alter: Alter des Spielers
-// pSkill: Derzeitiger Wert des zu trainierenden Spieler-Skills
-// tSkill: Trainer-Skill (60, 62.5, ..., 97.5, 99.5)
-// mode: Einsatztyp (0: Tribuene/Basis, 1: Bank, 2: teilweise, 3: durchgehend)
-// limit: Obere Grenze (99), Default ist unbegrenzt (undefined)
-// return Trainingswahrscheinlichkeit
-function calcProbPercent(alter, pSkill = 100, tSkill = 99.5, mode = 0, limit = undefined) {
-    const __SKILLDIFF = tSkill - pSkill;
-    const __SKILLPLUS = Math.max(0, __SKILLDIFF + 0.5);
-    const __SKILLFACT = __SKILLPLUS / (101 - __SKILLPLUS);
-    const __ALTERFACT = Math.pow((100 - alter) / 37, 7);
-    const __PROB = __099HOCH99 * __SKILLFACT * __ALTERFACT * __FACTORS[mode];
-
-    return ((limit === undefined) ? __PROB : Math.min(limit, __PROB));
-}
-
-// Gibt die Wahrscheinlichkeit fuer ein Training zurueck
-// alter: Alter des Spielers
-// tSkill: Trainer-Skill (60, 62.5, ..., 97.5, 99.5)
-// mode: Einsatztyp (0: Tribuene/Basis, 1: Bank, 2: teilweise, 3: durchgehend)
-// prob: Gewuenschte Wahrscheinlichkeit (Default ist 99)
-// return Spieler-Skill eines zu trainierenden Spielers, der optimal trainiert wird
-function calcMinPSkill(alter, tSkill = 99.5, mode = 0, prob = 99) {
-    const __ALTERFACT = Math.pow((100 - alter) / 37, 7);
-    const __SKILLFACT = prob / (__099HOCH99 * __ALTERFACT * __FACTORS[mode]);
-    const __SKILLPLUS = 101 * __SKILLFACT / (__SKILLFACT + 1);
-    const __SKILLDIFF = Math.max(0, __SKILLPLUS) - 0.5;
-    const __PSKILL = tSkill - __SKILLDIFF;
-
-    return Math.max(0, __PSKILL);
-}
-
 // ==================== Ende Abschnitt genereller Code zur Anzeige des Trainings ====================
 
 // ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
-const procHaupt = new PageManager("Haupt (Managerb\xFCro)", null, () => {
+const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", null, () => {
         const __TEAMPARAMS = getTeamParamsFromTable(__TEAMSEARCHHAUPT, __TEAMIDSEARCHHAUPT);
 
         return {
@@ -2164,7 +2093,7 @@ const procHaupt = new PageManager("Haupt (Managerb\xFCro)", null, () => {
 // Verarbeitet Ansicht "Zugabgabe - Aufstellung"
 const procAufstellung = new PageManager("Zugabgabe - Aufstellung", null, () => {
         if (getRows('table+table') === undefined) {  // #4: Tabelle mit Spieleraufstellung direkt hinter der Tabelle mit Raster
-            __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+            __LOG[2]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
 //                    'menuAnchor'  : getElement('div'),
@@ -2295,7 +2224,7 @@ const procAufstellung = new PageManager("Zugabgabe - Aufstellung", null, () => {
 // Verarbeitet Ansicht "Zugabgabe - Aktionen"
 const procAktionen = new PageManager("Zugabgabe - Aktionen", null, () => {
         if (getRows() === undefined) {
-            __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+            __LOG[2]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
                     'menuAnchor'  : getElement('div'),
@@ -2322,7 +2251,7 @@ const procAktionen = new PageManager("Zugabgabe - Aktionen", null, () => {
 // Verarbeitet Ansicht "Zugabgabe - Einstellungen"
 const procEinstellungen = new PageManager("Zugabgabe - Einstellungen", null, () => {
     if (getRows() === undefined) {
-        __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+        __LOG[2]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
                     'menuAnchor'  : getElement('div'),
@@ -2349,7 +2278,7 @@ const procEinstellungen = new PageManager("Zugabgabe - Einstellungen", null, () 
 // Verarbeitet Ansicht "Trainer"
 const procTrainer = new PageManager("Trainer", null, () => {
 //        if (getRows() === undefined) {
-//            __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+//            __LOG[2]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
 //        } else {
             return {
                     'menuAnchor'  : getElement('div'),
@@ -2376,7 +2305,7 @@ const procTrainer = new PageManager("Trainer", null, () => {
 // Verarbeitet Ansicht "Training"
 const procTraining = new PageManager("Training", null, () => {
         if (getRows('form table') === undefined) {  // #2: Tabelle innerhalb des Forms zur Trainingseinstellung
-            __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+            __LOG[2]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
                     'menuAnchor'  : getElement('div'),
@@ -2639,7 +2568,7 @@ const procTraining = new PageManager("Training", null, () => {
 // Verarbeitet Ansicht "ZAT-Report"
 const procZatReport = new PageManager("ZAT-Report", null, () => {
         if (getRows('table~table') === undefined) {  // #1: Tabelle (Trainingserfolge) mit Geschwistertabelle (Einnahmen / Ausgaben) davor
-            __LOG[2]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+            __LOG[2]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
                     'menuAnchor'  : getElement('div'),
@@ -2739,7 +2668,7 @@ const procZatReport = new PageManager("ZAT-Report", null, () => {
                 const __SUCC = getStringFromHTML(__CELLS, __COLUMNINDEX.Succ);
                 const __SUCCNUM = parseInt(__SUCC.substr(-6, 2), 10);  // 2 Stellen ab Ende - 6, dahinter " ZAT" bzw. " FIT"
                 const __ERFAHRUNG = (__SUCC === "Erfahrung gestiegen");
-                const __FUQ = (! __ERFAHRUNG) && (__SUCC === "F\xFChrungsqualität gestiegen");
+                const __FUQ = (! __ERFAHRUNG) && (__SUCC === "F\u00FChrungsqualität gestiegen");
                 const __ERFOLG = ((__ERFAHRUNG || __FUQ) ? undefined : (__SUCC.endsWith(" erfolglos") ? 0 : (__SUCC.endsWith(" erfolgreich") ? 1 : undefined)));
                 const __BLESSUR = (__SUCC.startsWith("Trainingsblessur: ") ? (__SUCC.endsWith(" FIT") ? __SUCCNUM : (__SUCC.endsWith(" ZAT") ? - __SUCCNUM : undefined)) : undefined);
                 const __ERROR = ! (__ERFAHRUNG || __FUQ || (__ERFOLG !== undefined) || (__BLESSUR !== undefined));
