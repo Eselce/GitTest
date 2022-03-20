@@ -35,7 +35,7 @@
 
                                                 ASSERT_ZERO(__RET, "startMain() darf keinen Eintrag verarbeiten");
 
-                                                return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer! Eventuell startMain() nicht ausgef\xFChrt?");
+                                                return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer! Eventuell startMain() nicht ausgef\u00FChrt?");
                                             }).catch(startMain);
                                     },
             'registerStartFun'    : async function() {
@@ -44,7 +44,7 @@
                                         return callPromiseChain(registerStartFun(() => undefined), value => {
                                                 const __RET = value;
 
-                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
                                                 return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
                                             }, startMain, value => {
@@ -61,7 +61,7 @@
                                         return callPromiseChain(registerStartFun(GM_showOptionsWritable), value => {
                                                 const __RET = value;
 
-                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
                                                 return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
                                             }, startMain, value => {
@@ -78,7 +78,7 @@
                                         return callPromiseChain(registerStartFun(GM_checkForTampermonkeyBug), value => {
                                                 const __RET = value;
 
-                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
                                                 return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
                                             }, startMain, value => {
@@ -101,7 +101,7 @@
                                             }), value => {
                                                 const __RET = value;
 
-                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
                                                 return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
                                             }, startMain, value => {
@@ -120,7 +120,7 @@
                                             value => {
                                                 const __RET = value;
 
-                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
                                                 return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
                                             },
@@ -128,15 +128,15 @@
                                             value => {
                                                 const __RET = value;
 
-                                                ASSERT_EQUAL(__RET, 2, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_EQUAL(__RET, 2, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
-                                                ASSERT_EQUAL(__SCRIPTINIT.length, 2, "__SCRIPTINIT muss genau zwei Eintr\xE4ge haben");
+                                                ASSERT_EQUAL(__SCRIPTINIT.length, 2, "__SCRIPTINIT muss genau zwei Eintr\u00E4ge haben");
                                             },
                                             startMain,
                                             value => {
                                                 const __RET = value;
 
-                                                ASSERT_EQUAL(__RET, 2, "startMain() muss genau zwei Eintr\xE4ge verarbeiten");
+                                                ASSERT_EQUAL(__RET, 2, "startMain() muss genau zwei Eintr\u00E4ge verarbeiten");
 
                                                 return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer!");
                                             });

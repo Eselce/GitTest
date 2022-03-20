@@ -47,6 +47,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
@@ -3307,7 +3308,7 @@ const __OPTCONFIG = {
                    'Rows'      : 20,
                    'Replace'   : null,
                    'Space'     : 0,
-                   'Label'     : "Pl\xE4tze:"
+                   'Label'     : "Pl\u00E4tze:"
                },
     'teamIds' : {         // Datenspeicher fuer aktuelle Team-IDs der Teams nach Namen
                    'Name'      : "teamIds",
@@ -3393,7 +3394,7 @@ const __OPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Optionen anzeigen",
                    'Hotkey'    : 'O',
-                   'AltTitle'  : "$V schlie\xDFen",
+                   'AltTitle'  : "$V schlie\u00DFen",
                    'AltLabel'  : "Optionen verbergen",
                    'AltHotkey' : 'O',
                    'FormLabel' : ""
@@ -3629,7 +3630,7 @@ function testItemAppend(node, platz, id, name) {
 
     __A2.className = "MINUS";
     __A2.href = "https://os.ongapo.com/fssturnier.php?cancelforderung=" + id + "#d";
-    __A2.append("Forderung zur\xFCcknehmen");
+    __A2.append("Forderung zur\u00FCcknehmen");
 
     __SPAN.className = "fsst_team";
     __SPAN.append(__B, __BR1, __A1, __BR2, __A2);
@@ -3644,7 +3645,7 @@ function testInsertBefore1(node, before) {
 
     testItemAppend(__OL, 56, 404, "Drovno Siroki Brijeg");
     testItemAppend(__OL, 58, 1933, "Dynamo Astrakhan");
-    testItemAppend(__OL, 57, 1226, "Blo-W\xE4iss Lintgen");
+    testItemAppend(__OL, 57, 1226, "Blo-W\u00E4iss Lintgen");
 
     node.insertBefore(__OL, before);
 }
@@ -3664,7 +3665,7 @@ function testInsertBefore2(node, before) {
 // ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
-const procHaupt = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
+const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () => {
         const __TEAMPARAMS = getTeamParamsFromTable(__TEAMSEARCHHAUPT, __TEAMIDSEARCHHAUPT);
 
         return {
@@ -3690,7 +3691,7 @@ const procHaupt = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
             if (__CURRZAT !== __DATAZAT) {
                 __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
 
-                // ... und ZAT-bezogene Daten als veraltet markieren (ausser 'skills' und 'positions')
+                // ... und ZAT-bezogene Daten als veraltet markieren
                 await __TEAMCLASS.deleteOptions({
                                               'datenZat'    : true,
                                               'oldDatenZat' : true
@@ -3709,7 +3710,7 @@ const procOSFSSTurnier = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
         const __TAB4 = getElement('div#d');
 
         if ((__TAB4 === undefined) || (__TAB4 === null)) {
-            __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+            __LOG[1]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             // Nur Test: Daten produzieren...
             //testInsertBefore1(__TAB4, __TAB4.getElementsByTagName('ol')[0]);

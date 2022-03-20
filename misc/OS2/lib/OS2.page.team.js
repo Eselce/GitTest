@@ -44,12 +44,12 @@ const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>.
         'end'       : ',0">LIVEGAME</a>'
     };
 
-const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="javascript:tabellenplatz(TEAMID)">Tabellenpl\xE4tze</a>"
+const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="javascript:tabellenplatz(TEAMID)">Tabellenpl\u00E4tze</a>"
         'Tabelle'   : 'table',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #1/Spalte #1 "Tabellenplaetze")...
         'Zeile'     : 1,
         'Spalte'    : 1,
         'start'     : '<a hspace="20" href="javascript:tabellenplatz(',
-        'end'       : ')">Tabellenpl\xE4tze</a>'
+        'end'       : ')">Tabellenpl\u00E4tze</a>'
     };
 
 // Ermittelt, wie das eigene Team heisst und aus welchem Land bzw. Liga es kommt (zur Unterscheidung von Erst- und Zweitteam)

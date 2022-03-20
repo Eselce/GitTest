@@ -152,7 +152,7 @@ Class.define(ColumnManager, Object, {
                                    this.addAndFillCell(headers, "Identifikation", titleColor);
                                }
                                if (this.bar) {
-                                   this.addAndFillCell(headers, "Qualit\xE4t", titleColor);
+                                   this.addAndFillCell(headers, "Qualit\u00E4t", titleColor);
                                }
                                if (this.tal) {
                                    this.addAndFillCell(headers, "Talent", titleColor);

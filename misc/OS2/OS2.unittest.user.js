@@ -54,6 +54,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
@@ -182,7 +183,7 @@ const __OPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Optionen anzeigen",
                    'Hotkey'    : 'O',
-                   'AltTitle'  : "$V schlie\xDFen",
+                   'AltTitle'  : "$V schlie\u00DFen",
                    'AltLabel'  : "Optionen verbergen",
                    'AltHotkey' : 'O',
                    'FormLabel' : ""

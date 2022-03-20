@@ -47,6 +47,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
@@ -71,18 +72,18 @@ const __OPTCONFIG = {
                    'Hotkey'    : 'A',
                    'AltLabel'  : "Auswahl lang",
                    'AltHotkey' : 'A',
-                   'FormLabel' : "Auswahl k\xFCrzen"
+                   'FormLabel' : "Auswahl k\u00FCrzen"
                },
     'zeigeKuerzel' : {      // Zeigt den Buchstaben der Spieler im Text (true = anzeigen, false = nicht anzeigen)
                    'Name'      : "showLetter",
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : true,
                    'Action'    : __OPTACTION.NXT,
-                   'Label'     : "K\xFCrzel ein",
+                   'Label'     : "K\u00FCrzel ein",
                    'Hotkey'    : 'K',
-                   'AltLabel'  : "K\xFCrzel aus",
+                   'AltLabel'  : "K\u00FCrzel aus",
                    'AltHotkey' : 'K',
-                   'FormLabel' : "K\xFCrzel"
+                   'FormLabel' : "K\u00FCrzel"
                },
     'aktuellerZat' : {    // Laufender ZAT
                    'Name'      : "currZAT",
@@ -189,7 +190,7 @@ const __OPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Optionen anzeigen",
                    'Hotkey'    : 'O',
-                   'AltTitle'  : "$V schlie\xDFen",
+                   'AltTitle'  : "$V schlie\u00DFen",
                    'AltLabel'  : "Optionen verbergen",
                    'AltHotkey' : 'O',
                    'FormLabel' : ""
@@ -214,7 +215,7 @@ __TEAMCLASS.optSelect = { };
 // ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
-const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
+const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () => {
         const __TEAMPARAMS = getTeamParamsFromTable(__TEAMSEARCHHAUPT, __TEAMIDSEARCHHAUPT);
 
         return {

@@ -47,6 +47,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
@@ -68,11 +69,11 @@ const __OPTCONFIG = {
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : true,
                    'Action'    : __OPTACTION.NXT,
-                   'Label'     : "Einf\xE4rbung ein",
+                   'Label'     : "Einf\u00E4rbung ein",
                    'Hotkey'    : 'f',
-                   'AltLabel'  : "Einf\xE4rbung aus",
+                   'AltLabel'  : "Einf\u00E4rbung aus",
                    'AltHotkey' : 'f',
-                   'FormLabel' : "Einf\xE4rbung"
+                   'FormLabel' : "Einf\u00E4rbung"
                },
     'zeigeTitel' : {      // Spaltenauswahl fuer die Markierung der Titel in der Tabelle (true = anzeigen, false = nicht anzeigen)
                    'Name'      : "showTitles",
@@ -187,7 +188,7 @@ const __OPTCONFIG = {
                    'ValType'   : 'String',
                    'FreeValue' : false,
                    'SelValue'  : true,
-                   'Choice'    : [ 'Gesamttabelle', 'Heimtabelle', 'Ausw\xE4rtstabelle', '2-Punktetabelle', 'Hinrundentabelle', 'R\xFCckrundentabelle', '1. Halbzeit', '2. Halbzeit', 'Kreuztabelle' ],
+                   'Choice'    : [ 'Gesamttabelle', 'Heimtabelle', 'Ausw\u00E4rtstabelle', '2-Punktetabelle', 'Hinrundentabelle', 'R\u00FCckrundentabelle', '1. Halbzeit', '2. Halbzeit', 'Kreuztabelle' ],
                    'Default'   : 'Gesamttabelle',
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Tabellentyp: $",
@@ -365,7 +366,7 @@ const __OPTCONFIG = {
                    'Rows'      : 20,
                    'Replace'   : null,
                    'Space'     : 1,
-                   'Label'     : "L\xE4nder der Vereine:"
+                   'Label'     : "L\u00E4nder der Vereine:"
                },
     'manager' : {         // Datenspeicher fuer Liste der derzeitigen Manager potentiell aller Vereine von OS2
                    'Name'      : "manager",
@@ -412,7 +413,7 @@ const __OPTCONFIG = {
                    'Rows'      : 20,
                    'Replace'   : null,
                    'Space'     : 0,
-                   'Label'     : "Startpl\xE4tze:"
+                   'Label'     : "Startpl\u00E4tze:"
                },
     'team' : {            // Datenspeicher fuer Daten des Erst- bzw. Zweitteams
                    'Name'      : "team",
@@ -480,7 +481,7 @@ const __OPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Optionen anzeigen",
                    'Hotkey'    : 'O',
-                   'AltTitle'  : "$V schlie\xDFen",
+                   'AltTitle'  : "$V schlie\u00DFen",
                    'AltLabel'  : "Optionen verbergen",
                    'AltHotkey' : 'O',
                    'FormLabel' : ""
@@ -837,7 +838,7 @@ function calcEuropaPlaetze(landData) {
 // ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
-const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
+const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () => {
         const __TEAMPARAMS = getTeamParamsFromTable(__TEAMSEARCHHAUPT, __TEAMIDSEARCHHAUPT);
 
         return {

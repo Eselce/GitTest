@@ -374,7 +374,7 @@ function promptNextOpt(opt, defValue = undefined, reload = false, freeValue = fa
 
                 const __LABEL = substParam(__CONFIG.Label, __VALUE);
 
-                showAlert(__LABEL, "Ung\xFCltige Eingabe: " + __ANSWER);
+                showAlert(__LABEL, "Ung\u00FCltige Eingabe: " + __ANSWER);
             }
         }
 

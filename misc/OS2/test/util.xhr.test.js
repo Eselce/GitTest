@@ -97,7 +97,7 @@
 
                                                 return ASSERT_NOT_EQUAL(__RET, __EXP, "browseXMLCORS() sollte keine XML-Daten liefern, sondern blockiert werden");
                                             }).catch(async ex => {
-                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
                                                 if (ex.message === __ERRORMSG1) {
                                                     ASSERT_EQUAL(ex.message, __ERRORMSG1, "Fehlertext in Error falsch");
                                                     ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
@@ -132,7 +132,7 @@
                                                         // NOTE Unreachable...
                                                     }).catch(ex => {
                                                             try {
-                                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
                                                                 if (ex.message === __ERRORMSG1) {
                                                                     ASSERT_EQUAL(ex.message, __ERRORMSG1, "Fehlertext in Error falsch");
                                                                     ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");

@@ -68,7 +68,7 @@ Class.define(WarnDrawPlayer, Object, {
                                   this.aufstieg = true;
 
                                   if (this.isZiehAufstieg()) {
-                                      this.setZatLeft(72 - this.currZAT - this.__ZATWARNVORLAUF);
+                                      this.setZatLeft(__SAISONZATS - this.currZAT - this.__ZATWARNVORLAUF);
                                   }
 
                                   return this.zatLeft;
@@ -149,8 +149,8 @@ Class.define(WarnDrawMessage, Object, {
                                   this.anzahl = __ZIEHANZAHL[__INDEX];
                               },
         'getTextMessage'    : function() {
-                                  return "ZAT " + this.abrZAT + ' ' + ((this.anzahl > 1) ? "m\xFCssen " + this.anzahl : "muss einer") +
-                                         " deiner Jugendspieler in das Profiteam \xFCbernommen werden, ansonsten verschwinde" + ((this.anzahl > 1) ? "n sie" : "t er") + '!';
+                                  return "ZAT " + this.abrZAT + ' ' + ((this.anzahl > 1) ? "m\u00FCssen " + this.anzahl : "muss einer") +
+                                         " deiner Jugendspieler in das Profiteam \u00FCbernommen werden, ansonsten verschwinde" + ((this.anzahl > 1) ? "n sie" : "t er") + '!';
                               },
         'createMessage'     : function() {
                                   this.label = undefined;
@@ -163,10 +163,10 @@ Class.define(WarnDrawMessage, Object, {
 
                                           if (this.warnMonth && (this.rest > 0)) {
                                               this.label = "Warnung";
-                                              this.when = "Bis zur n\xE4chsten Abrechnung am ";
+                                              this.when = "Bis zur n\u00E4chsten Abrechnung am ";
                                           } else if ((this.warn || this.warnMonth) && (this.rest === 0)) {
                                               this.label = "LETZTE WARNUNG VOR DER ABRECHNUNG";
-                                              this.when = "Bis zum n\xE4chsten ";
+                                              this.when = "Bis zum n\u00E4chsten ";
                                           }
                                       }
                                   }
@@ -295,15 +295,15 @@ Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
 
                                   this.abrZAT = (__INDEX + 1) * 6;
                                   this.rest   = 5 - (this.currZAT % 6);
-                                  this.anzahl = ((this.currZAT + this.__ZATMONATVORLAUF > 72 - this.__ZATWARNVORLAUF) ? __ZIEHANZAUFSTIEG : 0);
+                                  this.anzahl = ((this.currZAT + this.__ZATMONATVORLAUF > __SAISONZATS - this.__ZATWARNVORLAUF) ? __ZIEHANZAUFSTIEG : 0);
 
                                   this.warnDialog = false;     // kein Dialog fuer Aufstiegswarnung
                                   this.warnMonth = this.warn;  // nur im letzten Monat der Saison!
                               },
         'getTextMessage'    : function() {
-                                  return "ZAT " + this.abrZAT + " ist im Falle eines Aufstiegs f\xFCr " + ((this.anzahl > 1) ? "" + this.anzahl : "einen") +
-                                         " deiner Jugendspieler m\xF6glicherweise die letzte Chance, " + ((this.anzahl > 1) ? " diese noch vor ihrem" : "ihn noch vor seinem") +
-                                         " Geburtstag in der n\xE4chsten Saison in das Profiteam zu \xFCbernehmen!";
+                                  return "ZAT " + this.abrZAT + " ist im Falle eines Aufstiegs f\u00FCr " + ((this.anzahl > 1) ? "" + this.anzahl : "einen") +
+                                         " deiner Jugendspieler m\u00F6glicherweise die letzte Chance, " + ((this.anzahl > 1) ? " diese noch vor ihrem" : "ihn noch vor seinem") +
+                                         " Geburtstag in der n\u00E4chsten Saison in das Profiteam zu \u00FCbernehmen!";
                               },
         'getColorTag'       : function() {
                                   return "color='magenta'";  // magenta

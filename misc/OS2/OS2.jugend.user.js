@@ -48,6 +48,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
@@ -83,22 +84,22 @@ const __OPTCONFIG = {
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : true,
                    'Action'    : __OPTACTION.NXT,
-                   'Label'     : "Jahrgangs\xFCberschriften",
+                   'Label'     : "Jahrgangs\u00FCberschriften",
                    'Hotkey'    : 'J',
                    'AltLabel'  : "Nur Trennlinie benutzen",
                    'AltHotkey' : 'j',
-                   'FormLabel' : "Jahrg\xE4nge gruppieren"
+                   'FormLabel' : "Jahrg\u00E4nge gruppieren"
                },
     'zeigeUxx' : {        // Auswahl, ob in der Ueberschrift ueber jedem Jahrgang zusaetzlich zur Saison noch der Jahrgang in der Form 'Uxx' angegeben wird
                    'Name'      : "showUxx",
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : true,
                    'Action'    : __OPTACTION.NXT,
-                   'Label'     : "Jahrg\xE4nge anzeigen",
+                   'Label'     : "Jahrg\u00E4nge anzeigen",
                    'Hotkey'    : 'U',
                    'AltLabel'  : "Nur Saisons anzeigen",
                    'AltHotkey' : 'u',
-                   'FormLabel' : "Jahrg\xE4nge U13 bis U19"
+                   'FormLabel' : "Jahrg\u00E4nge U13 bis U19"
                },
     'zeigeWarnung' : {    // Auswahl, ob eine Warnung erscheint, wenn Talente gezogen werden sollten
                    'Name'      : "showWarning",
@@ -127,22 +128,22 @@ const __OPTCONFIG = {
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : true,
                    'Action'    : __OPTACTION.NXT,
-                   'Label'     : "Ziehwarnung B\xFCro ein",
+                   'Label'     : "Ziehwarnung B\u00FCro ein",
                    'Hotkey'    : 'z',
-                   'AltLabel'  : "Ziehwarnung B\xFCro aus",
+                   'AltLabel'  : "Ziehwarnung B\u00FCro aus",
                    'AltHotkey' : 'z',
-                   'FormLabel' : "Ziehwarnung B\xFCro"
+                   'FormLabel' : "Ziehwarnung B\u00FCro"
                },
     'zeigeWarnungDialog' : {  // Auswahl, ob die Meldung im Managerbuero als Dialog erscheinen soll
                    'Name'      : "showWarningDialog",
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : false,
                    'Action'    : __OPTACTION.NXT,
-                   'Label'     : "Ziehwarnung B\xFCro als Dialog",
+                   'Label'     : "Ziehwarnung B\u00FCro als Dialog",
                    'Hotkey'    : 'z',
-                   'AltLabel'  : "Ziehwarnung B\xFCro als Textmeldung",
+                   'AltLabel'  : "Ziehwarnung B\u00FCro als Textmeldung",
                    'AltHotkey' : 'z',
-                   'FormLabel' : "Ziehwarnung B\xFCro Dialog"
+                   'FormLabel' : "Ziehwarnung B\u00FCro Dialog"
                },
     'zeigeWarnungAufstieg' : {  // Auswahl, ob eine Warnung in der Uebersicht erscheint, wenn Talente nach Aufstieg nicht mehr gezogen werden koennen
                    'Name'      : "showWarningAufstieg",
@@ -171,11 +172,11 @@ const __OPTCONFIG = {
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : true,
                    'Action'    : __OPTACTION.NXT,
-                   'Label'     : "Balken Qualit\xE4t ein",
+                   'Label'     : "Balken Qualit\u00E4t ein",
                    'Hotkey'    : 'B',
-                   'AltLabel'  : "Balken Qualit\xE4t aus",
+                   'AltLabel'  : "Balken Qualit\u00E4t aus",
                    'AltHotkey' : 'B',
-                   'FormLabel' : "Balken Qualit\xE4t"
+                   'FormLabel' : "Balken Qualit\u00E4t"
                },
     'absBalken' : {       // Spaltenauswahl fuer den Guetebalken des Talents absolut statt nach Foerderung (true = absolut, false = relativ nach Foerderung)
                    'Name'      : "absBar",
@@ -184,7 +185,7 @@ const __OPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Balken absolut",
                    'Hotkey'    : 'u',
-                   'AltLabel'  : "Balken nach F\xF6rderung",
+                   'AltLabel'  : "Balken nach F\u00F6rderung",
                    'AltHotkey' : 'u',
                    'FormLabel' : "Balken 100%"
                },
@@ -607,9 +608,9 @@ const __OPTCONFIG = {
                                   5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000 ],
                    'Default'   : 10000,
                    'Action'    : __OPTACTION.NXT,
-                   'Label'     : "F\xF6rderung: $",
+                   'Label'     : "F\u00F6rderung: $",
                    'Hotkey'    : 'F',
-                   'FormLabel' : "F\xF6rderung:|$"
+                   'FormLabel' : "F\u00F6rderung:|$"
                },
     'team' : {            // Datenspeicher fuer Daten des Erst- bzw. Zweitteams
                    'Name'      : "team",
@@ -849,7 +850,7 @@ const __OPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Optionen anzeigen",
                    'Hotkey'    : 'O',
-                   'AltTitle'  : "$V schlie\xDFen",
+                   'AltTitle'  : "$V schlie\u00DFen",
                    'AltLabel'  : "Optionen verbergen",
                    'AltHotkey' : 'O',
                    'FormLabel' : ""
@@ -901,10 +902,10 @@ function init(playerRows, optSet, colIdx, offsetUpper = 1, offsetLower = 0, page
 
     const __SAISON = optSet.getOptValue('saison');
     const __AKTZAT = optSet.getOptValue('aktuellerZat');
-    const __GEALTERT = ((__AKTZAT >= 72) ? (getIntFromHTML(playerRows[playerRows.length - offsetLower - 1].cells, colIdx.Age) < 13) : false);
+    const __GEALTERT = ((__AKTZAT >= __SAISONZATS) ? (getIntFromHTML(playerRows[playerRows.length - offsetLower - 1].cells, colIdx.Age) < 13) : false);
     const __CURRZAT = (__GEALTERT ? 0 : __AKTZAT);
     const __LGNR = __TEAMCLASS.team.LgNr;
-    const __KLASSE = (__LGNR > 1) ? (__LGNR > 3) ? 3 : 2 : 1;
+    const __KLASSE = ((__LGNR > 1) ? ((__LGNR > 3) ? 3 : 2) : 1);
     const __DONATION = optSet.getOptValue('foerderung');
     const __BIRTHDAYS = optSet.getOptValue('birthdays', []);
     const __TCLASSES = optSet.getOptValue('tClasses', []);
@@ -1219,7 +1220,7 @@ function getAufwertFromHTML(cells, colIdxAuf, shortForm = true) {
 // ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
-const procHaupt = new PageManager("Haupt (Managerb\xFCro)", __TEAMCLASS, () => {
+const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () => {
         const __TEAMPARAMS = getTeamParamsFromTable(__TEAMSEARCHHAUPT, __TEAMIDSEARCHHAUPT);
 
         return {
@@ -1305,11 +1306,11 @@ const procOptionen = new PageManager("Optionen", __TEAMCLASS, () => {
         });
 
 // Verarbeitet Ansicht "Teamuebersicht"
-const procTeamuebersicht = new PageManager("Team\xFCbersicht", __TEAMCLASS, () => {
+const procTeamuebersicht = new PageManager("Team\u00FCbersicht", __TEAMCLASS, () => {
         if (getElementByName('transfer') !== undefined) {  // getElement("input[name='transfer']")...
             __LOG[1]("Ziehen-Seite");
         } else if (getRows('form table') === undefined) {  // #1: Tabelle innerhalb des Forms zum Ziehen
-            __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+            __LOG[1]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
                     'menuAnchor' : getElement('div'),
@@ -1442,7 +1443,7 @@ const procTeamuebersicht = new PageManager("Team\xFCbersicht", __TEAMCLASS, () =
 // Verarbeitet Ansicht "Spielereinzelwerte"
 const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS, () => {
         if (getRows('table.jugend') === undefined) {  // #1:  Tabelle mit Klasse 'jugend'
-            __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+            __LOG[1]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
                     'menuAnchor' : getElement('div'),
@@ -1532,7 +1533,7 @@ const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS
 // Verarbeitet Ansicht "Opt. Skill"
 const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
         if (getRows('table[border][align][cellspacing]') === undefined) {  // #1: Tabelle mit speziellen Attributen
-            __LOG[1]("Diese Seite ist ohne Team nicht verf\xFCgbar!");
+            __LOG[1]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
                     'menuAnchor' : getElement('div'),
@@ -1663,7 +1664,7 @@ function prepareOptions(optSet, optParams) {
         const __BOXDONATION = document.getElementsByTagName('option');
         const __DONATION = getSelectionFromComboBox(__BOXDONATION, 10000, 'Number');
 
-        __LOG[4]("Jugendf\xF6rderung: " + __DONATION + " Euro");
+        __LOG[4]("Jugendf\u00F6rderung: " + __DONATION + " Euro");
 
         // ... und abspeichern...
         optSet.setOpt('foerderung', __DONATION, false);

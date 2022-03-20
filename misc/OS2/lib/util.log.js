@@ -196,7 +196,7 @@ function serializer(replacer = undefined, cycleReplacer = undefined) {
 
                 if (~ __THISPOS) {
                     __STACK.splice(__THISPOS + 1);
-                    __KEYS.splice(__THISPOS, Infinity, key);
+                    __KEYS.splice(__THISPOS, Number.POSITIVE_INFINITY, key);
                 } else {
                     __STACK.push(this);
                     __KEYS.push(key);

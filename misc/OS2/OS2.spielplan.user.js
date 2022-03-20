@@ -46,6 +46,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
@@ -93,7 +94,7 @@ const __OPTCONFIG = {
                    'Hotkey'    : 'T',
                    'AltLabel'  : "Lange Texte",
                    'AltHotkey' : 'T',
-                   'FormLabel' : "Abk\xFCrzungen"
+                   'FormLabel' : "Abk\u00FCrzungen"
                },
     'sepMonths' : {       // Im Spielplan Trennstriche zwischen den Monaten
                    'Name'      : "sepMonths",
@@ -327,7 +328,7 @@ const __OPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Optionen anzeigen",
                    'Hotkey'    : 'a',
-                   'AltTitle'  : "$V schlie\xDFen",
+                   'AltTitle'  : "$V schlie\u00DFen",
                    'AltLabel'  : "Optionen verbergen",
                    'AltHotkey' : 'v',
                    'FormLabel' : ""
@@ -420,7 +421,7 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
                 const __CELLART = __CELLS[__COLUMNINDEX.Art];
 
                 __CELLKOM.innerHTML = __CELLKOM.innerHTML.replace("Vorbericht(e)", 'V').replace("Kommentar(e)", 'K').replace("&amp;", '/').replace('&', '/');
-                __CELLART.innerHTML = __CELLART.innerHTML.replace(": Heim", "(H)").replace(": Ausw\xE4rts", "(A)").replace(__ZAT.gameType, getGameTypeAlias(__ZAT.gameType));
+                __CELLART.innerHTML = __CELLART.innerHTML.replace(": Heim", "(H)").replace(": Ausw\u00E4rts", "(A)").replace(__ZAT.gameType, getGameTypeAlias(__ZAT.gameType));
             }
 
             __CELLS[__COLUMNINDEX.Erg].className = __ARTCLASS;

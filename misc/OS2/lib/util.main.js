@@ -46,10 +46,10 @@ Class.define(Main, Object, {
                                 const __HANDLER         = __MANAGER.handler;
 
                                 if (! __HANDLER) {
-                                    return Promise.reject(`Kein Seiten-Handler f\xFCr '${__MANAGER.name}' vorhanden!`);
+                                    return Promise.reject(`Kein Seiten-Handler f\u00FCr '${__MANAGER.name}' vorhanden!`);
                                 }
 
-                                __LOG[2](`${__DBMOD.Name}: Starte Seiten-Verarbeitung f\xFCr '${__MANAGER.name}'...`);
+                                __LOG[2](`${__DBMOD.Name}: Starte Seiten-Verarbeitung f\u00FCr '${__MANAGER.name}'...`);
 
                                 // Klassifikation verknuepfen...
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
@@ -65,7 +65,7 @@ Class.define(Main, Object, {
                                             }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
                                                                     ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
                             } else {
-                                return Promise.reject(`Keine Options-Parameter f\xFCr Seite '${__MANAGER.name}' vorhanden!`);
+                                return Promise.reject(`Keine Options-Parameter f\u00FCr Seite '${__MANAGER.name}' vorhanden!`);
                             }
                         },
         'run'         : async function(selector, ... selectorParams) {

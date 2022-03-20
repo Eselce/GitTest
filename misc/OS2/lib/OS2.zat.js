@@ -19,7 +19,7 @@ const __POKALRUNDEN = [ "", "1. Runde", "2. Runde", "3. Runde", "Achtelfinale", 
 const __QUALIRUNDEN = [ "", "Quali 1", "Quali 2", "Quali 3" ];
 const __OSCRUNDEN   = [ "", "Viertelfinale", "Halbfinale", "Finale" ];
 const __OSERUNDEN   = [ "", "Runde 1", "Runde 2", "Runde 3", "Runde 4", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale" ];
-const __HINRUECK    = [ " Hin", " R\xFCck", "" ];
+const __HINRUECK    = [ " Hin", " R\u00FCck", "" ];
 
 // ==================== Abschnitt fuer Klasse RundenLink ====================
 
@@ -135,7 +135,7 @@ function firstZAT(saison, ligaSize) {
 // currZAT: Enthaelt den Spielplanzeiger auf den aktuellen ZAT
 // longStats: Formatiert die Langversion des Textes
 function getZAT(currZAT, longStats) {
-    return (longStats ? currZAT.gameType + ' ' + (currZAT.heim ? "Heim" : "Ausw\xE4rts") + ' ' : "") +
+    return (longStats ? currZAT.gameType + ' ' + (currZAT.heim ? "Heim" : "Ausw\u00E4rts") + ' ' : "") +
            (longStats ? '[' + currZAT.ligaSpieltag + ' ' + currZAT.pokalRunde + ' ' + currZAT.euroRunde + "] " : "") +
            (longStats ? '[' + currZAT.ZATrueck + __HINRUECK[currZAT.hinRueck] +
                         ' ' + ((currZAT.ZATkorr < 0) ? "" : '+') + currZAT.ZATkorr + "] " : "") +
@@ -362,7 +362,7 @@ function setGegnerFromCell(currZAT, cell) {
 // cell: Tabellenzelle mit Eintrag "Liga : Heim" (Spielplan) oder "Liga  Heim: " (Managerbuero)
 // return { "Liga", "Heim" } im Beispiel
 function getSpielArtFromCell(cell) {
-    const __TEXT = cell.textContent.replace('\xA0', "").replace(':', "").replace("  ", ' ');
+    const __TEXT = cell.textContent.replace('\u00A0', "").replace(':', "").replace("  ", ' ');
     const __SPIELART = __TEXT.split(' ', 2);
 
     return __SPIELART;

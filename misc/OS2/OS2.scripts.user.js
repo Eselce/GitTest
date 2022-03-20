@@ -46,6 +46,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
@@ -116,7 +117,7 @@ const __OPTCONFIG = {
                    'Rows'      : 20,
                    'Replace'   : null,
                    'Space'     : 1,
-                   'Label'     : "Abh\xE4ngigkeiten:"
+                   'Label'     : "Abh\u00E4ngigkeiten:"
                },
     'reset' : {           // Optionen auf die "Werkseinstellungen" zuruecksetzen
                    'FormPrio'  : undefined,
@@ -157,7 +158,7 @@ const __OPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Optionen anzeigen",
                    'Hotkey'    : 'a',
-                   'AltTitle'  : "$V schlie\xDFen",
+                   'AltTitle'  : "$V schlie\u00DFen",
                    'AltLabel'  : "Optionen verbergen",
                    'AltHotkey' : 'v',
                    'FormLabel' : ""

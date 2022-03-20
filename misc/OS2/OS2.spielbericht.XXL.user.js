@@ -301,7 +301,7 @@ var tabberstat = document.getElementsByTagName('table')[5];
 textbausteine();
 berstatistik();
 
-window.resizeTo(1100,800);
+window.resizeTo(1100, 800);
 
 console.log("End of script");
 

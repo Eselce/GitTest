@@ -36,7 +36,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
     if (__MEMORY !== undefined) {
         const __RELOAD = "window.location.reload()";
         const __SETITEM = function(item, val, quotes = true) {
-                              return (__MEMSTR + ".setItem(" + __LOG.info(__RUNPREFIX + item, false) + ", " + (quotes ? __LOG.info(val, false) : val) + "),");
+                              return (__MEMSTR + ".setItem(" + __LOG.info(__RUNPREFIX + item, false) + ',' + (quotes ? __LOG.info(val, false) : val) + "),");
                           };
         const __SETITEMS = function(cmd, key = undefined, val = undefined) {
                               return ('(' + __SETITEM('cmd', cmd) + ((key === undefined) ? "" :
@@ -44,7 +44,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
                           };
         const __CONFIG = getOptConfig(opt);
         const __SERIAL = getValue(serial, getValue(__CONFIG.Serial, false));
-        const __THISVAL = ((__CONFIG.ValType === 'String') ? "'\\x22' + this.value + '\\x22'" : "this.value");
+        const __THISVAL = ((__CONFIG.ValType === 'String') ? "'\\u0022' + this.value + '\\u0022'" : "this.value");
         const __TVALUE = getValue(__CONFIG.ValType, __THISVAL, "new " + __CONFIG.ValType + '(' + __THISVAL + ')');
         const __VALSTR = ((value !== undefined) ? safeStringify(value) : __SERIAL ? "JSON.stringify(" + __TVALUE + ')' : __TVALUE);
         const __ACTION = (isAlt ? getValue(__CONFIG.AltAction, __CONFIG.Action) : __CONFIG.Action);

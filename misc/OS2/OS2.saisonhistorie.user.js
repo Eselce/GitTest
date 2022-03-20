@@ -46,6 +46,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
@@ -89,11 +90,11 @@ const __OPTCONFIG = {
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : true,
                    'Action'    : __OPTACTION.NXT,
-                   'Label'     : "Leere Eintr\xE4ge",
+                   'Label'     : "Leere Eintr\u00E4ge",
                    'Hotkey'    : 'T',
                    'AltLabel'  : "Nicht teilgenommen",
                    'AltHotkey' : 'T',
-                   'FormLabel' : "Leere Eintr\xE4ge"
+                   'FormLabel' : "Leere Eintr\u00E4ge"
                },
     'land' : {            // Name des Landes
                    'Name'      : "land",
@@ -221,7 +222,7 @@ const __OPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Optionen anzeigen",
                    'Hotkey'    : 'a',
-                   'AltTitle'  : "$V schlie\xDFen",
+                   'AltTitle'  : "$V schlie\u00DFen",
                    'AltLabel'  : "Optionen verbergen",
                    'AltHotkey' : 'v',
                    'FormLabel' : ""
