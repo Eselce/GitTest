@@ -34,6 +34,7 @@
 //  util.option.run.js
 //  util.main.js
 //  OS2.list.js
+//  OS2.calc.js
 //  OS2.team.js
 //  OS2.page.team.js
 //  OS2.page.js
@@ -243,7 +244,7 @@ function serializer(replacer = undefined, cycleReplacer = undefined) {
 
                 if (~ __THISPOS) {
                     __STACK.splice(__THISPOS + 1);
-                    __KEYS.splice(__THISPOS, Infinity, key);
+                    __KEYS.splice(__THISPOS, Number.POSITIVE_INFINITY, key);
                 } else {
                     __STACK.push(this);
                     __KEYS.push(key);
@@ -569,7 +570,7 @@ function getNextValue(arr, value) {
 // digits: Anzahl der Stellen nach dem Komma fuer das Produkt (Default: 0)
 // defValue: Default-Wert fuer den Fall, dass ein Multiplikant nicht gesetzt ist (Default: NaN)
 // return Das Produkt auf digits Stellen genau. Ist dieses nicht definiert, dann defValue
-function getMulValue(valueA, valueB, digits = 0, defValue = NaN) {
+function getMulValue(valueA, valueB, digits = 0, defValue = Number.NaN) {
     let product = defValue;
 
     if ((valueA !== undefined) && (valueB !== undefined)) {
@@ -591,6 +592,42 @@ function getOrdinal(value, defValue = '*') {
     return getValue(value, defValue, value + '.');
 }
 
+// Wandelt einen String in eine Zahl um.
+// Prozentzahlen werden als Anteil eines Ganzen interpretiert (d.h. "100%" -> 1).
+// Ganze Zahlen mit Tausenderpunkten werden erkannt, wenn sie mit '.' gefolgt von 3 Ziffern enden.
+// Dezimalzahlen werden erkannt, wenn sie mit '.' gefolgt von beliebig vielen Ziffern enden.
+// Da zuerst auf ganze Zahlen geprueft wird, koennen Dezimalzahlen nicht 3 Nachkommaziffern haben.
+// numberString: Dezimalzahl als String
+// return Numerischer Wert der Zahl im String
+function getNumber(numberString) {
+    const __STR = (numberString || "");
+    // Ist es eine Prozentzahl?
+    const __PERCENT = (__STR.indexOf('%') > -1);
+    // Buchstaben und '%' entfernen;
+    // Whitespaces vorne und hintenentfernen...
+    const str = __STR.replace(/[a-zA-Z%]/g, "").trim();
+    const __REGEXPINT     = /^\d+$/;
+    const __REGEXPINTDOTS = /^\d+(\.\d{3}){1,}$/;
+    const __REGEXPNUMBER  = /^\d*\.\d{1,}$/;
+    let ret = Number.NaN;
+
+    // parseXXX interpretiert einen Punkt immer als Dezimaltrennzeichen!
+    if (__REGEXPINT.test(str)) {
+        // Einfache ganze Zahl...
+        ret = Number.parseInt(str, 10);
+    } else if (__REGEXPINTDOTS.test(str)) {
+        // Ganze Zahl mit Tausenderpunkten...
+        ret = Number.parseInt(str.replace(/\./g, ""), 10);
+    } else if (__REGEXPNUMBER.test(str)) {
+        // Dezimalzahl mit Punkt als Trennzeichen...
+        ret = Number.parseFloat(str);
+    } else {
+        // Kein gueltiger String
+    }
+
+    return (__PERCENT ? (ret / 100) : ret);
+}
+
 // Fuegt in die uebergebene Zahl Tausender-Trennpunkte ein
 // Wandelt einen etwaig vorhandenen Dezimalpunkt in ein Komma um
 // numberString: Dezimalzahl als String
@@ -609,7 +646,7 @@ function getNumberString(numberString) {
         let result = "";
 
         for (let i = 0; i < __TEMP.length; i++) {
-            if ((i > 0) && (i % 3 === 0)) {
+            if ((i > 0) && ((i % 3) === 0)) {
                 result += '.';
             }
             result += __TEMP.substr(i, 1);
@@ -2484,14 +2521,14 @@ function appendCell(row, content, color = undefined, align = 'center', showUndef
 // Erzeugt die uebergebene Anzahl von Zellen in der uebergebenen Zeile
 // row: Zeile, die aufgepumpt werden soll
 // arrOrLength: Entweder ein Datenarray oder String zum Fuellen
-//      oder die Anzahl der zu erzeugenden Zellen (Default: 1)
+//              oder die Anzahl der zu erzeugenden Zellen (Default: 1)
 // color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
 // return Die aufgeblaehte Zeile
 function inflateRow(row, arrOrLength = 1, color = undefined, align = 'center') {
     const __ROW = (row || { });
     const __ARR = (((typeof arrOrLength) === 'string') ? [ arrOrLength ] :
                     (((typeof arrOrLength) === 'number') ? [] : arrOrLength));
-    const __LENGTH = getValue(__ARR.length, arrOrLength);
+    const __LENGTH = (__ARR.length || arrOrLength);
 
     for (let i = 0; i < __LENGTH; i++) {
         appendCell(row, __ARR[i], color, align);
@@ -2763,15 +2800,19 @@ function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
     return getValue(__TEXT.toString(), "");
 }
 
+
 // Liest ein Array von String-Werten aus den Spalten ab einer Zeile der Tabelle aus, nachdem diese konvertiert wurden
 // cells: Die Zellen einer Zeile
 // colIdxArr: Erster Spaltenindex der gesuchten Werte
 // arrOrLength: Entweder ein Datenarray zum Fuellen oder die Anzahl der zu lesenden Werte
+// arrOrLength: Entweder ein Datenarray oder String zum Fuellen
+//              oder die Anzahl der zu lesenden Werte (Default: 1)
 // convertFun: Funktion, die die Werte konvertiert
 // return Array mit Spalteneintraegen als String ("" fuer "nicht gefunden")
 function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sameValue) {
-    const __ARR = (((typeof arrOrLength) === 'number') ? [] : arrOrLength);
-    const __LENGTH = getValue(__ARR.length, arrOrLength);
+    const __ARR = (((typeof arrOrLength) === 'string') ? [ arrOrLength ] :
+                    (((typeof arrOrLength) === 'number') ? [] : arrOrLength));
+    const __LENGTH = (__ARR.length || arrOrLength);
     const __RET = [];
 
     for (let index = 0, colIdx = colIdxArr; index < __LENGTH; index++, colIdx++) {
@@ -4016,7 +4057,7 @@ function promptNextOpt(opt, defValue = undefined, reload = false, freeValue = fa
 
                 const __LABEL = substParam(__CONFIG.Label, __VALUE);
 
-                showAlert(__LABEL, "Ung\xFCltige Eingabe: " + __ANSWER);
+                showAlert(__LABEL, "Ung\u00FCltige Eingabe: " + __ANSWER);
             }
         }
 
@@ -5212,7 +5253,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
     if (__MEMORY !== undefined) {
         const __RELOAD = "window.location.reload()";
         const __SETITEM = function(item, val, quotes = true) {
-                              return (__MEMSTR + ".setItem(" + __LOG.info(__RUNPREFIX + item, false) + ", " + (quotes ? __LOG.info(val, false) : val) + "),");
+                              return (__MEMSTR + ".setItem(" + __LOG.info(__RUNPREFIX + item, false) + ',' + (quotes ? __LOG.info(val, false) : val) + "),");
                           };
         const __SETITEMS = function(cmd, key = undefined, val = undefined) {
                               return ('(' + __SETITEM('cmd', cmd) + ((key === undefined) ? "" :
@@ -5220,7 +5261,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
                           };
         const __CONFIG = getOptConfig(opt);
         const __SERIAL = getValue(serial, getValue(__CONFIG.Serial, false));
-        const __THISVAL = ((__CONFIG.ValType === 'String') ? "'\\x22' + this.value + '\\x22'" : "this.value");
+        const __THISVAL = ((__CONFIG.ValType === 'String') ? "'\\u0022' + this.value + '\\u0022'" : "this.value");
         const __TVALUE = getValue(__CONFIG.ValType, __THISVAL, "new " + __CONFIG.ValType + '(' + __THISVAL + ')');
         const __VALSTR = ((value !== undefined) ? safeStringify(value) : __SERIAL ? "JSON.stringify(" + __TVALUE + ')' : __TVALUE);
         const __ACTION = (isAlt ? getValue(__CONFIG.AltAction, __CONFIG.Action) : __CONFIG.Action);
@@ -5398,7 +5439,7 @@ function getOptionButton(opt) {
     const __BUTTONTITLE = substParam(getValue(__VALUE ? getValue(__CONFIG.AltTitle, __CONFIG.Title) : __CONFIG.Title, '$'), __BUTTONLABEL);
 
     return '<label for="' + __NAME + '">' + __FORMLABEL + '</label>' +
-           withTitle('<input type="button" name="" + ' + __NAME +
+           withTitle('<input type="button" name="' + __NAME +
                      '" id="' + __NAME + '" value="' + __BUTTONLABEL +
                      '"' + __ACTION + '/>', __BUTTONTITLE);
 }
@@ -6043,10 +6084,10 @@ Class.define(Main, Object, {
                                 const __HANDLER         = __MANAGER.handler;
 
                                 if (! __HANDLER) {
-                                    return Promise.reject(`Kein Seiten-Handler f\xFCr '${__MANAGER.name}' vorhanden!`);
+                                    return Promise.reject(`Kein Seiten-Handler f\u00FCr '${__MANAGER.name}' vorhanden!`);
                                 }
 
-                                __LOG[2](`${__DBMOD.Name}: Starte Seiten-Verarbeitung f\xFCr '${__MANAGER.name}'...`);
+                                __LOG[2](`${__DBMOD.Name}: Starte Seiten-Verarbeitung f\u00FCr '${__MANAGER.name}'...`);
 
                                 // Klassifikation verknuepfen...
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
@@ -6062,7 +6103,7 @@ Class.define(Main, Object, {
                                             }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
                                                                     ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
                             } else {
-                                return Promise.reject(`Keine Options-Parameter f\xFCr Seite '${__MANAGER.name}' vorhanden!`);
+                                return Promise.reject(`Keine Options-Parameter f\u00FCr Seite '${__MANAGER.name}' vorhanden!`);
                             }
                         },
         'run'         : async function(selector, ... selectorParams) {
@@ -6200,11 +6241,11 @@ const __LANDNRN = {
         'Belgien'                :  12,
         'Bosnien-Herzegowina'    :  66,
         'Bulgarien'              :  42,
-        'D\xE4nemark'            :   8,
+        'D\u00E4nemark'          :   8,
         'Deutschland'            :   6,
         'England'                :   1,
         'Estland'                :  57,
-        'Far\xF6er'              :  68,
+        'Far\u00F6er'            :  68,
         'Finnland'               :  40,
         'Frankreich'             :  32,
         'Georgien'               :  49,
@@ -6225,10 +6266,10 @@ const __LANDNRN = {
         'Niederlande'            :  11,
         'Nordirland'             :   4,
         'Norwegen'               :   9,
-        '\xD6sterreich'          :  14,
+        '\u00D6sterreich'        :  14,
         'Polen'                  :  25,
         'Portugal'               :  17,
-        'Rum\xE4nien'            :  28,
+        'Rum\u00E4nien'          :  28,
         'Russland'               :  19,
         'San Marino'             :  98,
         'Schottland'             :   2,
@@ -6239,7 +6280,7 @@ const __LANDNRN = {
         'Slowenien'              :  21,
         'Spanien'                :  13,
         'Tschechien'             :  18,
-        'T\xFCrkei'              :  39,
+        'T\u00FCrkei'            :  39,
         'Ukraine'                :  20,
         'Ungarn'                 :  26,
         'Wales'                  :   3,
@@ -6257,11 +6298,11 @@ const __TLALAND = {
         'BEL'     : 'Belgien',
         'BIH'     : 'Bosnien-Herzegowina',
         'BUL'     : 'Bulgarien',
-        'DEN'     : 'D\xE4nemark',
+        'DEN'     : 'D\u00E4nemark',
         'GER'     : 'Deutschland',
         'ENG'     : 'England',
         'EST'     : 'Estland',
-        'FRO'     : 'Far\xF6er',
+        'FRO'     : 'Far\u00F6er',
         'FIN'     : 'Finnland',
         'FRA'     : 'Frankreich',
         'GEO'     : 'Georgien',
@@ -6282,10 +6323,10 @@ const __TLALAND = {
         'NED'     : 'Niederlande',
         'NIR'     : 'Nordirland',
         'NOR'     : 'Norwegen',
-        'AUT'     : '\xD6sterreich',
+        'AUT'     : '\u00D6sterreich',
         'POL'     : 'Polen',
         'POR'     : 'Portugal',
-        'ROM'     : 'Rum\xE4nien',
+        'ROM'     : 'Rum\u00E4nien',
         'RUS'     : 'Russland',
         'SMR'     : 'San Marino',
         'SCO'     : 'Schottland',
@@ -6296,7 +6337,7 @@ const __TLALAND = {
         'SVN'     : 'Slowenien',
         'ESP'     : 'Spanien',
         'CZE'     : 'Tschechien',
-        'TUR'     : 'T\xFCrkei',
+        'TUR'     : 'T\u00FCrkei',
         'UKR'     : 'Ukraine',
         'HUN'     : 'Ungarn',
         'WAL'     : 'Wales',
@@ -6503,6 +6544,223 @@ function getColor(pos) {
 
 /*** Ende Modul OS2.list.js ***/
 
+/*** Modul OS2.calc.js ***/
+
+// ==UserScript==
+// _name         OS2.calc
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2022+
+// _author       Sven Loges (SLC)
+// _description  JS-lib mit Funktionen und Utilities zu OS2-spezifischen Berechnungen
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/OS2.list.js
+// _require      https://eselce.github.io/OS2.scripts/lib/OS2.calc.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer konstante Parameter bei OS2 ====================
+
+const __SAISONZATS = 72;    // Anzahl der ZATs pro Saison, wir ignorieren mal die 1. Saison...
+
+// ==================== Ende Abschnitt fuer konstante Parameter bei OS2 ====================
+
+// ==================== Abschnitt fuer dezimales Alter (Potential-Berechnung) ====================
+
+// Gibt das dezimale Alter passend zum ganzzahligen Alter und Geburtsdatum eines Spielers zurueck
+// age: Ganzzahliges Alter des Spielers
+// geb: Geburtsdatum des Spielers
+// currZAT: Aktueller ZAT
+// return Das Alter des Spielers zum currZAT als Dezimalbruch
+function getDezAlter(age, geb, currZAT) {
+    const __ZUSATZZATS = ((currZAT < geb)
+                        ? (__SAISONZATS - (geb - currZAT))  // ... hat diese Saison noch Geburtstag!
+                        : (currZAT - geb));                 // .... hatte diese Saison schon Geburtstag!
+    const __DEZALTER = age + (__ZUSATZZATS / __SAISONZATS);
+
+    return __DEZALTER;
+}
+
+// ==================== Ende Abschnitt fuer dezimales Alter (Potential-Berechnung) ====================
+
+// ==================== Abschnitt fuer EQ19 (Potential-Berechnung) ====================
+
+// ==================== Abschnitt Werte-Tabellen fuer Potential-Berechnung ====================
+
+// Fuer Skill-Werte von 0 bis 99: Anzahl der Trainings-ZATs, die bei vollem Training (17er/99.5) noetig sind...
+const __DAUER = [    0,  1,  2,  3,  4,  5,  6,  7,  8,  9,     //  0 -  9
+                    10, 11, 12, 13, 14, 15, 16, 17, 18, 19,     // 10 - 19
+                    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,     // 20 - 29
+                    30, 31, 32, 33, 34, 35, 36, 37, 38, 39,     // 30 - 39
+                    40, 41, 42, 43, 44, 45, 46, 47, 48, 49,     // 40 - 49
+                    50, 51, 52, 53, 54, 55, 56, 58, 59, 60,     // 50 - 59
+                    62, 63, 65, 66, 68, 70, 71, 73, 75, 77,     // 60 - 69
+                    79, 82, 84, 87, 89, 92, 95, 98,101,104,     // 70 - 79
+                   108,112,116,120,125,130,136,142,148,155,     // 80 - 89
+                   163,171,181,192,205,220,238,261,292,340 ];   // 90 - 99
+
+// Fuer Alter von 0 bis 39: Anzahl der Trainings-ZATs, die bei vollem Training (17er/99.5) noetig sind...
+const __TAGE = [ -1505,  -1426,  -1346,  -1267,  -1188,  -1109,  -1030,   -950,   -871,   -792,     //  0 -  9
+                  -713,   -634,   -554,-   475,   -396,   -317,   -238,   -158,    -79,      0,     // 10 - 19
+                    72,    138,    198,    254,    304,    350,    392,    431,    465,    497,     // 20 - 29
+                   526,    551,    575,    596,    615,    632,    648,    662,    674,    685 ];   // 30 - 39
+
+// Fuer Alter von 0 bis 39: Faktor fuer die Restbruchteile des Alters (in Prozent)...
+const __FAKTOR = [ 110,110,110,110,110,110,110,110,110,110,     //  0 -  9
+                   110,110,110,110,110,110,110,110,110,100,     // 10 - 19
+                    92, 84, 77, 70, 64, 58, 53, 48, 44, 40,     // 20 - 29
+                    36, 33, 29, 26, 24, 21, 19, 17, 15, 14];    // 30 - 39
+
+// ==================== Abschnitt Hilfsfunktion zur Potential-Berechnung ====================
+
+// Gibt Anzahl trainierter Skillpunkte und Michael Bertrams EQ19
+// "Potential" (frueher: "Talent") eines Spielers zurueck.
+// Dies ist ein Vergleichswert mit vergleichbaren 19-jaehrigen
+// Spielern, die voll mit 17er-Trainer trainiert werden
+// dezAlter: Dezimales Alter (also Alter plus ZATsSeitGeb / 72) des Spielers
+// skills: Array mit den Spieler-Einzelskills (Index 0 bis 15)
+// return Die passenden EQ19-Daten
+//        - __TRAINIERT: Anzahl der 11 trainierten Skills (ohne FUQ, ERF und Fix-Skills)
+//        - __POTENTIAL: Gewichtete Trainingsleistung unabhaengig vom Alter
+function calcPotential(dezAlter, skills) {
+    const [ __TRAINIERT, __EQ19 ] = getIdxTrainableSkills().Reduce(
+            function (res, skillIdx) {          // Fuer alle trainierbaren Skilltypen...
+                const __SKILL = skills[skillIdx];
+
+                res[0] += __SKILL;              // Skillpunkte aufsummieren (trainierte Skills)
+                res[1] += __DAUER[__SKILL];     // ZAT-Dauer aufsummieren (Trainingsleistung als ZAT-Dauer)
+
+                return res;
+            }, [0, 0]);                         // Start-Werte fuer [ __TRAINIERT, __EQ19 ]
+
+    const __ALTER = Math.min(39, Math.floor(age));      // Ganzzahliger Anteil des Alters (max 39)
+    const __RESTZAT = Math.round(__SAISONZATS * (age - __ALTER)); // Tage seit dem (max. 39.) Geburtstag des Spielers
+    const __BASISERWARTUNG = __TAGE[__ALTER] + Math.round((__RESTZAT * __FAKTOR[__ALTER]) / 100);  // Erwartete Profi-Trainingsleistung
+    const __POTENTIAL = __EQ19 - __BASISERWARTUNG;      // Trainingsleistung oberhalb des Trainings eines 19j Spielers ohne Skillpunkte
+
+    return [ __TRAINIERT, __POTENTIAL ];
+}
+
+// ==================== Ende Abschnitt fuer EQ19 (Potential-Berechnung) ====================
+
+// ==================== Abschnitt fuer Berechnung von Trainergehaeltern und Trainingswahrscheinlichkeiten ====================
+
+// ==================== Abschnitt Konstanten fuer Training ====================
+
+// Konstante 0.99 ^ 99
+const __099HOCH99 = 0.36972963764972677265718790562881;
+
+// Faktoren auf Trainingswahrscheinlichkeiten fuer Einsaetze...
+const __TRFACTORS = [ 1.00, 1.10, 1.25, 1.35 ];  // Tribuene, Bank, teilweise, durchgehend
+
+// ==================== Ende Abschnitt Konstanten fuer Training ====================
+
+// Gibt das Gehalt eines Trainers zurueck
+// tSkill: Trainer-Skill (60, 62.5, ..., 97.5, 99.5)
+// tZATs: Trainer-Vertragslänge (6, 12, ..., 90, 96)
+// return Trainer-Gehalt eines Trainers von bestimmtem Skill
+function calcTGehalt(tSkill = 99.5, tZATs = 96) {
+    const __OLDTSKILL = parseInt((2 * tSkill - 100.5).toFixed(0), 10);
+    const __SKILLFACT = Math.pow(__OLDTSKILL - 16.34, 1.26);
+    const __ZATFACT = (596 - tZATs) / 500;
+    const __GEHALT = 1950 * __SKILLFACT * __ZATFACT;
+
+    return __GEHALT;
+}
+
+// Gibt die Wahrscheinlichkeit fuer ein Training zurueck
+// alter: Alter des Spielers
+// pSkill: Derzeitiger Wert des zu trainierenden Spieler-Skills
+// tSkill: Trainer-Skill (60, 62.5, ..., 97.5, 99.5)
+// mode: Einsatztyp (0: Tribuene/Basis, 1: Bank, 2: teilweise, 3: durchgehend)
+// limit: Obere Grenze (99), Default ist unbegrenzt (undefined)
+// return Trainingswahrscheinlichkeit
+function calcProbPercent(alter, pSkill = 100, tSkill = 99.5, mode = 0, limit = undefined) {
+    const __SKILLDIFF = tSkill - pSkill;
+    const __SKILLPLUS = Math.max(0, __SKILLDIFF + 0.5);
+    const __SKILLFACT = __SKILLPLUS / (101 - __SKILLPLUS);
+    const __ALTERFACT = Math.pow((100 - alter) / 37, 7);
+    const __PROB = __099HOCH99 * __SKILLFACT * __ALTERFACT * __TRFACTORS[mode];
+
+    return ((limit === undefined) ? __PROB : Math.min(limit, __PROB));
+}
+
+// Gibt die Wahrscheinlichkeit fuer ein Training zurueck
+// alter: Alter des Spielers
+// tSkill: Trainer-Skill (60, 62.5, ..., 97.5, 99.5)
+// mode: Einsatztyp (0: Tribuene/Basis, 1: Bank, 2: teilweise, 3: durchgehend)
+// prob: Gewuenschte Wahrscheinlichkeit (Default ist 99)
+// return Spieler-Skill eines zu trainierenden Spielers, der optimal trainiert wird
+function calcMinPSkill(alter, tSkill = 99.5, mode = 0, prob = 99) {
+    const __ALTERFACT = Math.pow((100 - alter) / 37, 7);
+    const __SKILLFACT = prob / (__099HOCH99 * __ALTERFACT * __TRFACTORS[mode]);
+    const __SKILLPLUS = 101 * __SKILLFACT / (__SKILLFACT + 1);
+    const __SKILLDIFF = Math.max(0, __SKILLPLUS) - 0.5;
+    const __PSKILL = tSkill - __SKILLDIFF;
+
+    return Math.max(0, __PSKILL);
+}
+
+// Gibt die Trainingswahrscheinlichkeit zurueck
+// Format der Rueckgabe: "aaa.bb %", "aa.bb %" bzw. "a.bb %" (keine Deckelung bei 99.00 %)
+// probStr: Basis-Wahrscheinlichkeit (= Tribuene) als Prozent-String
+// mode: Art des Einsatzes: 0 - Tribuene, 1 - Bank, 2 - Teilweiser Einsatz, 3 - Volleinsatz
+// unit: Einheitensymbol (Default: " %")
+// fixed: Nachkommastellen (Default: 2)
+// limit: Obere Grenze, z.B. 99.0 (Default: aus)
+// return String der Trainingswahrscheinlichkeit im oben angegebenen Format
+function getProbabilityStr(probStr, mode, unit = " %", fixed = 2, limit = undefined) {
+    if ((probStr == "0.00 %") || (probStr == "Trainerskill zu niedrig!")) {
+        return "";
+    } else {
+        let ret = parseFloat(probStr) * __TRFACTORS[mode];
+
+        if (limit) {
+            ret = Math.min(limit, ret);
+        }
+
+        return ret.toFixed(fixed).toString() + unit;
+    }
+}
+
+// ==================== Ende Abschnitt fuer Berechnung von Trainergehaeltern und Trainingswahrscheinlichkeiten ====================
+
+// ==================== Abschnitt fuer Berechnung von Marktwerten von Spielern ====================
+
+const __MW5TF = 1.00;  // Zufaelliger Faktor zwischen 0.97 und 1.03, mal als 1.00 angenommen
+
+const __MW9FORMEL = false;  // alte MW-Formel bis Saison 9
+const __MW10FORMEL = true;  // neue MW-Formel ab Saison 10
+
+// Berechnet den Marktwert eines Spielers
+// age: Ganzzahliges Alter
+// skill: Skill-Schnitt
+// opti: Opti-Schnitt
+// mwFormel: Angabe ueber die Marktwert-Formel:
+// - false: Formel, die bis Saison 9 genutzt wurde
+// - true: Formel, die seit Saison 10 genutzt wird
+// return Marktwert des Spielers mit o.a. Werten
+function calcMarketValue(age, skill, opti, mwFormel = __MW10FORMEL) {
+    const __AGE = age;
+    const __SKILL = skill;
+    const __OPTI = opti;
+
+    if (mwFormel === __MW9FORMEL) {
+        return Math.round(Math.pow((1 + (__SKILL / 100)) * (1 + (__OPTI / 100)) * (2 - (__AGE / 100)), 10) * 2);    // Alte Formel bis Saison 9
+    } else {  // MW-Formel ab Saison 10...
+        return Math.round(Math.pow(1 + (__SKILL / 100), 5.65) * Math.pow(1 + (__OPTI / 100), 8.1) * Math.pow(1 + ((100 - __AGE) / 49), 10) * __MW5TF);
+    }
+}
+
+// ==================== Ende Abschnitt fuer Berechnung von Marktwerten von Spielern ====================
+
+// *** EOF ***
+
+/*** Ende Modul OS2.calc.js ***/
+
 /*** Modul OS2.team.js ***/
 
 // ==UserScript==
@@ -6707,12 +6965,12 @@ const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>.
         'end'       : ',0">LIVEGAME</a>'
     };
 
-const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="javascript:tabellenplatz(TEAMID)">Tabellenpl\xE4tze</a>"
+const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="javascript:tabellenplatz(TEAMID)">Tabellenpl\u00E4tze</a>"
         'Tabelle'   : 'table',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #1/Spalte #1 "Tabellenplaetze")...
         'Zeile'     : 1,
         'Spalte'    : 1,
         'start'     : '<a hspace="20" href="javascript:tabellenplatz(',
-        'end'       : ')">Tabellenpl\xE4tze</a>'
+        'end'       : ')">Tabellenpl\u00E4tze</a>'
     };
 
 // Ermittelt, wie das eigene Team heisst und aus welchem Land bzw. Liga es kommt (zur Unterscheidung von Erst- und Zweitteam)
@@ -6910,7 +7168,7 @@ const __POKALRUNDEN = [ "", "1. Runde", "2. Runde", "3. Runde", "Achtelfinale", 
 const __QUALIRUNDEN = [ "", "Quali 1", "Quali 2", "Quali 3" ];
 const __OSCRUNDEN   = [ "", "Viertelfinale", "Halbfinale", "Finale" ];
 const __OSERUNDEN   = [ "", "Runde 1", "Runde 2", "Runde 3", "Runde 4", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale" ];
-const __HINRUECK    = [ " Hin", " R\xFCck", "" ];
+const __HINRUECK    = [ " Hin", " R\u00FCck", "" ];
 
 // ==================== Abschnitt fuer Klasse RundenLink ====================
 
@@ -7026,7 +7284,7 @@ function firstZAT(saison, ligaSize) {
 // currZAT: Enthaelt den Spielplanzeiger auf den aktuellen ZAT
 // longStats: Formatiert die Langversion des Textes
 function getZAT(currZAT, longStats) {
-    return (longStats ? currZAT.gameType + ' ' + (currZAT.heim ? "Heim" : "Ausw\xE4rts") + ' ' : "") +
+    return (longStats ? currZAT.gameType + ' ' + (currZAT.heim ? "Heim" : "Ausw\u00E4rts") + ' ' : "") +
            (longStats ? '[' + currZAT.ligaSpieltag + ' ' + currZAT.pokalRunde + ' ' + currZAT.euroRunde + "] " : "") +
            (longStats ? '[' + currZAT.ZATrueck + __HINRUECK[currZAT.hinRueck] +
                         ' ' + ((currZAT.ZATkorr < 0) ? "" : '+') + currZAT.ZATkorr + "] " : "") +
@@ -7253,7 +7511,7 @@ function setGegnerFromCell(currZAT, cell) {
 // cell: Tabellenzelle mit Eintrag "Liga : Heim" (Spielplan) oder "Liga  Heim: " (Managerbuero)
 // return { "Liga", "Heim" } im Beispiel
 function getSpielArtFromCell(cell) {
-    const __TEXT = cell.textContent.replace('\xA0', "").replace(':', "").replace("  ", ' ');
+    const __TEXT = cell.textContent.replace('\u00A0', "").replace(':', "").replace("  ", ' ');
     const __SPIELART = __TEXT.split(' ', 2);
 
     return __SPIELART;
@@ -7407,7 +7665,7 @@ Class.define(WarnDrawPlayer, Object, {
                                   this.aufstieg = true;
 
                                   if (this.isZiehAufstieg()) {
-                                      this.setZatLeft(72 - this.currZAT - this.__ZATWARNVORLAUF);
+                                      this.setZatLeft(__SAISONZATS - this.currZAT - this.__ZATWARNVORLAUF);
                                   }
 
                                   return this.zatLeft;
@@ -7488,8 +7746,8 @@ Class.define(WarnDrawMessage, Object, {
                                   this.anzahl = __ZIEHANZAHL[__INDEX];
                               },
         'getTextMessage'    : function() {
-                                  return "ZAT " + this.abrZAT + ' ' + ((this.anzahl > 1) ? "m\xFCssen " + this.anzahl : "muss einer") +
-                                         " deiner Jugendspieler in das Profiteam \xFCbernommen werden, ansonsten verschwinde" + ((this.anzahl > 1) ? "n sie" : "t er") + '!';
+                                  return "ZAT " + this.abrZAT + ' ' + ((this.anzahl > 1) ? "m\u00FCssen " + this.anzahl : "muss einer") +
+                                         " deiner Jugendspieler in das Profiteam \u00FCbernommen werden, ansonsten verschwinde" + ((this.anzahl > 1) ? "n sie" : "t er") + '!';
                               },
         'createMessage'     : function() {
                                   this.label = undefined;
@@ -7502,10 +7760,10 @@ Class.define(WarnDrawMessage, Object, {
 
                                           if (this.warnMonth && (this.rest > 0)) {
                                               this.label = "Warnung";
-                                              this.when = "Bis zur n\xE4chsten Abrechnung am ";
+                                              this.when = "Bis zur n\u00E4chsten Abrechnung am ";
                                           } else if ((this.warn || this.warnMonth) && (this.rest === 0)) {
                                               this.label = "LETZTE WARNUNG VOR DER ABRECHNUNG";
-                                              this.when = "Bis zum n\xE4chsten ";
+                                              this.when = "Bis zum n\u00E4chsten ";
                                           }
                                       }
                                   }
@@ -7634,15 +7892,15 @@ Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
 
                                   this.abrZAT = (__INDEX + 1) * 6;
                                   this.rest   = 5 - (this.currZAT % 6);
-                                  this.anzahl = ((this.currZAT + this.__ZATMONATVORLAUF > 72 - this.__ZATWARNVORLAUF) ? __ZIEHANZAUFSTIEG : 0);
+                                  this.anzahl = ((this.currZAT + this.__ZATMONATVORLAUF > __SAISONZATS - this.__ZATWARNVORLAUF) ? __ZIEHANZAUFSTIEG : 0);
 
                                   this.warnDialog = false;     // kein Dialog fuer Aufstiegswarnung
                                   this.warnMonth = this.warn;  // nur im letzten Monat der Saison!
                               },
         'getTextMessage'    : function() {
-                                  return "ZAT " + this.abrZAT + " ist im Falle eines Aufstiegs f\xFCr " + ((this.anzahl > 1) ? "" + this.anzahl : "einen") +
-                                         " deiner Jugendspieler m\xF6glicherweise die letzte Chance, " + ((this.anzahl > 1) ? " diese noch vor ihrem" : "ihn noch vor seinem") +
-                                         " Geburtstag in der n\xE4chsten Saison in das Profiteam zu \xFCbernehmen!";
+                                  return "ZAT " + this.abrZAT + " ist im Falle eines Aufstiegs f\u00FCr " + ((this.anzahl > 1) ? "" + this.anzahl : "einen") +
+                                         " deiner Jugendspieler m\u00F6glicherweise die letzte Chance, " + ((this.anzahl > 1) ? " diese noch vor ihrem" : "ihn noch vor seinem") +
+                                         " Geburtstag in der n\u00E4chsten Saison in das Profiteam zu \u00FCbernehmen!";
                               },
         'getColorTag'       : function() {
                                   return "color='magenta'";  // magenta
@@ -7782,12 +8040,12 @@ Class.define(PlayerRecord, Object, {
                                       if (ziehmich) {
                                           const __LASTZAT = this.currZAT + this.getZatLeft();
 
-                                          if (__LASTZAT < 72) {  // U19
+                                          if (__LASTZAT < __SAISONZATS) {  // U19
                                               this.warnDraw = new WarnDrawPlayer(this, getColor('STU'));  // rot
                                               __LOG[5](this.getAge().toFixed(2), "rot");
-                                          } else if (__LASTZAT < Math.max(2, klasse) * 72) {  // Rest bis inkl. U18 (Liga 1 und 2) bzw. U17 (Liga 3)
+                                          } else if (__LASTZAT < Math.max(2, klasse) * __SAISONZATS) {  // Rest bis inkl. U18 (Liga 1 und 2) bzw. U17 (Liga 3)
                                               // do nothing
-                                          } else if (__LASTZAT < (klasse + 1) * 72) {  // U17/U16 je nach Liga 2/3
+                                          } else if (__LASTZAT < (klasse + 1) * __SAISONZATS) {  // U17/U16 je nach Liga 2/3
                                               this.warnDrawAufstieg = new WarnDrawPlayer(this, getColor('OMI'));  // magenta
                                               this.warnDrawAufstieg.setAufstieg();
                                               __LOG[5](this.getAge().toFixed(2), "magenta");
@@ -7825,7 +8083,7 @@ Class.define(PlayerRecord, Object, {
 
                                           if (isTrainableSkill(i)) {
                                               // Auf ganze Zahl runden und parseInt(), da das sonst irgendwie als String interpretiert wird
-                                              const __ADDSKILL = Math.min(99 - progSkill, getMulValue(__ADDRATIO, __SKILL, 0, NaN));
+                                              const __ADDSKILL = Math.min(99 - progSkill, getMulValue(__ADDRATIO, __SKILL, 0, Number.NaN));
 
                                               progSkill += __ADDSKILL;
                                               addSkill -= __ADDSKILL;
@@ -7861,13 +8119,13 @@ Class.define(PlayerRecord, Object, {
         'setGeb'                : function(gebZAT) {
                                       this.zatGeb = gebZAT;
                                       this.zatAge = this.calcZatAge(this.currZAT);
-                                      this.birth = (36 + this.saison) * 72 + this.currZAT - this.zatAge;
+                                      this.birth = (36 + this.saison) * __SAISONZATS + this.currZAT - this.zatAge;
                                   },
         'calcZatAge'            : function(currZAT) {
                                       let zatAge;
 
                                       if (this.zatGeb !== undefined) {
-                                          let ZATs = 72 * (this.age - ((currZAT < this.zatGeb) ? 12 : 13));  // Basiszeit fuer die Jahre seit Jahrgang 13
+                                          let ZATs = __SAISONZATS * (this.age - ((currZAT < this.zatGeb) ? 12 : 13));  // Basiszeit fuer die Jahre seit Jahrgang 13
 
                                           if (this.zatGeb < 0) {
                                               zatAge = ZATs + currZAT;  // Zaehlung begann Anfang der Saison (und der Geburtstag wird erst nach dem Ziehen bestimmt)
@@ -7880,13 +8138,13 @@ Class.define(PlayerRecord, Object, {
                                   },
         'getZatAge'             : function(when = this.__TIME.now) {
                                       if (when === this.__TIME.end) {
-                                          return (18 - 12) * 72 - 1;  // (max.) Trainings-ZATs bis Ende 18
+                                          return (18 - 12) * __SAISONZATS - 1;  // (max.) Trainings-ZATs bis Ende 18
                                       } else if (this.zatAge !== undefined) {
                                           return this.zatAge;
                                       } else {
                                           __LOG[3]("Empty getZatAge()");
 
-                                          return NaN;
+                                          return Number.NaN;
                                       }
                                   },
         'getZatDone'            : function(when = this.__TIME.now) {
@@ -7912,7 +8170,7 @@ Class.define(PlayerRecord, Object, {
                                       if (this.mwFormel === this.__MWFORMEL.alt) {
                                           return (when === this.__TIME.end) ? 18 : this.age;
                                       } else {  // Geburtstage ab Saison 10...
-                                          return (13.00 + this.getZatAge(when) / 72);
+                                          return (13.00 + this.getZatAge(when) / __SAISONZATS);
                                       }
                                   },
         'getTrainiert'          : function(recalc = false) {
@@ -8041,15 +8299,13 @@ Class.define(PlayerRecord, Object, {
                                       return this.getSkillSum(this.__TIME.now, getIdxFixSkills());
                                   },
         'getMarketValue'        : function(pos, when = this.__TIME.now) {
-                                      const __AGE = this.getAge(when);
+                                      const __MW = calcMarketValue(this.getAge(when),
+                                                                   this.getSkill(when),
+                                                                   this.getOpti(pos, when),
+                                                                   ((this.mwFormel === this.__MWFORMEL.alt)
+                                                                        ? __MW9FORMEL : __MW10FORMEL));
 
-                                      if (this.mwFormel === this.__MWFORMEL.alt) {
-                                          return Math.round(Math.pow((1 + this.getSkill(when)/100) * (1 + this.getOpti(pos, when)/100) * (2 - __AGE/100), 10) * 2);    // Alte Formel bis Saison 9
-                                      } else {  // MW-Formel ab Saison 10...
-                                          const __MW5TF = 1.00;  // Zwischen 0.97 und 1.03
-
-                                          return Math.round(Math.pow(1 + this.getSkill(when)/100, 5.65) * Math.pow(1 + this.getOpti(pos, when)/100, 8.1) * Math.pow(1 + (100 - __AGE)/49, 10) * __MW5TF);
-                                      }
+                                      return __MW;
                                   },
         'getFingerPrint'        : function() {
                                       // Jeweils gleichbreite Werte: (Alter/Geb.=>Monat), Land, Talent ('-', '=', '+')...
@@ -8100,7 +8356,7 @@ Class.define(PlayerRecord, Object, {
                                       return (fingerprint ? floorValue((fingerprint.slice(0, 3) - 1) / 12) : undefined);
                                   },
         'getCat'                : function() {
-                                      return (this.birth ? floorValue((this.birth - 1) / 72) : undefined);
+                                      return (this.birth ? floorValue((this.birth - 1) / __SAISONZATS) : undefined);
                                   },
         'findInFingerPrints'    : function(fingerprints) {
                                       const __MYFINGERPRINT = this.getFingerPrint();  // ggfs. unvollstaendiger Fingerprint
@@ -8314,7 +8570,7 @@ Class.define(ColumnManager, Object, {
                                    this.addAndFillCell(headers, "Identifikation", titleColor);
                                }
                                if (this.bar) {
-                                   this.addAndFillCell(headers, "Qualit\xE4t", titleColor);
+                                   this.addAndFillCell(headers, "Qualit\u00E4t", titleColor);
                                }
                                if (this.tal) {
                                    this.addAndFillCell(headers, "Talent", titleColor);

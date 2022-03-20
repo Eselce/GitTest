@@ -435,7 +435,7 @@ function promptNextOpt(opt, defValue = undefined, reload = false, freeValue = fa
 
                 const __LABEL = substParam(__CONFIG.Label, __VALUE);
 
-                showAlert(__LABEL, "Ung\xFCltige Eingabe: " + __ANSWER);
+                showAlert(__LABEL, "Ung\u00FCltige Eingabe: " + __ANSWER);
             }
         }
 
@@ -1631,7 +1631,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
     if (__MEMORY !== undefined) {
         const __RELOAD = "window.location.reload()";
         const __SETITEM = function(item, val, quotes = true) {
-                              return (__MEMSTR + ".setItem(" + __LOG.info(__RUNPREFIX + item, false) + ", " + (quotes ? __LOG.info(val, false) : val) + "),");
+                              return (__MEMSTR + ".setItem(" + __LOG.info(__RUNPREFIX + item, false) + ',' + (quotes ? __LOG.info(val, false) : val) + "),");
                           };
         const __SETITEMS = function(cmd, key = undefined, val = undefined) {
                               return ('(' + __SETITEM('cmd', cmd) + ((key === undefined) ? "" :
@@ -1639,7 +1639,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
                           };
         const __CONFIG = getOptConfig(opt);
         const __SERIAL = getValue(serial, getValue(__CONFIG.Serial, false));
-        const __THISVAL = ((__CONFIG.ValType === 'String') ? "'\\x22' + this.value + '\\x22'" : "this.value");
+        const __THISVAL = ((__CONFIG.ValType === 'String') ? "'\\u0022' + this.value + '\\u0022'" : "this.value");
         const __TVALUE = getValue(__CONFIG.ValType, __THISVAL, "new " + __CONFIG.ValType + '(' + __THISVAL + ')');
         const __VALSTR = ((value !== undefined) ? safeStringify(value) : __SERIAL ? "JSON.stringify(" + __TVALUE + ')' : __TVALUE);
         const __ACTION = (isAlt ? getValue(__CONFIG.AltAction, __CONFIG.Action) : __CONFIG.Action);
@@ -1817,7 +1817,7 @@ function getOptionButton(opt) {
     const __BUTTONTITLE = substParam(getValue(__VALUE ? getValue(__CONFIG.AltTitle, __CONFIG.Title) : __CONFIG.Title, '$'), __BUTTONLABEL);
 
     return '<label for="' + __NAME + '">' + __FORMLABEL + '</label>' +
-           withTitle('<input type="button" name="" + ' + __NAME +
+           withTitle('<input type="button" name="' + __NAME +
                      '" id="' + __NAME + '" value="' + __BUTTONLABEL +
                      '"' + __ACTION + '/>', __BUTTONTITLE);
 }
@@ -2462,10 +2462,10 @@ Class.define(Main, Object, {
                                 const __HANDLER         = __MANAGER.handler;
 
                                 if (! __HANDLER) {
-                                    return Promise.reject(`Kein Seiten-Handler f\xFCr '${__MANAGER.name}' vorhanden!`);
+                                    return Promise.reject(`Kein Seiten-Handler f\u00FCr '${__MANAGER.name}' vorhanden!`);
                                 }
 
-                                __LOG[2](`${__DBMOD.Name}: Starte Seiten-Verarbeitung f\xFCr '${__MANAGER.name}'...`);
+                                __LOG[2](`${__DBMOD.Name}: Starte Seiten-Verarbeitung f\u00FCr '${__MANAGER.name}'...`);
 
                                 // Klassifikation verknuepfen...
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
@@ -2481,7 +2481,7 @@ Class.define(Main, Object, {
                                             }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
                                                                     ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
                             } else {
-                                return Promise.reject(`Keine Options-Parameter f\xFCr Seite '${__MANAGER.name}' vorhanden!`);
+                                return Promise.reject(`Keine Options-Parameter f\u00FCr Seite '${__MANAGER.name}' vorhanden!`);
                             }
                         },
         'run'         : async function(selector, ... selectorParams) {

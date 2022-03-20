@@ -1158,7 +1158,7 @@ const __TESTOPTCONFIG = {
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Optionen anzeigen",
                    'Hotkey'    : 'a',
-                   'AltTitle'  : "$V schlie\xDFen",
+                   'AltTitle'  : "$V schlie\u00DFen",
                    'AltLabel'  : "Optionen verbergen",
                    'AltHotkey' : 'v',
                    'FormLabel' : ""
@@ -1220,7 +1220,7 @@ __TESTTEAMCLASS.optSelect = {
     new UnitTest('test.assert.js Tools', "Test-Werkzeuge", {
             'callPromiseChainSimpleOK'        : function() {
                                                     return callPromiseChain(__RESOLVED()).then(value => {
-                                                            return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
+                                                            return ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise");
                                                         }, ex => {
                                                             return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
                                                         });
@@ -1229,12 +1229,12 @@ __TESTTEAMCLASS.optSelect = {
                                                     return callPromiseChain(__REJECTED()).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainUsedCaseOK'      : function() {
                                                     return callPromiseChain(__RESOLVED(), __USEDCASE).then(value => {
-                                                            return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
+                                                            return ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise");
                                                         }, ex => {
                                                             return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
                                                         });
@@ -1243,33 +1243,33 @@ __TESTTEAMCLASS.optSelect = {
                                                     return callPromiseChain(__REJECTED(), __USEDCASE).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainErroneousOK'     : function() {
                                                     return callPromiseChain(__RESOLVED(), __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, async ex => {
-                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
                                                             ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
                                                             ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
                                                             ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.array.length, 1, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array.length, 1, "Falsche Array-Gr\u00F6\u00DFe");
                                                             ASSERT_EQUAL(ex.array, [ __ERRONEOUS ], "Falsches Funktionen-Array");
 
-                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise")).catch(assertionCatch);
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise")).catch(assertionCatch);
                                                         });
                                                 },
             'callPromiseChainErroneousFAIL'   : function() {
                                                     return callPromiseChain(__REJECTED(), __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainUsedUsedOK'      : function() {
                                                     return callPromiseChain(__RESOLVED(), __USEDCASE, __USEDCASE).then(value => {
-                                                            return ASSERT_TRUE(value, "Falsche R\xFCckgabe in Promise");
+                                                            return ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise");
                                                         }, ex => {
                                                             return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
                                                         });
@@ -1278,70 +1278,70 @@ __TESTTEAMCLASS.optSelect = {
                                                     return callPromiseChain(__REJECTED(), __USEDCASE, __USEDCASE).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainUsedFailOK'      : function() {
                                                     return callPromiseChain(__RESOLVED(), __USEDCASE, __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, async ex => {
-                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
                                                             ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
                                                             ASSERT_EQUAL(ex.index, 1, "Fehler in zweiter Funktion wurde ignoriert");
                                                             ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in zweiter Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\u00F6\u00DFe");
                                                             ASSERT_EQUAL(ex.array, [ __USEDCASE, __ERRONEOUS ], "Falsches Funktionen-Array");
 
-                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe f\xFCr Promise-Parameter")).catch(assertionCatch);
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe f\u00FCr Promise-Parameter")).catch(assertionCatch);
                                                         });
                                                 },
             'callPromiseChainUsedFailFAIL'    : function() {
                                                     return callPromiseChain(__REJECTED(), __USEDCASE, __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainFailUsedOK'      : function() {
                                                     return callPromiseChain(__RESOLVED(), __ERRONEOUS, __USEDCASE).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, async ex => {
-                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
                                                             ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
                                                             ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
                                                             ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\u00F6\u00DFe");
                                                             ASSERT_EQUAL(ex.array, [ __ERRONEOUS, __USEDCASE ], "Falsches Funktionen-Array");
 
-                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe f\xFCr Promise-Parameter")).catch(assertionCatch);
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe f\u00FCr Promise-Parameter")).catch(assertionCatch);
                                                         });
                                                 },
             'callPromiseChainFailUsedFAIL'    : function() {
                                                     return callPromiseChain(__REJECTED(), __ERRONEOUS, __USEDCASE).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
                                                         });
                                                 },
             'callPromiseChainFailFailOK'      : function() {
                                                     return callPromiseChain(__RESOLVED(), __ERRONEOUS, __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, async ex => {
-                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
                                                             ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
                                                             ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
                                                             ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\xF6\xDFe");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\u00F6\u00DFe");
                                                             ASSERT_EQUAL(ex.array, [ __ERRONEOUS, __ERRONEOUS ], "Falsches Funktionen-Array");
 
-                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\xFCckgabe f\xFCr Promise-Parameter")).catch(assertionCatch);
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe f\u00FCr Promise-Parameter")).catch(assertionCatch);
                                                         });
                                                 },
             'callPromiseChainFailFailFAIL'    : function() {
                                                     return callPromiseChain(__REJECTED(), __ERRONEOUS, __ERRONEOUS).then(value => {
                                                             return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
                                                         }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\xFCckgabe in Rejection");
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
                                                         });
                                                 },
         });
@@ -3700,7 +3700,7 @@ __TESTTEAMCLASS.optSelect = {
 
                                                 ASSERT_ZERO(__RET, "startMain() darf keinen Eintrag verarbeiten");
 
-                                                return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer! Eventuell startMain() nicht ausgef\xFChrt?");
+                                                return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer! Eventuell startMain() nicht ausgef\u00FChrt?");
                                             }).catch(startMain);
                                     },
             'registerStartFun'    : async function() {
@@ -3709,7 +3709,7 @@ __TESTTEAMCLASS.optSelect = {
                                         return callPromiseChain(registerStartFun(() => undefined), value => {
                                                 const __RET = value;
 
-                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
                                                 return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
                                             }, startMain, value => {
@@ -3726,7 +3726,7 @@ __TESTTEAMCLASS.optSelect = {
                                         return callPromiseChain(registerStartFun(GM_showOptionsWritable), value => {
                                                 const __RET = value;
 
-                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
                                                 return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
                                             }, startMain, value => {
@@ -3743,7 +3743,7 @@ __TESTTEAMCLASS.optSelect = {
                                         return callPromiseChain(registerStartFun(GM_checkForTampermonkeyBug), value => {
                                                 const __RET = value;
 
-                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
                                                 return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
                                             }, startMain, value => {
@@ -3766,7 +3766,7 @@ __TESTTEAMCLASS.optSelect = {
                                             }), value => {
                                                 const __RET = value;
 
-                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
                                                 return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
                                             }, startMain, value => {
@@ -3785,7 +3785,7 @@ __TESTTEAMCLASS.optSelect = {
                                             value => {
                                                 const __RET = value;
 
-                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_ONE(__RET, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
                                                 return ASSERT_ONE(__SCRIPTINIT.length, "__SCRIPTINIT muss genau einen Eintrag haben");
                                             },
@@ -3793,15 +3793,15 @@ __TESTTEAMCLASS.optSelect = {
                                             value => {
                                                 const __RET = value;
 
-                                                ASSERT_EQUAL(__RET, 2, "registerStartFun() lieferte falschen R\xFCckgabewert");
+                                                ASSERT_EQUAL(__RET, 2, "registerStartFun() lieferte falschen R\u00FCckgabewert");
 
-                                                ASSERT_EQUAL(__SCRIPTINIT.length, 2, "__SCRIPTINIT muss genau zwei Eintr\xE4ge haben");
+                                                ASSERT_EQUAL(__SCRIPTINIT.length, 2, "__SCRIPTINIT muss genau zwei Eintr\u00E4ge haben");
                                             },
                                             startMain,
                                             value => {
                                                 const __RET = value;
 
-                                                ASSERT_EQUAL(__RET, 2, "startMain() muss genau zwei Eintr\xE4ge verarbeiten");
+                                                ASSERT_EQUAL(__RET, 2, "startMain() muss genau zwei Eintr\u00E4ge verarbeiten");
 
                                                 return ASSERT_ZERO(__SCRIPTINIT.length, "__SCRIPTINIT ist nicht leer!");
                                             });
@@ -6000,7 +6000,7 @@ __TESTTEAMCLASS.optSelect = {
 
                                                 return ASSERT_NOT_EQUAL(__RET, __EXP, "browseXMLCORS() sollte keine XML-Daten liefern, sondern blockiert werden");
                                             }).catch(async ex => {
-                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
                                                 if (ex.message === __ERRORMSG1) {
                                                     ASSERT_EQUAL(ex.message, __ERRORMSG1, "Fehlertext in Error falsch");
                                                     ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
@@ -6035,7 +6035,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         // NOTE Unreachable...
                                                     }).catch(ex => {
                                                             try {
-                                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\xFCckgeben");
+                                                                ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
                                                                 if (ex.message === __ERRORMSG1) {
                                                                     ASSERT_EQUAL(ex.message, __ERRORMSG1, "Fehlertext in Error falsch");
                                                                     ASSERT_EQUAL(ex.result, __ERRORRESULT, "Result in Error falsch");
