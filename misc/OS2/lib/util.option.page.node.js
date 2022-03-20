@@ -133,7 +133,7 @@ function getOptionButton(opt) {
     const __BUTTONTITLE = substParam(getValue(__VALUE ? getValue(__CONFIG.AltTitle, __CONFIG.Title) : __CONFIG.Title, '$'), __BUTTONLABEL);
 
     return '<label for="' + __NAME + '">' + __FORMLABEL + '</label>' +
-           withTitle('<input type="button" name="" + ' + __NAME +
+           withTitle('<input type="button" name="' + __NAME +
                      '" id="' + __NAME + '" value="' + __BUTTONLABEL +
                      '"' + __ACTION + '/>', __BUTTONTITLE);
 }
