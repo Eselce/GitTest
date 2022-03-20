@@ -264,6 +264,7 @@ function showSpieler(currZAT) {
     const __SKILLS = [];
     const __COLOR = "";
     const __ALIGN = 'right';
+    const __CLASS = 'stat';
     const __AGE = getNumber(__ROWS1[0].cells[5].textContent);
     const __GEB = getNumber(__ROWS1[1].cells[4].textContent);
     const __DEZALTER = getDezAlter(__AGE, __GEB, __ZAT);
@@ -279,21 +280,22 @@ function showSpieler(currZAT) {
 
     const [ __TRAINIERT, __POTENTIAL ] = calcPotential(__DEZALTER, __SKILLS);
 
-    // ausgeben...
-    appendCell(__ROWS1[3], "trainiert :", __COLOR, __ALIGN);
-    appendCell(__ROWS1[3], __TRAINIERT, __COLOR, __ALIGN);
+    // Zusaetzliche Werte ausgeben...
+    appendCell(__ROWS1[3], "trainiert :", __COLOR, __ALIGN).classList.add(__CLASS);
+    appendCell(__ROWS1[3], __TRAINIERT, __COLOR, __ALIGN).classList.add(__CLASS);
 
-    const __NEWROW = __TABLE1.insertRow(-1);  // neue Zeile
+    const __NEWROW = __TABLE1.insertRow(4);  // neue Zeile an 4. Stelle einfuegen
     inflateRow(__NEWROW, 4);
-    appendCell(__NEWROW, "Potential :", __COLOR, __ALIGN);
-    appendCell(__NEWROW, __POTENTIAL.toFixed(0), __COLOR, __ALIGN);
+    appendCell(__NEWROW, "Potential :", __COLOR, __ALIGN).classList.add(__CLASS);
+    appendCell(__NEWROW, __POTENTIAL.toFixed(0), __COLOR, __ALIGN).classList.add(__CLASS);
     inflateRow(__NEWROW);
-    appendCell(__NEWROW, "ZAT :", __COLOR, __ALIGN);
-    appendCell(__NEWROW, __ZAT, __COLOR, __ALIGN);
+    appendCell(__NEWROW, "ZAT :", __COLOR, __ALIGN).classList.add(__CLASS);
+    appendCell(__NEWROW, __ZAT, __COLOR, __ALIGN).classList.add(__CLASS);
 
+    // Ganzzahliges Alter ersetzen durch Dezimalbruch...
     __ROWS1[0].cells[5].textContent = __DEZALTER.toFixed(2);
 
-    window.resizeTo(900, 700);
+    //window.resizeTo(900, 700);  // bringt nichts wegen der Reiter
 
     return true;
 }

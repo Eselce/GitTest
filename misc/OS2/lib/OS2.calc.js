@@ -134,7 +134,8 @@ function calcProbPercent(alter, pSkill = 100, tSkill = 99.5, mode = 0, limit = u
     const __SKILLDIFF = tSkill - pSkill;
     const __SKILLPLUS = Math.max(0, __SKILLDIFF + 0.5);
     const __SKILLFACT = __SKILLPLUS / (101 - __SKILLPLUS);
-    const __ALTERFACT = Math.pow((100 - alter) / 37, 7);
+    const __ALTER = Math.floor(alter);  // Gesucht ist der ganzzahlige Anteil des Alters!
+    const __ALTERFACT = Math.pow((100 - __ALTER) / 37, 7);
     const __PROB = __099HOCH99 * __SKILLFACT * __ALTERFACT * __TRFACTORS[mode];
 
     return ((limit === undefined) ? __PROB : Math.min(limit, __PROB));
@@ -147,7 +148,8 @@ function calcProbPercent(alter, pSkill = 100, tSkill = 99.5, mode = 0, limit = u
 // prob: Gewuenschte Wahrscheinlichkeit (Default ist 99)
 // return Spieler-Skill eines zu trainierenden Spielers, der optimal trainiert wird
 function calcMinPSkill(alter, tSkill = 99.5, mode = 0, prob = 99) {
-    const __ALTERFACT = Math.pow((100 - alter) / 37, 7);
+    const __ALTER = Math.floor(alter);  // Gesucht ist der ganzzahlige Anteil des Alters!
+    const __ALTERFACT = Math.pow((100 - __ALTER) / 37, 7);
     const __SKILLFACT = prob / (__099HOCH99 * __ALTERFACT * __TRFACTORS[mode]);
     const __SKILLPLUS = 101 * __SKILLFACT / (__SKILLFACT + 1);
     const __SKILLDIFF = Math.max(0, __SKILLPLUS) - 0.5;
@@ -188,7 +190,7 @@ const __MW9FORMEL = false;  // alte MW-Formel bis Saison 9
 const __MW10FORMEL = true;  // neue MW-Formel ab Saison 10
 
 // Berechnet den Marktwert eines Spielers
-// age: Ganzzahliges Alter
+// age: Alter als Dezimalbruch
 // skill: Skill-Schnitt
 // opti: Opti-Schnitt
 // mwFormel: Angabe ueber die Marktwert-Formel:
