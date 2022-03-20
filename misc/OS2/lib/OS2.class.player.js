@@ -120,12 +120,12 @@ Class.define(PlayerRecord, Object, {
                                       if (ziehmich) {
                                           const __LASTZAT = this.currZAT + this.getZatLeft();
 
-                                          if (__LASTZAT < 72) {  // U19
+                                          if (__LASTZAT < __SAISONZATS) {  // U19
                                               this.warnDraw = new WarnDrawPlayer(this, getColor('STU'));  // rot
                                               __LOG[5](this.getAge().toFixed(2), "rot");
-                                          } else if (__LASTZAT < Math.max(2, klasse) * 72) {  // Rest bis inkl. U18 (Liga 1 und 2) bzw. U17 (Liga 3)
+                                          } else if (__LASTZAT < Math.max(2, klasse) * __SAISONZATS) {  // Rest bis inkl. U18 (Liga 1 und 2) bzw. U17 (Liga 3)
                                               // do nothing
-                                          } else if (__LASTZAT < (klasse + 1) * 72) {  // U17/U16 je nach Liga 2/3
+                                          } else if (__LASTZAT < (klasse + 1) * __SAISONZATS) {  // U17/U16 je nach Liga 2/3
                                               this.warnDrawAufstieg = new WarnDrawPlayer(this, getColor('OMI'));  // magenta
                                               this.warnDrawAufstieg.setAufstieg();
                                               __LOG[5](this.getAge().toFixed(2), "magenta");
@@ -163,7 +163,7 @@ Class.define(PlayerRecord, Object, {
 
                                           if (isTrainableSkill(i)) {
                                               // Auf ganze Zahl runden und parseInt(), da das sonst irgendwie als String interpretiert wird
-                                              const __ADDSKILL = Math.min(99 - progSkill, getMulValue(__ADDRATIO, __SKILL, 0, NaN));
+                                              const __ADDSKILL = Math.min(99 - progSkill, getMulValue(__ADDRATIO, __SKILL, 0, Number.NaN));
 
                                               progSkill += __ADDSKILL;
                                               addSkill -= __ADDSKILL;
@@ -199,13 +199,13 @@ Class.define(PlayerRecord, Object, {
         'setGeb'                : function(gebZAT) {
                                       this.zatGeb = gebZAT;
                                       this.zatAge = this.calcZatAge(this.currZAT);
-                                      this.birth = (36 + this.saison) * 72 + this.currZAT - this.zatAge;
+                                      this.birth = (36 + this.saison) * __SAISONZATS + this.currZAT - this.zatAge;
                                   },
         'calcZatAge'            : function(currZAT) {
                                       let zatAge;
 
                                       if (this.zatGeb !== undefined) {
-                                          let ZATs = 72 * (this.age - ((currZAT < this.zatGeb) ? 12 : 13));  // Basiszeit fuer die Jahre seit Jahrgang 13
+                                          let ZATs = __SAISONZATS * (this.age - ((currZAT < this.zatGeb) ? 12 : 13));  // Basiszeit fuer die Jahre seit Jahrgang 13
 
                                           if (this.zatGeb < 0) {
                                               zatAge = ZATs + currZAT;  // Zaehlung begann Anfang der Saison (und der Geburtstag wird erst nach dem Ziehen bestimmt)
@@ -218,13 +218,13 @@ Class.define(PlayerRecord, Object, {
                                   },
         'getZatAge'             : function(when = this.__TIME.now) {
                                       if (when === this.__TIME.end) {
-                                          return (18 - 12) * 72 - 1;  // (max.) Trainings-ZATs bis Ende 18
+                                          return (18 - 12) * __SAISONZATS - 1;  // (max.) Trainings-ZATs bis Ende 18
                                       } else if (this.zatAge !== undefined) {
                                           return this.zatAge;
                                       } else {
                                           __LOG[3]("Empty getZatAge()");
 
-                                          return NaN;
+                                          return Number.NaN;
                                       }
                                   },
         'getZatDone'            : function(when = this.__TIME.now) {
@@ -250,7 +250,7 @@ Class.define(PlayerRecord, Object, {
                                       if (this.mwFormel === this.__MWFORMEL.alt) {
                                           return (when === this.__TIME.end) ? 18 : this.age;
                                       } else {  // Geburtstage ab Saison 10...
-                                          return (13.00 + this.getZatAge(when) / 72);
+                                          return (13.00 + this.getZatAge(when) / __SAISONZATS);
                                       }
                                   },
         'getTrainiert'          : function(recalc = false) {
@@ -379,15 +379,13 @@ Class.define(PlayerRecord, Object, {
                                       return this.getSkillSum(this.__TIME.now, getIdxFixSkills());
                                   },
         'getMarketValue'        : function(pos, when = this.__TIME.now) {
-                                      const __AGE = this.getAge(when);
+                                      const __MW = calcMarketValue(this.getAge(when),
+                                                                   this.getSkill(when),
+                                                                   this.getOpti(pos, when),
+                                                                   ((this.mwFormel === this.__MWFORMEL.alt)
+                                                                        ? __MW9FORMEL : __MW10FORMEL));
 
-                                      if (this.mwFormel === this.__MWFORMEL.alt) {
-                                          return Math.round(Math.pow((1 + this.getSkill(when)/100) * (1 + this.getOpti(pos, when)/100) * (2 - __AGE/100), 10) * 2);    // Alte Formel bis Saison 9
-                                      } else {  // MW-Formel ab Saison 10...
-                                          const __MW5TF = 1.00;  // Zwischen 0.97 und 1.03
-
-                                          return Math.round(Math.pow(1 + this.getSkill(when)/100, 5.65) * Math.pow(1 + this.getOpti(pos, when)/100, 8.1) * Math.pow(1 + (100 - __AGE)/49, 10) * __MW5TF);
-                                      }
+                                      return __MW;
                                   },
         'getFingerPrint'        : function() {
                                       // Jeweils gleichbreite Werte: (Alter/Geb.=>Monat), Land, Talent ('-', '=', '+')...
@@ -438,7 +436,7 @@ Class.define(PlayerRecord, Object, {
                                       return (fingerprint ? floorValue((fingerprint.slice(0, 3) - 1) / 12) : undefined);
                                   },
         'getCat'                : function() {
-                                      return (this.birth ? floorValue((this.birth - 1) / 72) : undefined);
+                                      return (this.birth ? floorValue((this.birth - 1) / __SAISONZATS) : undefined);
                                   },
         'findInFingerPrints'    : function(fingerprints) {
                                       const __MYFINGERPRINT = this.getFingerPrint();  // ggfs. unvollstaendiger Fingerprint
