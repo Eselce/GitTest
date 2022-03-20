@@ -224,14 +224,14 @@ function appendCell(row, content, color = undefined, align = 'center', showUndef
 // Erzeugt die uebergebene Anzahl von Zellen in der uebergebenen Zeile
 // row: Zeile, die aufgepumpt werden soll
 // arrOrLength: Entweder ein Datenarray oder String zum Fuellen
-//      oder die Anzahl der zu erzeugenden Zellen (Default: 1)
+//              oder die Anzahl der zu erzeugenden Zellen (Default: 1)
 // color: Schriftfarbe der neuen Zelle (z.B. '#FFFFFF' fuer weiss)
 // return Die aufgeblaehte Zeile
 function inflateRow(row, arrOrLength = 1, color = undefined, align = 'center') {
     const __ROW = (row || { });
     const __ARR = (((typeof arrOrLength) === 'string') ? [ arrOrLength ] :
                     (((typeof arrOrLength) === 'number') ? [] : arrOrLength));
-    const __LENGTH = getValue(__ARR.length, arrOrLength);
+    const __LENGTH = (__ARR.length || arrOrLength);
 
     for (let i = 0; i < __LENGTH; i++) {
         appendCell(row, __ARR[i], color, align);
@@ -503,15 +503,19 @@ function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
     return getValue(__TEXT.toString(), "");
 }
 
+
 // Liest ein Array von String-Werten aus den Spalten ab einer Zeile der Tabelle aus, nachdem diese konvertiert wurden
 // cells: Die Zellen einer Zeile
 // colIdxArr: Erster Spaltenindex der gesuchten Werte
 // arrOrLength: Entweder ein Datenarray zum Fuellen oder die Anzahl der zu lesenden Werte
+// arrOrLength: Entweder ein Datenarray oder String zum Fuellen
+//              oder die Anzahl der zu lesenden Werte (Default: 1)
 // convertFun: Funktion, die die Werte konvertiert
 // return Array mit Spalteneintraegen als String ("" fuer "nicht gefunden")
 function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sameValue) {
-    const __ARR = (((typeof arrOrLength) === 'number') ? [] : arrOrLength);
-    const __LENGTH = getValue(__ARR.length, arrOrLength);
+    const __ARR = (((typeof arrOrLength) === 'string') ? [ arrOrLength ] :
+                    (((typeof arrOrLength) === 'number') ? [] : arrOrLength));
+    const __LENGTH = (__ARR.length || arrOrLength);
     const __RET = [];
 
     for (let index = 0, colIdx = colIdxArr; index < __LENGTH; index++, colIdx++) {
