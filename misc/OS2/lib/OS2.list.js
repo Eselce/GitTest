@@ -213,12 +213,28 @@ function getLandNr(land, defValue = __LANDNRN.unbekannt) {
     return getValue(__LANDNRN[land], defValue);
 }
 
+// Gibt die TLA des Landes mit dem uebergebenen Namen zurueck.
+// land: Name des Landes
+// defValue: Default-Wert
+// return TLA des Landes, undefined fuer ungueltig
+function getLandTLA(land, defValue = __LANDTLAS.unbekannt) {
+    return getValue(__LANDTLAS[land], defValue);
+}
+
 // Gibt die ID der Liga mit dem uebergebenen Namen zurueck.
-// land: Name der Liga
+// liga: Name der Liga
 // defValue: Default-Wert
 // return OS2-ID der Liga, 0 fuer ungueltig
 function getLigaNr(liga, defValue = __LIGANRN.unbekannt) {
     return getValue(__LIGANRN[liga], defValue);
+}
+
+// Gibt den Namen einer per ID uebergebenen Liga zurueck.
+// ID: OS2-ID der Liga
+// defValue: Default-Wert
+// return Name der Liga, "unbekannt" fuer ungueltig
+function getLigaName(ID, defValue = __LIGATYPES[0]) {
+    return getValue(__LIGATYPES[ID], defValue);
 }
 
 // Kehrt das Mapping eines Objekts um und liefert ein neues Objekt zurueck.

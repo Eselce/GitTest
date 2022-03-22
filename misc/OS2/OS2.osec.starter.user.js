@@ -220,7 +220,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                                         'ligaNr'    : getLigaNr(__LIGA),
                                         'land'      : __LAND,
                                         'landNr'    : getLandNr(__LAND),
-                                        'landTLA'   : __LANDTLAS[__LAND],
+                                        'landTLA'   : getLandTLA(__LAND),
                                         'runde'     : __RUNDE,
                                         'skill'     : __SKILL,
                                         'opti'      : __OPTI
