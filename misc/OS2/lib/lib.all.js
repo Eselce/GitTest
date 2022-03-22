@@ -6092,6 +6092,10 @@ Class.define(Main, Object, {
                                 // Klassifikation verknuepfen...
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
 
+                                // Parameter im Handler verfuegbar machen...
+                                __HANDLER.classification = __CLASSIFICATION;
+                                __HANDLER.optParams = __OPTPARAMS;
+
                                 return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(
                                         async optSet => {
                                                 const __PREPAREOPT  = (__OPTPARAMS.prepareOpt || this.prepareOpt || sameValue);
@@ -6379,6 +6383,14 @@ function getLandName(tla, defValue = __TLALAND[undefined]) {
     return getValue(__TLALAND[tla], defValue);
 }
 
+// Gibt den Namen des Landes mit der uebergebenen ID zurueck.
+// ID: OS2-ID des Landes
+// defValue: Default-Wert
+// return Name der Landes, "unbekannt" fuer ungueltig
+function getLandNameById(ID, defValue = __LAENDER[0]) {
+    return getValue(__LAENDER[ID], defValue);
+}
+
 // Gibt die ID des Landes mit dem uebergebenen Namen zurueck.
 // land: Name des Landes
 // defValue: Default-Wert
@@ -6387,12 +6399,28 @@ function getLandNr(land, defValue = __LANDNRN.unbekannt) {
     return getValue(__LANDNRN[land], defValue);
 }
 
+// Gibt die TLA des Landes mit dem uebergebenen Namen zurueck.
+// land: Name des Landes
+// defValue: Default-Wert
+// return TLA des Landes, undefined fuer ungueltig
+function getLandTLA(land, defValue = __LANDTLAS.unbekannt) {
+    return getValue(__LANDTLAS[land], defValue);
+}
+
 // Gibt die ID der Liga mit dem uebergebenen Namen zurueck.
-// land: Name der Liga
+// liga: Name der Liga
 // defValue: Default-Wert
 // return OS2-ID der Liga, 0 fuer ungueltig
 function getLigaNr(liga, defValue = __LIGANRN.unbekannt) {
     return getValue(__LIGANRN[liga], defValue);
+}
+
+// Gibt den Namen einer per ID uebergebenen Liga zurueck.
+// ID: OS2-ID der Liga
+// defValue: Default-Wert
+// return Name der Liga, "unbekannt" fuer ungueltig
+function getLigaName(ID, defValue = __LIGATYPES[0]) {
+    return getValue(__LIGATYPES[ID], defValue);
 }
 
 // Kehrt das Mapping eines Objekts um und liefert ein neues Objekt zurueck.
@@ -6636,10 +6664,10 @@ function calcPotential(dezAlter, skills) {
                 return res;
             }, [0, 0]);                         // Start-Werte fuer [ __TRAINIERT, __EQ19 ]
 
-    const __ALTER = Math.min(39, Math.floor(age));      // Ganzzahliger Anteil des Alters (max 39)
-    const __RESTZAT = Math.round(__SAISONZATS * (age - __ALTER)); // Tage seit dem (max. 39.) Geburtstag des Spielers
+    const __ALTER = Math.min(39, Math.floor(dezAlter));                 // Ganzzahliger Anteil des Alters (max 39)
+    const __RESTZAT = Math.round(__SAISONZATS * (dezAlter - __ALTER));  // Tage seit dem (max. 39.) Geburtstag des Spielers
     const __BASISERWARTUNG = __TAGE[__ALTER] + Math.round((__RESTZAT * __FAKTOR[__ALTER]) / 100);  // Erwartete Profi-Trainingsleistung
-    const __POTENTIAL = __EQ19 - __BASISERWARTUNG;      // Trainingsleistung oberhalb des Trainings eines 19j Spielers ohne Skillpunkte
+    const __POTENTIAL = __EQ19 - __BASISERWARTUNG;                      // Trainingsleistung oberhalb des Trainings eines 19j Spielers ohne Skillpunkte
 
     return [ __TRAINIERT, __POTENTIAL ];
 }
