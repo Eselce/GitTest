@@ -55,8 +55,8 @@ Class.define(Main, Object, {
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
 
                                 // Parameter im Handler verfuegbar machen...
-                                __HANDLER.classification = __CLASSIFICATION;
-                                __HANDLER.optParams = __OPTPARAMS;
+                                __MANAGER.classification = __CLASSIFICATION;
+                                __MANAGER.optParams = __OPTPARAMS;
 
                                 return await startOptions(this.optConfig, this.optSet, __CLASSIFICATION).then(
                                         async optSet => {
