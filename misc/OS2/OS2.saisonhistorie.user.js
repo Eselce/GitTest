@@ -248,7 +248,7 @@ __TEAMCLASS.optSelect = {
 
 // ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
-// Verarbeitet Ansicht "Saisonplan"
+// Verarbeitet Ansicht "Saisonhistorie"
 const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => {
         const __TEAMPARAMS = getTeamParamsFromTable(__TEAMSEARCHTEAM, __TEAMIDSEARCHTEAM);
 
