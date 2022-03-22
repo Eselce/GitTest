@@ -1,4 +1,4 @@
-				// ==UserScript==
+// ==UserScript==
 // @name         OS2.ergebnisse
 // @namespace    http://os.ongapo.com/
 // @version      0.32+lib
