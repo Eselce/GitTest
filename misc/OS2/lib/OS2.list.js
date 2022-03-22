@@ -205,6 +205,14 @@ function getLandName(tla, defValue = __TLALAND[undefined]) {
     return getValue(__TLALAND[tla], defValue);
 }
 
+// Gibt den Namen des Landes mit der uebergebenen ID zurueck.
+// ID: OS2-ID des Landes
+// defValue: Default-Wert
+// return Name der Landes, "unbekannt" fuer ungueltig
+function getLandNameById(ID, defValue = __LAENDER[0]) {
+    return getValue(__LAENDER[ID], defValue);
+}
+
 // Gibt die ID des Landes mit dem uebergebenen Namen zurueck.
 // land: Name des Landes
 // defValue: Default-Wert
