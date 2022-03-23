@@ -182,7 +182,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                 'formWidth'   : 3,
                 'formBreak'   : 4
             };
-    }, async optSet => {
+    }, async function(optSet) {
         // Format der Trennlinie zwischen den Eintraegen...
         const __BORDERSTRING = optSet.getOptValue('sepStyle') + ' ' + optSet.getOptValue('sepColor') + ' ' + optSet.getOptValue('sepWidth');
 
