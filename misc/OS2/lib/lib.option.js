@@ -2482,8 +2482,8 @@ Class.define(Main, Object, {
                                                 return await Promise.resolve(__PREPAREOPT(optSet, __OPTPARAMS)).then(
                                                                             optSet => Promise.resolve(showOptions(optSet, __OPTPARAMS)).then(
                                                                             optSet => __VERIFYOPT(optSet, __OPTPARAMS)));
-                                            }).then(__HANDLER.bind(__MANAGER, this.optSet, ... __MANAGER.params)).then(
-                                                                    ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
+                                            }).then(optSet => __HANDLER.call(__MANAGER, optSet, ... __MANAGER.params)).then(
+                                                                            ret => ((ret ? 'OK' : 'FAILED') + ' ' + __MANAGER.name));
                             } else {
                                 return Promise.reject(`Keine Options-Parameter f\u00FCr Seite '${__MANAGER.name}' vorhanden!`);
                             }
