@@ -193,11 +193,11 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
         const __MAXLIGALEN = "2. Liga A".length;  // Maximale Laenge der Ligabezeichnung
         let count = 0;
 
-        const __TITLES = Array.from(__HEADER).map(element => element.textContent);
+        const __CUPS = Array.from(__HEADER).map(element => element.textContent);
         const __TEAMLISTS = Array.from(__LISTEN).map((list, indexList) =>
                     Array.from(getElements('li', list)).map(entry => {
                                 const __ITEMS = getElements('a,div', entry);
-                                const __TITEL = __TITLES[indexList];  // passende Ueberschrift (Wettbewerb)
+                                const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
                                 const __LINK = __ITEMS[1].href;
                                 const __ID = __LINK.substring(__LINK.lastIndexOf('=') + 1);
                                 const __VEREIN = __ITEMS[1].textContent;
@@ -206,13 +206,15 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                                 const __INDEXLIGALAND = __LIGALAND.lastIndexOf(' ', __MAXLIGALEN);
                                 const __LIGA = __LIGALAND.substring(0, __INDEXLIGALAND);
                                 const __LAND = __LIGALAND.substring(__INDEXLIGALAND + 1);
+                                const __TLA = getLandTLA(__LAND);
+                                const __FLAG = '<abbr title="' + __TLA + '"><img src="images/flaggen/' + __TLA + '.gif" />';
                                 const [ __SKILLSTR, __OPTISTR ] = __ITEMS[4].textContent.split(" - ", 2);
                                 const __SKILL = Number.parseFloat(__SKILLSTR.split(": ")[1]);
                                 const __OPTI = Number.parseFloat(__OPTISTR.split(": ")[1]);
 
                                 return {
                                         'lfd'       : ++count,
-                                        'titel'     : __TITEL,
+                                        'cup'       : __CUP,
                                         'id'        : __ID,
                                         'verein'    : __VEREIN,
                                         'manager'   : __MANAGER,
@@ -220,21 +222,22 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                                         'ligaNr'    : getLigaNr(__LIGA),
                                         'land'      : __LAND,
                                         'landNr'    : getLandNr(__LAND),
-                                        'landTLA'   : getLandTLA(__LAND),
+                                        'landTLA'   : __TLA,
+                                        'flag'      : __FLAG,
                                         'runde'     : __RUNDE,
-                                        'skill'     : __SKILL,
-                                        'opti'      : __OPTI
+                                        'skill'     : __SKILL.toFixed(2),
+                                        'opti'      : __OPTI.toFixed(2)
                                     };
                             })
                 );
 
-        if (! __TITLES) {
+        if (! __CUPS) {
             __LOG[1]("Keine Teilnehmerliste vorhanden!");
             return;
         }
 
-        const __ITEMS = [ 'id', 'lfd', 'landNr', 'titel', 'runde', 'verein', 'land', 'manager', 'liga', 'ligaNr', 'landTLA', 'skill', 'opti' ];
-        const __HEADS = [ 'ID', '#', 'Land', 'Wettbewerb', 'Runde', 'Verein', 'Land', 'Manager', 'Liga', 'Liga', 'Land', 'Skill', 'Opti' ];
+        const __ITEMS = [ 'id', 'lfd', 'landNr', 'cup', 'runde', 'flag', 'verein', 'land', 'manager', 'liga', 'ligaNr', 'skill', 'opti' ];
+        const __HEADS = [ 'ID', '#', 'Land', 'Cup', 'Runde', 'Flagge', 'Verein', 'Land', 'Manager', 'Liga', 'Liga', 'Skill', 'Opti' ];
         const __ALIGN = 'center';
         const __TABLE = document.createElement('table');
         const __TBODY = document.createElement('tbody');
@@ -260,7 +263,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
         __TBODY.appendChild(__THR);
 
         __TEAMLISTS.forEach((list, indexList) => {
-                const __CLASS = __TITLES[indexList].toLowerCase();  // passende Style-Class zum Wettbewerb
+                const __CLASS = __CUPS[indexList].toLowerCase();  // passende Style-Class zum Wettbewerb
 
                 list.forEach((entry, indexEntry) => {
                         const __TR = document.createElement('tr');
@@ -269,7 +272,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                         __ITEMS.forEach(item => {
                                 const __TD = document.createElement('td');
 
-                                __TD.textContent = entry[item];
+                                __TD.innerHTML = entry[item];
                                 __TD.align = __ALIGN;
                                 if (__BORDERTOP) {
                                     __TD.style.borderTop = __BORDERSTRING;
@@ -282,7 +285,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
 
                         __TBODY.appendChild(__TR);
 
-                        __LOG[7](entry.id, entry.lfd, entry.landNr, entry.titel, entry.runde, entry.liga, entry.ligaNr, entry.verein, entry.land, entry.manager, entry.landTLA, entry.skill, entry.opti);
+                        __LOG[7](entry.id, entry.lfd, entry.landNr, entry.cup, entry.runde, entry.landTLA, entry.verein, entry.land, entry.manager, entry.liga, entry.ligaNr, entry.skill, entry.opti);
                     });
             });
 
