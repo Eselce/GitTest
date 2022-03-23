@@ -733,6 +733,15 @@ Class.define(Team, Object, {
 
         this.Manager = manager;
         this.Flags = (flags || []);
+
+        Object.defineProperty(this, 'ID', {
+                enumerable    : false,
+                configurable  : true,
+                get           : function() {
+                                    return this.TmNr;
+                                },
+                set           : undefined
+            });
     }
 //}
 
