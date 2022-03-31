@@ -105,6 +105,15 @@ function removeDocEvent(id, type, callback, capture = false) {
     return removeEvent(__OBJ, type, callback, capture);
 }
 
+// Pendant zur Javascript-Funktion Node.insertBefore(). Nur wird ueber das
+// Eltern-Element vor (statt hinter) dem uebergebenen anchor eingefuegt.
+// element: Neu hinzuzufuegenes HTML-Element (direkt hinter dem anchor)
+// anchor: Element, hinter dem das Element unter demselben parent eingefuegt werden soll
+// return Ueblicherweise das hinzugefuegte Element (Ausnahme: Siehe Node.insertBefore())
+function insertAfter(element, anchor) {
+    return anchor.parentNode.insertBefore(element, anchor.nextSibling);
+}
+
 // Hilfsfunktion fuer die Ermittlung aller Elements desselben Typs auf der Seite ueber CSS Selector (Default: Tabelle)
 // selector: CSS Selector des Elements ('table')
 // doc: Dokument (document)
