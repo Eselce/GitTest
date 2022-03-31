@@ -16,8 +16,8 @@
 
 // Gibt einen Wert zurueck. Ist dieser nicht definiert oder null, wird ein Alternativwert geliefert
 // value: Ein Wert. Ist dieser nicht undefined oder null, wird er zurueckgeliefert (oder retValue)
-// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
-// retValue: Falls definiert, Rueckgabe-Wert fuer den Fall, dass value nicht undefined oder null ist
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist (also undefined oder null)
+// retValue: Falls definiert, Rueckgabe-Wert fuer den Fall, dass value gesetzt (also nicht undefined oder null) ist
 // return Der Wert. Sind weder value noch defValue definiert, dann undefined
 function getValue(value, defValue = undefined, retValue = undefined) {
     return ((value === undefined) || (value === null)) ? defValue : (retValue === undefined) ? value : retValue;
@@ -37,12 +37,62 @@ function getObjValue(obj, item, defValue = undefined, retValue = undefined) {
 // Gibt den Wert eines Arrays-Elements zurueck. Ist dieser nicht definiert oder null, wird ein Alternativwert geliefert
 // Ist das Array selbst undefined, gibt es keinen Fehler, es wird jedoch undefined zurueckgegeben
 // arr: Das Array, dessen Item den Wert liefern soll
-// index: Ein Key. Ist der zugehoerige Wert nicht undefined oder null, wird er zurueckgeliefert (oder retValue)
+// index: Ein Array-Index. Ist der zugehoerige Wert im Array nicht undefined oder null, wird er zurueckgeliefert (oder retValue)
 // defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // retValue: Falls definiert, Rueckgabe-Wert fuer den Fall, dass value nicht undefined oder null ist
 // return Der Wert. Sind weder value noch defValue definiert, dann undefined
 function getArrValue(arr, index, defValue = undefined, retValue = undefined) {
     return getValue(getValue(arr, [])[index], defValue, retValue);
+}
+
+// Fuegt einen Wert dem Item-Array eines Objektes hinzu. Ist dieses nicht definiert oder null, wird es vorher angelegt
+// Ist das Objekt selbst undefined, gibt es keinen Fehler, der gelieferte Eintrag muss jedoch noch selbst zugewiesen werden
+// obj: Das Objekt, dessen Item mit dem Wert gesetzt werden soll
+// item: Ein Key. Ist der zugehoerige Wert undefined oder null, wird ein Array angelegt
+// value: Zu setzender Wert
+// defValue: Default-Wert fuer den Fall, dass value nichts gesetzt ist
+// returnOnly: true - Wert nur ermittlen, nicht im obj setzen, false - Item auch setzen
+// scalarUnique: true - Nur bei mehreren Eintraegen Array nutzen, false - Skalare Werte,
+//               wobei nur der letzte gesetzte Wert bei identischen Schluesseln uebrig bleibt!
+// return Das Array mit allen Werten, die fuer dieses item gesetzt sind
+function pushObjValue(obj, item, value, defValue, returnOnly = false, scalarUnique = false) {
+    const __VALUE = getObjValue(obj, item, []);
+    const __VALUEARR = (Array.isArray(__VALUE) ? __VALUE : [ __VALUE ]);
+
+    __VALUEARR.push(getValue(value, defValue));
+
+    const __RET = ((scalarUnique && (__VALUEARR.length === 1)) ? __VALUEARR[0] : __VALUEARR);
+
+    if (obj && (! returnOnly)) {
+        obj[item] = __RET;
+    }
+
+    return __RET;
+}
+
+// Fuegt einen Wert dem Item-Array-Element eines Arrays hinzu. Ist dieses nicht definiert oder null, wird es vorher angelegt
+// Ist das Array selbst undefined, gibt es keinen Fehler, der gelieferte Eintrag muss jedoch noch selbst zugewiesen werden
+// arr: Das Objekt, dessen Item mit dem Wert gesetzt werden soll
+// index: Ein Array-Index. Ist der zugehoerige Wert im Array undefined oder null, wird ein Array an dieser Stelle angelegt
+// value: Zu setzender Wert
+// defValue: Default-Wert fuer den Fall, dass value nichts gesetzt ist
+// returnOnly: true - Wert nur ermittlen, nicht im arr setzen, false - Item auch setzen
+// scalarUnique: true - Nur bei mehreren Eintraegen Array nutzen, false - Skalare Werte,
+//               wobei nur der letzte gesetzte Wert bei identischen Schluesseln uebrig bleibt!
+// return Das Array mit allen Werten, die fuer diesen Index gesetzt sind
+function pushArrValue(arr, index, value, defValue, returnOnly = false, scalarUnique = false) {
+    const __VALUE = getArrValue(arr, index, []);
+    const __VALUEARR = (Array.isArray(__VALUE) ? __VALUE : [ __VALUE ]);
+
+    __VALUEARR.push(getValue(value, defValue));
+
+    const __RET = ((scalarUnique && (__VALUEARR.length === 1)) ? __VALUEARR[0] : __VALUEARR);
+
+    if (arr && (! returnOnly)) {
+        arr[index] = __RET;
+    }
+
+    return __RET;
 }
 
 // Gibt einen Wert zurueck. Ist dieser nicht definiert, wird ein Alternativwert geliefert
