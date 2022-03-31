@@ -96,4 +96,71 @@ function isGoalieFromHTML(cells, colIdxClass = 0) {
 
 // ==================== Ende Abschnitt fuer Parameter von den OS2-Seiten ====================
 
+// ==================== Abschnitt fuer Hilfsfunktionen ====================
+
+// Liefert umschlossenen textContent und einen der einem <a>-Link uebergebenen Parameter.
+// Als Drittes wird optional der ganze Ziel-Link (das href) zurueckgegeben.
+// element: Eine <a>-Node mit href-Link
+// queryID: Name des Parameters innerhalb der URL, der die ID liefert
+// return Text, ID und href-Link
+function getLinkData(element, queryID) {
+    checkType(element && element.href, 'string', true, 'getLinkData', 'element.href', 'String');
+    checkType(queryID, 'string', false, 'getLinkData', 'queryID', 'String');
+
+    const __A = element; // <a href="https://.../...?QUERYID=ID">TEXT</a>
+    const __TEXT = __A.textContent;
+    const __HREF = __A.href;
+    const __URI = new URI(__HREF);
+    const __ID = __URI.getQueryPar(queryID);
+
+    return [ __TEXT, __ID, __HREF ];
+}
+
+// Liefert den HTML-Code fuer einen parametrisierten <img>-Link.
+// imageURL: URL des verlinkten Bildes
+// title: Tooltip des Bildes (Default: null fuer kein Tooltip)
+// altText: ALT-Parameter fuer Ausgabe ohne Bild (Default: Tooltip-Text)
+// return String mit HTML-Code des <img>-Links
+function getImgLink(imageURL, title = null, altText = title) {
+    checkType(imageURL, 'string', true, 'getImgLink', 'imageURL', 'String');
+    checkType(title, 'string', false, 'getImgLink', 'title', 'String');
+    checkType(altText, 'string', false, 'getImgLink', 'altText', 'String');
+
+    const __ALTSTR = (altText ? (' alt="' + altText + '"') : "");
+    const __IMGSTR = '<img src="' + imageURL + '"' + __ALTSTR + ' />';
+    const __RETSTR = (title ? ('<abbr title="' + title + '">' + __IMGSTR + '</abbr>') : __IMGSTR);
+
+    return __RETSTR;
+}
+
+// Liefert den HTML-Code fuer einen parametrisierten <a>-Link auf ein OS-Team.
+// teamName: Name des Teams fuer den textContent
+// osID: OS-ID des Teams
+// return String mit HTML-Code des <a>-Team-Links
+function getTeamLink(teamName, osID) {
+    checkType(teamName, 'string', true, 'getTeamLink', 'teamName', 'String');
+    checkType(osID, 'number', true, 'getTeamLink', 'osID', 'Number');
+
+    const __RETSTR = '<a href="/st.php?c=' + osID + '" onClick="teaminfo(' + osID + ');return false;">' + teamName + '</a>';
+
+    return __RETSTR;
+}
+
+// Liefert den HTML-Code fuer einen parametrisierten <a>-Link auf das Manager-PM-Fenster.
+// managerName: Name des Managers fuer den textContent
+// pmID: User-ID des Managers im PM-System von OS2
+// return String mit HTML-Code des <a>-Manager-Links, falls pmID okay, ansonsten nur Managername geklammert
+function getManagerLink(managerName, pmID) {
+    checkType(managerName, 'string', true, 'getManagerLink', 'managerName', 'String');
+    checkType(pmID, 'number', true, 'getManagerLink', 'pmID', 'Number');
+
+    const __RETSTR = (pmID > -1) ? ('<a href="/osneu/pm?action=writeNew&receiver_id=' + pmID
+                    + '" onclick="writePM(" + pmID + ");return false;" target="_blank">'
+                    + managerName + '</a>') : ('(' + managerName + ')');
+
+    return __RETSTR;
+}
+
+// ==================== Ende Abschnitt fuer Hilfsfunktionen ====================
+
 // *** EOF ***
