@@ -5,6 +5,7 @@
 // @copyright    2022+
 // @author       Sven Loges (SLC)
 // @description  Script zu den internationalen Teilnehmern bzw. Startern fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
 // @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(osneu/)?intTeilnehmer(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
 // @grant        GM.getValue
 // @grant        GM.setValue
@@ -98,6 +99,71 @@ const __OPTCONFIG = {
                    'Hotkey'    : 'D',
                    'FormLabel' : "Dicke:|$"
                },
+    'saison' : {          // Laufende Saison
+                   'Name'      : "saison",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'Number',
+                   'FreeValue' : true,
+                   'SelValue'  : false,
+                   'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ],
+                   'Default'   : 18,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Saison: $",
+                   'Hotkey'    : 'a',
+                   'FormLabel' : "Saison:|$"
+               },
+    'aktuellerZat' : {    // Laufender ZAT
+                   'Name'      : "currZAT",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'Number',
+                   'Permanent' : true,
+                   'SelValue'  : false,
+                   'Choice'    : [ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11,
+                                  12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                                  24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+                                  36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+                                  48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+                                  60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+                                  72 ],
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "ZAT: $",
+                   'Hotkey'    : 'Z',
+                   'FormLabel' : "ZAT:|$"
+               },
+    'datenZat' : {        // Stand der Daten zum Team und ZAT
+                   'Name'      : "dataZAT",
+                   'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'Number',
+                   'Hidden'    : true,
+                   'Serial'    : true,
+                   'AutoReset' : true,
+                   'Permanent' : true,
+                   'Default'   : undefined,
+                   'Action'    : __OPTACTION.SET,
+                   'Submit'    : undefined,
+                   'Cols'      : 1,
+                   'Rows'      : 1,
+                   'Replace'   : null,
+                   'Space'     : 0,
+                   'Label'     : "Daten-ZAT:"
+               },
+    'oldDatenZat' : {     // Stand der Daten zum Team und ZAT
+                   'Name'      : "oldDataZAT",
+                   'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'Number',
+                   'Hidden'    : true,
+                   'Serial'    : true,
+                   'AutoReset' : true,
+                   'Permanent' : true,
+                   'Default'   : undefined,
+                   'Action'    : __OPTACTION.SET,
+                   'Submit'    : undefined,
+                   'Cols'      : 1,
+                   'Rows'      : 1,
+                   'Replace'   : null,
+                   'Space'     : 0,
+                   'Label'     : "Vorheriger Daten-ZAT:"
+               },
     'reset' : {           // Optionen auf die "Werkseinstellungen" zuruecksetzen
                    'FormPrio'  : undefined,
                    'Name'      : "reset",
@@ -155,9 +221,43 @@ __LOG.init(window, __LOGLEVEL);
 
 // ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
-function insertAfter(element, anchor) {
-    anchor.parentNode.insertBefore(element, anchor.nextSibling);
-}
+// Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
+const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", null, () => {
+        return {
+//                'menuAnchor' : getElement('div'),
+                'hideMenu'   : true,
+                'showForm'   : {
+                                   'saison'               : true,
+                                   'aktuellerZat'         : true,
+                                   'showForm'             : true
+                               }
+            };
+    }, async optSet => {
+            //const __ZATCELL = getProp(getProp(getRows(), 2), 'cells', { })[0];
+            const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
+            const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
+            const __CURRZAT = __NEXTZAT - 1;
+            const __DATAZAT = optSet.getOptValue('datenZat');
+
+            // Stand der alten Daten merken...
+            optSet.setOpt('oldDatenZat', __DATAZAT, false);
+
+            if (__CURRZAT >= 0) {
+                __LOG[2]("Aktueller ZAT: " + __CURRZAT);
+
+                // Neuen aktuellen ZAT speichern...
+                optSet.setOpt('aktuellerZat', __CURRZAT, false);
+
+                if (__CURRZAT !== __DATAZAT) {
+                    __LOG[2](__LOG.changed(__DATAZAT, __CURRZAT));
+
+                    // Neuen Daten-ZAT speichern...
+                    optSet.setOpt('datenZat', __CURRZAT, false);
+                }
+            }
+
+            return true;
+        });
 
 // Verarbeitet Ansicht "Internationale Teilnehmer"
 const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () => {
@@ -198,35 +298,58 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                     Array.from(getElements('li', list)).map(entry => {
                                 const __ITEMS = getElements('a,div', entry);
                                 const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
-                                const __LINK = __ITEMS[1].href;
-                                const __ID = __LINK.substring(__LINK.lastIndexOf('=') + 1);
-                                const __VEREIN = __ITEMS[1].textContent;
-                                const __MANAGER = __ITEMS[2].textContent;
+                                const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
+                                const [ __MANAGER, __PMID ] = getLinkData(__ITEMS[2], 'receiver_id');
+                                const __VEREINSTR = getTeamLink(__TEAMNAME, __OSID);
+                                const __MANAGERSTR = getManagerLink(__MANAGER, __PMID);
                                 const [ __LIGALAND, __RUNDE ] = __ITEMS[3].textContent.split(" - ", 2);
                                 const __INDEXLIGALAND = __LIGALAND.lastIndexOf(' ', __MAXLIGALEN);
                                 const __LIGA = __LIGALAND.substring(0, __INDEXLIGALAND);
                                 const __LAND = __LIGALAND.substring(__INDEXLIGALAND + 1);
                                 const __TLA = getLandTLA(__LAND);
-                                const __FLAG = '<abbr title="' + __TLA + '"><img src="images/flaggen/' + __TLA + '.gif" />';
+                                const __FLAGSTR = getImgLink('images/flaggen/' + __TLA + '.gif', __TLA);
                                 const [ __SKILLSTR, __OPTISTR ] = __ITEMS[4].textContent.split(" - ", 2);
                                 const __SKILL = Number.parseFloat(__SKILLSTR.split(": ")[1]);
                                 const __OPTI = Number.parseFloat(__OPTISTR.split(": ")[1]);
+                                const __SAISON = optSet.getOptValue('saison');
+                                const __CURRZAT = optSet.getOptValue('aktuellerZat');
+                                const __LIGASIZE = getLigaSizeByTLA(__TLA);
+                                const __VEREIN = new Verein(__TEAMNAME, __LAND, __LIGA, __OSID, __MANAGER);
+                                const __ZAT = firstZAT(__SAISON, __LIGASIZE);
+
+                                __ZAT.gameType = "Liga";
+
+                                const __LIGASTR = addTableLink(__ZAT, __VEREIN, __LIGA, true)
+                                const [ __INTZAT, __INTEVT, __INTLNK ] = calcZATEventByCupRunde(__CUP, __RUNDE, __CURRZAT);
+
+                                incZAT(__ZAT, __INTZAT);
+                                __ZAT.gameType = __INTEVT;
+
+                                const __ZATLINK = getZatLink(__ZAT, __VEREIN, true);
 
                                 return {
-                                        'lfd'       : ++count,
-                                        'cup'       : __CUP,
-                                        'id'        : __ID,
-                                        'verein'    : __VEREIN,
-                                        'manager'   : __MANAGER,
-                                        'liga'      : __LIGA,
-                                        'ligaNr'    : getLigaNr(__LIGA),
-                                        'land'      : __LAND,
-                                        'landNr'    : getLandNr(__LAND),
-                                        'landTLA'   : __TLA,
-                                        'flag'      : __FLAG,
-                                        'runde'     : __RUNDE,
-                                        'skill'     : __SKILL.toFixed(2),
-                                        'opti'      : __OPTI.toFixed(2)
+                                        'lfd'         : ++count,
+                                        'cup'         : __CUP,
+                                        'id'          : __OSID,
+                                        'verein'      : __TEAMNAME,
+                                        'vereinStr'   : __VEREINSTR,
+                                        'pmId'        : __PMID,
+                                        'manager'     : __MANAGER,
+                                        'managerStr'  : __MANAGERSTR,
+                                        'liga'        : __LIGA,
+                                        'ligaStr'     : __LIGASTR,
+                                        'ligaNr'      : getLigaNr(__LIGA),
+                                        'land'        : __LAND,
+                                        'landNr'      : getLandNr(__LAND),
+                                        'landTLA'     : __TLA,
+                                        'flagStr'     : __FLAGSTR,
+                                        'runde'       : __RUNDE,
+                                        'rundeStr'    : __ZATLINK,
+                                        'rundeLnk'    : __INTLNK,
+                                        'rundeEvt'    : __INTEVT,
+                                        'rundeZAT'    : __INTZAT,
+                                        'skill'       : __SKILL.toFixed(2),
+                                        'opti'        : __OPTI.toFixed(2)
                                     };
                             })
                 );
@@ -236,7 +359,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
             return;
         }
 
-        const __ITEMS = [ 'id', 'lfd', 'landNr', 'cup', 'runde', 'flag', 'verein', 'land', 'manager', 'liga', 'ligaNr', 'skill', 'opti' ];
+        const __ITEMS = [ 'id', 'lfd', 'landNr', 'cup', 'rundeStr', 'flagStr', 'vereinStr', 'land', 'managerStr', 'ligaStr', 'ligaNr', 'skill', 'opti' ];
         const __HEADS = [ 'ID', '#', 'Land', 'Cup', 'Runde', 'Flagge', 'Verein', 'Land', 'Manager', 'Liga', 'Liga', 'Skill', 'Opti' ];
         const __ALIGN = 'center';
         const __TABLE = document.createElement('table');
@@ -285,7 +408,10 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
 
                         __TBODY.appendChild(__TR);
 
-                        __LOG[7](entry.id, entry.lfd, entry.landNr, entry.cup, entry.runde, entry.landTLA, entry.verein, entry.land, entry.manager, entry.liga, entry.ligaNr, entry.skill, entry.opti);
+                        __LOG[7](entry.id, entry.lfd, entry.landNr, entry.pmID, entry.cup,
+                                entry.runde, entry.rundeEvt, entry.rundeZAT, entry.rundeLnk,
+                                entry.landTLA, entry.verein, entry.land, entry.manager,
+                                entry.liga, entry.ligaNr, entry.skill, entry.opti);
                     });
             });
 
@@ -300,14 +426,16 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
 
 // ==================== Hauptprogramm ====================
 
-// Selektor (Seite bzw. Parameter) fuer den richtigen PageManager (hier eigentlich ueberfluessig)...
+// Selektor (Seite bzw. Parameter) fuer den richtigen PageManager...
 const __LEAFS = {
-                    'intTeilnehmer' : 0  // Teamansicht "Internationale Teilnehmer"
+                    'haupt.php'     : 0, // Ansicht "Haupt" (Managerbuero)
+                    'intTeilnehmer' : 1  // Teamansicht "Internationale Teilnehmer"
                 };
 
 // URL-Legende:
-// 0: Internationale Teilnehmer
-const __MAIN = new Main(__OPTCONFIG, null, procIntTeilnehmer);
+// 0: Managerbuero
+// 1: Internationale Teilnehmer
+const __MAIN = new Main(__OPTCONFIG, null, procHaupt, procIntTeilnehmer);
 
 __MAIN.run(getPageIdFromURL, __LEAFS);
 
