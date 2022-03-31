@@ -189,6 +189,122 @@ const __TLALAND = {
     };
 const __LANDTLAS = reverseMapping(__TLALAND);
 
+const __TLALIGASIZE = {
+        undefined : 10,
+        'ALB'     : 10,
+        'AND'     : 10,
+        'ARM'     : 10,
+        'AZE'     : 10,
+        'BEL'     : 18,
+        'BIH'     : 10,
+        'BUL'     : 10,
+        'DEN'     : 10,
+        'GER'     : 18,
+        'ENG'     : 20,
+        'EST'     : 10,
+        'FRO'     : 10,
+        'FIN'     : 10,
+        'FRA'     : 18,
+        'GEO'     : 10,
+        'GRE'     : 18,
+        'IRL'     : 10,
+        'ISL'     : 10,
+        'ISR'     : 10,
+        'ITA'     : 18,
+        'KAZ'     : 10,
+        'CRO'     : 10,
+        'LVA'     : 10,
+        'LIE'     : 10,
+        'LTU'     : 10,
+        'LUX'     : 10,
+        'MLT'     : 10,
+        'MKD'     : 10,
+        'MDA'     : 10,
+        'NED'     : 18,
+        'NIR'     : 10,
+        'NOR'     : 10,
+        'AUT'     : 10,
+        'POL'     : 10,
+        'POR'     : 18,
+        'ROM'     : 10,
+        'RUS'     : 18,
+        'SMR'     : 10,
+        'SCO'     : 10,
+        'SWE'     : 10,
+        'SUI'     : 10,
+        'SCG'     : 10,
+        'SVK'     : 10,
+        'SVN'     : 10,
+        'ESP'     : 20,
+        'CZE'     : 10,
+        'TUR'     : 18,
+        'UKR'     : 10,
+        'HUN'     : 10,
+        'WAL'     : 10,
+        'BLR'     : 10,
+        'CYP'     : 10
+    };
+const __LIGASIZETLAS = reverseMapping(__TLALIGASIZE, mappingPush);
+
+// ==================== Ende Abschnitt fuer interne IDs auf den Seiten ====================
+
+// ==================== Abschnitt fuer interne IDs des OS-Spielplans auf den Seiten ====================
+
+const __COLINTSPIELPLAN = {
+        'ZAT2'      : 0,
+        'ZAT'       : 1,
+        'LabOSE'    : 2,
+        'LabOSC'    : 3,
+        'CupOSE'    : 4,
+        'CupOSC'    : 5,
+        'EvtOSE'    : 6,
+        'EvtOSC'    : 7,
+        'RndOSE'    : 8,
+        'RndOSC'    : 9,
+        'HROSE'     : 10,
+        'HROSC'     : 11,
+        'IntOSE'    : 12,
+        'IntOSC'    : 13
+    };
+
+const __INTSPIELPLAN = {
+        1   : [ 0,  0,  'Saisonstart',              'Saisonstart',              '', '',         'OSEQ', 'OSCQ',     '',                 '',                 0,  0,  '',                 ''              ],
+        2   : [ 4,  5,  '1. Quali Hin',             '1. Quali Hin',             'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 1',          'Runde 1',          1,  1,  '1. Runde',         '1. Runde'      ],
+        3   : [ 6,  7,  '1. Quali R\u00FCck',       '1. Quali R\u00FCck',       'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 1',          'Runde 1',          2,  2,  '1. Runde',         '1. Runde'      ],
+        4   : [ 10, 11, '2. Quali Hin',             '2. Quali Hin',             'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 2',          'Runde 2',          1,  1,  '2. Runde',         '2. Runde'      ],
+        5   : [ 14, 13, '2. Quali R\u00FCck',       '2. Quali R\u00FCck',       'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 2',          'Runde 2',          2,  2,  '2. Runde',         '2. Runde'      ],
+        6   : [ 16, 17, '3. Quali Hin',             '1. Gruppenspiel',          'OSEQ', 'OSC',  'OSEQ', 'OSCHR',    'Runde 3',          'Spiel 1',          1,  1,  '3. Runde',         '1. Spiel'      ],
+        7   : [ 22, 19, '3. Quali R\u00FCck',       '2. Gruppenspiel',          'OSEQ', 'OSC',  'OSEQ', 'OSCHR',    'Runde 3',          'Spiel 2',          2,  1,  '3. Runde',         '2. Spiel'      ],
+        8   : [ 24, 23, '1. Runde Hin',             '3. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCHR',    'Runde 1',          'Spiel 3',          1,  1,  '1. Runde',         '3. Spiel'      ],
+        9   : [ 26, 25, '1. Runde R\u00FCck',       '4. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCHR',    'Runde 1',          'Spiel 4',          2,  2,  '1. Runde',         '4. Spiel'      ],
+        10  : [ 34, 29, '2. Runde Hin',             '5. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCHR',    'Runde 2',          'Spiel 5',          1,  2,  '2. Runde',         '5. Spiel'      ],
+        11  : [ 36, 31, '2. Runde R\u00FCck',       '6. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCHR',    'Runde 2',          'Spiel 6',          2,  2,  '2. Runde',         '6. Spiel'      ],
+        12  : [ 38, 35, '3. Runde Hin',             '7. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCZR',    'Runde 3',          'Spiel 1',          1,  1,  '3. Runde',         '1. Spiel'      ],
+        13  : [ 42, 37, '3. Runde R\u00FCck',       '8. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCZR',    'Runde 3',          'Spiel 2',          2,  1,  '3. Runde',         '2. Spiel'      ],
+        14  : [ 44, 41, '4. Runde Hin',             '9. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCZR',    'Runde 4',          'Spiel 3',          1,  1,  '4. Runde',         '3. Spiel'      ],
+        15  : [ 50, 43, '4. Runde R\u00FCck',       '10. Gruppenspiel',         'OSE',  'OSC',  'OSE',  'OSCZR',    'Runde 4',          'Spiel 4',          2,  2,  '4. Runde',         '4. Spiel'      ],
+        16  : [ 52, 47, 'Achtelfinale Hin',         '11. Gruppenspiel',         'OSE',  'OSC',  'OSE',  'OSCZR',    'Achtelfinale',     'Spiel 5',          1,  2,  'Achtelfinale',     '5. Spiel'      ],
+        17  : [ 54, 49, 'Achtelfinale R\u00FCck',   '12. Gruppenspiel',         'OSE',  'OSC',  'OSE',  'OSCZR',    'Achtelfinale',     'Spiel 6',          2,  2,  'Achtelfinale',     '6. Spiel'      ],
+        18  : [ 56, 53, 'Viertelfinale Hin',        'Viertelfinale Hin',        'OSE',  'OSC',  'OSE',  'OSCFR',    'Viertelfinale',    'Viertelfinale',    1,  2,  'Viertelfinale',    'Viertelfinale' ],
+        19  : [ 60, 55, 'Viertelfinale R\u00FCck',  'Viertelfinale R\u00FCck',  'OSE',  'OSC',  'OSE',  'OSCFR',    'Viertelfinale',    'Viertelfinale',    2,  2,  'Viertelfinale',    'Viertelfinale' ],
+        20  : [ 62, 59, 'Halbfinale Hin',           'Halbfinale Hin',           'OSE',  'OSC',  'OSE',  'OSCFR',    'Halbfinale',       'Halbfinale',       1,  2,  'Halbfinale',       'Halbfinale'    ],
+        21  : [ 66, 61, 'Halbfinale R\u00FCck',     'Halbfinale R\u00FCck',     'OSE',  'OSC',  'OSE',  'OSCFR',    'Halbfinale',       'Halbfinale',       2,  2,  'Halbfinale',       'Halbfinale'    ],
+        22  : [ 70, 71, 'Finale',                   'Finale',                   'OSE',  'OSC',  'OSE',  'OSCFR',    'Finale',           'Finale',           1,  2,  'Finale',           'Finale'        ],
+        23  : [ 99, 99, 'Saisonende',               'Saisonende',               '', '',         'OSE',  'OSCFR',    'Sieger',           'Sieger',           0,  0,  'Sieger',           'Sieger'        ]
+    };
+const __INTZATLABOSE = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSE);
+const __INTZATLABOSC = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSC);
+const __INTOSEALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSE, __COLINTSPIELPLAN.ZAT, mappingPush);
+const __INTOSCALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSC, __COLINTSPIELPLAN.ZAT, mappingPush);
+const __INTOSECUPS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.CupOSE, mappingPush);
+const __INTOSCCUPS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __COLINTSPIELPLAN.CupOSC, mappingPush);
+const __INTOSEEVTS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.EvtOSE, mappingPush);
+const __INTOSCEVTS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __COLINTSPIELPLAN.EvtOSC, mappingPush);
+const __INTOSEZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.ZAT, mappingPush);
+const __INTOSCZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __COLINTSPIELPLAN.ZAT, mappingPush);
+
+// ==================== Ende Abschnitt fuer interne IDs des OS-Spielplans auf den Seiten ====================
+
 // ==================== Abschnitt fuer Daten des Spielplans ====================
 
 // Gibt die ID fuer den Namen eines Wettbewerbs zurueck
@@ -262,27 +378,64 @@ function getLigaName(ID, defValue = __LIGATYPES[0]) {
     return getValue(__LIGATYPES[ID], defValue);
 }
 
-// Kehrt das Mapping eines Objekts um und liefert ein neues Objekt zurueck.
-// obj: Objekt mit key => value
-// convFun: Konvertierfunktion fuer die Werte
-// return Neues Objekt mit value => key (doppelte value-Werte fallen heraus!)
-function reverseMapping(obj, convFun) {
-    if (! obj) {
-        return obj;
-    }
-
-    const __RET = { };
-
-    for (let key in obj) {
-        const __VALUE = obj[key];
-
-        __RET[__VALUE] = (convFun ? convFun(key) : key);
-    }
-
-    return __RET;
+// Gibt die Ligengroesse des Landes mit dem uebergebenen Kuerzel (TLA) zurueck.
+// tla: Kuerzel (TLA) des Landes
+// defValue: Default-Wert (__TLALIGASIZE[undefined])
+// return Ligengroesse des Landes (10/18/20), defaultValue fuer unbekannt
+function getLigaSizeByTLA(tla, defValue = __TLALIGASIZE[undefined]) {
+    return getValue(__TLALIGASIZE[tla], defValue);
 }
 
-// ==================== Ende Abschnitt fuer interne IDs auf den Seiten ====================
+// Gibt die Ligengroesse des Landes mit dem uebergebenen Namen zurueck.
+// land: Name des Landes
+// defValue: Default-Wert (__TLALIGASIZE[undefined])
+// return Ligengroesse des Landes (10/18/20), defaultValue fuer unbekannt
+function getLigaSize(land, defValue = __TLALIGASIZE[undefined]) {
+    return getLigaSizeByTLA(__LANDTLAS[land], defValue);
+}
+
+// Gibt die Ligengroesse des Landes mit der uebergebenen ID zurueck.
+// ID: OS2-ID des Landes
+// defValue: Default-Wert (__TLALIGASIZE[undefined])
+// return Ligengroesse des Landes (10/18/20), defaultValue fuer unbekannt
+function getLigaSizeById(ID, defValue = __TLALIGASIZE[undefined]) {
+    return getValue(__LAENDER[ID], defValue);
+}
+
+// Gibt den ZAT, das Event und den Link einer internationalen Runde zurueck.
+// TODO Diese Version ist beschraenkt auf Saisons ab der 3. Saison!
+// searchCup: Gesuchter Wettbewerb ('OSC', 'OSCQ', 'OSE', 'OSEQ')
+// searchRunde: Gesuchte Runde im Wettbewerb ('1. Runde', ...)
+// currZAT: Der aktuelle ZAT (fuer die Frage, ob vergangene oder kommende Runde)
+// return ZAT, Event der Runde und deren OS2-Webseite
+function calcZATEventByCupRunde(searchCup, searchRunde, currZAT) {
+    const __CUP = searchCup;
+    const __RUNDE = searchRunde;
+    const __CUPS = getArrValue(__INTOSECUPS, __RUNDE).concat(
+                        getArrValue(__INTOSCCUPS, __RUNDE));
+    const __EVTS = getArrValue(__INTOSEEVTS, __RUNDE).concat(
+                        getArrValue(__INTOSCEVTS, __RUNDE));
+    const __ZATS = getArrValue(__INTOSEZATS, __RUNDE).concat(
+                        getArrValue(__INTOSCZATS, __RUNDE));
+    let ret = [ -1, __CUP, null ];  // nicht gefunden
+
+    __CUPS.forEach((cup, index) => {
+            if (cup === __CUP) {
+                const __ZAT = getValue(__ZATS[index]);
+                const __EVT = getValue(__EVTS[index]);
+
+                if ((! ~ ret[0]) || (__ZAT <= currZAT)) {  // in der Zukunft nur den ersten Treffer...
+                    ret = [ __ZAT, __EVT, __EVT.toLowerCase() + '.php' ];
+                }
+            }
+        });
+
+    return ret;
+}
+
+// ==================== Abschnitt fuer Daten des Spielplans ====================
+
+// ==================== Abschnitt fuer Skilltypen, Skills und Spielreihen ====================
 
 // Schaut nach, ob der uebergebene Index zu einem trainierbaren Skill gehoert
 // Die Indizes gehen von 0 (SCH) bis 16 (EIN)
@@ -406,6 +559,148 @@ function getColor(pos) {
         default :    return "";
     }
 }
+
+// ==================== Ende Abschnitt fuer Skilltypen, Skills und Spielreihen ====================
+
+// ==================== Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
+
+// Kehrt das Mapping eines Objekts um und liefert ein neues Objekt zurueck.
+// obj: Objekt mit key => value
+// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// - newValue: Neuer Wert (zu konvertierender alter Schluessel)
+// - newKey: Neuer Schluessel (konvertierter alter Wert)
+// - newObj: Neues Objekt (im Aufbau, alles konvertiert)
+// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
+// - return Konvertierter neuer Wert
+// valuesFun: Funktion zur Ermittlung der neuen Schluessel aus alten Werten (Default: Object.values)
+// - obj: Objekt, das an reverseMapping uebergeben wurde
+// - return Liste aller alten Werte als Array, aus denen sich die neuen Schluessel ergeben
+// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus den alten Werten
+// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
+// - key: Alter Schluessel (unveraendert, wird spaeter zum neuen Wert konvertiert)
+// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
+// - return Konvertierter neuer Schluessel
+// return Neues Objekt mit value => key (doppelte value-Werte fallen heraus!)
+// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
+// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
+function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
+    if (! obj) {
+        return obj;
+    }
+
+    try {
+        checkType(obj, 'object', true, 'reverseMapping', 'obj', 'Object');
+        checkType(keyValFun, 'function', false, 'reverseMapping', 'keyValFun', 'Function');
+        checkType(valuesFun, 'function', false, 'reverseMapping', 'valuesFun', 'Function');
+        checkType(valKeyFun, 'function', false, 'reverseMapping', 'valKeyFun', 'Function');
+
+        const __KEYSFUN = Object.keys;
+        const __VALUESFUN = (valuesFun || Object.values);
+        const __OLDKEYS = getValue(__KEYSFUN(obj), []);
+        const __OLDVALUES = getValue(__VALUESFUN(obj), []);
+        const __RET = { };
+
+        __OLDKEYS.forEach((key, index) => {
+                const __VALUE = __OLDVALUES[index];
+                const __NEWKEYS = (valKeyFun ? valKeyFun(__VALUE, index, __OLDVALUES) : __VALUE);
+                const __NEWVALUE = (keyValFun ? keyValFun(key, __NEWKEYS, __RET, obj) : key);
+
+                if (Array.isArray(__NEWKEYS)) {
+                    __NEWKEYS.forEach(key => (__RET[key] = __NEWVALUE));
+                } else {
+                    __RET[__NEWKEYS] = __NEWVALUE;
+                }
+            });
+
+        return __RET;
+    } catch (ex) {
+        showException('[' + (ex && ex.lineNumber) + "] reverseMapping()", ex);
+    }
+}
+
+// Erzeugt ein Mapping innerhalb der Werte eines Objekts ueber Spaltenindizes.
+// obj: Objekt mit key => value
+// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// - newValue: Neuer Wert (zu konvertieren)
+// - newKey: Neuer Schluessel (konvertiert)
+// - newObj: Neues Objekt (im Aufbau, alles konvertiert)
+// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
+// - return Konvertierter neuer Wert
+// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus der Schluesselspalte
+// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
+// - key: Alter Schluessel (unveraendert)
+// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
+// - return Konvertierter neuer Schluessel
+// return Neues Objekt mit value[keyIndex] => value[valueIndex]
+//        (doppelte value-Werte fallen heraus!)
+// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
+// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
+function selectMapping(obj, keyIndex, valueIndex, keyValFun, valKeyFun) {
+    checkType(obj, 'object', true, 'selectMapping', 'obj', 'Object');
+    checkType(keyIndex, 'number', true, 'selectMapping', 'keyIndex', 'Number');
+    checkType(valueIndex, 'number', true, 'selectMapping', 'valueIndex', 'Number');
+    checkType(keyValFun, 'function', false, 'selectMapping', 'keyValFun', 'Function');
+    checkType(valKeyFun, 'function', false, 'selectMapping', 'valKeyFun', 'Function');
+
+    const __KEYVALFUN = mappingValueSelect.bind(this, valueIndex, keyValFun);
+    const __VALUESFUN = mappingValuesFunSelect.bind(this, keyIndex);
+    const __VALKEYFUN = valKeyFun;
+
+    return reverseMapping(obj, __KEYVALFUN, __VALUESFUN, __VALKEYFUN);
+}
+
+// Standard-Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// fuer die Funktion reverseMapping() (legt Array mit allen Schluesseln an).
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+// return Konvertierter neuer Wert (in Form eines Arrays)
+function mappingPush(value, key, obj) {
+    return pushObjValue(obj, key, value, null, true, false);
+}
+
+// Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln fuer die Funktion
+// reverseMapping() (legt Array mit allen Schluesseln an, falls dieser eindeutig ist).
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+// return Konvertierter neuer Wert (in Form eines Arrays, falls mehr als einmal vorkommend)
+function mappingSetOrPush(value, key, obj) {
+    return pushObjValue(obj, key, value, null, true, true);
+}
+
+// Konvertierfunktion fuer die neuen Werte aus einer Spalte der alten Werte
+// fuer die Funktion reverseMapping() als Parameter keyValFun (index und keyValFun
+// sollten dafuer mit bind() herausgefiltert werden: bind(this, index, keyValFun)).
+// Das Ergebnis, also ein Wert der indizierten Spalte, wird ggfs. noch nachbearbeitet.
+// index: Index der Spalte, dessen Array-Eintraege als neuer Wert genutzt werden (Default: 0)
+// keyValFun: Funktion, mit der der ermittelte Wert nachbearbeitet wird (Default: null)
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+// oldObj: Altes Objekt, aus derem alten Wert selektiert wird (key ist value, der alte Schluessel)
+// return Selektierter neuer Wert (aus einer Spalte des alten Wertes)
+function mappingValueSelect(index = 0, keyValFun = null, value, key, obj, oldObj) {
+    const __VALUE = getArrValue(oldObj[value], index);
+    const __NEWVALUE = (keyValFun ? keyValFun(__VALUE, key, obj, oldObj) : __VALUE);
+
+    return __NEWVALUE;
+}
+
+// Standard-Selectionsfunktion fuer die neuen Keys aus Spalten der alten Werte
+// fuer die Funktion reverseMapping() (die in Array-Form vorliegen) als keysFun-Parameter.
+// index: Index der Spalte, dessen Array-Eintraege als neuer Key genutzt werden (Default: 0)
+// obj: Objekt, dessen Werte ermittelt werden (besteht aus Array-Eintraegen)
+// return Array mit alles Keys (siehe Object.values, aber nur bestimmte Spalte)
+function mappingValuesFunSelect(index = 0, obj) {
+    const __VALUES = Object.values(obj);
+
+    return __VALUES.map(valueArr => getArrValue(valueArr, index));
+}
+
+// ==================== Ende Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
 
 // *** EOF ***
 
@@ -1022,6 +1317,73 @@ function isGoalieFromHTML(cells, colIdxClass = 0) {
 }
 
 // ==================== Ende Abschnitt fuer Parameter von den OS2-Seiten ====================
+
+// ==================== Abschnitt fuer Hilfsfunktionen ====================
+
+// Liefert umschlossenen textContent und einen der einem <a>-Link uebergebenen Parameter.
+// Als Drittes wird optional der ganze Ziel-Link (das href) zurueckgegeben.
+// element: Eine <a>-Node mit href-Link
+// queryID: Name des Parameters innerhalb der URL, der die ID liefert
+// return Text, ID und href-Link
+function getLinkData(element, queryID) {
+    checkType(element && element.href, 'string', true, 'getLinkData', 'element.href', 'String');
+    checkType(queryID, 'string', false, 'getLinkData', 'queryID', 'String');
+
+    const __A = element; // <a href="https://.../...?QUERYID=ID">TEXT</a>
+    const __TEXT = __A.textContent;
+    const __HREF = __A.href;
+    const __URI = new URI(__HREF);
+    const __ID = __URI.getQueryPar(queryID);
+
+    return [ __TEXT, __ID, __HREF ];
+}
+
+// Liefert den HTML-Code fuer einen parametrisierten <img>-Link.
+// imageURL: URL des verlinkten Bildes
+// title: Tooltip des Bildes (Default: null fuer kein Tooltip)
+// altText: ALT-Parameter fuer Ausgabe ohne Bild (Default: Tooltip-Text)
+// return String mit HTML-Code des <img>-Links
+function getImgLink(imageURL, title = null, altText = title) {
+    checkType(imageURL, 'string', true, 'getImgLink', 'imageURL', 'String');
+    checkType(title, 'string', false, 'getImgLink', 'title', 'String');
+    checkType(altText, 'string', false, 'getImgLink', 'altText', 'String');
+
+    const __ALTSTR = (altText ? (' alt="' + altText + '"') : "");
+    const __IMGSTR = '<img src="' + imageURL + '"' + __ALTSTR + ' />';
+    const __RETSTR = (title ? ('<abbr title="' + title + '">' + __IMGSTR + '</abbr>') : __IMGSTR);
+
+    return __RETSTR;
+}
+
+// Liefert den HTML-Code fuer einen parametrisierten <a>-Link auf ein OS-Team.
+// teamName: Name des Teams fuer den textContent
+// osID: OS-ID des Teams
+// return String mit HTML-Code des <a>-Team-Links
+function getTeamLink(teamName, osID) {
+    checkType(teamName, 'string', true, 'getTeamLink', 'teamName', 'String');
+    checkType(osID, 'number', true, 'getTeamLink', 'osID', 'Number');
+
+    const __RETSTR = '<a href="/st.php?c=' + osID + '" onClick="teaminfo(' + osID + ');return false;">' + teamName + '</a>';
+
+    return __RETSTR;
+}
+
+// Liefert den HTML-Code fuer einen parametrisierten <a>-Link auf das Manager-PM-Fenster.
+// managerName: Name des Managers fuer den textContent
+// pmID: User-ID des Managers im PM-System von OS2
+// return String mit HTML-Code des <a>-Manager-Links, falls pmID okay, ansonsten nur Managername geklammert
+function getManagerLink(managerName, pmID) {
+    checkType(managerName, 'string', true, 'getManagerLink', 'managerName', 'String');
+    checkType(pmID, 'number', true, 'getManagerLink', 'pmID', 'Number');
+
+    const __RETSTR = (pmID > -1) ? ('<a href="/osneu/pm?action=writeNew&receiver_id=' + pmID
+                    + '" onclick="writePM(" + pmID + ");return false;" target="_blank">'
+                    + managerName + '</a>') : ('(' + managerName + ')');
+
+    return __RETSTR;
+}
+
+// ==================== Ende Abschnitt fuer Hilfsfunktionen ====================
 
 // *** EOF ***
 
