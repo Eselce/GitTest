@@ -112,7 +112,7 @@ function checkType(value, type, strict = false, label = "", valName = undefined,
     const __VAL = (valName || "Value");
     const __LABEL = (label || "Error");
 
-    if (strict || (value !== undefined)) {
+    if (strict || ((value !== undefined) && (value !== null))) {
         if ((typeof value) !== type) {
             throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
                             __LOG.info(value, true, true) + ' ' + String(value));
