@@ -323,7 +323,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                                 const [ __INTZAT, __INTEVT, __INTLNK ] = calcZATEventByCupRunde(__CUP, __RUNDE, __CURRZAT);
 
                                 incZAT(__ZAT, __INTZAT);
-                                __ZAT.gameType = __INTEVT;
+                                __ZAT.gameType = __CUP;
 
                                 const __ZATLINK = getZatLink(__ZAT, __VEREIN, true);
 
