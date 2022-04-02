@@ -359,8 +359,8 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
             return;
         }
 
-        const __ITEMS = [ 'id', 'lfd', 'landNr', 'cup', 'rundeStr', 'flagStr', 'vereinStr', 'land', 'managerStr', 'ligaStr', 'ligaNr', 'skill', 'opti' ];
-        const __HEADS = [ 'ID', '#', 'Land', 'Cup', 'Runde', 'Flagge', 'Verein', 'Land', 'Manager', 'Liga', 'Liga', 'Skill', 'Opti' ];
+        const __ITEMS = [ 'id', 'lfd', 'landNr', 'cup', 'rundeZAT', 'rundeStr', 'flagStr', 'vereinStr', 'land', 'managerStr', 'ligaStr', 'ligaNr', 'skill', 'opti' ];
+        const __HEADS = [ 'ID', '#', 'Land', 'Cup', 'ZAT', 'Runde', 'Flagge', 'Verein', 'Land', 'Manager', 'Liga', 'Liga', 'Skill', 'Opti' ];
         const __ALIGN = 'center';
         const __TABLE = document.createElement('table');
         const __TBODY = document.createElement('tbody');
