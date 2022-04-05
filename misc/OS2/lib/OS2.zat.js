@@ -14,13 +14,6 @@
 
 // ==================== Abschnitt fuer Spielplan und ZATs ====================
 
-// Beschreibungstexte aller Runden
-const __POKALRUNDEN = [ "", "1. Runde", "2. Runde", "3. Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale" ];
-const __QUALIRUNDEN = [ "", "Quali 1", "Quali 2", "Quali 3" ];
-const __OSCRUNDEN   = [ "", "Viertelfinale", "Halbfinale", "Finale" ];
-const __OSERUNDEN   = [ "", "Runde 1", "Runde 2", "Runde 3", "Runde 4", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale" ];
-const __HINRUECK    = [ " Hin", " R\u00FCck", "" ];
-
 // ==================== Abschnitt fuer Klasse RundenLink ====================
 
 /*class*/ function RundenLink /*{
@@ -112,8 +105,8 @@ Class.define(RundenLink, Object, {
 // - ZAT Rueck
 // - ZAT Korr
 function firstZAT(saison, ligaSize) {
-    return {
-        'anzZATpMonth' : ((saison < 2) ? 7 : 6),    // Erste Saison 7 ZAT, danach 6 ZAT...
+    return {             // Erste Saison 7 ZAT, danach 6 ZAT...
+        'anzZATpMonth' : ((saison < __SAISON6ZATMONAT) ? __OLDMONATZATS : __MONATZATS),
         'saison'       : saison,
         'ZAT'          : 0,
         'gameType'     : 'spielfrei',
@@ -125,7 +118,7 @@ function firstZAT(saison, ligaSize) {
         'ligaSpieltag' : 0,
         'pokalRunde'   : 1,
         'euroRunde'    : 0,
-        'hinRueck'     : 2,    // 0: Hin, 1: Rueck, 2: unbekannt
+        'hinRueck'     : __HINRUECKNULL,    // 0: Hin, 1: Rueck, 2: unbekannt
         'ZATrueck'     : 0,
         'ZATkorr'      : 0
     };
@@ -147,7 +140,7 @@ function getZAT(currZAT, longStats) {
 // saison: Enthaelt die Nummer der laufenden Saison
 // return [ 10erHin, 10erRueck, 20erHin, 20erRueck ], ZAT-Nummern der Zusatzspieltage
 function getLigaExtra(saison) {
-    if (saison < 3) {
+    if (saison < __SAISONFIRST) {
         return [ 8, 64, 32, 46 ];
     } else {
         return [ 9, 65, 33, 57 ];
@@ -182,15 +175,15 @@ function incZAT(currZAT, anzZAT = 1) {
             if (currZAT.ZAT < 63) {
                 currZAT.ZATrueck = currZAT.ZAT + 2;
                 currZAT.euroRunde++;
-                currZAT.hinRueck = 0;
+                currZAT.hinRueck = __HINRUECKHIN;
             } else {
                 currZAT.euroRunde = 11;    // Finale
-                currZAT.hinRueck = 2;
+                currZAT.hinRueck = __HINRUECKNULL;
             }
         }
         if (currZAT.ZAT === currZAT.ZATrueck) {
-            currZAT.hinRueck = 1;        // 5, 7; 11, 13;  (17, 19)  / 23,   25; 29, 31; 35,  37; 41,  43; 47, 49; 53,  55; 59,  61; 69
-            if (currZAT.saison < 3) {    // 4, 6; 10, 14*; (16, 22*) / 24**, 26; 34, 36; 38*, 42; 44*, 50; 52, 54; 56*, 60; 62*, 66; 70
+            currZAT.hinRueck = __HINRUECKRUECK;     // 5, 7; 11, 13;  (17, 19)  / 23,   25; 29, 31; 35,  37; 41,  43; 47, 49; 53,  55; 59,  61; 69
+            if (currZAT.saison < __SAISONFIRST) {   // 4, 6; 10, 14*; (16, 22*) / 24**, 26; 34, 36; 38*, 42; 44*, 50; 52, 54; 56*, 60; 62*, 66; 70
                 if (currZAT.ZAT === 22) {
                     currZAT.ZATkorr = 4;
                 } else if ((currZAT.ZAT - 6) % 20 > 6) {

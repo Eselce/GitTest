@@ -41,7 +41,7 @@
 Class.define(WarnDrawPlayer, Object, {
         '__MONATEBISABR'    : 1,
         '__ZATWARNVORLAUF'  : 1,
-        '__ZATMONATVORLAUF' : 6,
+        '__ZATMONATVORLAUF' : __MONATZATS,
         'setZatLeft'        : function(zatLeft) {
                                   this.zatLeft = zatLeft;
                               },
@@ -57,7 +57,7 @@ Class.define(WarnDrawPlayer, Object, {
                               },
         'calcZiehIndex'     : function(currZAT) {
                                   const __RESTZAT = this.zatLeft + currZAT;
-                                  const __INDEX = parseInt(__RESTZAT / 6 + 1) - this.__MONATEBISABR;  // Lfd. Nummer des Abrechnungsmonats (0-basiert)
+                                  const __INDEX = parseInt(__RESTZAT / __MONATZATS + 1) - this.__MONATEBISABR;  // Lfd. Nummer des Abrechnungsmonats (0-basiert)
 
                                   return __INDEX;
                               },
@@ -118,7 +118,7 @@ const __NOWARNDRAW = new WarnDrawPlayer(undefined, undefined);  // inaktives Obj
 
 Class.define(WarnDrawMessage, Object, {
         '__ZATWARNVORLAUF'  : 1,
-        '__ZATMONATVORLAUF' : 6,
+        '__ZATMONATVORLAUF' : __MONATZATS,
         'startMessage'      : function(currZAT) {
                                   this.setZat(currZAT);
                                   this.createMessage();
@@ -142,10 +142,10 @@ Class.define(WarnDrawMessage, Object, {
                               },
         'configureZat'      : function() {
                                   const __ZIEHANZAHL = this.optSet.getOptValue('ziehAnz', []);
-                                  const __INDEX = parseInt(this.currZAT / 6);
+                                  const __INDEX = parseInt(this.currZAT / __MONATZATS);
 
-                                  this.abrZAT = (__INDEX + 1) * 6;
-                                  this.rest   = 5 - (this.currZAT % 6);
+                                  this.abrZAT = (__INDEX + 1) * __MONATZATS;
+                                  this.rest   = (__MONATZATS - 1) - (this.currZAT % __MONATZATS);
                                   this.anzahl = __ZIEHANZAHL[__INDEX];
                               },
         'getTextMessage'    : function() {
@@ -291,10 +291,10 @@ Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
 Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
         'configureZat'      : function() {
                                   const __ZIEHANZAUFSTIEG = this.optSet.getOptValue('ziehAnzAufstieg', 0);
-                                  const __INDEX = parseInt(this.currZAT / 6);
+                                  const __INDEX = parseInt(this.currZAT / __MONATZATS);
 
-                                  this.abrZAT = (__INDEX + 1) * 6;
-                                  this.rest   = 5 - (this.currZAT % 6);
+                                  this.abrZAT = (__INDEX + 1) * __MONATZATS;
+                                  this.rest   = (__MONATZATS - 1) - (this.currZAT % __MONATZATS);
                                   this.anzahl = ((this.currZAT + this.__ZATMONATVORLAUF > __SAISONZATS - this.__ZATWARNVORLAUF) ? __ZIEHANZAUFSTIEG : 0);
 
                                   this.warnDialog = false;     // kein Dialog fuer Aufstiegswarnung

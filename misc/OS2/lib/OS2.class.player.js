@@ -239,7 +239,7 @@ Class.define(PlayerRecord, Object, {
                                   },
         'calcZiehIndex'         : function() {
                                       //const __RESTZAT = this.getZatAge(this.__TIME.end) - this.getZatAge() + this.currZAT;
-                                      //const __INDEX = parseInt(__RESTZAT / 6 + 1) - 1;  // Lfd. Nummer des Abrechnungsmonats (0-basiert)
+                                      //const __INDEX = parseInt(__RESTZAT / __MONATZATS + 1) - 1;  // Lfd. Nummer des Abrechnungsmonats (0-basiert)
 
                                       return (this.warnDraw && this.warnDraw.calcZiehIndex(this.currZAT));
                                   },
@@ -389,7 +389,7 @@ Class.define(PlayerRecord, Object, {
                                   },
         'getFingerPrint'        : function() {
                                       // Jeweils gleichbreite Werte: (Alter/Geb.=>Monat), Land, Talent ('-', '=', '+')...
-                                      const __BASEPART = padNumber(this.birth / 6, 3) + padLeft(this.land, -3);
+                                      const __BASEPART = padNumber(this.birth / __MONATZATS, 3) + padLeft(this.land, -3);
                                       const __TALENT = '-=+'[this.talent + 1];
 
                                       if (this.skills === undefined) {

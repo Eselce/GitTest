@@ -16,7 +16,14 @@
 
 // ==================== Abschnitt fuer konstante Parameter bei OS2 ====================
 
-const __SAISONZATS = 72;    // Anzahl der ZATs pro Saison, wir ignorieren mal die 1. Saison...
+const __SAISONZATS      = 72;   // Anzahl der ZATs pro Saison, ab Saison 3
+const __MONATZATS       =  6;   // Anzahl der ZATs pro Abrechnungs-Monat, ab Saison 2
+const __SAISONFIRST     =  3;   // Erste Saison mit diesen Parametern, ab Saison 3
+const __SAISON6ZATMONAT =  2;   // Erste Saison mit 6 ZATs pro Monat, ab Saison 2
+
+const __OLDSAISONZATS   = 70;   // Anzahl der ZATs pro Saison, nur in der 1. und 2. Saison
+const __OLDMONATZATS    =  7;   // Anzahl der ZATs pro Abrechnungs-Monat, nur in der 1. Saison
+const __OLDSAISONFIRST  =  1;   // Erste Saison mit diesen Parametern, ab Saison 1
 
 // ==================== Ende Abschnitt fuer konstante Parameter bei OS2 ====================
 
@@ -112,7 +119,7 @@ const __TRFACTORS = [ 1.00, 1.10, 1.25, 1.35 ];  // Tribuene, Bank, teilweise, d
 
 // Gibt das Gehalt eines Trainers zurueck
 // tSkill: Trainer-Skill (60, 62.5, ..., 97.5, 99.5)
-// tZATs: Trainer-Vertragslänge (6, 12, ..., 90, 96)
+// tZATs: Trainer-Vertragslaenge (6, 12, ..., 90, 96)
 // return Trainer-Gehalt eines Trainers von bestimmtem Skill
 function calcTGehalt(tSkill = 99.5, tZATs = 96) {
     const __OLDTSKILL = parseInt((2 * tSkill - 100.5).toFixed(0), 10);
