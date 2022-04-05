@@ -452,6 +452,201 @@ function getValStr(obj, keyStrings, showType, showLen, stepIn) {
 
 // ==================== Ende Abschnitt fuer detaillierte Ausgabe von Daten ====================
 
+// ==================== Abschnitt Hilfsfunktionen fuer Array-Mapping ====================
+
+// Hilfsfunktion, die Array.from() auch fuer Objekte ermoeglicht, die nicht 'array-like' sind.
+// Empfehlenswert ist allerdings, dass die Schluessel positive Integer sind.
+// obj: Objekt mit key => value
+// mapFun (optional): Callback-Funktion, die waehrend der Konvertierung angewandt wird (siehe Array.from())
+// - element: Zu mappender Wert
+// - index: Index-Position im Array
+// - array: Das gesamte Array
+// thisArg (optional): Ggfs. zu nutzendes alternatives this fuer den Callback-Aufruf
+// return Neues Array mit demselben Mapping wie das Original-Objekt
+function Arrayfrom(obj, mapFun, thisArg) {
+    if (! obj) {
+        return obj;
+    }
+
+    checkType(obj, 'object', true, 'Arrayfrom', 'obj', 'Object');
+    checkType(mapFun, 'function', false, 'Arrayfrom', 'mapFun', 'Function');
+
+    const __RET = [];
+
+    Object.entries(obj).forEach(([key, value]) => {
+            const __VALUE = (mapFun ? mapFun.call(thisArg, value) : value);
+
+            __RET[key] = __VALUE;
+        });
+
+    return __RET;
+}
+
+// Kehrt das Mapping eines Objekts um und liefert ein neues Array zurueck.
+// obj: Objekt mit key => value
+// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// - newValue: Neuer Wert (zu konvertierender alter Schluessel)
+// - newKey: Neuer Schluessel (konvertierter alter Wert)
+// - newObj: Neues Array (im Aufbau, alles konvertiert)
+// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
+// - return Konvertierter neuer Wert
+// valuesFun: Funktion zur Ermittlung der neuen Schluessel aus alten Werten (Default: Object.values)
+// - obj: Objekt, das an reverseMapping uebergeben wurde
+// - return Liste aller alten Werte als Array, aus denen sich die neuen Schluessel ergeben
+// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus den alten Werten
+// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
+// - key: Alter Schluessel (unveraendert, wird spaeter zum neuen Wert konvertiert)
+// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
+// - return Konvertierter neuer Schluessel
+// return Neues Objekt mit value => key (doppelte value-Werte fallen heraus!)
+// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
+// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
+function reverseArray(obj, keyValFun, valuesFun, valKeyFun) {
+    return Arrayfrom(reverseMapping(obj, keyValFun, valuesFun, valKeyFun));
+}
+
+// ==================== Ende Abschnitt Hilfsfunktionen fuer Array-Mapping ====================
+
+// ==================== Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
+
+// Kehrt das Mapping eines Objekts um und liefert ein neues Objekt zurueck.
+// obj: Objekt mit key => value
+// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// - newValue: Neuer Wert (zu konvertierender alter Schluessel)
+// - newKey: Neuer Schluessel (konvertierter alter Wert)
+// - newObj: Neues Objekt (im Aufbau, alles konvertiert)
+// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
+// - return Konvertierter neuer Wert
+// valuesFun: Funktion zur Ermittlung der neuen Schluessel aus alten Werten (Default: Object.values)
+// - obj: Objekt, das an reverseMapping uebergeben wurde
+// - return Liste aller alten Werte als Array, aus denen sich die neuen Schluessel ergeben
+// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus den alten Werten
+// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
+// - key: Alter Schluessel (unveraendert, wird spaeter zum neuen Wert konvertiert)
+// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
+// - return Konvertierter neuer Schluessel
+// return Neues Objekt mit value => key (doppelte value-Werte fallen heraus!)
+// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
+// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
+function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
+    if (! obj) {
+        return obj;
+    }
+
+    try {
+        checkType(obj, 'object', true, 'reverseMapping', 'obj', 'Object');
+        checkType(keyValFun, 'function', false, 'reverseMapping', 'keyValFun', 'Function');
+        checkType(valuesFun, 'function', false, 'reverseMapping', 'valuesFun', 'Function');
+        checkType(valKeyFun, 'function', false, 'reverseMapping', 'valKeyFun', 'Function');
+
+        const __KEYSFUN = Object.keys;
+        const __VALUESFUN = (valuesFun || Object.values);
+        const __OLDKEYS = getValue(__KEYSFUN(obj), []);
+        const __OLDVALUES = getValue(__VALUESFUN(obj), []);
+        const __RET = { };
+
+        __OLDKEYS.forEach((key, index) => {
+                const __VALUE = __OLDVALUES[index];
+                const __NEWKEYS = (valKeyFun ? valKeyFun(__VALUE, index, __OLDVALUES) : __VALUE);
+                const __NEWVALUE = (keyValFun ? keyValFun(key, __NEWKEYS, __RET, obj) : key);
+
+                if (Array.isArray(__NEWKEYS)) {
+                    __NEWKEYS.forEach(key => (__RET[key] = __NEWVALUE));
+                } else {
+                    __RET[__NEWKEYS] = __NEWVALUE;
+                }
+            });
+
+        return __RET;
+    } catch (ex) {
+        showException('[' + (ex && ex.lineNumber) + "] reverseMapping()", ex);
+    }
+}
+
+// Erzeugt ein Mapping innerhalb der Werte eines Objekts ueber Spaltenindizes.
+// obj: Objekt mit key => value
+// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// - newValue: Neuer Wert (zu konvertieren)
+// - newKey: Neuer Schluessel (konvertiert)
+// - newObj: Neues Objekt (im Aufbau, alles konvertiert)
+// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
+// - return Konvertierter neuer Wert
+// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus der Schluesselspalte
+// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
+// - key: Alter Schluessel (unveraendert)
+// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
+// - return Konvertierter neuer Schluessel
+// return Neues Objekt mit value[keyIndex] => value[valueIndex]
+//        (doppelte value-Werte fallen heraus!)
+// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
+// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
+function selectMapping(obj, keyIndex, valueIndex, keyValFun, valKeyFun) {
+    checkType(obj, 'object', true, 'selectMapping', 'obj', 'Object');
+    checkType(keyIndex, 'number', true, 'selectMapping', 'keyIndex', 'Number');
+    checkType(valueIndex, 'number', true, 'selectMapping', 'valueIndex', 'Number');
+    checkType(keyValFun, 'function', false, 'selectMapping', 'keyValFun', 'Function');
+    checkType(valKeyFun, 'function', false, 'selectMapping', 'valKeyFun', 'Function');
+
+    const __KEYVALFUN = mappingValueSelect.bind(this, valueIndex, keyValFun);
+    const __VALUESFUN = mappingValuesFunSelect.bind(this, keyIndex);
+    const __VALKEYFUN = valKeyFun;
+
+    return reverseMapping(obj, __KEYVALFUN, __VALUESFUN, __VALKEYFUN);
+}
+
+// Standard-Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// fuer die Funktion reverseMapping() (legt Array mit allen Schluesseln an).
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+// return Konvertierter neuer Wert (in Form eines Arrays)
+function mappingPush(value, key, obj) {
+    return pushObjValue(obj, key, value, null, true, false);
+}
+
+// Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln fuer die Funktion
+// reverseMapping() (legt Array mit allen Schluesseln an, falls dieser eindeutig ist).
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+// return Konvertierter neuer Wert (in Form eines Arrays, falls mehr als einmal vorkommend)
+function mappingSetOrPush(value, key, obj) {
+    return pushObjValue(obj, key, value, null, true, true);
+}
+
+// Konvertierfunktion fuer die neuen Werte aus einer Spalte der alten Werte
+// fuer die Funktion reverseMapping() als Parameter keyValFun (index und keyValFun
+// sollten dafuer mit bind() herausgefiltert werden: bind(this, index, keyValFun)).
+// Das Ergebnis, also ein Wert der indizierten Spalte, wird ggfs. noch nachbearbeitet.
+// index: Index der Spalte, dessen Array-Eintraege als neuer Wert genutzt werden (Default: 0)
+// keyValFun: Funktion, mit der der ermittelte Wert nachbearbeitet wird (Default: null)
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+// oldObj: Altes Objekt, aus derem alten Wert selektiert wird (key ist value, der alte Schluessel)
+// return Selektierter neuer Wert (aus einer Spalte des alten Wertes)
+function mappingValueSelect(index = 0, keyValFun = null, value, key, obj, oldObj) {
+    const __VALUE = getArrValue(oldObj[value], index);
+    const __NEWVALUE = (keyValFun ? keyValFun(__VALUE, key, obj, oldObj) : __VALUE);
+
+    return __NEWVALUE;
+}
+
+// Standard-Selectionsfunktion fuer die neuen Keys aus Spalten der alten Werte
+// fuer die Funktion reverseMapping() (die in Array-Form vorliegen) als keysFun-Parameter.
+// index: Index der Spalte, dessen Array-Eintraege als neuer Key genutzt werden (Default: 0)
+// obj: Objekt, dessen Werte ermittelt werden (besteht aus Array-Eintraegen)
+// return Array mit alles Keys (siehe Object.values, aber nur bestimmte Spalte)
+function mappingValuesFunSelect(index = 0, obj) {
+    const __VALUES = Object.values(obj);
+
+    return __VALUES.map(valueArr => getArrValue(valueArr, index));
+}
+
+// ==================== Ende Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
+
 // ==================== Ende Abschnitt fuer diverse Utilities fuer Object, Array, etc. ====================
 
 // *** EOF ***
@@ -2425,12 +2620,21 @@ function removeDocEvent(id, type, callback, capture = false) {
 }
 
 // Pendant zur Javascript-Funktion Node.insertBefore(). Nur wird ueber das
-// Eltern-Element vor (statt hinter) dem uebergebenen anchor eingefuegt.
+// Eltern-Element hinter (statt vor) dem uebergebenen anchor eingefuegt.
 // element: Neu hinzuzufuegenes HTML-Element (direkt hinter dem anchor)
 // anchor: Element, hinter dem das Element unter demselben parent eingefuegt werden soll
 // return Ueblicherweise das hinzugefuegte Element (Ausnahme: Siehe Node.insertBefore())
 function insertAfter(element, anchor) {
     return anchor.parentNode.insertBefore(element, anchor.nextSibling);
+}
+
+// Gegenstueck zu insertAfter(). Wie die Javascript-Funktion Node.insertBefore().
+// Nur wird ueber das Eltern-Element vor dem uebergebenen anchor eingefuegt.
+// element: Neu hinzuzufuegenes HTML-Element (direkt hinter dem anchor)
+// anchor: Element, vor dem das Element unter demselben parent eingefuegt werden soll
+// return Ueblicherweise das hinzugefuegte Element (Ausnahme: Siehe Node.insertBefore())
+function insertBefore(element, anchor) {
+    return anchor.parentNode.insertBefore(element, anchor);
 }
 
 // Hilfsfunktion fuer die Ermittlung aller Elements desselben Typs auf der Seite ueber CSS Selector (Default: Tabelle)

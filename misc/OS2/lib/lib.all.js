@@ -19,6 +19,7 @@
 //  util.class.delim.js
 //  util.class.path.js
 //  util.class.uri.js
+//  util.class.report.js
 //  util.option.type.js
 //  util.option.data.js
 //  util.option.class.options.js
@@ -479,6 +480,201 @@ function getValStr(obj, keyStrings, showType, showLen, stepIn) {
 }
 
 // ==================== Ende Abschnitt fuer detaillierte Ausgabe von Daten ====================
+
+// ==================== Abschnitt Hilfsfunktionen fuer Array-Mapping ====================
+
+// Hilfsfunktion, die Array.from() auch fuer Objekte ermoeglicht, die nicht 'array-like' sind.
+// Empfehlenswert ist allerdings, dass die Schluessel positive Integer sind.
+// obj: Objekt mit key => value
+// mapFun (optional): Callback-Funktion, die waehrend der Konvertierung angewandt wird (siehe Array.from())
+// - element: Zu mappender Wert
+// - index: Index-Position im Array
+// - array: Das gesamte Array
+// thisArg (optional): Ggfs. zu nutzendes alternatives this fuer den Callback-Aufruf
+// return Neues Array mit demselben Mapping wie das Original-Objekt
+function Arrayfrom(obj, mapFun, thisArg) {
+    if (! obj) {
+        return obj;
+    }
+
+    checkType(obj, 'object', true, 'Arrayfrom', 'obj', 'Object');
+    checkType(mapFun, 'function', false, 'Arrayfrom', 'mapFun', 'Function');
+
+    const __RET = [];
+
+    Object.entries(obj).forEach(([key, value]) => {
+            const __VALUE = (mapFun ? mapFun.call(thisArg, value) : value);
+
+            __RET[key] = __VALUE;
+        });
+
+    return __RET;
+}
+
+// Kehrt das Mapping eines Objekts um und liefert ein neues Array zurueck.
+// obj: Objekt mit key => value
+// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// - newValue: Neuer Wert (zu konvertierender alter Schluessel)
+// - newKey: Neuer Schluessel (konvertierter alter Wert)
+// - newObj: Neues Array (im Aufbau, alles konvertiert)
+// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
+// - return Konvertierter neuer Wert
+// valuesFun: Funktion zur Ermittlung der neuen Schluessel aus alten Werten (Default: Object.values)
+// - obj: Objekt, das an reverseMapping uebergeben wurde
+// - return Liste aller alten Werte als Array, aus denen sich die neuen Schluessel ergeben
+// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus den alten Werten
+// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
+// - key: Alter Schluessel (unveraendert, wird spaeter zum neuen Wert konvertiert)
+// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
+// - return Konvertierter neuer Schluessel
+// return Neues Objekt mit value => key (doppelte value-Werte fallen heraus!)
+// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
+// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
+function reverseArray(obj, keyValFun, valuesFun, valKeyFun) {
+    return Arrayfrom(reverseMapping(obj, keyValFun, valuesFun, valKeyFun));
+}
+
+// ==================== Ende Abschnitt Hilfsfunktionen fuer Array-Mapping ====================
+
+// ==================== Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
+
+// Kehrt das Mapping eines Objekts um und liefert ein neues Objekt zurueck.
+// obj: Objekt mit key => value
+// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// - newValue: Neuer Wert (zu konvertierender alter Schluessel)
+// - newKey: Neuer Schluessel (konvertierter alter Wert)
+// - newObj: Neues Objekt (im Aufbau, alles konvertiert)
+// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
+// - return Konvertierter neuer Wert
+// valuesFun: Funktion zur Ermittlung der neuen Schluessel aus alten Werten (Default: Object.values)
+// - obj: Objekt, das an reverseMapping uebergeben wurde
+// - return Liste aller alten Werte als Array, aus denen sich die neuen Schluessel ergeben
+// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus den alten Werten
+// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
+// - key: Alter Schluessel (unveraendert, wird spaeter zum neuen Wert konvertiert)
+// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
+// - return Konvertierter neuer Schluessel
+// return Neues Objekt mit value => key (doppelte value-Werte fallen heraus!)
+// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
+// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
+function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
+    if (! obj) {
+        return obj;
+    }
+
+    try {
+        checkType(obj, 'object', true, 'reverseMapping', 'obj', 'Object');
+        checkType(keyValFun, 'function', false, 'reverseMapping', 'keyValFun', 'Function');
+        checkType(valuesFun, 'function', false, 'reverseMapping', 'valuesFun', 'Function');
+        checkType(valKeyFun, 'function', false, 'reverseMapping', 'valKeyFun', 'Function');
+
+        const __KEYSFUN = Object.keys;
+        const __VALUESFUN = (valuesFun || Object.values);
+        const __OLDKEYS = getValue(__KEYSFUN(obj), []);
+        const __OLDVALUES = getValue(__VALUESFUN(obj), []);
+        const __RET = { };
+
+        __OLDKEYS.forEach((key, index) => {
+                const __VALUE = __OLDVALUES[index];
+                const __NEWKEYS = (valKeyFun ? valKeyFun(__VALUE, index, __OLDVALUES) : __VALUE);
+                const __NEWVALUE = (keyValFun ? keyValFun(key, __NEWKEYS, __RET, obj) : key);
+
+                if (Array.isArray(__NEWKEYS)) {
+                    __NEWKEYS.forEach(key => (__RET[key] = __NEWVALUE));
+                } else {
+                    __RET[__NEWKEYS] = __NEWVALUE;
+                }
+            });
+
+        return __RET;
+    } catch (ex) {
+        showException('[' + (ex && ex.lineNumber) + "] reverseMapping()", ex);
+    }
+}
+
+// Erzeugt ein Mapping innerhalb der Werte eines Objekts ueber Spaltenindizes.
+// obj: Objekt mit key => value
+// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// - newValue: Neuer Wert (zu konvertieren)
+// - newKey: Neuer Schluessel (konvertiert)
+// - newObj: Neues Objekt (im Aufbau, alles konvertiert)
+// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
+// - return Konvertierter neuer Wert
+// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus der Schluesselspalte
+// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
+// - key: Alter Schluessel (unveraendert)
+// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
+// - return Konvertierter neuer Schluessel
+// return Neues Objekt mit value[keyIndex] => value[valueIndex]
+//        (doppelte value-Werte fallen heraus!)
+// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
+// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
+function selectMapping(obj, keyIndex, valueIndex, keyValFun, valKeyFun) {
+    checkType(obj, 'object', true, 'selectMapping', 'obj', 'Object');
+    checkType(keyIndex, 'number', true, 'selectMapping', 'keyIndex', 'Number');
+    checkType(valueIndex, 'number', true, 'selectMapping', 'valueIndex', 'Number');
+    checkType(keyValFun, 'function', false, 'selectMapping', 'keyValFun', 'Function');
+    checkType(valKeyFun, 'function', false, 'selectMapping', 'valKeyFun', 'Function');
+
+    const __KEYVALFUN = mappingValueSelect.bind(this, valueIndex, keyValFun);
+    const __VALUESFUN = mappingValuesFunSelect.bind(this, keyIndex);
+    const __VALKEYFUN = valKeyFun;
+
+    return reverseMapping(obj, __KEYVALFUN, __VALUESFUN, __VALKEYFUN);
+}
+
+// Standard-Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// fuer die Funktion reverseMapping() (legt Array mit allen Schluesseln an).
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+// return Konvertierter neuer Wert (in Form eines Arrays)
+function mappingPush(value, key, obj) {
+    return pushObjValue(obj, key, value, null, true, false);
+}
+
+// Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln fuer die Funktion
+// reverseMapping() (legt Array mit allen Schluesseln an, falls dieser eindeutig ist).
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+// return Konvertierter neuer Wert (in Form eines Arrays, falls mehr als einmal vorkommend)
+function mappingSetOrPush(value, key, obj) {
+    return pushObjValue(obj, key, value, null, true, true);
+}
+
+// Konvertierfunktion fuer die neuen Werte aus einer Spalte der alten Werte
+// fuer die Funktion reverseMapping() als Parameter keyValFun (index und keyValFun
+// sollten dafuer mit bind() herausgefiltert werden: bind(this, index, keyValFun)).
+// Das Ergebnis, also ein Wert der indizierten Spalte, wird ggfs. noch nachbearbeitet.
+// index: Index der Spalte, dessen Array-Eintraege als neuer Wert genutzt werden (Default: 0)
+// keyValFun: Funktion, mit der der ermittelte Wert nachbearbeitet wird (Default: null)
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+// oldObj: Altes Objekt, aus derem alten Wert selektiert wird (key ist value, der alte Schluessel)
+// return Selektierter neuer Wert (aus einer Spalte des alten Wertes)
+function mappingValueSelect(index = 0, keyValFun = null, value, key, obj, oldObj) {
+    const __VALUE = getArrValue(oldObj[value], index);
+    const __NEWVALUE = (keyValFun ? keyValFun(__VALUE, key, obj, oldObj) : __VALUE);
+
+    return __NEWVALUE;
+}
+
+// Standard-Selectionsfunktion fuer die neuen Keys aus Spalten der alten Werte
+// fuer die Funktion reverseMapping() (die in Array-Form vorliegen) als keysFun-Parameter.
+// index: Index der Spalte, dessen Array-Eintraege als neuer Key genutzt werden (Default: 0)
+// obj: Objekt, dessen Werte ermittelt werden (besteht aus Array-Eintraegen)
+// return Array mit alles Keys (siehe Object.values, aber nur bestimmte Spalte)
+function mappingValuesFunSelect(index = 0, obj) {
+    const __VALUES = Object.values(obj);
+
+    return __VALUES.map(valueArr => getArrValue(valueArr, index));
+}
+
+// ==================== Ende Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
 
 // ==================== Ende Abschnitt fuer diverse Utilities fuer Object, Array, etc. ====================
 
@@ -2453,12 +2649,21 @@ function removeDocEvent(id, type, callback, capture = false) {
 }
 
 // Pendant zur Javascript-Funktion Node.insertBefore(). Nur wird ueber das
-// Eltern-Element vor (statt hinter) dem uebergebenen anchor eingefuegt.
+// Eltern-Element hinter (statt vor) dem uebergebenen anchor eingefuegt.
 // element: Neu hinzuzufuegenes HTML-Element (direkt hinter dem anchor)
 // anchor: Element, hinter dem das Element unter demselben parent eingefuegt werden soll
 // return Ueblicherweise das hinzugefuegte Element (Ausnahme: Siehe Node.insertBefore())
 function insertAfter(element, anchor) {
     return anchor.parentNode.insertBefore(element, anchor.nextSibling);
+}
+
+// Gegenstueck zu insertAfter(). Wie die Javascript-Funktion Node.insertBefore().
+// Nur wird ueber das Eltern-Element vor dem uebergebenen anchor eingefuegt.
+// element: Neu hinzuzufuegenes HTML-Element (direkt hinter dem anchor)
+// anchor: Element, vor dem das Element unter demselben parent eingefuegt werden soll
+// return Ueblicherweise das hinzugefuegte Element (Ausnahme: Siehe Node.insertBefore())
+function insertBefore(element, anchor) {
+    return anchor.parentNode.insertBefore(element, anchor);
 }
 
 // Hilfsfunktion fuer die Ermittlung aller Elements desselben Typs auf der Seite ueber CSS Selector (Default: Tabelle)
@@ -3697,6 +3902,331 @@ Class.define(URI, Path, {
 // *** EOF ***
 
 /*** Ende Modul util.class.uri.js ***/
+
+/*** Modul util.class.report.js ***/
+
+// ==UserScript==
+// _name         util.class.report
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2022+
+// _author       Sven Loges (SLC)
+// _description  JS-lib mit Berichts-Klassen-Objekten fuer Auswertungen
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.class.report.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Klasse Report ====================
+
+// Basisklasse zum Konfigurieren eines Reports fuer Ereignisse
+
+/*class*/ function Report /*{
+    constructor*/(label) {
+        'use strict';
+
+        this.label = label;         // Name des Reports in der Ausgabe
+        this.success = false;       // Angabe, ob etwas zu berichten ist
+        this.entries = [];          // Liste der Eintraege, die in den Report eingehen
+        this.entryFormatter = null; // Formatierfunktion fuer ein entry
+    }
+//}
+
+Class.define(Report, Object, {
+        'setFormatter'    : function(formatFun) {
+                                checkType(formatFun, 'function', true, 'Report.setFormatter', 'formatFun', 'Function');
+
+                                this.entryFormatter = formatFun;
+                            },
+        'handleEntry'     : function(entry) {
+                                if (this.testEntry(entry)) {
+                                    this.success = true;
+                                    this.entries.push(entry);
+                                }
+                                return this.success;
+                            },
+        'testEntry'       : function(entry) {
+                                return getValue(entry, false, true);
+                            },
+        'formatEntry'     : function(entry) {
+                                return (this.entryFormatter ? this.entryFormatter(entry) : valueOf(entry));
+                            },
+        'formatEntries'   : function() {
+                                return this.entries.map(entry => this.formatEntry(entry)).join(", ");
+                            },
+        'formatLabel'     : function(entryStr) {
+                                const __LABEL = this.getLabel();
+
+                                return getValue(entryStr, __LABEL, __LABEL + " (" + entryStr + ')');
+                            },
+        'getLabel'        : function() {
+                                return this.getLabelPrefix() + getValue(this.label, "", this.label) + this.getLabelPostfix();
+                            },
+        'getLabelPrefix'  : function() {
+                                const __ANZ = this.entries.length;
+
+                                return ((__ANZ > 1) ? this.entries.length + "x " : "");
+                            },
+        'getLabelPostfix' : function() {
+                                return "";
+                            },
+        'getReport'       : function() {
+                                return (this.success ? this.formatLabel(this.formatEntries(this.entries)) : "");
+                            },
+        'toString'        : function() {
+                                return this.getReport();
+                            }
+    });
+
+// ==================== Ende Abschnitt fuer Klasse Report ====================
+
+// ==================== Abschnitt fuer Klasse ReportEval ====================
+
+// Basisklasse zum Konfigurieren eines Reports eines gefilterten Kriteriums fuer Ereignisse
+
+/*class*/ function ReportEval /*extends Report {
+    constructor*/(label, evalFun, filterFun, formatValFun) {
+        'use strict';
+
+        checkType(evalFun, 'function', false, 'ReportEval', 'evalFun', 'Function');
+        checkType(filterFun, 'function', false, 'ReportEval', 'filterFun', 'Function');
+        checkType(formatValFun, 'function', false, 'ReportEval', 'formatValFun', 'Function');
+
+        Report.call(this, label);
+
+        this.evalFun = evalFun;  // Funktion zur Ermittlung des Kriteriums
+        this.filterFun = filterFun;
+        this.formatValFun = formatValFun;
+    }
+//}
+
+Class.define(ReportEval, Report, {
+        'testEntry'       : function(entry) {
+                                return this.filterTest(entry, (this.evalFun ? this.evalFun(entry) : true));
+                            },
+        'getLabelPostfix' : function() {
+                                const __FORMATFUN = getValue(this.formatValFun, sameValue);
+                                const __VAL = this.getVal();
+
+                                return (__VAL ? (": " + __FORMATFUN(__VAL)) : "");
+                            },
+        'getVal'          : function() {
+                                return 'OK';
+                            },
+        'filterTest'      : function(entry, test) {
+                                const __FILTER = this.filterEvals(entry, test);
+
+                                if (__FILTER) {
+                                    return this.evalTest(entry, test);
+                                }
+
+                                return __FILTER;
+                            },
+        'filterEvals'     : function(entry, test) {
+                                return (this.filterFun ? this.filterFun(entry, test) : test);
+                            },
+        'evalTest'        : function(entry, test) {
+                                UNUSED(entry);
+
+                                return test;
+                            }
+    });
+
+// ==================== Ende Abschnitt fuer Klasse ReportEval ====================
+
+// ==================== Abschnitt fuer Klasse ReportExists ====================
+
+// Klasse zum Konfigurieren eines Reports eines gefilterten Kriteriums fuer Ereignisse
+
+/*class*/ function ReportExists /*extends ReportEval {
+    constructor*/(label, evalFun, filterFun, formatValFun) {
+        'use strict';
+
+        ReportEval.call(this, label, evalFun, filterFun, formatValFun);
+    }
+//}
+
+Class.define(ReportExists, ReportEval, {
+        'getVal'          : function() {
+                                return null;
+                            },
+        'evalTest'        : function(entry, test) {
+                                UNUSED(entry);
+
+                                return test;
+                            }
+    });
+
+// ==================== Ende Abschnitt fuer Klasse ReportExists ====================
+
+// ==================== Abschnitt fuer Klasse ReportSum ====================
+
+// Klasse zum Konfigurieren eines Reports zur gefilterten Summenbildung eines Kriteriums fuer Ereignisse
+
+/*class*/ function ReportSum /*extends ReportEval {
+    constructor*/(label, evalFun, filterFun, formatValFun, sumFun) {
+        'use strict';
+
+        checkType(sumFun, 'function', false, 'ReportSum', 'sumFun', 'Function');
+
+        ReportEval.call(this, label, evalFun, filterFun, formatValFun);
+
+        this.sumFun = sumFun;
+        this.sumVal = undefined;
+    }
+//}
+
+Class.define(ReportSum, ReportEval, {
+        'formatEntries'   : function() {  // Gruppenbefehle wie "Sum" liefern generell eh alle Elemente!
+                                return null;
+                            },
+        'getLabelPrefix'  : function() {
+                                return "";
+                            },
+        'getVal'          : function() {
+                                return this.sumVal;
+                            },
+        'evalTest'        : function(entry, test) {
+                                UNUSED(entry);
+
+                                const __SUMVAL = this.sumEvals(test, this.sumVal);
+
+                                this.sumVal = __SUMVAL;
+
+                                return true;
+                            },
+        'sumEvals'        : function(thisVal, sumVal) {
+                                return (this.sumFun ? this.sumFun(thisVal, sumVal) : (getValue(sumVal, 0) + thisVal));
+                            }
+    });
+
+// ==================== Ende Abschnitt fuer Klasse ReportSum ====================
+
+// ==================== Abschnitt fuer Klasse ReportCount ====================
+
+// Klasse zum Konfigurieren eines Reports zur Zaehlung gefilterter Kriterien fuer Ereignisse
+
+/*class*/ function ReportCount /*extends ReportSum {
+    constructor*/(label, evalFun, filterFun, formatValFun) {
+        'use strict';
+
+        ReportSum.call(this, label, evalFun, filterFun, formatValFun, ((thisVal, sumVal) => (getValue(sumVal, 0) + getValue(thisVal, 0, 1))));
+    }
+//}
+
+Class.define(ReportCount, ReportSum);
+
+// ==================== Ende Abschnitt fuer Klasse ReportCount ====================
+
+// ==================== Abschnitt fuer Klasse ReportAverage ====================
+
+// Klasse zum Konfigurieren eines Reports zur Zaehlung gefilterter Kriterien fuer Ereignisse
+
+/*class*/ function ReportAverage /*extends ReportSum {
+    constructor*/(label, evalFun, filterFun, formatValFun, sumFun) {
+        'use strict';
+
+        ReportSum.call(this, label, evalFun, filterFun, formatValFun, sumFun);
+    }
+//}
+
+Class.define(ReportAverage, ReportSum, {
+        'getVal'          : function() {
+                                const __ANZ = this.entries.length;
+
+                                return (this.sumVal / __ANZ).toFixed(2);
+                            }
+    });
+
+// ==================== Ende Abschnitt fuer Klasse ReportAverage ====================
+
+// ==================== Abschnitt fuer Klasse ReportCompare ====================
+
+// Basisklasse zum Konfigurieren eines Reports eines Kriterium-Vergleichs fuer Ereignisse
+
+/*class*/ function ReportCompare /*extends ReportEval {
+    constructor*/(label, evalFun, compareFun, filterFun, formatValFun) {
+        'use strict';
+
+        checkType(compareFun, 'function', false, 'ReportCompare', 'compareFun', 'Function');
+
+        ReportEval.call(this, label, evalFun, filterFun, formatValFun);
+
+        this.compareFun = compareFun;
+        this.bestVal = undefined;
+    }
+//}
+
+Class.define(ReportCompare, ReportEval, {
+        'getVal'          : function() {
+                                return this.bestVal;
+                            },
+        'evalTest'        : function(entry, test) {
+                                UNUSED(entry);
+
+                                const __BESTVAL = getValue(this.bestVal, test);
+                                const __COMPARE = this.compareEvals(test, __BESTVAL);
+                                let ret = false;
+
+                                if (__COMPARE >= 0) {
+                                    ret = true;
+
+                                    this.bestVal = test;
+
+                                    if (__COMPARE > 0) {  // Rekord wurde uebertroffen!
+                                        this.entries = [];
+                                    }
+                                }
+
+                                return ret;
+                            },
+        'compareEvals'    : function(thisVal, bestVal) {
+                                return (this.compareFun ? this.compareFun(thisVal, bestVal) : 0);
+                            }
+    });
+
+// ==================== Ende Abschnitt fuer Klasse ReportCompare ====================
+
+// ==================== Abschnitt fuer Klasse ReportMax ====================
+
+// Klasse zum Konfigurieren eines Reports eines Maximalwerts fuer Ereignisse
+
+/*class*/ function ReportMax /*extends ReportCompare {
+    constructor*/(label, evalFun, filterFun, formatValFun) {
+        'use strict';
+
+        ReportCompare.call(this, label, evalFun, ((thisVal, bestVal) => (thisVal - bestVal)), filterFun, formatValFun);
+    }
+//}
+
+Class.define(ReportMax, ReportCompare);
+
+// ==================== Ende Abschnitt fuer Klasse ReportMax ====================
+
+// ==================== Abschnitt fuer Klasse ReportMin ====================
+
+// Klasse zum Konfigurieren eines Reports eines Minimalwerts fuer Ereignisse
+
+/*class*/ function ReportMin /*extends ReportCompare {
+    constructor*/(label, evalFun, filterFun, formatValFun) {
+        'use strict';
+
+        ReportCompare.call(this, label, evalFun, ((thisVal, bestVal) => (bestVal - thisVal)), filterFun, formatValFun);
+    }
+//}
+
+Class.define(ReportMin, ReportCompare);
+
+// ==================== Ende Abschnitt fuer Klasse ReportMin ====================
+
+// *** EOF ***
+
+/*** Ende Modul util.class.report.js ***/
 
 /*** Modul util.option.type.js ***/
 
@@ -6266,6 +6796,7 @@ const __GAMETYPENRN = {    // "Blind FSS gesucht!"
         'OSC'        :  7,
         'Supercup'   : 10
     };
+const __GAMETYPES = reverseArray(__GAMETYPENRN);
 
 const __GAMETYPEALIASES = {
         'unbekannt'  :  "unbekannt",
@@ -6281,7 +6812,6 @@ const __GAMETYPEALIASES = {
         'OSC'        :  undefined,
         'Supercup'   : "Super"
     };
-const __GAMETYPES = reverseMapping(__GAMETYPENRN);
 
 const __LIGANRN = {
         'unbekannt'  :  0,
@@ -6293,7 +6823,7 @@ const __LIGANRN = {
         '3. Liga C'  :  6,
         '3. Liga D'  :  7
     };
-const __LIGATYPES = reverseMapping(__LIGANRN);
+const __LIGANAMES = reverseArray(__LIGANRN);
 
 const __LANDNRN = {
         'unbekannt'              :   0,
@@ -6350,7 +6880,7 @@ const __LANDNRN = {
         'Weissrussland'          :  71,
         'Zypern'                 :  38
     };
-const __LAENDER = reverseMapping(__LANDNRN);
+const __LAENDER = reverseArray(__LANDNRN);
 
 const __TLALAND = {
         undefined : 'unbekannt',
@@ -6523,6 +7053,27 @@ const __INTOSCEVTS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __C
 const __INTOSEZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.ZAT, mappingPush);
 const __INTOSCZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __COLINTSPIELPLAN.ZAT, mappingPush);
 
+// Beschreibungstexte aller Runden...
+const __POKALRUNDEN = [ "", "1. Runde", "2. Runde", "3. Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale", "Pokalsieger" ];
+const __QUALIRUNDEN = [ "", "Quali 1", "Quali 2", "Quali 3" ];
+const __OSCRUNDEN   = [ "", "Viertelfinale", "Halbfinale", "Finale", "OSC-Sieger" ];
+const __OSERUNDEN   = [ "", "Runde 1", "Runde 2", "Runde 3", "Runde 4", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale", "OSE-Sieger" ];
+const __OSCALLRND   = [ "", "1. Runde Quali", "2. Runde Quali", "1. Hauptrunde", "2. Hauptrunde", "Viertelfinale", "Halbfinale", "Finale", "OSC-Sieger" ];
+const __OSEALLRND   = [ "", "1. Runde Quali", "2. Runde Quali", "3. Runde Quali", "1. Runde", "2. Runde", "3. Runde", "4. Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale", "OSE-Sieger" ];
+const __HINRUECK    = [ " Hin", " R\u00FCck", "" ];
+
+// Ermittlung von Spielrunden...
+const __RUNDEPOKAL  = reverseMapping(__POKALRUNDEN, Number);
+const __RUNDEQUALI  = reverseMapping(__QUALIRUNDEN, Number);
+const __RUNDEOSC    = reverseMapping(__OSCRUNDEN, Number);
+const __RUNDEOSE    = reverseMapping(__OSERUNDEN, Number);
+const __ALLRNDOSC   = reverseMapping(__OSCALLRND, Number);
+const __ALLRNDOSE   = reverseMapping(__OSEALLRND, Number);
+
+const __HINRUECKHIN     = 0;
+const __HINRUECKRUECK   = 1;
+const __HINRUECKNULL    = 2;
+
 // ==================== Ende Abschnitt fuer interne IDs des OS-Spielplans auf den Seiten ====================
 
 // ==================== Abschnitt fuer Daten des Spielplans ====================
@@ -6554,7 +7105,7 @@ function getGameTypeAlias(gameType) {
 // tla: Kuerzel (TLA) des Landes
 // defValue: Default-Wert
 // return Name des Landes, 'unbekannt' fuer undefined
-function getLandName(tla, defValue = __TLALAND[undefined]) {
+function getLandName(tla, defValue = __TLALAND.undefined) {
     return getValue(__TLALAND[tla], defValue);
 }
 
@@ -6594,15 +7145,15 @@ function getLigaNr(liga, defValue = __LIGANRN.unbekannt) {
 // ID: OS2-ID der Liga
 // defValue: Default-Wert
 // return Name der Liga, "unbekannt" fuer ungueltig
-function getLigaName(ID, defValue = __LIGATYPES[0]) {
-    return getValue(__LIGATYPES[ID], defValue);
+function getLigaName(ID, defValue = __LIGANAMES[0]) {
+    return getValue(__LIGANAMES[ID], defValue);
 }
 
 // Gibt die Ligengroesse des Landes mit dem uebergebenen Kuerzel (TLA) zurueck.
 // tla: Kuerzel (TLA) des Landes
 // defValue: Default-Wert (__TLALIGASIZE[undefined])
 // return Ligengroesse des Landes (10/18/20), defaultValue fuer unbekannt
-function getLigaSizeByTLA(tla, defValue = __TLALIGASIZE[undefined]) {
+function getLigaSizeByTLA(tla, defValue = __TLALIGASIZE.undefined) {
     return getValue(__TLALIGASIZE[tla], defValue);
 }
 
@@ -6610,7 +7161,7 @@ function getLigaSizeByTLA(tla, defValue = __TLALIGASIZE[undefined]) {
 // land: Name des Landes
 // defValue: Default-Wert (__TLALIGASIZE[undefined])
 // return Ligengroesse des Landes (10/18/20), defaultValue fuer unbekannt
-function getLigaSize(land, defValue = __TLALIGASIZE[undefined]) {
+function getLigaSize(land, defValue = __TLALIGASIZE.undefined) {
     return getLigaSizeByTLA(__LANDTLAS[land], defValue);
 }
 
@@ -6618,7 +7169,7 @@ function getLigaSize(land, defValue = __TLALIGASIZE[undefined]) {
 // ID: OS2-ID des Landes
 // defValue: Default-Wert (__TLALIGASIZE[undefined])
 // return Ligengroesse des Landes (10/18/20), defaultValue fuer unbekannt
-function getLigaSizeById(ID, defValue = __TLALIGASIZE[undefined]) {
+function getLigaSizeById(ID, defValue = __TLALIGASIZE.undefined) {
     return getValue(__LAENDER[ID], defValue);
 }
 
@@ -6782,146 +7333,6 @@ function getColor(pos) {
 
 // ==================== Ende Abschnitt fuer Skilltypen, Skills und Spielreihen ====================
 
-// ==================== Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
-
-// Kehrt das Mapping eines Objekts um und liefert ein neues Objekt zurueck.
-// obj: Objekt mit key => value
-// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
-// - newValue: Neuer Wert (zu konvertierender alter Schluessel)
-// - newKey: Neuer Schluessel (konvertierter alter Wert)
-// - newObj: Neues Objekt (im Aufbau, alles konvertiert)
-// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
-// - return Konvertierter neuer Wert
-// valuesFun: Funktion zur Ermittlung der neuen Schluessel aus alten Werten (Default: Object.values)
-// - obj: Objekt, das an reverseMapping uebergeben wurde
-// - return Liste aller alten Werte als Array, aus denen sich die neuen Schluessel ergeben
-// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus den alten Werten
-// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
-// - key: Alter Schluessel (unveraendert, wird spaeter zum neuen Wert konvertiert)
-// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
-// - return Konvertierter neuer Schluessel
-// return Neues Objekt mit value => key (doppelte value-Werte fallen heraus!)
-// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
-// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
-function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
-    if (! obj) {
-        return obj;
-    }
-
-    try {
-        checkType(obj, 'object', true, 'reverseMapping', 'obj', 'Object');
-        checkType(keyValFun, 'function', false, 'reverseMapping', 'keyValFun', 'Function');
-        checkType(valuesFun, 'function', false, 'reverseMapping', 'valuesFun', 'Function');
-        checkType(valKeyFun, 'function', false, 'reverseMapping', 'valKeyFun', 'Function');
-
-        const __KEYSFUN = Object.keys;
-        const __VALUESFUN = (valuesFun || Object.values);
-        const __OLDKEYS = getValue(__KEYSFUN(obj), []);
-        const __OLDVALUES = getValue(__VALUESFUN(obj), []);
-        const __RET = { };
-
-        __OLDKEYS.forEach((key, index) => {
-                const __VALUE = __OLDVALUES[index];
-                const __NEWKEYS = (valKeyFun ? valKeyFun(__VALUE, index, __OLDVALUES) : __VALUE);
-                const __NEWVALUE = (keyValFun ? keyValFun(key, __NEWKEYS, __RET, obj) : key);
-
-                if (Array.isArray(__NEWKEYS)) {
-                    __NEWKEYS.forEach(key => (__RET[key] = __NEWVALUE));
-                } else {
-                    __RET[__NEWKEYS] = __NEWVALUE;
-                }
-            });
-
-        return __RET;
-    } catch (ex) {
-        showException('[' + (ex && ex.lineNumber) + "] reverseMapping()", ex);
-    }
-}
-
-// Erzeugt ein Mapping innerhalb der Werte eines Objekts ueber Spaltenindizes.
-// obj: Objekt mit key => value
-// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
-// - newValue: Neuer Wert (zu konvertieren)
-// - newKey: Neuer Schluessel (konvertiert)
-// - newObj: Neues Objekt (im Aufbau, alles konvertiert)
-// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
-// - return Konvertierter neuer Wert
-// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus der Schluesselspalte
-// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
-// - key: Alter Schluessel (unveraendert)
-// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
-// - return Konvertierter neuer Schluessel
-// return Neues Objekt mit value[keyIndex] => value[valueIndex]
-//        (doppelte value-Werte fallen heraus!)
-// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
-// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
-function selectMapping(obj, keyIndex, valueIndex, keyValFun, valKeyFun) {
-    checkType(obj, 'object', true, 'selectMapping', 'obj', 'Object');
-    checkType(keyIndex, 'number', true, 'selectMapping', 'keyIndex', 'Number');
-    checkType(valueIndex, 'number', true, 'selectMapping', 'valueIndex', 'Number');
-    checkType(keyValFun, 'function', false, 'selectMapping', 'keyValFun', 'Function');
-    checkType(valKeyFun, 'function', false, 'selectMapping', 'valKeyFun', 'Function');
-
-    const __KEYVALFUN = mappingValueSelect.bind(this, valueIndex, keyValFun);
-    const __VALUESFUN = mappingValuesFunSelect.bind(this, keyIndex);
-    const __VALKEYFUN = valKeyFun;
-
-    return reverseMapping(obj, __KEYVALFUN, __VALUESFUN, __VALKEYFUN);
-}
-
-// Standard-Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
-// fuer die Funktion reverseMapping() (legt Array mit allen Schluesseln an).
-// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
-// value: Neuer Wert (zu konvertierender alter Schluessel)
-// key: Neuer Schluessel (konvertierter alter Wert)
-// obj: Neues Objekt (im Aufbau, alles konvertiert)
-// return Konvertierter neuer Wert (in Form eines Arrays)
-function mappingPush(value, key, obj) {
-    return pushObjValue(obj, key, value, null, true, false);
-}
-
-// Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln fuer die Funktion
-// reverseMapping() (legt Array mit allen Schluesseln an, falls dieser eindeutig ist).
-// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
-// value: Neuer Wert (zu konvertierender alter Schluessel)
-// key: Neuer Schluessel (konvertierter alter Wert)
-// obj: Neues Objekt (im Aufbau, alles konvertiert)
-// return Konvertierter neuer Wert (in Form eines Arrays, falls mehr als einmal vorkommend)
-function mappingSetOrPush(value, key, obj) {
-    return pushObjValue(obj, key, value, null, true, true);
-}
-
-// Konvertierfunktion fuer die neuen Werte aus einer Spalte der alten Werte
-// fuer die Funktion reverseMapping() als Parameter keyValFun (index und keyValFun
-// sollten dafuer mit bind() herausgefiltert werden: bind(this, index, keyValFun)).
-// Das Ergebnis, also ein Wert der indizierten Spalte, wird ggfs. noch nachbearbeitet.
-// index: Index der Spalte, dessen Array-Eintraege als neuer Wert genutzt werden (Default: 0)
-// keyValFun: Funktion, mit der der ermittelte Wert nachbearbeitet wird (Default: null)
-// value: Neuer Wert (zu konvertierender alter Schluessel)
-// key: Neuer Schluessel (konvertierter alter Wert)
-// obj: Neues Objekt (im Aufbau, alles konvertiert)
-// oldObj: Altes Objekt, aus derem alten Wert selektiert wird (key ist value, der alte Schluessel)
-// return Selektierter neuer Wert (aus einer Spalte des alten Wertes)
-function mappingValueSelect(index = 0, keyValFun = null, value, key, obj, oldObj) {
-    const __VALUE = getArrValue(oldObj[value], index);
-    const __NEWVALUE = (keyValFun ? keyValFun(__VALUE, key, obj, oldObj) : __VALUE);
-
-    return __NEWVALUE;
-}
-
-// Standard-Selectionsfunktion fuer die neuen Keys aus Spalten der alten Werte
-// fuer die Funktion reverseMapping() (die in Array-Form vorliegen) als keysFun-Parameter.
-// index: Index der Spalte, dessen Array-Eintraege als neuer Key genutzt werden (Default: 0)
-// obj: Objekt, dessen Werte ermittelt werden (besteht aus Array-Eintraegen)
-// return Array mit alles Keys (siehe Object.values, aber nur bestimmte Spalte)
-function mappingValuesFunSelect(index = 0, obj) {
-    const __VALUES = Object.values(obj);
-
-    return __VALUES.map(valueArr => getArrValue(valueArr, index));
-}
-
-// ==================== Ende Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
-
 // *** EOF ***
 
 /*** Ende Modul OS2.list.js ***/
@@ -6946,7 +7357,14 @@ function mappingValuesFunSelect(index = 0, obj) {
 
 // ==================== Abschnitt fuer konstante Parameter bei OS2 ====================
 
-const __SAISONZATS = 72;    // Anzahl der ZATs pro Saison, wir ignorieren mal die 1. Saison...
+const __SAISONZATS      = 72;   // Anzahl der ZATs pro Saison, ab Saison 3
+const __MONATZATS       =  6;   // Anzahl der ZATs pro Abrechnungs-Monat, ab Saison 2
+const __SAISONFIRST     =  3;   // Erste Saison mit diesen Parametern, ab Saison 3
+const __SAISON6ZATMONAT =  2;   // Erste Saison mit 6 ZATs pro Monat, ab Saison 2
+
+const __OLDSAISONZATS   = 70;   // Anzahl der ZATs pro Saison, nur in der 1. und 2. Saison
+const __OLDMONATZATS    =  7;   // Anzahl der ZATs pro Abrechnungs-Monat, nur in der 1. Saison
+const __OLDSAISONFIRST  =  1;   // Erste Saison mit diesen Parametern, ab Saison 1
 
 // ==================== Ende Abschnitt fuer konstante Parameter bei OS2 ====================
 
@@ -7042,7 +7460,7 @@ const __TRFACTORS = [ 1.00, 1.10, 1.25, 1.35 ];  // Tribuene, Bank, teilweise, d
 
 // Gibt das Gehalt eines Trainers zurueck
 // tSkill: Trainer-Skill (60, 62.5, ..., 97.5, 99.5)
-// tZATs: Trainer-Vertragslänge (6, 12, ..., 90, 96)
+// tZATs: Trainer-Vertragslaenge (6, 12, ..., 90, 96)
 // return Trainer-Gehalt eines Trainers von bestimmtem Skill
 function calcTGehalt(tSkill = 99.5, tZATs = 96) {
     const __OLDTSKILL = parseInt((2 * tSkill - 100.5).toFixed(0), 10);
@@ -7627,13 +8045,6 @@ function getManagerLink(managerName, pmID) {
 
 // ==================== Abschnitt fuer Spielplan und ZATs ====================
 
-// Beschreibungstexte aller Runden
-const __POKALRUNDEN = [ "", "1. Runde", "2. Runde", "3. Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale" ];
-const __QUALIRUNDEN = [ "", "Quali 1", "Quali 2", "Quali 3" ];
-const __OSCRUNDEN   = [ "", "Viertelfinale", "Halbfinale", "Finale" ];
-const __OSERUNDEN   = [ "", "Runde 1", "Runde 2", "Runde 3", "Runde 4", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale" ];
-const __HINRUECK    = [ " Hin", " R\u00FCck", "" ];
-
 // ==================== Abschnitt fuer Klasse RundenLink ====================
 
 /*class*/ function RundenLink /*{
@@ -7725,8 +8136,8 @@ Class.define(RundenLink, Object, {
 // - ZAT Rueck
 // - ZAT Korr
 function firstZAT(saison, ligaSize) {
-    return {
-        'anzZATpMonth' : ((saison < 2) ? 7 : 6),    // Erste Saison 7 ZAT, danach 6 ZAT...
+    return {             // Erste Saison 7 ZAT, danach 6 ZAT...
+        'anzZATpMonth' : ((saison < __SAISON6ZATMONAT) ? __OLDMONATZATS : __MONATZATS),
         'saison'       : saison,
         'ZAT'          : 0,
         'gameType'     : 'spielfrei',
@@ -7738,7 +8149,7 @@ function firstZAT(saison, ligaSize) {
         'ligaSpieltag' : 0,
         'pokalRunde'   : 1,
         'euroRunde'    : 0,
-        'hinRueck'     : 2,    // 0: Hin, 1: Rueck, 2: unbekannt
+        'hinRueck'     : __HINRUECKNULL,    // 0: Hin, 1: Rueck, 2: unbekannt
         'ZATrueck'     : 0,
         'ZATkorr'      : 0
     };
@@ -7760,7 +8171,7 @@ function getZAT(currZAT, longStats) {
 // saison: Enthaelt die Nummer der laufenden Saison
 // return [ 10erHin, 10erRueck, 20erHin, 20erRueck ], ZAT-Nummern der Zusatzspieltage
 function getLigaExtra(saison) {
-    if (saison < 3) {
+    if (saison < __SAISONFIRST) {
         return [ 8, 64, 32, 46 ];
     } else {
         return [ 9, 65, 33, 57 ];
@@ -7795,15 +8206,15 @@ function incZAT(currZAT, anzZAT = 1) {
             if (currZAT.ZAT < 63) {
                 currZAT.ZATrueck = currZAT.ZAT + 2;
                 currZAT.euroRunde++;
-                currZAT.hinRueck = 0;
+                currZAT.hinRueck = __HINRUECKHIN;
             } else {
                 currZAT.euroRunde = 11;    // Finale
-                currZAT.hinRueck = 2;
+                currZAT.hinRueck = __HINRUECKNULL;
             }
         }
         if (currZAT.ZAT === currZAT.ZATrueck) {
-            currZAT.hinRueck = 1;        // 5, 7; 11, 13;  (17, 19)  / 23,   25; 29, 31; 35,  37; 41,  43; 47, 49; 53,  55; 59,  61; 69
-            if (currZAT.saison < 3) {    // 4, 6; 10, 14*; (16, 22*) / 24**, 26; 34, 36; 38*, 42; 44*, 50; 52, 54; 56*, 60; 62*, 66; 70
+            currZAT.hinRueck = __HINRUECKRUECK;     // 5, 7; 11, 13;  (17, 19)  / 23,   25; 29, 31; 35,  37; 41,  43; 47, 49; 53,  55; 59,  61; 69
+            if (currZAT.saison < __SAISONFIRST) {   // 4, 6; 10, 14*; (16, 22*) / 24**, 26; 34, 36; 38*, 42; 44*, 50; 52, 54; 56*, 60; 62*, 66; 70
                 if (currZAT.ZAT === 22) {
                     currZAT.ZATkorr = 4;
                 } else if ((currZAT.ZAT - 6) % 20 > 6) {
@@ -8102,7 +8513,7 @@ function getLigaSizeFromSpielplan(rows, startIdx, colArtIdx, saison) {
 Class.define(WarnDrawPlayer, Object, {
         '__MONATEBISABR'    : 1,
         '__ZATWARNVORLAUF'  : 1,
-        '__ZATMONATVORLAUF' : 6,
+        '__ZATMONATVORLAUF' : __MONATZATS,
         'setZatLeft'        : function(zatLeft) {
                                   this.zatLeft = zatLeft;
                               },
@@ -8118,7 +8529,7 @@ Class.define(WarnDrawPlayer, Object, {
                               },
         'calcZiehIndex'     : function(currZAT) {
                                   const __RESTZAT = this.zatLeft + currZAT;
-                                  const __INDEX = parseInt(__RESTZAT / 6 + 1) - this.__MONATEBISABR;  // Lfd. Nummer des Abrechnungsmonats (0-basiert)
+                                  const __INDEX = parseInt(__RESTZAT / __MONATZATS + 1) - this.__MONATEBISABR;  // Lfd. Nummer des Abrechnungsmonats (0-basiert)
 
                                   return __INDEX;
                               },
@@ -8179,7 +8590,7 @@ const __NOWARNDRAW = new WarnDrawPlayer(undefined, undefined);  // inaktives Obj
 
 Class.define(WarnDrawMessage, Object, {
         '__ZATWARNVORLAUF'  : 1,
-        '__ZATMONATVORLAUF' : 6,
+        '__ZATMONATVORLAUF' : __MONATZATS,
         'startMessage'      : function(currZAT) {
                                   this.setZat(currZAT);
                                   this.createMessage();
@@ -8203,10 +8614,10 @@ Class.define(WarnDrawMessage, Object, {
                               },
         'configureZat'      : function() {
                                   const __ZIEHANZAHL = this.optSet.getOptValue('ziehAnz', []);
-                                  const __INDEX = parseInt(this.currZAT / 6);
+                                  const __INDEX = parseInt(this.currZAT / __MONATZATS);
 
-                                  this.abrZAT = (__INDEX + 1) * 6;
-                                  this.rest   = 5 - (this.currZAT % 6);
+                                  this.abrZAT = (__INDEX + 1) * __MONATZATS;
+                                  this.rest   = (__MONATZATS - 1) - (this.currZAT % __MONATZATS);
                                   this.anzahl = __ZIEHANZAHL[__INDEX];
                               },
         'getTextMessage'    : function() {
@@ -8352,10 +8763,10 @@ Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
 Class.define(WarnDrawMessageAufstieg, WarnDrawMessage, {
         'configureZat'      : function() {
                                   const __ZIEHANZAUFSTIEG = this.optSet.getOptValue('ziehAnzAufstieg', 0);
-                                  const __INDEX = parseInt(this.currZAT / 6);
+                                  const __INDEX = parseInt(this.currZAT / __MONATZATS);
 
-                                  this.abrZAT = (__INDEX + 1) * 6;
-                                  this.rest   = 5 - (this.currZAT % 6);
+                                  this.abrZAT = (__INDEX + 1) * __MONATZATS;
+                                  this.rest   = (__MONATZATS - 1) - (this.currZAT % __MONATZATS);
                                   this.anzahl = ((this.currZAT + this.__ZATMONATVORLAUF > __SAISONZATS - this.__ZATWARNVORLAUF) ? __ZIEHANZAUFSTIEG : 0);
 
                                   this.warnDialog = false;     // kein Dialog fuer Aufstiegswarnung
@@ -8623,7 +9034,7 @@ Class.define(PlayerRecord, Object, {
                                   },
         'calcZiehIndex'         : function() {
                                       //const __RESTZAT = this.getZatAge(this.__TIME.end) - this.getZatAge() + this.currZAT;
-                                      //const __INDEX = parseInt(__RESTZAT / 6 + 1) - 1;  // Lfd. Nummer des Abrechnungsmonats (0-basiert)
+                                      //const __INDEX = parseInt(__RESTZAT / __MONATZATS + 1) - 1;  // Lfd. Nummer des Abrechnungsmonats (0-basiert)
 
                                       return (this.warnDraw && this.warnDraw.calcZiehIndex(this.currZAT));
                                   },
@@ -8773,7 +9184,7 @@ Class.define(PlayerRecord, Object, {
                                   },
         'getFingerPrint'        : function() {
                                       // Jeweils gleichbreite Werte: (Alter/Geb.=>Monat), Land, Talent ('-', '=', '+')...
-                                      const __BASEPART = padNumber(this.birth / 6, 3) + padLeft(this.land, -3);
+                                      const __BASEPART = padNumber(this.birth / __MONATZATS, 3) + padLeft(this.land, -3);
                                       const __TALENT = '-=+'[this.talent + 1];
 
                                       if (this.skills === undefined) {
