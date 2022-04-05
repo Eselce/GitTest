@@ -29,6 +29,7 @@ const __GAMETYPENRN = {    // "Blind FSS gesucht!"
         'OSC'        :  7,
         'Supercup'   : 10
     };
+const __GAMETYPES = reverseArray(__GAMETYPENRN);
 
 const __GAMETYPEALIASES = {
         'unbekannt'  :  "unbekannt",
@@ -44,7 +45,6 @@ const __GAMETYPEALIASES = {
         'OSC'        :  undefined,
         'Supercup'   : "Super"
     };
-const __GAMETYPES = reverseMapping(__GAMETYPENRN);
 
 const __LIGANRN = {
         'unbekannt'  :  0,
@@ -56,7 +56,7 @@ const __LIGANRN = {
         '3. Liga C'  :  6,
         '3. Liga D'  :  7
     };
-const __LIGATYPES = reverseMapping(__LIGANRN);
+const __LIGANAMES = reverseArray(__LIGANRN);
 
 const __LANDNRN = {
         'unbekannt'              :   0,
@@ -113,7 +113,7 @@ const __LANDNRN = {
         'Weissrussland'          :  71,
         'Zypern'                 :  38
     };
-const __LAENDER = reverseMapping(__LANDNRN);
+const __LAENDER = reverseArray(__LANDNRN);
 
 const __TLALAND = {
         undefined : 'unbekannt',
@@ -286,6 +286,27 @@ const __INTOSCEVTS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __C
 const __INTOSEZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.ZAT, mappingPush);
 const __INTOSCZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __COLINTSPIELPLAN.ZAT, mappingPush);
 
+// Beschreibungstexte aller Runden...
+const __POKALRUNDEN = [ "", "1. Runde", "2. Runde", "3. Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale", "Pokalsieger" ];
+const __QUALIRUNDEN = [ "", "Quali 1", "Quali 2", "Quali 3" ];
+const __OSCRUNDEN   = [ "", "Viertelfinale", "Halbfinale", "Finale", "OSC-Sieger" ];
+const __OSERUNDEN   = [ "", "Runde 1", "Runde 2", "Runde 3", "Runde 4", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale", "OSE-Sieger" ];
+const __OSCALLRND   = [ "", "1. Runde Quali", "2. Runde Quali", "1. Hauptrunde", "2. Hauptrunde", "Viertelfinale", "Halbfinale", "Finale", "OSC-Sieger" ];
+const __OSEALLRND   = [ "", "1. Runde Quali", "2. Runde Quali", "3. Runde Quali", "1. Runde", "2. Runde", "3. Runde", "4. Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale", "OSE-Sieger" ];
+const __HINRUECK    = [ " Hin", " R\u00FCck", "" ];
+
+// Ermittlung von Spielrunden...
+const __RUNDEPOKAL  = reverseMapping(__POKALRUNDEN, Number);
+const __RUNDEQUALI  = reverseMapping(__QUALIRUNDEN, Number);
+const __RUNDEOSC    = reverseMapping(__OSCRUNDEN, Number);
+const __RUNDEOSE    = reverseMapping(__OSERUNDEN, Number);
+const __ALLRNDOSC   = reverseMapping(__OSCALLRND, Number);
+const __ALLRNDOSE   = reverseMapping(__OSEALLRND, Number);
+
+const __HINRUECKHIN     = 0;
+const __HINRUECKRUECK   = 1;
+const __HINRUECKNULL    = 2;
+
 // ==================== Ende Abschnitt fuer interne IDs des OS-Spielplans auf den Seiten ====================
 
 // ==================== Abschnitt fuer Daten des Spielplans ====================
@@ -317,7 +338,7 @@ function getGameTypeAlias(gameType) {
 // tla: Kuerzel (TLA) des Landes
 // defValue: Default-Wert
 // return Name des Landes, 'unbekannt' fuer undefined
-function getLandName(tla, defValue = __TLALAND[undefined]) {
+function getLandName(tla, defValue = __TLALAND.undefined) {
     return getValue(__TLALAND[tla], defValue);
 }
 
@@ -357,15 +378,15 @@ function getLigaNr(liga, defValue = __LIGANRN.unbekannt) {
 // ID: OS2-ID der Liga
 // defValue: Default-Wert
 // return Name der Liga, "unbekannt" fuer ungueltig
-function getLigaName(ID, defValue = __LIGATYPES[0]) {
-    return getValue(__LIGATYPES[ID], defValue);
+function getLigaName(ID, defValue = __LIGANAMES[0]) {
+    return getValue(__LIGANAMES[ID], defValue);
 }
 
 // Gibt die Ligengroesse des Landes mit dem uebergebenen Kuerzel (TLA) zurueck.
 // tla: Kuerzel (TLA) des Landes
 // defValue: Default-Wert (__TLALIGASIZE[undefined])
 // return Ligengroesse des Landes (10/18/20), defaultValue fuer unbekannt
-function getLigaSizeByTLA(tla, defValue = __TLALIGASIZE[undefined]) {
+function getLigaSizeByTLA(tla, defValue = __TLALIGASIZE.undefined) {
     return getValue(__TLALIGASIZE[tla], defValue);
 }
 
@@ -373,7 +394,7 @@ function getLigaSizeByTLA(tla, defValue = __TLALIGASIZE[undefined]) {
 // land: Name des Landes
 // defValue: Default-Wert (__TLALIGASIZE[undefined])
 // return Ligengroesse des Landes (10/18/20), defaultValue fuer unbekannt
-function getLigaSize(land, defValue = __TLALIGASIZE[undefined]) {
+function getLigaSize(land, defValue = __TLALIGASIZE.undefined) {
     return getLigaSizeByTLA(__LANDTLAS[land], defValue);
 }
 
@@ -381,7 +402,7 @@ function getLigaSize(land, defValue = __TLALIGASIZE[undefined]) {
 // ID: OS2-ID des Landes
 // defValue: Default-Wert (__TLALIGASIZE[undefined])
 // return Ligengroesse des Landes (10/18/20), defaultValue fuer unbekannt
-function getLigaSizeById(ID, defValue = __TLALIGASIZE[undefined]) {
+function getLigaSizeById(ID, defValue = __TLALIGASIZE.undefined) {
     return getValue(__LAENDER[ID], defValue);
 }
 
@@ -544,145 +565,5 @@ function getColor(pos) {
 }
 
 // ==================== Ende Abschnitt fuer Skilltypen, Skills und Spielreihen ====================
-
-// ==================== Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
-
-// Kehrt das Mapping eines Objekts um und liefert ein neues Objekt zurueck.
-// obj: Objekt mit key => value
-// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
-// - newValue: Neuer Wert (zu konvertierender alter Schluessel)
-// - newKey: Neuer Schluessel (konvertierter alter Wert)
-// - newObj: Neues Objekt (im Aufbau, alles konvertiert)
-// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
-// - return Konvertierter neuer Wert
-// valuesFun: Funktion zur Ermittlung der neuen Schluessel aus alten Werten (Default: Object.values)
-// - obj: Objekt, das an reverseMapping uebergeben wurde
-// - return Liste aller alten Werte als Array, aus denen sich die neuen Schluessel ergeben
-// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus den alten Werten
-// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
-// - key: Alter Schluessel (unveraendert, wird spaeter zum neuen Wert konvertiert)
-// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
-// - return Konvertierter neuer Schluessel
-// return Neues Objekt mit value => key (doppelte value-Werte fallen heraus!)
-// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
-// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
-function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
-    if (! obj) {
-        return obj;
-    }
-
-    try {
-        checkType(obj, 'object', true, 'reverseMapping', 'obj', 'Object');
-        checkType(keyValFun, 'function', false, 'reverseMapping', 'keyValFun', 'Function');
-        checkType(valuesFun, 'function', false, 'reverseMapping', 'valuesFun', 'Function');
-        checkType(valKeyFun, 'function', false, 'reverseMapping', 'valKeyFun', 'Function');
-
-        const __KEYSFUN = Object.keys;
-        const __VALUESFUN = (valuesFun || Object.values);
-        const __OLDKEYS = getValue(__KEYSFUN(obj), []);
-        const __OLDVALUES = getValue(__VALUESFUN(obj), []);
-        const __RET = { };
-
-        __OLDKEYS.forEach((key, index) => {
-                const __VALUE = __OLDVALUES[index];
-                const __NEWKEYS = (valKeyFun ? valKeyFun(__VALUE, index, __OLDVALUES) : __VALUE);
-                const __NEWVALUE = (keyValFun ? keyValFun(key, __NEWKEYS, __RET, obj) : key);
-
-                if (Array.isArray(__NEWKEYS)) {
-                    __NEWKEYS.forEach(key => (__RET[key] = __NEWVALUE));
-                } else {
-                    __RET[__NEWKEYS] = __NEWVALUE;
-                }
-            });
-
-        return __RET;
-    } catch (ex) {
-        showException('[' + (ex && ex.lineNumber) + "] reverseMapping()", ex);
-    }
-}
-
-// Erzeugt ein Mapping innerhalb der Werte eines Objekts ueber Spaltenindizes.
-// obj: Objekt mit key => value
-// keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
-// - newValue: Neuer Wert (zu konvertieren)
-// - newKey: Neuer Schluessel (konvertiert)
-// - newObj: Neues Objekt (im Aufbau, alles konvertiert)
-// - oldObj (optional): Altes Objekt als Referenz (als key ist newValue benutzbar)
-// - return Konvertierter neuer Wert
-// valKeyFun: Konvertierfunktion fuer die neuen Schluessel aus der Schluesselspalte
-// - value: Alter Wert (unveraendert, zu konvertieren zum neuen Schluessel)
-// - key: Alter Schluessel (unveraendert)
-// - obj: Altes Objekt (mit allen Eintraegen, sollte unveraendert bleiben!)
-// - return Konvertierter neuer Schluessel
-// return Neues Objekt mit value[keyIndex] => value[valueIndex]
-//        (doppelte value-Werte fallen heraus!)
-// Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
-// Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
-function selectMapping(obj, keyIndex, valueIndex, keyValFun, valKeyFun) {
-    checkType(obj, 'object', true, 'selectMapping', 'obj', 'Object');
-    checkType(keyIndex, 'number', true, 'selectMapping', 'keyIndex', 'Number');
-    checkType(valueIndex, 'number', true, 'selectMapping', 'valueIndex', 'Number');
-    checkType(keyValFun, 'function', false, 'selectMapping', 'keyValFun', 'Function');
-    checkType(valKeyFun, 'function', false, 'selectMapping', 'valKeyFun', 'Function');
-
-    const __KEYVALFUN = mappingValueSelect.bind(this, valueIndex, keyValFun);
-    const __VALUESFUN = mappingValuesFunSelect.bind(this, keyIndex);
-    const __VALKEYFUN = valKeyFun;
-
-    return reverseMapping(obj, __KEYVALFUN, __VALUESFUN, __VALKEYFUN);
-}
-
-// Standard-Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
-// fuer die Funktion reverseMapping() (legt Array mit allen Schluesseln an).
-// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
-// value: Neuer Wert (zu konvertierender alter Schluessel)
-// key: Neuer Schluessel (konvertierter alter Wert)
-// obj: Neues Objekt (im Aufbau, alles konvertiert)
-// return Konvertierter neuer Wert (in Form eines Arrays)
-function mappingPush(value, key, obj) {
-    return pushObjValue(obj, key, value, null, true, false);
-}
-
-// Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln fuer die Funktion
-// reverseMapping() (legt Array mit allen Schluesseln an, falls dieser eindeutig ist).
-// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
-// value: Neuer Wert (zu konvertierender alter Schluessel)
-// key: Neuer Schluessel (konvertierter alter Wert)
-// obj: Neues Objekt (im Aufbau, alles konvertiert)
-// return Konvertierter neuer Wert (in Form eines Arrays, falls mehr als einmal vorkommend)
-function mappingSetOrPush(value, key, obj) {
-    return pushObjValue(obj, key, value, null, true, true);
-}
-
-// Konvertierfunktion fuer die neuen Werte aus einer Spalte der alten Werte
-// fuer die Funktion reverseMapping() als Parameter keyValFun (index und keyValFun
-// sollten dafuer mit bind() herausgefiltert werden: bind(this, index, keyValFun)).
-// Das Ergebnis, also ein Wert der indizierten Spalte, wird ggfs. noch nachbearbeitet.
-// index: Index der Spalte, dessen Array-Eintraege als neuer Wert genutzt werden (Default: 0)
-// keyValFun: Funktion, mit der der ermittelte Wert nachbearbeitet wird (Default: null)
-// value: Neuer Wert (zu konvertierender alter Schluessel)
-// key: Neuer Schluessel (konvertierter alter Wert)
-// obj: Neues Objekt (im Aufbau, alles konvertiert)
-// oldObj: Altes Objekt, aus derem alten Wert selektiert wird (key ist value, der alte Schluessel)
-// return Selektierter neuer Wert (aus einer Spalte des alten Wertes)
-function mappingValueSelect(index = 0, keyValFun = null, value, key, obj, oldObj) {
-    const __VALUE = getArrValue(oldObj[value], index);
-    const __NEWVALUE = (keyValFun ? keyValFun(__VALUE, key, obj, oldObj) : __VALUE);
-
-    return __NEWVALUE;
-}
-
-// Standard-Selectionsfunktion fuer die neuen Keys aus Spalten der alten Werte
-// fuer die Funktion reverseMapping() (die in Array-Form vorliegen) als keysFun-Parameter.
-// index: Index der Spalte, dessen Array-Eintraege als neuer Key genutzt werden (Default: 0)
-// obj: Objekt, dessen Werte ermittelt werden (besteht aus Array-Eintraegen)
-// return Array mit alles Keys (siehe Object.values, aber nur bestimmte Spalte)
-function mappingValuesFunSelect(index = 0, obj) {
-    const __VALUES = Object.values(obj);
-
-    return __VALUES.map(valueArr => getArrValue(valueArr, index));
-}
-
-// ==================== Ende Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
 
 // *** EOF ***
