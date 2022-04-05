@@ -31,6 +31,7 @@
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
@@ -63,17 +64,6 @@ const __LOGLEVEL = 4;
 
 // Moegliche Optionen (hier die Standardwerte editieren oder ueber das Benutzermenu setzen):
 const __OPTCONFIG = {
-    'longStats' : {       // Europapokal ausfuehrlich
-                   'Name'      : "longStats",
-                   'Type'      : __OPTTYPES.SW,
-                   'Default'   : false,
-                   'Action'    : __OPTACTION.NXT,
-                   'Label'     : "Lange Stats",
-                   'Hotkey'    : 'L',
-                   'AltLabel'  : "Kurze Stats",
-                   'AltHotkey' : 'K',
-                   'FormLabel' : "Lange Stats"
-               },
     'showStats' : {       // Alle Titel und Erfolge zusammenfassen
                    'Name'      : "showStats",
                    'Type'      : __OPTTYPES.SW,
@@ -85,6 +75,17 @@ const __OPTCONFIG = {
                    'AltHotkey' : 'S',
                    'FormLabel' : "Zusammenfassung"
                },
+    'longStats' : {       // Europapokal ausfuehrlich
+                   'Name'      : "longStats",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : true,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Viele Stats",
+                   'Hotkey'    : 'V',
+                   'AltLabel'  : "Wenige Stats",
+                   'AltHotkey' : 'W',
+                   'FormLabel' : "Viele Details"
+               },
     'shortKom' : {        // "Nicht teilgenommen" weglassen
                    'Name'      : "shortKom",
                    'Type'      : __OPTTYPES.SW,
@@ -95,6 +96,17 @@ const __OPTCONFIG = {
                    'AltLabel'  : "Nicht teilgenommen",
                    'AltHotkey' : 'T',
                    'FormLabel' : "Leere Eintr\u00E4ge"
+               },
+    'extraQuali' : {      // Europapokal ausfuehrlich (Quali gesondert ausweisen)
+                   'Name'      : "extraQuali",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : false,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Qualis extra",
+                   'Hotkey'    : 'E',
+                   'AltLabel'  : "Qualis integriert",
+                   'AltHotkey' : 'I',
+                   'FormLabel' : "Qualis extra"
                },
     'land' : {            // Name des Landes
                    'Name'      : "land",
@@ -246,6 +258,97 @@ __TEAMCLASS.optSelect = {
 
 // ==================== Ende Abschnitt fuer Optionen ====================
 
+// ==================== Abschnitt fuer Klasse SaisonhistorieEntry ====================
+
+// Klasse zum Halten eines Saison-Ergebnisses in der Saison-Historie
+
+/*class*/ function SaisonhistorieEntry /*{
+    constructor*/(cells) {
+        'use strict';
+
+        //this.cells = cells;  // zugrundeliegende Zeile der Tabelle
+
+        this.parseCells(cells);
+    }
+//}
+
+Class.define(SaisonhistorieEntry, Object, {
+        'parseCells'      : function(cells) {
+                                const __COLUMNINDEX = {
+                                        'Saison'    : 0,
+                                        'Liga'      : 1,
+                                        'Tabelle'   : 2,
+                                        'Pokal'     : 3,
+                                        'OSE'       : 4,
+                                        'OSC'       : 5
+                                    };
+
+                                const __SAISON  = getIntFromHTML(cells, __COLUMNINDEX.Saison);
+                                const __LIGA    = getStringFromHTML(cells, __COLUMNINDEX.Liga);
+                                const __TABELLE = getStringFromHTML(cells, __COLUMNINDEX.Tabelle);
+                                const __POKAL   = getStringFromHTML(cells, __COLUMNINDEX.Pokal);
+                                const __OSE     = getStringFromHTML(cells, __COLUMNINDEX.OSE);
+                                const __OSC     = getStringFromHTML(cells, __COLUMNINDEX.OSC);
+
+                                const __LIGANR  = getLigaNr(__LIGA);
+                                const __INDEXP  = __TABELLE.indexOf('.');
+                                const __PLATZ   = Number.parseInt(__TABELLE.substring(0, __INDEXP), 10);
+                                const __MATCHP  = __TABELLE.match(/^\d+\. Platz \((\d+) Punkte\)$/);
+                                const __PUNKTE  = (__MATCHP ? Number.parseInt(__MATCHP[1], 10) : 0);
+                                const __POKALNR = __RUNDEPOKAL[__POKAL];
+                                const __OSENR   = __ALLRNDOSE[__OSE];
+                                const __OSCNR   = __ALLRNDOSC[__OSC];
+
+                                this.saison = __SAISON;
+                                this.ligaNr = __LIGANR;
+                                this.platz = __PLATZ;
+                                this.punkte = __PUNKTE;
+                                this.pokalNr = __POKALNR;
+                                this.OSENr = __OSENR;
+                                this.OSCNr = __OSCNR;
+                            },
+        'isMeister'       : function() {
+                                return ((this.ligaNr === 1) && (this.platz === 1));
+                            },
+        'isVizeMeister'   : function() {
+                                return ((this.ligaNr === 1) && (this.platz === 2));
+                            },
+        'isZweitMeister'  : function() {
+                                return (((this.ligaNr === 2) || (this.ligaNr === 3)) && (this.platz === 1));
+                            },
+        'isDrittMeister'  : function() {
+                                return ((this.ligaNr >= 4) && (this.platz === 1));
+                            },
+        'isPokalsieger'   : function() {
+                                return (__POKALRUNDEN[this.pokalNr] === 'Pokalsieger');
+                            },
+        'isPokalfinale'   : function() {
+                                return (__POKALRUNDEN[this.pokalNr] === 'Finale');
+                            },
+        'isOSEsieger'     : function() {
+                                return (__OSEALLRND[this.OSENr] === 'OSE-Sieger');
+                            },
+        'isOSEfinale'     : function() {
+                                return (__OSEALLRND[this.OSENr] === 'Finale');
+                            },
+        'isOSCsieger'     : function() {
+                                return (__OSCALLRND[this.OSCNr] === 'OSC-Sieger');
+                            },
+        'isOSCfinale'     : function() {
+                                return (__OSCALLRND[this.OSCNr] === 'Finale');
+                            },
+        'valueOf'         : function() {
+                                return ('S' + this.saison);
+                            },
+        'toString'        : function() {
+                                return "\nSaison: " + this.saison + "\tLiga #" + this.ligaNr
+                                    + "\tPlatz: " + this.platz + "\tPunkte: " + this.punkte
+                                    + "\tPokal #" + this.pokalNr + "\tOSE #" + this.OSENr + "\tOSC #" + this.OSCNr;
+                            }
+    });
+
+// ==================== Ende Abschnitt fuer Klasse SaisonhistorieEntry ====================
+
 // ==================== Page-Manager fuer zu bearbeitende Seiten ====================
 
 // Verarbeitet Ansicht "Saisonhistorie"
@@ -292,24 +395,215 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
         // Format der Trennlinie zwischen den Eintraegen...
         const __BORDERSTRING = optSet.getOptValue('sepStyle') + ' ' + optSet.getOptValue('sepColor') + ' ' + optSet.getOptValue('sepWidth');
         const __SHORTKOM = optSet.getOptValue('shortKom');
+        const __NOEMPTYCOLUMNS = __SHORTKOM;  // Gemeinsame Aufgabe
+        const __SHOWSTATS = optSet.getOptValue('showStats');
+        const __LONGSTATS = optSet.getOptValue('longStats');
+        //const __EXTRAQUALI = optSet.getOptValue('extraQuali');  // TODO
         const __EMPTYTEXT = 'Nicht teilgenommen';
+        const __REPORTS = [];
 
-        Array.from(__ROWS).forEach(row => {
+        if (__SHOWSTATS) {
+            const __SHOW = (report => __REPORTS.push(report));
+            const __LANG = (__LONGSTATS ? __SHOW : UNUSED);
+            const __KURZ = __SHOW;
+
+            // Formatierungen...
+            //const __OUTSAISON = (entry => ('S' + entry.saison));
+            //const __OUTSAISONLONG = (entry => ("Saison " + entry.saison));
+            const __OUTTEILNAHMEN = (anz => ((anz === 1) ? "1 Teilnahme" : (anz + " Teilnahmen")));
+            const __OUTAUSGESCHIEDEN = (anz => (anz + "-mal ausgeschieden"));
+            const __OUTPUNKTE = (punkte => ((punkte === 1) ? "1 Punkt" : (punkte + " Punkte")));
+            const __OUTPLATZ = (platz => (platz + ". Platz"));
+            const __OUTLIGA = (ligaNr => ((ligaNr === 1) ? "1. Liga" : ((ligaNr < 4) ? "2. Liga" : "3. Liga")));
+            const __OUTLIGANAME = getLigaName;
+            const __OUTPOKAL = (pokalNr => __POKALRUNDEN[pokalNr]);
+            const __OUTOSE = (OSENr => __OSEALLRND[OSENr]);
+            const __OUTOSC = (OSCNr => __OSCALLRND[OSCNr]);
+
+            // Hilfsfunktionen fuer Evals und Filter der Reports...
+            const __MEISTER = (entry => entry.isMeister());
+            const __VIZEMEISTER = (entry => entry.isVizeMeister());
+            const __ZWEITMEISTER = (entry => entry.isZweitMeister());
+            const __DRITTMEISTER = (entry => entry.isDrittMeister());
+            const __POKALSIEGER = (entry => entry.isPokalsieger());
+            const __POKALFINALIST = (entry => entry.isPokalfinale());
+            const __POKALFINALE = (entry => (entry.isPokalfinale() || entry.isPokalsieger()));
+            const __OSESIEGER = (entry => entry.isOSEsieger());
+            const __OSEFINALIST = (entry => entry.isOSEfinale());
+            const __OSEFINALE = (entry => (entry.isOSEfinale() || entry.isOSEsieger()));
+            const __OSCSIEGER = (entry => entry.isOSCsieger());
+            const __OSCFINALIST = (entry => entry.isOSCfinale());
+            const __OSCFINALE = (entry => (entry.isOSCfinale() || entry.isOSCsieger()));
+            const __PUNKTE = (entry => entry.punkte);
+            const __PLATZ = (entry => entry.platz);
+            const __POKALRND = (entry => entry.pokalNr);
+            const __OSEC = (entry => (entry.OSENr || entry.OSCNr));
+            const __OSERND = (entry => entry.OSENr);
+            const __OSERNDQ = (entry => (entry.OSENr <= 3));
+            const __OSERND1 = (entry => (entry.OSENr > 3));
+            const __OSCRND = (entry => entry.OSCNr);
+            const __OSCRNDQ = (entry => (entry.OSCNr <= 2));
+            const __OSCRND1 = (entry => (entry.OSCNr > 2));
+            const __OSCRND2 = (entry => (entry.OSCNr > 3));
+            const __OSCRNDKO = (entry => (entry.OSCNr > 4));
+            const __LIGA = (entry => entry.ligaNr);
+            const __LIGALVL = (entry => ((entry.ligaNr === 1) ? 1 : ((entry.ligaNr < 4) ? 2 : 3)));
+            const __LIGA1 = (entry => (entry.ligaNr === 1));
+            const __LIGA1NOT = (entry => (entry.ligaNr > 1));
+            const __LIGA2 = (entry => ((entry.ligaNr === 2) || (entry.ligaNr === 3)));
+            const __LIGA3 = (entry => (entry.ligaNr > 3));
+            const __COUNT = (() => 1);
+
+            // Alle Reports, je nach Optionen werden mehr (__LANG) oder weniger (__KURZ) davon genutzt...
+            __KURZ(new ReportExists("OSC-Sieger", __OSCSIEGER));
+            __KURZ(new ReportExists("OSC-Finalist", __OSCFINALIST));
+            __KURZ(new ReportExists("OSE-Sieger", __OSESIEGER));
+            __KURZ(new ReportExists("OSE-Finalist", __OSEFINALIST));
+            __KURZ(new ReportExists("Meister", __MEISTER));
+            __KURZ(new ReportExists("Vizemeister", __VIZEMEISTER));
+            __LANG(new ReportExists("Zweitliga-Meister", __ZWEITMEISTER));
+            __LANG(new ReportExists("Drittliga-Meister", __DRITTMEISTER));
+            __KURZ(new ReportExists("Pokalsieger", __POKALSIEGER));
+            __KURZ(new ReportExists("Pokalfinalist", __POKALFINALIST));
+            __KURZ(new ReportSum("Gesamtpunkte", __PUNKTE, null, __OUTPUNKTE));
+            __KURZ(new ReportMax("Maximale Punkte", __PUNKTE, null, __OUTPUNKTE));
+            __LANG(new ReportMin("Minimale Punkte", __PUNKTE, null, __OUTPUNKTE));
+            __LANG(new ReportAverage("Durchschnittspunkte", __PUNKTE, null, __OUTPUNKTE));
+            __LANG(new ReportSum("Gesamtpunkte 1. Liga", __PUNKTE, __LIGA1, __OUTPUNKTE));
+            __LANG(new ReportMax("Maximale Punkte 1. Liga", __PUNKTE, __LIGA1, __OUTPUNKTE));
+            __LANG(new ReportMin("Minimale Punkte 1. Liga", __PUNKTE, __LIGA1, __OUTPUNKTE));
+            __LANG(new ReportAverage("Durchschnittspunkte 1. Liga", __PUNKTE, __LIGA1, __OUTPUNKTE));
+            __LANG(new ReportSum("Gesamtpunkte 2. Liga", __PUNKTE, __LIGA2, __OUTPUNKTE));
+            __LANG(new ReportMax("Maximale Punkte 2. Liga", __PUNKTE, __LIGA2, __OUTPUNKTE));
+            __LANG(new ReportMin("Minimale Punkte 2. Liga", __PUNKTE, __LIGA2, __OUTPUNKTE));
+            __LANG(new ReportAverage("Durchschnittspunkte 2. Liga", __PUNKTE, __LIGA2, __OUTPUNKTE));
+            __LANG(new ReportSum("Gesamtpunkte 3. Liga", __PUNKTE, __LIGA3, __OUTPUNKTE));
+            __LANG(new ReportMax("Maximale Punkte 3. Liga", __PUNKTE, __LIGA3, __OUTPUNKTE));
+            __LANG(new ReportMin("Minimale Punkte 3. Liga", __PUNKTE, __LIGA3, __OUTPUNKTE));
+            __LANG(new ReportAverage("Durchschnittspunkte 3. Liga", __PUNKTE, __LIGA3, __OUTPUNKTE));
+            __KURZ(new ReportMax("Bestes Pokalergebnis", __POKALRND, null, __OUTPOKAL));
+            __LANG(new ReportMin("Schlechtestes Pokalergebnis", __POKALRND, null, __OUTPOKAL));
+            __KURZ(new ReportMax("Bestes OSC-Ergebnis", __OSCRND, null, __OUTOSC));
+            __LANG(new ReportMin("Schlechtestes OSC-Ergebnis", __OSCRND, null, __OUTOSC));
+            __LANG(new ReportMax("Sp&auml;testes OSCQ-Scheitern", __OSCRND, __OSCRNDQ, __OUTOSC));
+            __LANG(new ReportMin("Fr&uuml;hestes OSCQ-Scheitern", __OSCRND, __OSCRNDQ, __OUTOSC));
+            __KURZ(new ReportMax("Bestes OSE-Ergebnis", __OSERND, null, __OUTOSE));
+            __LANG(new ReportMin("Schlechtestes OSE-Ergebnis", __OSERND, null, __OUTOSE));
+            __LANG(new ReportMax("Sp&auml;testes OSEQ-Scheitern", __OSERND, __OSERNDQ, __OUTOSE));
+            __LANG(new ReportMin("Fr&uuml;hestes OSEQ-Scheitern", __OSERND, __OSERNDQ, __OUTOSE));
+            __KURZ(new ReportCount("1. Liga", __LIGA1, null, __OUTTEILNAHMEN));
+            __KURZ(new ReportCount("2. Liga", __LIGA2, null, __OUTTEILNAHMEN));
+            __KURZ(new ReportCount("3. Liga", __LIGA3, null, __OUTTEILNAHMEN));
+            __LANG(new ReportCount("National", __COUNT, __POKALRND, __OUTTEILNAHMEN));
+            __LANG(new ReportCount("International", __COUNT, __OSEC, __OUTTEILNAHMEN));
+            __KURZ(new ReportCount("OSC/OSCQ", __OSCRND, null, __OUTTEILNAHMEN));
+            __LANG(new ReportCount("OSC Quali", __OSCRNDQ, null, __OUTAUSGESCHIEDEN));
+            __LANG(new ReportCount("OSC HR", __OSCRND1, null, __OUTTEILNAHMEN));
+            __LANG(new ReportCount("OSC ZR", __OSCRND2, null, __OUTTEILNAHMEN));
+            __LANG(new ReportCount("OSC FR", __OSCRNDKO, null, __OUTTEILNAHMEN));
+            __KURZ(new ReportCount("OSE/OSEQ", __OSERND, null, __OUTTEILNAHMEN));
+            __LANG(new ReportCount("OSE Quali", __OSERNDQ, null, __OUTAUSGESCHIEDEN));
+            __LANG(new ReportCount("OSE", __OSERND1, null, __OUTTEILNAHMEN));
+            __LANG(new ReportCount("OSC-Siege", __OSCSIEGER));
+            __LANG(new ReportCount("OSC-Finals", __OSCFINALE));
+            __LANG(new ReportCount("OSE-Siege", __OSESIEGER));
+            __LANG(new ReportCount("OSE-Finals", __OSEFINALE));
+            __LANG(new ReportCount("Meisterschaften", __MEISTER));
+            __LANG(new ReportCount("Vize-Meisterschaften", __VIZEMEISTER));
+            __LANG(new ReportCount("Zweitliga-Meisterschaften", __ZWEITMEISTER));
+            __LANG(new ReportCount("Drittliga-Meisterschaften", __DRITTMEISTER));
+            __LANG(new ReportCount("Pokalsiege", __POKALSIEGER));
+            __LANG(new ReportCount("Pokalfinals", __POKALFINALE));
+            __LANG(new ReportExists("1. Liga", __LIGA1, null, __OUTTEILNAHMEN));
+            __LANG(new ReportExists("2. Liga", __LIGA2, null, __OUTTEILNAHMEN));
+            __LANG(new ReportExists("3. Liga", __LIGA3, null, __OUTTEILNAHMEN));
+            __LANG(new ReportExists("OSC/OSCQ", __OSCRND, null, __OUTTEILNAHMEN));
+            __LANG(new ReportExists("OSC Quali", __OSCRNDQ, null, __OUTAUSGESCHIEDEN));
+            __LANG(new ReportExists("OSC HR", __OSCRND1, null, __OUTTEILNAHMEN));
+            __LANG(new ReportExists("OSC ZR", __OSCRND2, null, __OUTTEILNAHMEN));
+            __LANG(new ReportExists("OSC FR", __OSCRNDKO, null, __OUTTEILNAHMEN));
+            __LANG(new ReportExists("OSE/OSEQ", __OSERND, null, __OUTTEILNAHMEN));
+            __LANG(new ReportExists("OSE Quali", __OSERNDQ, null, __OUTAUSGESCHIEDEN));
+            __LANG(new ReportExists("OSE", __OSERND1, null, __OUTTEILNAHMEN));
+            __KURZ(new ReportMin("Beste Platzierung 1. Liga", __PLATZ, __LIGA1, __OUTPLATZ));
+            __LANG(new ReportMax("Schlechteste Platzierung 1. Liga", __PLATZ, __LIGA1, __OUTPLATZ));
+            __LANG(new ReportAverage("Durchschnittliche Platzierung 1. Liga", __PLATZ, __LIGA1));
+            __LANG(new ReportMin("Beste Platzierung sonstige Ligen", __PLATZ, __LIGA1NOT, __OUTPLATZ));
+            __LANG(new ReportMax("Schlechteste Platzierung sonstige Ligen", __PLATZ, __LIGA1NOT, __OUTPLATZ));
+            __LANG(new ReportAverage("Durchschnittliche Platzierung sonstige Ligen", __PLATZ, __LIGA1NOT));
+            __LANG(new ReportMin("Beste Platzierung 2. Liga", __PLATZ, __LIGA2, __OUTPLATZ));
+            __LANG(new ReportMax("Schlechteste Platzierung 2. Liga", __PLATZ, __LIGA2, __OUTPLATZ));
+            __LANG(new ReportAverage("Durchschnittliche Platzierung 2. Liga", __PLATZ, __LIGA2));
+            __LANG(new ReportMin("Beste Platzierung 3. Liga", __PLATZ, __LIGA3, __OUTPLATZ));
+            __LANG(new ReportMax("Schlechteste Platzierung 3. Liga", __PLATZ, __LIGA3, __OUTPLATZ));
+            __LANG(new ReportAverage("Durchschnittliche Platzierung 3. Liga", __PLATZ, __LIGA3));
+            __KURZ(new ReportMin("H&ouml;chste Liga", __LIGA, null, __OUTLIGANAME));
+            __LANG(new ReportMax("Niedrigste Liga", __LIGA, null, __OUTLIGANAME));
+            __LANG(new ReportMin("H&ouml;chste Ligenstufe", __LIGALVL, null, __OUTLIGA));
+            __LANG(new ReportMax("Niedrigste Ligenstufe", __LIGALVL, null, __OUTLIGA));
+
+            // Ueberall die Eintraege im Format 'Sxx' anzeigen...
+            //__REPORTS.forEach(report => report.setFormatter(__OUTSAISON));
+        }
+
+        // Jede bekannte Spalte erstmal als leer markieren...
+        const __EMPTYCOLUMN = reverseArray(this.__COLUMNINDEX).map(name => true);
+
+        Array.from(__ROWS).reverse().forEach(row => {
+                const __ROWINDEX = row.rowIndex;
                 const __CELLS = row.cells;    // Aktuelle Eintraege
+
+                if (__ROWINDEX > 0) {  // kein Header...
+                    const __ENTRY = new SaisonhistorieEntry(__CELLS);
+
+                    __REPORTS.forEach(report => report.handleEntry(__ENTRY));
+
+                    __LOG[2](String(__ENTRY));
+                }
 
                 row.style.textAlign = 'center';
 
-                Array.from(__CELLS).forEach(cell => {
+                Array.from(__CELLS).forEach((cell, index) => {
                         cell.style.border = __BORDERSTRING;
 
-                        if (__SHORTKOM && (cell.textContent === __EMPTYTEXT)) {
-                            cell.textContent = '';  // Eintrag irritiert etwas!
+                        if (cell.textContent === __EMPTYTEXT) {
+                            if (__SHORTKOM) {
+                                cell.textContent = "";  // Eintrag irritiert etwas, leeres Feld ist besser!
+                            }
+                        } else if (__ROWINDEX > 0) {  // kein Header...
+                            __EMPTYCOLUMN[index] = false;
                         }
                     });
 /*
                 //Array.from(document.querySelector('#leihe').rows[i].cells).forEach(cell => (cell.style.border = __BORDERSTRING));
 */
             });
+
+        if (__NOEMPTYCOLUMNS) {
+            for (let index = this.__COLUMNINDEX.OSC; index >= this.__COLUMNINDEX.OSE; index--) {
+                if (__EMPTYCOLUMN[index]) {
+                    Array.from(__ROWS).forEach(row => {
+                            row.deleteCell(index);
+                        });
+                }
+            }
+        }
+
+        const __UL = document.createElement('ul');
+
+        __REPORTS.forEach(report => {
+                const __REPORT = report.getReport();
+                if (__REPORT) {
+                    const __LI = document.createElement('li');
+
+                    __LI.innerHTML = __REPORT;
+                    __UL.append(__LI);
+                }
+            });
+
+        const __ANCHOR = document.querySelector('#leihe');  // ueber den Namen reden wir noch einmal...
+
+        insertBefore(__UL, __ANCHOR);
 
         return true;
     });
