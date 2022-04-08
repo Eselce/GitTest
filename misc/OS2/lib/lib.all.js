@@ -7195,7 +7195,7 @@ function calcZATEventByCupRunde(searchCup, searchRunde, currZAT) {
                 const __ZAT = getValue(__ZATS[index]);
                 const __EVT = getValue(__EVTS[index]);
 
-                if ((! ~ ret[0]) || (__ZAT <= currZAT)) {  // in der Zukunft nur den ersten Treffer...
+                if ((! ~ ret[0]) || (ret[0] <= currZAT)) {  // in der Zukunft nur den ersten Treffer...
                     ret = [ __ZAT, __EVT, __EVT.toLowerCase() + '.php' ];
                 }
             }
