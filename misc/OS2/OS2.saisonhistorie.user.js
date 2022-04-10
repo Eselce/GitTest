@@ -411,7 +411,10 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
             //const __OUTSAISON = (entry => ('S' + entry.saison));
             //const __OUTSAISONLONG = (entry => ("Saison " + entry.saison));
             const __OUTTEILNAHMEN = (anz => ((anz === 1) ? "1 Teilnahme" : (anz + " Teilnahmen")));
+            const __OUTERFOLGE = (anz => ((anz === 1) ? "1 Erfolg" : (anz + " Erfolge")));
             const __OUTAUSGESCHIEDEN = (anz => (anz + "-mal ausgeschieden"));
+            const __OUTSCHNITT = (wert => (wert + " im Schnitt"));
+            const __OUTPUNKTESCHNITT = (punkte => (punkte + " Punkte im Schnitt"));
             const __OUTPUNKTE = (punkte => ((punkte === 1) ? "1 Punkt" : (punkte + " Punkte")));
             const __OUTPLATZ = (platz => (platz + ". Platz"));
             const __OUTLIGA = (ligaNr => ((ligaNr === 1) ? "1. Liga" : ((ligaNr < 4) ? "2. Liga" : "3. Liga")));
@@ -468,19 +471,19 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
             __KURZ(new ReportSum("Gesamtpunkte", __PUNKTE, null, __OUTPUNKTE));
             __KURZ(new ReportMax("Maximale Punkte", __PUNKTE, null, __OUTPUNKTE));
             __LANG(new ReportMin("Minimale Punkte", __PUNKTE, null, __OUTPUNKTE));
-            __LANG(new ReportAverage("Durchschnittspunkte", __PUNKTE, null, __OUTPUNKTE));
+            __LANG(new ReportAverage("Durchschnittspunkte", __PUNKTE, null, __OUTPUNKTESCHNITT));
             __LANG(new ReportSum("Gesamtpunkte 1. Liga", __PUNKTE, __LIGA1, __OUTPUNKTE));
             __LANG(new ReportMax("Maximale Punkte 1. Liga", __PUNKTE, __LIGA1, __OUTPUNKTE));
             __LANG(new ReportMin("Minimale Punkte 1. Liga", __PUNKTE, __LIGA1, __OUTPUNKTE));
-            __LANG(new ReportAverage("Durchschnittspunkte 1. Liga", __PUNKTE, __LIGA1, __OUTPUNKTE));
+            __LANG(new ReportAverage("Durchschnittspunkte 1. Liga", __PUNKTE, __LIGA1, __OUTPUNKTESCHNITT));
             __LANG(new ReportSum("Gesamtpunkte 2. Liga", __PUNKTE, __LIGA2, __OUTPUNKTE));
             __LANG(new ReportMax("Maximale Punkte 2. Liga", __PUNKTE, __LIGA2, __OUTPUNKTE));
             __LANG(new ReportMin("Minimale Punkte 2. Liga", __PUNKTE, __LIGA2, __OUTPUNKTE));
-            __LANG(new ReportAverage("Durchschnittspunkte 2. Liga", __PUNKTE, __LIGA2, __OUTPUNKTE));
+            __LANG(new ReportAverage("Durchschnittspunkte 2. Liga", __PUNKTE, __LIGA2, __OUTPUNKTESCHNITT));
             __LANG(new ReportSum("Gesamtpunkte 3. Liga", __PUNKTE, __LIGA3, __OUTPUNKTE));
             __LANG(new ReportMax("Maximale Punkte 3. Liga", __PUNKTE, __LIGA3, __OUTPUNKTE));
             __LANG(new ReportMin("Minimale Punkte 3. Liga", __PUNKTE, __LIGA3, __OUTPUNKTE));
-            __LANG(new ReportAverage("Durchschnittspunkte 3. Liga", __PUNKTE, __LIGA3, __OUTPUNKTE));
+            __LANG(new ReportAverage("Durchschnittspunkte 3. Liga", __PUNKTE, __LIGA3, __OUTPUNKTESCHNITT));
             __KURZ(new ReportMax("Bestes Pokalergebnis", __POKALRND, null, __OUTPOKAL));
             __LANG(new ReportMin("Schlechtestes Pokalergebnis", __POKALRND, null, __OUTPOKAL));
             __KURZ(new ReportMax("Bestes OSC-Ergebnis", __OSCRND, null, __OUTOSC));
@@ -504,50 +507,50 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
             __KURZ(new ReportCount("OSE/OSEQ", __OSERND, null, __OUTTEILNAHMEN));
             __LANG(new ReportCount("OSE Quali", __OSERNDQ, null, __OUTAUSGESCHIEDEN));
             __LANG(new ReportCount("OSE", __OSERND1, null, __OUTTEILNAHMEN));
-            __LANG(new ReportCount("OSC-Siege", __OSCSIEGER));
-            __LANG(new ReportCount("OSC-Finals", __OSCFINALE));
-            __LANG(new ReportCount("OSE-Siege", __OSESIEGER));
-            __LANG(new ReportCount("OSE-Finals", __OSEFINALE));
-            __LANG(new ReportCount("Meisterschaften", __MEISTER));
-            __LANG(new ReportCount("Vize-Meisterschaften", __VIZEMEISTER));
-            __LANG(new ReportCount("Zweitliga-Meisterschaften", __ZWEITMEISTER));
-            __LANG(new ReportCount("Drittliga-Meisterschaften", __DRITTMEISTER));
-            __LANG(new ReportCount("Pokalsiege", __POKALSIEGER));
-            __LANG(new ReportCount("Pokalfinals", __POKALFINALE));
-            __LANG(new ReportExists("1. Liga", __LIGA1, null, __OUTTEILNAHMEN));
-            __LANG(new ReportExists("2. Liga", __LIGA2, null, __OUTTEILNAHMEN));
-            __LANG(new ReportExists("3. Liga", __LIGA3, null, __OUTTEILNAHMEN));
-            __LANG(new ReportExists("OSC/OSCQ", __OSCRND, null, __OUTTEILNAHMEN));
-            __LANG(new ReportExists("OSC Quali", __OSCRNDQ, null, __OUTAUSGESCHIEDEN));
-            __LANG(new ReportExists("OSC HR", __OSCRND1, null, __OUTTEILNAHMEN));
-            __LANG(new ReportExists("OSC ZR", __OSCRND2, null, __OUTTEILNAHMEN));
-            __LANG(new ReportExists("OSC FR", __OSCRNDKO, null, __OUTTEILNAHMEN));
-            __LANG(new ReportExists("OSE/OSEQ", __OSERND, null, __OUTTEILNAHMEN));
-            __LANG(new ReportExists("OSE Quali", __OSERNDQ, null, __OUTAUSGESCHIEDEN));
-            __LANG(new ReportExists("OSE", __OSERND1, null, __OUTTEILNAHMEN));
+            __LANG(new ReportCount("OSC-Siege", __OSCSIEGER, null, __OUTERFOLGE));
+            __LANG(new ReportCount("OSC-Finals", __OSCFINALE, null, __OUTERFOLGE));
+            __LANG(new ReportCount("OSE-Siege", __OSESIEGER, null, __OUTERFOLGE));
+            __LANG(new ReportCount("OSE-Finals", __OSEFINALE, null, __OUTERFOLGE));
+            __LANG(new ReportCount("Meisterschaften", __MEISTER, null, __OUTERFOLGE));
+            __LANG(new ReportCount("Vize-Meisterschaften", __VIZEMEISTER, null, __OUTERFOLGE));
+            __LANG(new ReportCount("Zweitliga-Meisterschaften", __ZWEITMEISTER, null, __OUTERFOLGE));
+            __LANG(new ReportCount("Drittliga-Meisterschaften", __DRITTMEISTER, null, __OUTERFOLGE));
+            __LANG(new ReportCount("Pokalsiege", __POKALSIEGER, null, __OUTERFOLGE));
+            __LANG(new ReportCount("Pokalfinals", __POKALFINALE, null, __OUTERFOLGE));
+            __LANG(new ReportExists("1. Liga", __LIGA1));
+            __LANG(new ReportExists("2. Liga", __LIGA2));
+            __LANG(new ReportExists("3. Liga", __LIGA3));
+            __LANG(new ReportExists("OSC/OSCQ", __OSCRND));
+            __LANG(new ReportExists("OSC Quali", __OSCRNDQ));
+            __LANG(new ReportExists("OSC HR", __OSCRND1));
+            __LANG(new ReportExists("OSC ZR", __OSCRND2));
+            __LANG(new ReportExists("OSC FR", __OSCRNDKO));
+            __LANG(new ReportExists("OSE/OSEQ", __OSERND));
+            __LANG(new ReportExists("OSE Quali", __OSERNDQ));
+            __LANG(new ReportExists("OSE", __OSERND1));
             __KURZ(new ReportMin("Beste Platzierung 1. Liga", __PLATZ, __LIGA1, __OUTPLATZ));
             __LANG(new ReportMax("Schlechteste Platzierung 1. Liga", __PLATZ, __LIGA1, __OUTPLATZ));
-            __LANG(new ReportAverage("Durchschnittliche Platzierung 1. Liga", __PLATZ, __LIGA1));
+            __LANG(new ReportAverage("Durchschnittliche Platzierung 1. Liga", __PLATZ, __LIGA1, __OUTSCHNITT));
             __LANG(new ReportMin("Beste Platzierung sonstige Ligen", __PLATZ, __LIGA1NOT, __OUTPLATZ));
             __LANG(new ReportMax("Schlechteste Platzierung sonstige Ligen", __PLATZ, __LIGA1NOT, __OUTPLATZ));
-            __LANG(new ReportAverage("Durchschnittliche Platzierung sonstige Ligen", __PLATZ, __LIGA1NOT));
+            __LANG(new ReportAverage("Durchschnittliche Platzierung sonstige Ligen", __PLATZ, __LIGA1NOT, __OUTSCHNITT));
             __LANG(new ReportMin("Beste Platzierung 2. Liga", __PLATZ, __LIGA2, __OUTPLATZ));
             __LANG(new ReportMax("Schlechteste Platzierung 2. Liga", __PLATZ, __LIGA2, __OUTPLATZ));
-            __LANG(new ReportAverage("Durchschnittliche Platzierung 2. Liga", __PLATZ, __LIGA2));
+            __LANG(new ReportAverage("Durchschnittliche Platzierung 2. Liga", __PLATZ, __LIGA2, __OUTSCHNITT));
             __LANG(new ReportMin("Beste Platzierung 3. Liga", __PLATZ, __LIGA3, __OUTPLATZ));
             __LANG(new ReportMax("Schlechteste Platzierung 3. Liga", __PLATZ, __LIGA3, __OUTPLATZ));
-            __LANG(new ReportAverage("Durchschnittliche Platzierung 3. Liga", __PLATZ, __LIGA3));
+            __LANG(new ReportAverage("Durchschnittliche Platzierung 3. Liga", __PLATZ, __LIGA3, __OUTSCHNITT));
             __KURZ(new ReportMin("H&ouml;chste Liga", __LIGA, null, __OUTLIGANAME));
             __LANG(new ReportMax("Niedrigste Liga", __LIGA, null, __OUTLIGANAME));
             __LANG(new ReportMin("H&ouml;chste Ligenstufe", __LIGALVL, null, __OUTLIGA));
             __LANG(new ReportMax("Niedrigste Ligenstufe", __LIGALVL, null, __OUTLIGA));
 
-            // Ueberall die Eintraege im Format 'Sxx' anzeigen...
-            //__REPORTS.forEach(report => report.setFormatter(__OUTSAISON));
+            // Ueberall die Eintraege im Format "Saison xx" (per valueOf) statt 'Sxx' anzeigen...
+            //__REPORTS.forEach(report => report.setFormatter(__OUTSAISONLONG));
         }
 
         // Jede bekannte Spalte erstmal als leer markieren...
-        const __EMPTYCOLUMN = reverseArray(this.__COLUMNINDEX).map(name => true);
+        const __EMPTYCOLUMN = reverseArray(this.__COLUMNINDEX).map(() => true);
 
         Array.from(__ROWS).reverse().forEach(row => {
                 const __ROWINDEX = row.rowIndex;
