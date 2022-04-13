@@ -11,12 +11,14 @@
 // @grant        GM.setValue
 // @grant        GM.deleteValue
 // @grant        GM.registerMenuCommand
+// @grant        GM.addStyle
 // @grant        GM.info
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
 // @grant        GM_registerMenuCommand
+// @grant        GM_addStyle
 // @grant        GM_info
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
@@ -284,6 +286,9 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                 'formBreak'   : 4
             };
     }, async function(optSet) {
+        // Stil fuer rausgeflogene Teams definieren...
+        GM.addStyle(".raus { color: #ff0000 } table#intstarter tr.raus a { color: #ff3333 }");
+
         // Format der Trennlinie zwischen den Eintraegen...
         const __BORDERSTRING = optSet.getOptValue('sepStyle') + ' ' + optSet.getOptValue('sepColor') + ' ' + optSet.getOptValue('sepWidth');
 
@@ -293,6 +298,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
         const __TABANCHOR = __OPTPARAMS.tabAnchor;
         const __MAXLIGALEN = "2. Liga A".length;  // Maximale Laenge der Ligabezeichnung
         let count = 0;
+        let rausCount = 0;
 
         const __CUPS = Array.from(__HEADER).map(element => element.textContent);
         const __TEAMLISTS = Array.from(__LISTEN).map((list, indexList) =>
@@ -327,9 +333,11 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                                 __ZAT.gameType = __CUP;
 
                                 const __ZATLINK = getZatLink(__ZAT, __VEREIN, true);
+                                const __RAUS = (__ZAT.ZAT <= __CURRZAT);
 
                                 return {
-                                        'lfd'         : ++count,
+                                        'lfd'         : (__RAUS ? --rausCount : ++count),
+                                        'raus'        : __RAUS,
                                         'cup'         : __CUP,
                                         'id'          : __OSID,
                                         'verein'      : __TEAMNAME,
@@ -392,6 +400,11 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                 list.forEach((entry, indexEntry) => {
                         const __TR = document.createElement('tr');
                         const __BORDERTOP = (indexEntry === 0);
+                        const __RAUS = entry.raus;
+
+                        if (__RAUS) {
+                            __TR.classList.add('raus');
+                        }
 
                         __ITEMS.forEach(item => {
                                 const __TD = document.createElement('td');
