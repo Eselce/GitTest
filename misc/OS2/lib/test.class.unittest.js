@@ -323,7 +323,7 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
 }
 
 UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = document) {
-    let table = doc.getElementById(tableId);
+    let table = getElementById(tableId, doc);
 
     if (! table) {  // Anlegen...
         table = doc.createElement('table');
