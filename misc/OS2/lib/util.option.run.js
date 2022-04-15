@@ -33,13 +33,13 @@
 // optAction: Typ der Funktion
 // item: Key der Option
 // optSet: Platz fuer die gesetzten Optionen (und Config)
-// optConfig: Konfiguration der Option
+// config: Konfiguration der Option
 // return Funktion fuer die Option
-function initOptAction(optAction, item = undefined, optSet = undefined, optConfig = undefined) {
+function initOptAction(optAction, item = undefined, optSet = undefined, config = undefined) {
     let fun;
 
     if (optAction !== undefined) {
-        const __CONFIG = ((optConfig !== undefined) ? optConfig : getOptConfig(getOptByName(optSet, item)));
+        const __CONFIG = ((config !== undefined) ? config : getOptConfig(getOptByName(optSet, item)));
         const __RELOAD = getValue(getValue(__CONFIG, { }).ActionReload, true);
 
         switch (optAction) {
@@ -68,11 +68,11 @@ function initOptAction(optAction, item = undefined, optSet = undefined, optConfi
 }
 
 // Gibt diese Config oder, falls 'Shared', ein Referenz-Objekt mit gemeinsamen Daten zurueck
-// optConfig: Konfiguration der Option
+// config: Konfiguration der Option
 // item: Key der Option
-// return Entweder optConfig oder gemergete Daten auf Basis des in 'Shared' angegebenen Objekts
-function getSharedConfig(optConfig, item = undefined) {
-    let config = getValue(optConfig, { });
+// return Entweder config oder gemergete Daten auf Basis des in 'Shared' angegebenen Objekts
+function getSharedConfig(config, item = undefined) {
+    let newConfig = getValue(config, { });
     const __SHARED = config.Shared;
 
     if (__SHARED !== undefined) {
@@ -81,39 +81,42 @@ function getSharedConfig(optConfig, item = undefined) {
         if (getValue(__SHARED.item, '$') !== '$') {  // __OBJREF ist ein Item
             const __REF = valueOf(__OBJREF);
 
-            config = { };  // Neu aufbauen...
-            addProps(config, getOptConfig(__REF));
-            addProps(config, optConfig);
-            config.setConst('SharedData', getOptValue(__REF), false);   // Wert muss schon da sein, NICHT nachladen, sonst ggfs. Promise
+            newConfig = { };  // Neu aufbauen...
+            addProps(newConfig, getOptConfig(__REF));
+            addProps(newConfig, config);
+            newConfig.setConst('SharedData', getOptValue(__REF), false);   // Wert muss schon da sein, NICHT nachladen, sonst ggfs. Promise
         } else {  // __OBJREF enthaelt die Daten selbst
-            if (! config.Name) {
-                config.Name = __OBJREF.getPath();
+            if (! newConfig.Name) {
+                newConfig.Name = __OBJREF.getPath();
             }
-            config.setConst('SharedData', __OBJREF);  // Achtung: Ggfs. zirkulaer!
+            newConfig.setConst('SharedData', __OBJREF);  // Achtung: Ggfs. zirkulaer!
         }
     }
 
-    return config;
+    return newConfig;
 }
 
-// Initialisiert die gesetzten Optionen
+// Initialisiert die gesetzten Optionen. Man beachte:
+// Diese Funktion wird erst mit preInit = true, dann mit preInit = false aufgerufen!
 // optConfig: Konfiguration der Optionen
 // optSet: Platz fuer die gesetzten Optionen
 // preInit: Vorinitialisierung einzelner Optionen mit 'PreInit'-Attribut
 // return Gefuelltes Objekt mit den gesetzten Optionen
 function initOptions(optConfig, optSet = undefined, preInit = undefined) {
+    const __OPTCONFIG = optConfig;  // Konfiguration wird in startOptions ueberprueft!
+
     if (optSet === undefined) {
         optSet = new Options();
     }
 
     for (let opt in optConfig) {
-        const __OPTCONFIG = optConfig[opt];
-        const __PREINIT = getValue(__OPTCONFIG.PreInit, false, true);
-        const __ISSHARED = getValue(__OPTCONFIG.Shared, false, true);
+        const __CONFIG = optConfig[opt];
+        const __PREINIT = getValue(__CONFIG.PreInit, false, true);
+        const __ISSHARED = getValue(__CONFIG.Shared, false, true);
 
         if ((preInit === undefined) || (__PREINIT === preInit)) {
-            const __CONFIG = getSharedConfig(__OPTCONFIG, opt);
-            const __ALTACTION = getValue(__CONFIG.AltAction, __CONFIG.Action);
+            const __SHAREDCONFIG = getSharedConfig(__CONFIG, opt);
+            const __ALTACTION = getValue(__SHAREDCONFIG.AltAction, __SHAREDCONFIG.Action);
             // Gab es vorher einen Aufruf, der einen Stub-Eintrag erzeugt hat, und wurden Daten geladen?
             const __LOADED = ((preInit === false) && optSet[opt].Loaded);
             const __PROMISE = ((__LOADED || ! optSet[opt]) ? undefined : optSet[opt].Promise);
@@ -121,23 +124,23 @@ function initOptions(optConfig, optSet = undefined, preInit = undefined) {
 
             optSet[opt] = {
                 'Item'      : opt,
-                'Config'    : __CONFIG,
+                'Config'    : __SHAREDCONFIG,
                 'Loaded'    : (__ISSHARED || __LOADED),
                 'Promise'   : __PROMISE,
-                'Value'     : initOptValue(__CONFIG, __VALUE),
-                'SetValue'  : __CONFIG.SetValue,
-                'ReadOnly'  : (__ISSHARED || __CONFIG.ReadOnly),
-                'Action'    : initOptAction(__CONFIG.Action, opt, optSet, __CONFIG),
-                'AltAction' : initOptAction(__ALTACTION, opt, optSet, __CONFIG)
+                'Value'     : initOptValue(__SHAREDCONFIG, __VALUE),
+                'SetValue'  : __SHAREDCONFIG.SetValue,
+                'ReadOnly'  : (__ISSHARED || __SHAREDCONFIG.ReadOnly),
+                'Action'    : initOptAction(__SHAREDCONFIG.Action, opt, optSet, __SHAREDCONFIG),
+                'AltAction' : initOptAction(__ALTACTION, opt, optSet, __SHAREDCONFIG)
             };
         } else if (preInit) {  // erstmal nur Stub
             optSet[opt] = {
                 'Item'      : opt,
-                'Config'    : __OPTCONFIG,
+                'Config'    : __CONFIG,
                 'Loaded'    : false,
                 'Promise'   : undefined,
-                'Value'     : initOptValue(__OPTCONFIG),
-                'ReadOnly'  : (__ISSHARED || __OPTCONFIG.ReadOnly)
+                'Value'     : initOptValue(__CONFIG),
+                'ReadOnly'  : (__ISSHARED || __CONFIG.ReadOnly)
             };
         }
     }
@@ -322,27 +325,29 @@ Class.define(ClassificationPair, Classification, {
 // optSet: Platz fuer die gesetzten Optionen
 // return Promise auf gefuelltes Objekt mit den gesetzten Optionen
 async function startOptions(optConfig, optSet = undefined, classification = undefined) {
-    optSet = initOptions(optConfig, optSet, true);  // PreInit
+    // Ueberpruefung der uebergebenen Konfiguration der Optionen...
+    const __OPTCONFIG = checkOptConfig(optConfig, true);
+    const __PREOPTSET = initOptions(__OPTCONFIG, optSet, true);  // PreInit
 
     // Memory Storage fuer vorherige Speicherung...
-    myOptMemSize = getMemSize(myOptMem = await restoreMemoryByOpt(optSet.oldStorage));
+    myOptMemSize = getMemSize(myOptMem = await restoreMemoryByOpt(__PREOPTSET.oldStorage));
 
     // Zwischengespeicherte Befehle auslesen...
     const __STOREDCMDS = getStoredCmds(myOptMem);
 
     // ... ermittelte Befehle ausfuehren...
-    const __LOADEDCMDS = await runStoredCmds(__STOREDCMDS, optSet, true);  // BeforeLoad
+    const __LOADEDCMDS = await runStoredCmds(__STOREDCMDS, __PREOPTSET, true);  // BeforeLoad
 
     // Bisher noch nicht geladenene Optionen laden...
-    await loadOptions(optSet);
+    await loadOptions(__PREOPTSET);
 
     // Memory Storage fuer naechste Speicherung...
-    myOptMemSize = getMemSize(myOptMem = startMemoryByOpt(optSet.storage, optSet.oldStorage));
+    myOptMemSize = getMemSize(myOptMem = startMemoryByOpt(__PREOPTSET.storage, __PREOPTSET.oldStorage));
 
     // Globale Daten ermitteln...
-    initScriptDB(optSet);
+    initScriptDB(__PREOPTSET);
 
-    optSet = initOptions(optConfig, optSet, false);  // Rest
+    const __OPTSET = initOptions(__OPTCONFIG, __PREOPTSET, false);  // Rest
 
     if (classification !== undefined) {
         // Umbenennungen durchfuehren...
@@ -350,12 +355,12 @@ async function startOptions(optConfig, optSet = undefined, classification = unde
     }
 
     // ... ermittelte Befehle ausfuehren...
-    await runStoredCmds(__LOADEDCMDS, optSet, false);  // Rest
+    await runStoredCmds(__LOADEDCMDS, __OPTSET, false);  // Rest
 
     // Als globale Daten speichern...
-    updateScriptDB(optSet);
+    updateScriptDB(__OPTSET);
 
-    return optSet;
+    return __OPTSET;
 }
 
 // ==================== Abschnitt Anzeige der Optionen ====================
