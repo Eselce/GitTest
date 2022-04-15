@@ -208,7 +208,7 @@ const __OPTCONFIG = {
                    'FormLabel' : "Trainer-Nummer"
                },
     'zeigePrio' : {       // Spaltenauswahl fuer Training eines Primaerskills der trainierten Spieler (true = anzeigen, false = nicht anzeigen)
-                   'Name'      : "showTSkill",
+                   'Name'      : "showPrio",
                    'Type'      : __OPTTYPES.SW,
                    'Default'   : true,
                    'Action'    : __OPTACTION.NXT,

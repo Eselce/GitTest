@@ -409,15 +409,21 @@ function checkOptConfig(optConfig, preInit = false) {
 
     // Benutzte (interne Speicher-) Namen auf doppelte Eintraege ueberpruefen...
     __ENTRIES.forEach(([key, config]) => {
-            const __KEY = key;
-            const __NAME = config.Name;  // Muss vorhanden sein, da vorher ueberprueft!
-            const __USED = __NAMEUSE[__NAME];
+            const __CONFIG = config;
+            const __ISSHARED = getValue(__CONFIG.Shared, false, true);
 
-            if (__USED) {
-                __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-                throw RangeError("Internal name of option " + __LOG.info(__KEY, false) + " already used in option " + __LOG.info(__USED, false));
-            } else {
-                __NAMEUSE[__NAME] = __KEY;
+            if (! __ISSHARED) {
+                const __KEY = key;
+                const __NAME = config.Name;  // Muss vorhanden sein, da vorher ueberprueft!
+                const __USED = __NAMEUSE[__NAME];
+
+                if (__USED) {
+                    __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
+                    throw RangeError("Internal name " + __LOG.info(__NAME, false) + " of option " +
+                            __LOG.info(__KEY, false) + " was already used in option " + __LOG.info(__USED, false));
+                } else {
+                    __NAMEUSE[__NAME] = __KEY;
+                }
             }
         });
 
