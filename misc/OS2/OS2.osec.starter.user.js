@@ -67,6 +67,66 @@ const __LOGLEVEL = 4;
 
 // Moegliche Optionen (hier die Standardwerte editieren oder ueber das Benutzermenu setzen):
 const __OPTCONFIG = {
+    'showStats' : {       // Zusaetzlich eine Tabelle als Uebersicht anzeigen
+                   'Name'      : "showStats",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : true,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Tabelle ein",
+                   'Hotkey'    : 'T',
+                   'AltLabel'  : "Tabelle aus",
+                   'AltHotkey' : 'T',
+                   'FormLabel' : "Tabelle"
+               },
+    'showElims' : {       // Ausgeschiedene Teams anzeigen
+                   'Name'      : "showElims",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : true,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Alle Teams anzeigen",
+                   'Hotkey'    : 'A',
+                   'AltLabel'  : "Nur aktive Teams",
+                   'AltHotkey' : 'A',
+                   'FormLabel' : "Ausgeschiedene Teams"
+               },
+    'lastRnd' : {         // Statt der erreichten Runde die letzte Runde anzeigen (auch nach Ausscheiden)
+                   'Name'      : "lastRnd",
+                   'Type'      : __OPTTYPES.SW,
+                   'Default'   : false,
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Letzte Runde",
+                   'Hotkey'    : 'l',
+                   'AltLabel'  : "Erreichte Runde",
+                   'AltHotkey' : 'l',
+                   'FormLabel' : "Letzte Runde",
+                   'Hidden'    : true
+               },
+    'elimColor' : {       // Farbe der ausgeschiedenen Teams
+                   'Name'      : "elimColor",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'String',
+                   'FreeValue' : true,
+                   'Choice'    : [ 'red', 'white', 'yellow', 'black', 'blue', 'cyan', 'gold', 'grey', 'green',
+                                   'lime', 'magenta', 'maroon', 'navy', 'olive', 'orange', 'purple',
+                                   /* 'red', */ 'teal', 'transparent' ],
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Raus-Farbe: $",
+                   'Hotkey'    : 'F',
+                   'FormLabel' : "Raus-Farbe:|$"
+               },
+    'elimLinkColor' : {   // Farbe der Links ausgeschiedener Teams
+                   'Name'      : "elimLinkColor",
+                   'Type'      : __OPTTYPES.MC,
+                   'ValType'   : 'String',
+                   'FreeValue' : true,
+                   'Choice'    : [ '#ff3333', 'white', 'yellow', 'black', 'blue', 'cyan', 'gold', 'grey', 'green',
+                                   'lime', 'magenta', 'maroon', 'navy', 'olive', 'orange', 'purple',
+                                   'red', 'teal', 'transparent' ],
+                   'Action'    : __OPTACTION.NXT,
+                   'Label'     : "Raus-Linkfarbe: $",
+                   'Hotkey'    : 'F',
+                   'FormLabel' : "Raus-Linkfarbe:|$"
+               },
     'sepStyle' : {        // Stil der Trennlinie
                    'Name'      : "sepStyle",
                    'Type'      : __OPTTYPES.MC,
@@ -287,152 +347,208 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                 'formBreak'   : 4
             };
     }, async function(optSet) {
-        // Stil fuer rausgeflogene Teams definieren...
-        GM.addStyle(".raus { color: #ff0000 } table#intstarter tr.raus a { color: #ff3333 }");
-
+        const __SHOWSTATS = optSet.getOptValue('showStats');
+        const __SHOWELIMS = optSet.getOptValue('showElims');
+        const __ELIMCOLOR = optSet.getOptValue('elimColor');
+        const __ELIMLINKCOLOR = optSet.getOptValue('elimLinkColor');
+        const __LASTRND = optSet.getOptValue('lastRnd');
         // Format der Trennlinie zwischen den Eintraegen...
         const __BORDERSTRING = optSet.getOptValue('sepStyle') + ' ' + optSet.getOptValue('sepColor') + ' ' + optSet.getOptValue('sepWidth');
+        const __SAISON = optSet.getOptValue('saison');
+        const __CURRZAT = optSet.getOptValue('aktuellerZat');
 
-        const __OPTPARAMS = this.optParams;
-        const __HEADER = __OPTPARAMS.header;
-        const __LISTEN = __OPTPARAMS.listen;
-        const __TABANCHOR = __OPTPARAMS.tabAnchor;
-        const __MAXLIGALEN = "2. Liga A".length;  // Maximale Laenge der Ligabezeichnung
-        let count = 0;
-        let rausCount = 0;
+        if (__SHOWSTATS) {
+            // Stil fuer rausgeflogene Teams definieren...
+            GM.addStyle(".raus { color: " + __ELIMCOLOR + " }");
+            GM.addStyle("table#intstarter tr.raus a { color: " + __ELIMLINKCOLOR + " }");
 
-        const __CUPS = Array.from(__HEADER).map(element => element.textContent);
-        const __TEAMLISTS = Array.from(__LISTEN).map((list, indexList) =>
-                    Array.from(getElements('li', list)).map(entry => {
-                                const __ITEMS = getElements('a,div', entry);
-                                const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
-                                const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
-                                const [ __MANAGER, __PMID ] = getLinkData(__ITEMS[2], 'receiver_id');
-                                const __VEREINSTR = getTeamLink(__TEAMNAME, __OSID);
-                                const __MANAGERSTR = getManagerLink(__MANAGER, __PMID);
-                                const [ __LIGALAND, __RUNDE ] = __ITEMS[3].textContent.split(" - ", 2);
-                                const __INDEXLIGALAND = __LIGALAND.lastIndexOf(' ', __MAXLIGALEN);
-                                const __LIGA = __LIGALAND.substring(0, __INDEXLIGALAND);
-                                const __LAND = __LIGALAND.substring(__INDEXLIGALAND + 1);
-                                const __TLA = getLandTLA(__LAND);
-                                const __FLAGSTR = getImgLink('images/flaggen/' + __TLA + '.gif', __TLA);
-                                const [ __SKILLSTR, __OPTISTR ] = __ITEMS[4].textContent.split(" - ", 2);
-                                const __SKILL = Number.parseFloat(__SKILLSTR.split(": ")[1]);
-                                const __OPTI = Number.parseFloat(__OPTISTR.split(": ")[1]);
-                                const __SAISON = optSet.getOptValue('saison');
-                                const __CURRZAT = optSet.getOptValue('aktuellerZat');
-                                const __LIGASIZE = getLigaSizeByTLA(__TLA);
-                                const __VEREIN = new Verein(__TEAMNAME, __LAND, __LIGA, __OSID, __MANAGER);
-                                const __ZAT = firstZAT(__SAISON, __LIGASIZE);
+            const __OPTPARAMS = this.optParams;
+            const __HEADER = Array.from(__OPTPARAMS.header);
+            const __LISTEN = Array.from(__OPTPARAMS.listen);
+            const __TABANCHOR = __OPTPARAMS.tabAnchor;
+            const __MAXLIGALEN = "2. Liga A".length;  // Maximale Laenge der Ligabezeichnung
+            const __CUPS = __HEADER.map(element => element.textContent);
+            const __RAUSDATA = [];
+            let count = 0;
+            let rausCount = 0;
 
-                                __ZAT.gameType = "Liga";
+            if (! __CUPS) {
+                __LOG[1]("Keine Teilnehmerliste vorhanden!");
+                return;
+            }
 
-                                const __LIGASTR = addTableLink(__ZAT, __VEREIN, __LIGA, true)
-                                const [ __INTZAT, __INTEVT, __INTLNK ] = calcZATEventByCupRunde(__CUP, __RUNDE, __CURRZAT);
+            if (__LASTRND) {
+                // Phase 1: Zunaechst nur Cup/Runde des Ausscheidens/Sieges berechnen...
+                const __TEAMLISTS = __LISTEN.map((list, indexList) =>
+                            Array.from(getElements('li', list)).forEach(entry => {
+                                        const __ITEMS = getElements('a,div', entry);
+                                        const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
+                                        const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
+                                        const [ __MANAGER, __PMID ] = getLinkData(__ITEMS[2], 'receiver_id');
+                                        const [ __LIGALAND, __RUNDE ] = __ITEMS[3].textContent.split(" - ", 2);
+                                        const __INDEXLIGALAND = __LIGALAND.lastIndexOf(' ', __MAXLIGALEN);
+                                        const __LIGA = __LIGALAND.substring(0, __INDEXLIGALAND);
+                                        const __LAND = __LIGALAND.substring(__INDEXLIGALAND + 1);
+                                        const __TLA = getLandTLA(__LAND);
+                                        const __LIGASIZE = getLigaSizeByTLA(__TLA);
+                                        const __VEREIN = new Verein(__TEAMNAME, __LAND, __LIGA, __OSID, __MANAGER);
+                                        const __ZAT = firstZAT(__SAISON, __LIGASIZE);
+                                        const [ __INTZAT, __INTEVT, __INTLNK ] = calcZATEventByCupRunde(__CUP, __RUNDE, __CURRZAT);
 
-                                incZAT(__ZAT, __INTZAT);
-                                __ZAT.gameType = __CUP;
+                                        incZAT(__ZAT, __INTZAT);
+                                        __ZAT.gameType = __CUP;
 
-                                const __ZATLINK = getZatLink(__ZAT, __VEREIN, true);
-                                const __RAUS = (__ZAT.ZAT <= __CURRZAT);
+                                        const __ZATLINK = getZatLink(__ZAT, __VEREIN, true);
+                                        const __RAUS = (__CURRZAT >= __INTZAT);
 
-                                return {
-                                        'lfd'         : (__RAUS ? --rausCount : ++count),
-                                        'raus'        : __RAUS,
-                                        'cup'         : __CUP,
-                                        'id'          : __OSID,
-                                        'verein'      : __TEAMNAME,
-                                        'vereinStr'   : __VEREINSTR,
-                                        'pmId'        : __PMID,
-                                        'manager'     : __MANAGER,
-                                        'managerStr'  : __MANAGERSTR,
-                                        'liga'        : __LIGA,
-                                        'ligaStr'     : __LIGASTR,
-                                        'ligaNr'      : getLigaNr(__LIGA),
-                                        'land'        : __LAND,
-                                        'landNr'      : getLandNr(__LAND),
-                                        'landTLA'     : __TLA,
-                                        'flagStr'     : __FLAGSTR,
-                                        'runde'       : __RUNDE,
-                                        'rundeStr'    : __ZATLINK,
-                                        'rundeLnk'    : __INTLNK,
-                                        'rundeEvt'    : __INTEVT,
-                                        'rundeZAT'    : __INTZAT,
-                                        'skill'       : __SKILL.toFixed(2),
-                                        'opti'        : __OPTI.toFixed(2)
-                                    };
-                            })
-                );
+                                        if (__RAUS) {
+                                            __RAUSDATA[__OSID] = [ __INTZAT, __INTEVT, __INTLNK, __ZATLINK, __CUP, __RUNDE ];
+                                        }
+                                    })
+                        );
+            }
 
-        if (! __CUPS) {
-            __LOG[1]("Keine Teilnehmerliste vorhanden!");
-            return;
-        }
+            __LOG[1](__RAUSDATA);
 
-        const __ITEMS = [ 'id', 'lfd', 'landNr', 'cup', 'rundeZAT', 'rundeStr', 'flagStr', 'vereinStr', 'land', 'managerStr', 'ligaStr', 'ligaNr', 'skill', 'opti' ];
-        const __HEADS = [ 'ID', '#', 'Land', 'Cup', 'ZAT', 'Runde', 'Flagge', 'Verein', 'Land', 'Manager', 'Liga', 'Liga', 'Skill', 'Opti' ];
-        const __ALIGN = 'center';
-        const __TABLE = document.createElement('table');
-        const __TBODY = document.createElement('tbody');
+            // Phase 2: Jetzt kann neben der naechsten Runde auch die letzte Runde berechnet werden...
+            const __TEAMLISTS = __LISTEN.map((list, indexList) =>
+                        Array.from(getElements('li', list)).map(entry => {
+                                    const __ITEMS = getElements('a,div', entry);
+                                    const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
+                                    const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
+                                    const [ __MANAGER, __PMID ] = getLinkData(__ITEMS[2], 'receiver_id');
+                                    const __VEREINSTR = getTeamLink(__TEAMNAME, __OSID);
+                                    const __MANAGERSTR = getManagerLink(__MANAGER, __PMID);
+                                    const [ __LIGALAND, __RUNDE ] = __ITEMS[3].textContent.split(" - ", 2);
+                                    const __INDEXLIGALAND = __LIGALAND.lastIndexOf(' ', __MAXLIGALEN);
+                                    const __LIGA = __LIGALAND.substring(0, __INDEXLIGALAND);
+                                    const __LAND = __LIGALAND.substring(__INDEXLIGALAND + 1);
+                                    const __TLA = getLandTLA(__LAND);
+                                    const __FLAGSTR = getImgLink('images/flaggen/' + __TLA + '.gif', __TLA);
+                                    const [ __SKILLSTR, __OPTISTR ] = __ITEMS[4].textContent.split(" - ", 2);
+                                    const __SKILL = Number.parseFloat(__SKILLSTR.split(": ")[1]);
+                                    const __OPTI = Number.parseFloat(__OPTISTR.split(": ")[1]);
+                                    const __LIGASIZE = getLigaSizeByTLA(__TLA);
+                                    const __VEREIN = new Verein(__TEAMNAME, __LAND, __LIGA, __OSID, __MANAGER);
+                                    const __ZAT = firstZAT(__SAISON, __LIGASIZE);
 
-        __TABLE.id = 'intstarter';
-        //__TABLE.border = 1;
-        __TABLE.cellpadding = 10;
-        __TABLE.style.borderCollapse = 'collapse';
-        __TABLE.style.borderColor = '#aaaaaa';
-        __TABLE.classList.add('sortable');
+                                    __ZAT.gameType = "Liga";
 
-        const __THR = document.createElement('tr');
+                                    const __LIGASTR = addTableLink(__ZAT, __VEREIN, __LIGA, true)
+                                    const [ __INTZAT, __INTEVT, __INTLNK ] = calcZATEventByCupRunde(__CUP, __RUNDE, __CURRZAT, __LASTRND);
 
-        __HEADS.forEach(head => {
-                const __TH = document.createElement('th');
+                                    incZAT(__ZAT, __INTZAT);
+                                    __ZAT.gameType = __CUP;
 
-                __TH.textContent = head;
-                __TH.style.borderBottom = __BORDERSTRING;
+                                    const __ZATLINK = getZatLink(__ZAT, __VEREIN, true);
+                                    const __CUPSWITCHED = ((! ~ __INTZAT) && __RAUSDATA[__OSID]);
+                                    const [ __THISZAT, __THISEVT, __THISLNK, __THISZATLINK, __THISCUP, __THISRUNDE ] = (__CUPSWITCHED
+                                            ? __CUPSWITCHED : [ __INTZAT, __INTEVT, __INTLNK, __ZATLINK, __CUP, __RUNDE ]);
+                                    const __RAUS = (__CURRZAT >= __INTZAT);
+                                    const __SHOWRAUS = (__SHOWELIMS || __LASTRND);
 
-                __THR.appendChild(__TH);
-            });
+                                    return {
+                                            'lfd'         : (__RAUS ? --rausCount : ++count),
+                                            'raus'        : __RAUS,
+                                            'showraus'    : __SHOWRAUS,
+                                            'cup'         : __THISCUP,
+                                            'id'          : __OSID,
+                                            'verein'      : __TEAMNAME,
+                                            'vereinStr'   : __VEREINSTR,
+                                            'pmId'        : __PMID,
+                                            'manager'     : __MANAGER,
+                                            'managerStr'  : __MANAGERSTR,
+                                            'liga'        : __LIGA,
+                                            'ligaStr'     : __LIGASTR,
+                                            'ligaNr'      : getLigaNr(__LIGA),
+                                            'land'        : __LAND,
+                                            'landNr'      : getLandNr(__LAND),
+                                            'landTLA'     : __TLA,
+                                            'flagStr'     : __FLAGSTR,
+                                            'runde'       : __THISRUNDE,
+                                            'rundeStr'    : __THISZATLINK,
+                                            'rundeLnk'    : __THISLNK,
+                                            'rundeEvt'    : __THISEVT,
+                                            'rundeZAT'    : __THISZAT,
+                                            'skill'       : __SKILL.toFixed(2),
+                                            'opti'        : __OPTI.toFixed(2)
+                                        };
+                                })
+                    );
 
-        __TBODY.appendChild(__THR);
+            const __ITEMS = [ 'id', 'lfd', 'landNr', 'cup', 'rundeZAT', 'rundeStr', 'flagStr', 'vereinStr', 'land', 'managerStr', 'ligaStr', 'ligaNr', 'skill', 'opti' ];
+            const __HEADS = [ 'ID', '#', 'Land', 'Cup', 'ZAT', 'Runde', 'Flagge', 'Verein', 'Land', 'Manager', 'Liga', 'Liga', 'Skill', 'Opti' ];
+            const __ALIGN = 'center';
+            const __TABLE = document.createElement('table');
+            const __TBODY = document.createElement('tbody');
 
-        __TEAMLISTS.forEach((list, indexList) => {
-                const __CLASS = __CUPS[indexList].toLowerCase();  // passende Style-Class zum Wettbewerb
+            __TABLE.id = 'intstarter';
+            //__TABLE.border = 1;
+            __TABLE.cellpadding = 10;
+            __TABLE.style.borderCollapse = 'collapse';
+            __TABLE.style.borderColor = '#aaaaaa';
+            __TABLE.classList.add('sortable');
 
-                list.forEach((entry, indexEntry) => {
-                        const __TR = document.createElement('tr');
-                        const __BORDERTOP = (indexEntry === 0);
-                        const __RAUS = entry.raus;
+            const __THR = document.createElement('tr');
 
-                        if (__RAUS) {
-                            __TR.classList.add('raus');
-                        }
+            __HEADS.forEach(head => {
+                    const __TH = document.createElement('th');
 
-                        __ITEMS.forEach(item => {
-                                const __TD = document.createElement('td');
+                    __TH.textContent = head;
+                    __TH.style.borderBottom = __BORDERSTRING;
 
-                                __TD.innerHTML = entry[item];
-                                __TD.align = __ALIGN;
-                                if (__BORDERTOP) {
-                                    __TD.style.borderTop = __BORDERSTRING;
+                    __THR.appendChild(__TH);
+                });
+
+            __TBODY.appendChild(__THR);
+
+            __TEAMLISTS.forEach((list, indexList) => {
+                    const __CLASS = __CUPS[indexList].toLowerCase();  // passende Style-Class zum Wettbewerb
+                    let isFirstEntry = true;
+
+                    list.forEach(entry => {
+                            const __RAUS = entry.raus;
+                            const __SHOWRAUS = entry.showraus;
+                            const __SHOW = ((! __RAUS) || __SHOWRAUS);
+
+                            if (__SHOW) {
+                                const __TR = document.createElement('tr');
+                                const __BORDERTOP = isFirstEntry;
+
+                                isFirstEntry = false;
+
+                                if (__RAUS) {
+                                    __TR.classList.add('raus');
                                 }
 
-                                __TR.appendChild(__TD);
-                            });
+                                __ITEMS.forEach(item => {
+                                        const __TD = document.createElement('td');
 
-                        __TR.classList.add(__CLASS);
+                                        __TD.innerHTML = entry[item];
+                                        __TD.align = __ALIGN;
+                                        if (__BORDERTOP) {
+                                            __TD.style.borderTop = __BORDERSTRING;
+                                        }
 
-                        __TBODY.appendChild(__TR);
+                                        __TR.appendChild(__TD);
+                                    });
 
-                        __LOG[7](entry.id, entry.lfd, entry.landNr, entry.pmID, entry.cup,
-                                entry.runde, entry.rundeEvt, entry.rundeZAT, entry.rundeLnk,
-                                entry.landTLA, entry.verein, entry.land, entry.manager,
-                                entry.liga, entry.ligaNr, entry.skill, entry.opti);
-                    });
-            });
+                                __TR.classList.add(__CLASS);
 
-        __TABLE.appendChild(__TBODY);
+                                __TBODY.appendChild(__TR);
+                            }
 
-        insertAfter(__TABLE, __TABANCHOR);
+                            __LOG[7](entry.id, entry.lfd, entry.landNr, entry.pmID, entry.cup,
+                                    entry.runde, entry.rundeEvt, entry.rundeZAT, entry.rundeLnk,
+                                    entry.landTLA, entry.verein, entry.land, entry.manager,
+                                    entry.liga, entry.ligaNr, entry.skill, entry.opti);
+                        });
+                });
+
+            __TABLE.appendChild(__TBODY);
+
+            insertAfter(__TABLE, __TABANCHOR);
+        }
 
         return true;
     });
