@@ -132,7 +132,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
                     throw Error("Option " + __LOG.info(__KEY, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
                 }
             });
-        __DAT.forEach(item => {
+        __CHO.forEach(item => {
                 const __ITEM = __CONFIG[item];
 
                 if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
