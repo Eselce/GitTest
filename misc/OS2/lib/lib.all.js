@@ -4313,13 +4313,14 @@ const __OPTACTION = {
 
 // Notwendigkeit der Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
 const __OPTNEED = {
-    'MAN'   : "mandatory parameter",        // Muss-Parameter, darf nicht fehlen!
-    'DAT'   : "mandatory data parameter",   // Muss-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
-    'REC'   : "recommended parameter",      // Soll-Parameter: Nutzung dieser Parameter wird empfohlen
-    'VAL'   : "recommended parameter",      // Soll-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
-    'SEL'   : "recommended parameter",      // Soll-Parameter fuer Datentyp __OPTTYPES.MC
-    'OPT'   : "optional parameter",         // Optionale Parameter ohne Pficht
-    'INT'   : "internal parameter"          // Nicht in __OPTCONFIG verwenden!
+    'MAN'   : "mandatory parameter",            // Muss-Parameter, darf nicht fehlen!
+    'DAT'   : "mandatory data parameter",       // Muss-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
+    'CHO'   : "mandytory select parameter",     // Muss-Parameter fuer Datentyp __OPTTYPES.MC
+    'REC'   : "recommended parameter",          // Soll-Parameter: Nutzung dieser Parameter wird empfohlen
+    'VAL'   : "recommended data parameter",     // Soll-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
+    'SEL'   : "recommended select parameter",   // Soll-Parameter fuer Datentyp __OPTTYPES.MC
+    'OPT'   : "optional parameter",             // Optionale Parameter ohne Pficht
+    'INT'   : "internal parameter"              // Nicht in __OPTCONFIG verwenden!
 };
 
 // Abgeleitete Typen gemappt auf Haupttypen...
@@ -4371,7 +4372,7 @@ const __OPTITEMS = {
     'Submit'    : [ "onKeyDown-Code",                   'Code',         "",                         __OPTNEED.OPT ],
     'Title'     : [ "Titel",                            'String',       "$V Optionen",              __OPTNEED.OPT ],
     'Type'      : [ "Typ der Option",                   '__OPTTYPES',   "MC, SD, SI, SW",           __OPTNEED.REC ],
-    'ValType'   : [ "Datentyp der Werte",               'String',       "'Number', 'String'",       __OPTNEED.DAT ],
+    'ValType'   : [ "Datentyp der Werte",               'String',       "'Number', 'String'",       __OPTNEED.CHO ],
     'Value'     : [ "INTERNAL: Gesetzter Wert",         'any',          "",                         __OPTNEED.INT ]
 };
 const __OPTITEMSBYNEED = reverseMapping(__OPTITEMS, mappingPush);
@@ -4484,60 +4485,72 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
     const __CONFIG = optItem;
     const __OPTTYPE = __CONFIG.Type;
     const __ITEMS = Object.keys(__CONFIG);
-    const __NAME = __CONFIG.Name;  // TODO Shared Ref
+    const __NAME = __CONFIG.Name;
+    const __ISSHARED = getValue(__CONFIG.Shared, false, true);
     const __KEY = key;
-    const __MAN = __OPTITEMSBYNEED[__OPTNEED.MAN];  // Muss-Parameter
-    const __DAT = __OPTITEMSBYNEED[__OPTNEED.DAT];  // Muss-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
-    const __REC = __OPTITEMSBYNEED[__OPTNEED.REC];  // Soll-Parameter
-    const __VAL = __OPTITEMSBYNEED[__OPTNEED.VAL];  // Soll-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
-    const __SEL = __OPTITEMSBYNEED[__OPTNEED.SEL];  // Soll-Parameter fuer __OPTTYPES.MC
+    const __MAN = getValue(__OPTITEMSBYNEED[__OPTNEED.MAN], []);    // Muss-Parameter
+    const __DAT = getValue(__OPTITEMSBYNEED[__OPTNEED.DAT], []);    // Muss-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
+    const __CHO = getValue(__OPTITEMSBYNEED[__OPTNEED.CHO], []);    // Muss-Parameter fuer __OPTTYPES.MC
+    const __REC = getValue(__OPTITEMSBYNEED[__OPTNEED.REC], []);    // Soll-Parameter
+    const __VAL = getValue(__OPTITEMSBYNEED[__OPTNEED.VAL], []);    // Soll-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
+    const __SEL = getValue(__OPTITEMSBYNEED[__OPTNEED.SEL], []);    // Soll-Parameter fuer __OPTTYPES.MC
 
-    // Redundante Pruefung auf Namen der Option (spaeter Ueberpruefung von __MAN)...
-    if (__NAME === undefined) {
-        __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-        throw Error("Unknown 'Name' for option " + __LOG.info(key, false));
+    if (! __ISSHARED) {  // TODO Shared Ref
+        // Redundante Pruefung auf Namen der Option (spaeter Ueberpruefung von __MAN)...
+        if (__NAME === undefined) {
+            __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+            throw Error("Unknown 'Name' for option " + __LOG.info(key, false));
+        }
+
+        // Ueberpruefung der Pflichtparameter...
+        __MAN.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if (! __ITEM) {
+                    __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                    throw Error("Option " + __LOG.info(key, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
+                }
+            });
+        __DAT.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
+                    __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                    throw Error("Option " + __LOG.info(key, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
+                }
+            });
+        __DAT.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
+                    __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                    throw Error("Option " + __LOG.info(key, false) + " is missing mandatory select parameter " + __LOG.info(item, false) + "...");
+                }
+            });
+
+        // Ueberpruefung der Pflichtparameter...
+        __REC.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if (! __ITEM) {
+                    __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended parameter " + __LOG.info(item, false) + "...");
+                }
+            });
+        __VAL.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
+                    __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended data parameter " + __LOG.info(item, false) + "...");
+                }
+            });
+        __SEL.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
+                    __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended select parameter " + __LOG.info(item, false) + "...");
+                }
+            });
     }
-
-    // Ueberpruefung der Pflichtparameter...
-    __MAN.forEach(item => {
-            const __ITEM = __CONFIG[item];
-
-            if (! __ITEM) {
-                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw Error("Option " + __LOG.info(key, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
-            }
-        });
-    __DAT.forEach(item => {
-            const __ITEM = __CONFIG[item];
-
-            if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
-                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw Error("Option " + __LOG.info(key, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
-            }
-        });
-
-    // Ueberpruefung der Pflichtparameter...
-    __REC.forEach(item => {
-            const __ITEM = __CONFIG[item];
-
-            if (! __ITEM) {
-                __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended parameter " + __LOG.info(item, false) + "...");
-            }
-        });
-    __VAL.forEach(item => {
-            const __ITEM = __CONFIG[item];
-
-            if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
-                __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended data parameter " + __LOG.info(item, false) + "...");
-            }
-        });
-    __SEL.forEach(item => {
-            const __ITEM = __CONFIG[item];
-
-            if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
-                __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended select parameter " + __LOG.info(item, false) + "...");
-            }
-        });
 
     // Ueberpruefung der angegebenen Parameter auf Bekanntheit und Typen...
     __ITEMS.forEach(item => {
