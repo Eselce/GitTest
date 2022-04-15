@@ -277,6 +277,8 @@ const __INTSPIELPLAN = {
     };
 const __INTZATLABOSE = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSE);
 const __INTZATLABOSC = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSC);
+const __INTLABOSEZAT = reverseMapping(__INTZATLABOSE);
+const __INTLABOSCZAT = reverseMapping(__INTZATLABOSC);
 const __INTOSEALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSE, __COLINTSPIELPLAN.ZAT, mappingPush);
 const __INTOSCALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSC, __COLINTSPIELPLAN.ZAT, mappingPush);
 const __INTOSECUPS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.CupOSE, mappingPush);
@@ -411,10 +413,13 @@ function getLigaSizeById(ID, defValue = __TLALIGASIZE.undefined) {
 // searchCup: Gesuchter Wettbewerb ('OSC', 'OSCQ', 'OSE', 'OSEQ')
 // searchRunde: Gesuchte Runde im Wettbewerb ('1. Runde', ...)
 // currZAT: Der aktuelle ZAT (fuer die Frage, ob vergangene oder kommende Runde)
-// return ZAT, Event der Runde und deren OS2-Webseite
-function calcZATEventByCupRunde(searchCup, searchRunde, currZAT) {
+// lastRnd: Letzte Runde finden (statt erreichter Runde): Ergebnisse liegen in der Vergangenheit
+// return ZAT, Event der Runde und deren OS2-Webseite der erreichten (bzw. vergangenen) Runde
+function calcZATEventByCupRunde(searchCup, searchRunde, currZAT, lastRnd) {
     const __CUP = searchCup;
     const __RUNDE = searchRunde;
+    const __CURRZAT = currZAT;
+    const __LASTRND = lastRnd;
     const __CUPS = getArrValue(__INTOSECUPS, __RUNDE).concat(
                         getArrValue(__INTOSCCUPS, __RUNDE));
     const __EVTS = getArrValue(__INTOSEEVTS, __RUNDE).concat(
@@ -428,8 +433,10 @@ function calcZATEventByCupRunde(searchCup, searchRunde, currZAT) {
                 const __ZAT = getValue(__ZATS[index]);
                 const __EVT = getValue(__EVTS[index]);
 
-                if ((! ~ ret[0]) || (ret[0] <= currZAT)) {  // in der Zukunft nur den ersten Treffer...
-                    ret = [ __ZAT, __EVT, __EVT.toLowerCase() + '.php' ];
+                if ((! ~ ret[0]) || (ret[0] <= __CURRZAT)) {  // in der Zukunft nur den ersten Treffer...
+                    if ((! __LASTRND) || (__ZAT <= __CURRZAT)) {  // bei __LASTRND keine zukuenftigen Runden...
+                        ret = [ __ZAT, __EVT, __EVT.toLowerCase() + '.php' ];
+                    }
                 }
             }
         });
@@ -559,7 +566,7 @@ function getColor(pos) {
         case 'OMI' : return '#FF66FF';
         case 'STU' : return '#FF0000';
         case 'LEI' : return '#FFFFFF';
-        case "" :    return '#111166';  // osBlau
+        case "" :    return __OSBLAU;
         default :    return "";
     }
 }
