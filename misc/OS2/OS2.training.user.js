@@ -1057,8 +1057,6 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                                return result;
                            },
         'addFillCell'    : function(playerRow, testVar) {
-                               const __OSBLAU = getColor("");
-
                                if (testVar !== undefined) {
                                    return true;
                                } else {
@@ -1143,8 +1141,7 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                                //const __IDXPRI = getIdxPriSkills(player.getPos());
                                //const __LEICOLOR = getColor('LEI');
                                const __TORCOLOR = getColor('TOR');
-                               //const __OSBLAU = getColor("");
-                               const __NEUCOLOR = color;
+                               const __NEWCOLOR = color;
                                const __POSCOLOR = (player.isGoalie ? __TORCOLOR : getColor(player.pos));
                                const __COLOR = ((player.erfolg === undefined) ? color : __POSCOLOR);
 
@@ -1202,7 +1199,7 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                                    this.addFillCell(playerRow, player.erfolg) && this.addAndFillCell(playerRow, player.tNr, __COLOR, null, 0);
                                }
                                if (this.prio) {
-                                   this.addFillCell(playerRow, player.erfolg) && this.addAndFillCell(playerRow, player.isPrio ? '*' : "", __NEUCOLOR);
+                                   this.addFillCell(playerRow, player.erfolg) && this.addAndFillCell(playerRow, player.isPrio ? '*' : "", __NEWCOLOR);
                                }
                                if (this.eins) {
                                    const __EINS = ((player.einsatz < 1) ? "" : ((player.einsatz === 3) ? player.pos : "EIN"));
@@ -1242,7 +1239,7 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                                    }
                                } else {
                                    if (this.erw) {
-                                       this.addFillCell(playerRow, player.erfolg) && this.addAndFillCell(playerRow, - __ERWARTUNG, __NEUCOLOR, 'right', 2);
+                                       this.addFillCell(playerRow, player.erfolg) && this.addAndFillCell(playerRow, - __ERWARTUNG, __NEWCOLOR, 'right', 2);
                                    } else if (this.erwB) {
                                        this.addFillCell(playerRow);
                                    }
@@ -1313,7 +1310,7 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                                    this.addAndFillCell(playerRow, player.getSkill(), __COLOR, null, 2);
                                }
                                if (this.pos) {
-                                   this.addAndFillCell(playerRow, player.getPos(), __NEUCOLOR);
+                                   this.addAndFillCell(playerRow, player.getPos(), __NEWCOLOR);
                                }
 
                                // Einzelwerte mit Ende 18
@@ -1322,7 +1319,7 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                                        convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skillsEnd, function(value, cell, arr, index) {
                                                                                                                      UNUSED(arr);
                                                                                                                      if (~ __IDXPRI.indexOf(index)) {
-                                                                                                                         formatCell(cell, true, __OSBLAU, __NEUCOLOR, 1.0);
+                                                                                                                         formatCell(cell, true, __OSBLAU, __NEWCOLOR, 1.0);
                                                                                                                      }
                                                                                                                      return value;
                                                                                                                  });
@@ -1330,7 +1327,7 @@ Class.define(ColumnManagerZatReport, ColumnManagerBase, {
                                        convertArrayFromHTML(playerRow.cells, this.colIdx.Einz, player.skills.length, function(value, cell, arr, index) {
                                                                                                                          UNUSED(arr);
                                                                                                                          if (~ __IDXPRI.indexOf(index)) {
-                                                                                                                             formatCell(cell, true, __NEUCOLOR, null, 1.0);
+                                                                                                                             formatCell(cell, true, __NEWCOLOR, null, 1.0);
                                                                                                                          }
                                                                                                                          return value;
                                                                                                                      });
@@ -1693,7 +1690,7 @@ Class.define(PlayerRecordTraining, Object, {
                                       return sumSkills;
                                   },
         'getSkill'              : function(when = this.__TIME.now) {
-                                      return this.getSkillSum(when) / 17;
+                                      return this.getSkillSum(when) / __NUMSKILLS;
                                   },
         'getOpti'               : function(pos, when = this.__TIME.now) {
                                       UNUSED(pos, when);
@@ -1705,9 +1702,9 @@ if (this.zatGeb === 24) {
     console.error("__OVERFLOW = " + __OVERFLOW);
     console.error("__SUMALLSKILLS = " + __SUMALLSKILLS);
     console.error("__SUMPRISKILLS = " + __SUMPRISKILLS);
-    console.error("getOpti(" + pos + ") = " + ((4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / 27));
+    console.error("getOpti(" + pos + ") = " + ((4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / __NUMOPTI));
 }
-                                      return (4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / 27;
+                                      return (4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / __NUMOPTI;
 */
                                   },
         'getPrios'              : function(pos, when = this.__TIME.now) {
@@ -2176,7 +2173,7 @@ const procAufstellung = new PageManager("Zugabgabe - Aufstellung", null, () => {
                 const __ALTER = getAlter(__CURRENTROW, __COLUMNINDEX.Age);
                 const __POS = getPos(__CURRENTROW, __COLUMNINDEX.Spieler);
                 const __OPTI = getFloatFromHTML(__CURRENTROW.cells, __COLUMNINDEX.Opti);
-                const __O27 = parseInt((27 * __OPTI).toFixed(0), 10);
+                const __O27 = parseInt((__NUMOPTI * __OPTI).toFixed(0), 10);
 
                 __LOG[4]("Adding new player", '#' + __ID, __NAME, __ALTER, __POS, __OPTI.toFixed(2));
 
@@ -2499,7 +2496,7 @@ const procTraining = new PageManager("Training", null, () => {
             __NAMES[__INDEX] = __NAME;
             __AGES[__INDEX] = __ALTER;
             __POSITIONS[__INDEX] = __POS;
-            __OPTI27[__INDEX] = parseInt((27 * __OPTI).toFixed(0), 10);
+            __OPTI27[__INDEX] = parseInt((__NUMOPTI * __OPTI).toFixed(0), 10);
             //__VERLETZT[__INDEX] = 0;
             __SKILLS[__INDEX] = __PSKILL;
             __TSKILLS[__INDEX] = __TSKILL;
@@ -2681,7 +2678,7 @@ const procZatReport = new PageManager("ZAT-Report", null, () => {
                 const __ALTER = __AGES[__INDEX];
                 const __POS = __POSITIONS[__INDEX];
                 const __ISGOALIE = (__POS === "TOR");
-                const __OPTI = parseInt(__OPTI27[__INDEX], 10) / 27.0;
+                const __OPTI = parseInt(__OPTI27[__INDEX], 10) / __NUMOPTI;
                 const __VERL = __VERLETZT[__INDEX];
                 const __PSKILL = __SKILLS[__INDEX];
                 const __TSKILL = __TSKILLS[__INDEX];
