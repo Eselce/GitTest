@@ -143,6 +143,7 @@ const __TESTOPTCONFIG = {
     'team' : {            // Datenspeicher fuer Daten des Erst- bzw. Zweitteams
                    'Name'      : "team",
                    'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'Team',
                    'Hidden'    : true,
                    'Serial'    : true,
                    'Permanent' : true,

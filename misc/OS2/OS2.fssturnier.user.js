@@ -133,6 +133,7 @@ const __OPTCONFIG = {
     'team' : {            // Datenspeicher fuer Daten des Erst- bzw. Zweitteams
                    'Name'      : "team",
                    'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'Team',
                    'Hidden'    : false,
                    'Serial'    : true,
                    'Permanent' : true,

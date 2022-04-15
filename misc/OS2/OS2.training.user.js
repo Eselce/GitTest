@@ -390,6 +390,7 @@ const __OPTCONFIG = {
     'team' : {            // Datenspeicher fuer Daten des Erst- bzw. Zweitteams
                    'Name'      : "team",
                    'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'Team',
                    'Hidden'    : false,
                    'Serial'    : true,
                    'Permanent' : true,
@@ -408,7 +409,7 @@ const __OPTCONFIG = {
                    'Serial'    : true,
                    'AutoReset' : true,
                    'Permanent' : true,
-                   'Default'   : [null, null, null, null, null, null],
+                   'Default'   : [ null, null, null, null, null, null ],
                    'Submit'    : undefined,
                    'Cols'      : 36,
                    'Rows'      : 2,

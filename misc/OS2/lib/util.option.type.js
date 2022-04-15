@@ -32,13 +32,14 @@ const __OPTACTION = {
 
 // Notwendigkeit der Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
 const __OPTNEED = {
-    'MAN'   : "mandatory parameter",        // Muss-Parameter, darf nicht fehlen!
-    'DAT'   : "mandatory data parameter",   // Muss-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
-    'REC'   : "recommended parameter",      // Soll-Parameter: Nutzung dieser Parameter wird empfohlen
-    'VAL'   : "recommended parameter",      // Soll-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
-    'SEL'   : "recommended parameter",      // Soll-Parameter fuer Datentyp __OPTTYPES.MC
-    'OPT'   : "optional parameter",         // Optionale Parameter ohne Pficht
-    'INT'   : "internal parameter"          // Nicht in __OPTCONFIG verwenden!
+    'MAN'   : "mandatory parameter",            // Muss-Parameter, darf nicht fehlen!
+    'DAT'   : "mandatory data parameter",       // Muss-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
+    'CHO'   : "mandytory select parameter",     // Muss-Parameter fuer Datentyp __OPTTYPES.MC
+    'REC'   : "recommended parameter",          // Soll-Parameter: Nutzung dieser Parameter wird empfohlen
+    'VAL'   : "recommended data parameter",     // Soll-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
+    'SEL'   : "recommended select parameter",   // Soll-Parameter fuer Datentyp __OPTTYPES.MC
+    'OPT'   : "optional parameter",             // Optionale Parameter ohne Pficht
+    'INT'   : "internal parameter"              // Nicht in __OPTCONFIG verwenden!
 };
 
 // Abgeleitete Typen gemappt auf Haupttypen...
@@ -90,7 +91,7 @@ const __OPTITEMS = {
     'Submit'    : [ "onKeyDown-Code",                   'Code',         "",                         __OPTNEED.OPT ],
     'Title'     : [ "Titel",                            'String',       "$V Optionen",              __OPTNEED.OPT ],
     'Type'      : [ "Typ der Option",                   '__OPTTYPES',   "MC, SD, SI, SW",           __OPTNEED.REC ],
-    'ValType'   : [ "Datentyp der Werte",               'String',       "'Number', 'String'",       __OPTNEED.DAT ],
+    'ValType'   : [ "Datentyp der Werte",               'String',       "'Number', 'String'",       __OPTNEED.CHO ],
     'Value'     : [ "INTERNAL: Gesetzter Wert",         'any',          "",                         __OPTNEED.INT ]
 };
 const __OPTITEMSBYNEED = reverseMapping(__OPTITEMS, mappingPush);
