@@ -4650,7 +4650,7 @@ function checkOpt(opt, key = undefined) {
 // optSet: Zu validierende Options-Objekte
 // return Das uebergeben optSet (falls alle Optionen valide sind)
 function checkOptSet(optSet) {
-    Object.entries(optSet).forEach(([item, opt]) => checkOpt(opt, item));
+    Object.entries(optSet).forEach(([key, opt]) => checkOpt(opt, key));
 
     return optSet;
 }
@@ -4665,7 +4665,7 @@ function checkOptConfig(optConfig, preInit = false) {
     const __NAMEUSE = { };
 
     // Jede einzelne Option ueberpruefen...
-    __ENTRIES.forEach(([item, config]) => checkOptItem(config, item, preInit));
+    __ENTRIES.forEach(([key, config]) => checkOptItem(config, key, preInit));
 
     // Benutzte (interne Speicher-) Namen auf doppelte Eintraege ueberpruefen...
     __ENTRIES.forEach(([key, config]) => {
@@ -4677,7 +4677,7 @@ function checkOptConfig(optConfig, preInit = false) {
                 __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
                 throw RangeError("Internal name of option " + __LOG.info(__KEY, false) + " already used in option " + __LOG.info(__USED, false));
             } else {
-                __NAMEUSE[__NAME] = item;
+                __NAMEUSE[__NAME] = __KEY;
             }
         });
 
