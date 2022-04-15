@@ -4499,7 +4499,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
         // Redundante Pruefung auf Namen der Option (spaeter Ueberpruefung von __MAN)...
         if (__NAME === undefined) {
             __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-            throw Error("Unknown 'Name' for option " + __LOG.info(key, false));
+            throw Error("Unknown 'Name' for option " + __LOG.info(__KEY, false));
         }
 
         // Ueberpruefung der Pflichtparameter...
@@ -4508,7 +4508,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
                 if (! __ITEM) {
                     __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    throw Error("Option " + __LOG.info(key, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
+                    throw Error("Option " + __LOG.info(__KEY, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
                 }
             });
         __DAT.forEach(item => {
@@ -4516,7 +4516,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
                 if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
                     __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    throw Error("Option " + __LOG.info(key, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
+                    throw Error("Option " + __LOG.info(__KEY, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
                 }
             });
         __DAT.forEach(item => {
@@ -4524,7 +4524,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
                 if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
                     __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    throw Error("Option " + __LOG.info(key, false) + " is missing mandatory select parameter " + __LOG.info(item, false) + "...");
+                    throw Error("Option " + __LOG.info(__KEY, false) + " is missing mandatory select parameter " + __LOG.info(item, false) + "...");
                 }
             });
 
@@ -4533,21 +4533,21 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
                 const __ITEM = __CONFIG[item];
 
                 if (! __ITEM) {
-                    __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended parameter " + __LOG.info(item, false) + "...");
+                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended parameter " + __LOG.info(item, false) + "...");
                 }
             });
         __VAL.forEach(item => {
                 const __ITEM = __CONFIG[item];
 
                 if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
-                    __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended data parameter " + __LOG.info(item, false) + "...");
+                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended data parameter " + __LOG.info(item, false) + "...");
                 }
             });
         __SEL.forEach(item => {
                 const __ITEM = __CONFIG[item];
 
                 if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
-                    __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended select parameter " + __LOG.info(item, false) + "...");
+                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended select parameter " + __LOG.info(item, false) + "...");
                 }
             });
     }
@@ -4558,18 +4558,18 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
             const __ITEMINFO = __OPTITEMS[item];
             const [ __ITEMTEXT, __ITEMTYPE, __ITEMEXAMPLES, __ITEMNEED] =
                     (__ITEMINFO || [ "Error", undefined, "", __OPTNEED.OPT ]);
-            const __KEYITEM = key + '[' + item + ']';
+            const __KEYITEM = __KEY + '[' + item + ']';
             const __TYPE = (__OPTITEMTYPES[__ITEMTYPE] || __ITEMTYPE);
             let isValid = true;
 
             if (! __ITEMINFO) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw Error("Unknown parameter " + __LOG.info(item, false) + " for option " + __LOG.info(key, false));
+                throw Error("Unknown parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false));
             }
 
             if (preInit && (__ITEMNEED === __OPTNEED.INT)) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(key, false));
+                throw TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(__KEY, false));
             }
 
             switch (__TYPE) {
@@ -4589,7 +4589,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
                                     break;
                 case 'any'        : break;  // OK
                 default           : __LOG[1]("checkOptItem(): Internal error in " + codeLine(true, true, true, false));
-                                    throw TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(key, false));
+                                    throw TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(__KEY, false));
             }
 
             if (__ITEMVALUE) {
@@ -4608,7 +4608,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
             }
             if (! isValid) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(key, false) + " is not of type " + __ITEMTYPE);
+                throw TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false) + " is not of type " + __ITEMTYPE);
             }
         });
 
@@ -4668,13 +4668,14 @@ function checkOptConfig(optConfig, preInit = false) {
     __ENTRIES.forEach(([item, config]) => checkOptItem(config, item, preInit));
 
     // Benutzte (interne Speicher-) Namen auf doppelte Eintraege ueberpruefen...
-    __ENTRIES.forEach(([item, config]) => {
+    __ENTRIES.forEach(([key, config]) => {
+            const __KEY = key;
             const __NAME = config.Name;  // Muss vorhanden sein, da vorher ueberprueft!
             const __USED = __NAMEUSE[__NAME];
 
             if (__USED) {
                 __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-                throw RangeError("Internal name of option " + __LOG.info(key, false) + " already used in option " + __LOG.info(__USED, false));
+                throw RangeError("Internal name of option " + __LOG.info(__KEY, false) + " already used in option " + __LOG.info(__USED, false));
             } else {
                 __NAMEUSE[__NAME] = item;
             }
