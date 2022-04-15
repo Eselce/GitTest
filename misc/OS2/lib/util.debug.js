@@ -98,7 +98,7 @@ function checkObjClass(obj, cls, strict = false, label = "", objName = undefined
     return ((obj instanceof cls) || checkType(obj, 'object', strict, __LABEL, __OBJ, __TYPE));
 }
 
-// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
+// Funktion zum Testen eines Wertes auf einen bestimmten Typen
 // value: Der zu pruefende Wert
 // type: Erforderlicher Typ
 // strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
@@ -122,7 +122,35 @@ function checkType(value, type, strict = false, label = "", valName = undefined,
     return true;
 }
 
-// ==================== Ende Hilfsfunktionen fuer Typueberpruefungens ====================
+// Funktion zum Testen eines Wertes auf ein bestimmtes "Enum"-Objekt
+// value: Der zu pruefende Wert
+// enumObj: Objekt mit den "Enum"-Mappings (Typen)
+// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
+// label: Prefix fuer die Fehlerzeile
+// valName: Name des Wertes oder der Variablen
+// enumName: Name des "Enums" fuer die Fehlermeldung
+// throw Wirft im Fehlerfall (also, wenn der Typ nicht stimmt) einen TypeError
+// return true, falls kein Error geworfen wurde
+function checkEnumObj(value, enumObj, strict = false, label = "", valName = undefined, enumName = undefined) {
+    const __TYPE = (enumName || enumObj);
+    const __VAL = (valName || "Value");
+    const __LABEL = (label || "Error");
+
+    // enumObj sollte ein "Enum"-Objekt sein...
+    checkType(enumObj, 'object', true, "checkEnumObj(" + __LOG.info(valName, false) + ')', "enumObj", "Object");
+
+    if (strict || ((value !== undefined) && (value !== null))) {
+        const __VALUES = Object.values(enumObj);
+        if (! __VALUES.includes(value)) {
+            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                            __LOG.info(value, true, true) + ' ' + String(value));
+        }
+    }
+
+    return true;
+}
+
+// ==================== Ende Hilfsfunktionen fuer Typueberpruefungen ====================
 
 // Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
 // ex: Exception, Error o.ae. mit 'stack' Eigenschaft, die ein Stacktrace enthaelt
