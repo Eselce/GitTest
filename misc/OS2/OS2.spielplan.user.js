@@ -505,7 +505,7 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
 // return Gefuelltes Objekt mit den gesetzten Optionen
 function prepareOptions(optSet, optParams) {
     // Werte aus der HTML-Seite ermitteln...
-    const __BOXSAISONS = document.getElementsByTagName('option');
+    const __BOXSAISONS = getTags('option');
     const __SAISON = getSelectionFromComboBox(__BOXSAISONS, 0, 'Number');
     const __LIGASIZE = (optParams.Tab ? getLigaSizeFromSpielplan(optParams.Tab.rows, optParams.Zei, optParams.Spa, optSet.getOptValue('saison')) : undefined);
 
