@@ -33,11 +33,11 @@
                     }
                     popen = newopen;
                     if (inopen === true) {
-                        document.getElementById('script_' + id).style.display = 'none';
-                        document.getElementById('openclose_' + id).src = 'img/geschlossen.gif';
+                        getElementById('script_' + id).style.display = 'none';
+                        getElementById('openclose_' + id).src = 'img/geschlossen.gif';
                     } else {
-                        document.getElementById('script_' + id).style.display = "";
-                        document.getElementById('openclose_' + id).src = 'img/offen.gif';
+                        getElementById('script_' + id).style.display = "";
+                        getElementById('openclose_' + id).src = 'img/offen.gif';
                         popen.push(id);
                     }
                 }
@@ -120,7 +120,7 @@
                     tr.firstChild.setAttribute('colspan', 5);
                 }
                 function fillScriptTable(id, scriptMetaInfos, filter = Object.keys(scriptMeta), sortFun = undefined) {
-                    var table = document.getElementById(id);
+                    var table = getElementById(id);
                     if (table && ! table.children.length) {
                         var scriptIds = ((typeof filter == 'function') ? Object.keys(scriptMeta).filter(filter) : filter).sort(sortFun);
                         addRow(table, [
@@ -441,12 +441,14 @@
 // @grant        GM.setValue
 // @grant        GM.deleteValue
 // @grant        GM.registerMenuCommand
+// @grant        GM.addStyle
 // @grant        GM.info
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
 // @grant        GM_registerMenuCommand
+// @grant        GM_addStyle
 // @grant        GM_info
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
