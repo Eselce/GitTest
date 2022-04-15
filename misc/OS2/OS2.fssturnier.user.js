@@ -3398,6 +3398,7 @@ const __OPTCONFIG = {
                    'FormPrio'  : undefined,
                    'Name'      : "oldStorage",
                    'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'String',
                    'PreInit'   : true,
                    'AutoReset' : true,
                    'Hidden'    : true
