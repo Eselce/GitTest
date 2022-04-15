@@ -25,11 +25,12 @@
 
 // Zeigt eine Option auf der Seite als Auswahlbox an
 // opt: Anzuzeigende Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // return String mit dem HTML-Code
-function getOptionSelect(opt) {
+function getOptionSelect(opt, defValue = undefined) {
     const __CONFIG = getOptConfig(opt);
     const __NAME = getOptName(opt);
-    const __VALUE = getOptValue(opt);
+    const __VALUE = getOptValue(opt, defValue);
     const __ACTION = getFormActionEvent(opt, false, undefined, 'change', undefined);
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __CONFIG.Label, true);
     const __TITLE = substParam(getValue(__CONFIG.Title, __CONFIG.Label), __VALUE);
@@ -51,11 +52,12 @@ function getOptionSelect(opt) {
 
 // Zeigt eine Option auf der Seite als Radiobutton an
 // opt: Anzuzeigende Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // return String mit dem HTML-Code
-function getOptionRadio(opt) {
+function getOptionRadio(opt, defValue = false) {
     const __CONFIG = getOptConfig(opt);
     const __NAME = getOptName(opt);
-    const __VALUE = getOptValue(opt, false);
+    const __VALUE = getOptValue(opt, defValue);
     const __ACTION = getFormActionEvent(opt, false, true, 'click', false);
     const __ALTACTION = getFormActionEvent(opt, true, false, 'click', false);
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel);  // nur nutzen, falls angegeben
@@ -83,11 +85,12 @@ function getOptionRadio(opt) {
 
 // Zeigt eine Option auf der Seite als Checkbox an
 // opt: Anzuzeigende Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // return String mit dem HTML-Code
-function getOptionCheckbox(opt) {
+function getOptionCheckbox(opt, defValue = false) {
     const __CONFIG = getOptConfig(opt);
     const __NAME = getOptName(opt);
-    const __VALUE = getOptValue(opt, false);
+    const __VALUE = getOptValue(opt, defValue);
     const __ACTION = getFormActionEvent(opt, __VALUE, ! __VALUE, 'click', false);
     const __VALUELABEL = (__VALUE ? __CONFIG.Label : getValue(__CONFIG.AltLabel, __CONFIG.Label));
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __CONFIG.Label);
@@ -101,11 +104,12 @@ function getOptionCheckbox(opt) {
 
 // Zeigt eine Option auf der Seite als Daten-Textfeld an
 // opt: Anzuzeigende Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // return String mit dem HTML-Code
-function getOptionTextarea(opt) {
+function getOptionTextarea(opt, defValue = "") {
     const __CONFIG = getOptConfig(opt);
     const __NAME = getOptName(opt);
-    const __VALUE = getOptValue(opt);
+    const __VALUE = getOptValue(opt, defValue);
     const __ACTION = getFormActionEvent(opt, false, undefined, 'submit', undefined);
     const __SUBMIT = getValue(__CONFIG.Submit, "");
     //const __ONSUBMIT = (__SUBMIT.length ? ' onKeyDown="' + __SUBMIT + '"': "");
@@ -122,11 +126,12 @@ function getOptionTextarea(opt) {
 
 // Zeigt eine Option auf der Seite als Button an
 // opt: Anzuzeigende Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // return String mit dem HTML-Code
-function getOptionButton(opt) {
+function getOptionButton(opt, defValue = false) {
     const __CONFIG = getOptConfig(opt);
     const __NAME = getOptName(opt);
-    const __VALUE = getOptValue(opt, false);
+    const __VALUE = getOptValue(opt, defValue);
     const __ACTION = getFormActionEvent(opt, __VALUE, ! __VALUE, 'click', false);
     const __BUTTONLABEL = (__VALUE ? getValue(__CONFIG.AltLabel, __CONFIG.Label) : __CONFIG.Label);
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __BUTTONLABEL);
