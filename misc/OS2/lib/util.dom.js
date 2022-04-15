@@ -88,7 +88,7 @@ function removeEvent(obj, type, callback, capture = false) {
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
 function addDocEvent(id, type, callback, capture = false) {
-    const __OBJ = document.getElementById(id);
+    const __OBJ = getElementById(id);
 
     return addEvent(__OBJ, type, callback, capture);
 }
@@ -100,7 +100,7 @@ function addDocEvent(id, type, callback, capture = false) {
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
 function removeDocEvent(id, type, callback, capture = false) {
-    const __OBJ = document.getElementById(id);
+    const __OBJ = getElementById(id);
 
     return removeEvent(__OBJ, type, callback, capture);
 }
@@ -157,13 +157,33 @@ function getElementByName(name, index = 0, doc = document) {
     return __ELEMENT;
 }
 
+// Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber die ID
+// id: ID des Elements (siehe "id=")
+// doc: Dokument (document)
+// return Gesuchtes Element oder undefined (falls nicht gefunden)
+function getElementById(id, doc = document) {
+    const __ELEMENT = doc.getElementById(id);
+
+    return __ELEMENT;
+}
+
+// Hilfsfunktion fuer die Ermittlung aller Elemente der Seite (Default: Tabelle)
+// tag: Tag des Elements ('table')
+// doc: Dokument (document)
+// return Gesuchte Elemente
+function getTags(tag = 'table', doc = document) {
+    const __TAGS = doc.getElementsByTagName(tag);
+
+    return __TAGS;
+}
+
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
 // tag: Tag des Elements ('table')
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
-function getTable(index, tag = 'table', doc = document) {
-    const __TAGS = doc.getElementsByTagName(tag);
+function getTable(index = 0, tag = 'table', doc = document) {
+    const __TAGS = getTags(tag, doc);
     const __TABLE = (__TAGS ? __TAGS[index] : undefined);
 
     return __TABLE;
@@ -193,12 +213,13 @@ function getRows(selector = 'table', index = 0, doc = document) {
     return __ROWS;
 }
 
-// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle
+// Hilfsfunktion fuer die Ermittlung der Zeilen eines Elements (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
+// tag: Tag des Elements ('table')
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getTableRows(index, doc = document) {
-    const __TABLE = getTable(index, 'table', doc);
+function getTableRows(index = 0, tag = 'table', doc = document) {
+    const __TABLE = getTable(index, tag, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
     return __ROWS;
@@ -209,7 +230,7 @@ function getTableRows(index, doc = document) {
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
 function getRowsById(id, doc = document) {
-    const __TABLE = doc.getElementById(id);
+    const __TABLE = getElementById(id, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
     return __ROWS;
@@ -387,7 +408,7 @@ function getUpperClassNameFromElement(element) {
 // defValue: Default-Wert, falls nichts selektiert ist
 // return Array mit den Options-Werten
 function getSelectionArray(element, valType = 'String', valFun = getSelectedValue, defValue = undefined) {
-    const __SELECT = ((typeof element) === 'string' ? getValue(document.getElementsByName(element), [])[0] : element);
+    const __SELECT = ((typeof element) === 'string' ? getElementByName(element) : element);
 
     return (__SELECT ? [].map.call(__SELECT.options, function(option) {
                                                          return this[valType](getValue(valFun(option), defValue));
@@ -401,7 +422,7 @@ function getSelectionArray(element, valType = 'String', valFun = getSelectedValu
 // defValue: Default-Wert, falls nichts selektiert ist
 // return Ausgewaehlter Wert
 function getSelection(element, valType = 'String', valFun = getSelectedOptionText, defValue = undefined) {
-    const __SELECT = ((typeof element) === 'string' ? getValue(document.getElementsByName(element), [])[0] : element);
+    const __SELECT = ((typeof element) === 'string' ? getElementByName(element) : element);
 
     return this[valType](getValue(valFun(__SELECT), defValue));
 }

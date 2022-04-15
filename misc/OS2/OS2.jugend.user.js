@@ -836,6 +836,7 @@ const __OPTCONFIG = {
                    'FormPrio'  : undefined,
                    'Name'      : "oldStorage",
                    'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'String',
                    'PreInit'   : true,
                    'AutoReset' : true,
                    'Hidden'    : true
@@ -1662,7 +1663,7 @@ const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
 function prepareOptions(optSet, optParams) {
     if (optParams.getDonation) {
         // Jugendfoerderung aus der Options-HTML-Seite ermitteln...
-        const __BOXDONATION = document.getElementsByTagName('option');
+        const __BOXDONATION = getTags('option');
         const __DONATION = getSelectionFromComboBox(__BOXDONATION, 10000, 'Number');
 
         __LOG[4]("Jugendf\u00F6rderung: " + __DONATION + " Euro");

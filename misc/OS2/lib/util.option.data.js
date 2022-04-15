@@ -89,6 +89,133 @@ function getSharedRef(shared, item = undefined) {
 
 // ==================== Abschnitt fuer Zugriff auf Options-Parameter ====================
 
+// Prueft ein Objekt, ob es eine syntaktisch valide Konfiguration einer (ueber Menu) gesetzten Option ist
+// optItem: Zu validierendes Konfigurations-Item-Objekt
+// key: Falls bekannt, der Item-Key dieser Option (wird auf Korrektheit ueberprueft)
+// preInit: Falls true, dann geht es um die Grundinitialisierung, in der keine internen Optionen erlaubt sind!
+// return [__CONFIG, __NAME, __KEY, ...] Konfiguration und ggfs. Name und/oder Key der Option
+function checkOptItem(optItem, key = undefined, preInit = false) {
+    const __CONFIG = optItem;
+    const __OPTTYPE = __CONFIG.Type;
+    const __ITEMS = Object.keys(__CONFIG);
+    const __NAME = __CONFIG.Name;  // TODO Shared Ref
+    const __KEY = key;
+    const __MAN = __OPTITEMSBYNEED[__OPTNEED.MAN];  // Muss-Parameter
+    const __DAT = __OPTITEMSBYNEED[__OPTNEED.DAT];  // Muss-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
+    const __REC = __OPTITEMSBYNEED[__OPTNEED.REC];  // Soll-Parameter
+    const __VAL = __OPTITEMSBYNEED[__OPTNEED.VAL];  // Soll-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
+    const __SEL = __OPTITEMSBYNEED[__OPTNEED.SEL];  // Soll-Parameter fuer __OPTTYPES.MC
+
+    // Redundante Pruefung auf Namen der Option (spaeter Ueberpruefung von __MAN)...
+    if (__NAME === undefined) {
+        __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+        throw Error("Unknown 'Name' for option " + __LOG.info(key, false));
+    }
+
+    // Ueberpruefung der Pflichtparameter...
+    __MAN.forEach(item => {
+            const __ITEM = __CONFIG[item];
+
+            if (! __ITEM) {
+                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                throw Error("Option " + __LOG.info(key, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
+            }
+        });
+    __DAT.forEach(item => {
+            const __ITEM = __CONFIG[item];
+
+            if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
+                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                throw Error("Option " + __LOG.info(key, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
+            }
+        });
+
+    // Ueberpruefung der Pflichtparameter...
+    __REC.forEach(item => {
+            const __ITEM = __CONFIG[item];
+
+            if (! __ITEM) {
+                __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended parameter " + __LOG.info(item, false) + "...");
+            }
+        });
+    __VAL.forEach(item => {
+            const __ITEM = __CONFIG[item];
+
+            if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
+                __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended data parameter " + __LOG.info(item, false) + "...");
+            }
+        });
+    __SEL.forEach(item => {
+            const __ITEM = __CONFIG[item];
+
+            if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
+                __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended select parameter " + __LOG.info(item, false) + "...");
+            }
+        });
+
+    // Ueberpruefung der angegebenen Parameter auf Bekanntheit und Typen...
+    __ITEMS.forEach(item => {
+            const __ITEMVALUE = __CONFIG[item];
+            const __ITEMINFO = __OPTITEMS[item];
+            const [ __ITEMTEXT, __ITEMTYPE, __ITEMEXAMPLES, __ITEMNEED] =
+                    (__ITEMINFO || [ "Error", undefined, "", __OPTNEED.OPT ]);
+            const __KEYITEM = key + '[' + item + ']';
+            const __TYPE = (__OPTITEMTYPES[__ITEMTYPE] || __ITEMTYPE);
+            let isValid = true;
+
+            if (! __ITEMINFO) {
+                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                throw Error("Unknown parameter " + __LOG.info(item, false) + " for option " + __LOG.info(key, false));
+            }
+
+            if (preInit && (__ITEMNEED === __OPTNEED.INT)) {
+                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                throw TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(key, false));
+            }
+
+            switch (__TYPE) {
+                case 'Boolean'    :
+                case 'Function'   :
+                case 'Number'     :
+                case 'Object'     :
+                case 'Promise'    :
+                case 'String'     :
+                                    checkType(__ITEMVALUE, __TYPE.toLowerCase(), false, "checkOptItem()", __KEYITEM, __TYPE);
+                                    break;
+                case '__OPTACTION':
+                                    checkEnumObj(__ITEMVALUE, __OPTACTION, true, "checkOptItem()", __KEYITEM, __TYPE);
+                                    break;
+                case '__OPTTYPES' :
+                                    checkEnumObj(__ITEMVALUE, __OPTTYPES, true, "checkOptItem()", __KEYITEM, __TYPE);
+                                    break;
+                case 'any'        : break;  // OK
+                default           : __LOG[1]("checkOptItem(): Internal error in " + codeLine(true, true, true, false));
+                                    throw TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(key, false));
+            }
+
+            if (__ITEMVALUE) {
+                switch (__ITEMTYPE) {
+                    case 'Array'      : isValid = Array.isArray(__ITEMVALUE);
+                                        break;
+                    case 'Char'       : isValid = (__ITEMVALUE.length === 1);
+                                        break;
+                    case 'Code'       : isValid = false;  // TODO Code-Schutz verfeinern (bisher: gesperrt)
+                                        break;
+                    case 'Integer'    : isValid = Number.isInteger(__ITEMVALUE);
+                                        break;
+                    default           : isValid = true;
+                                        break;
+                }
+            }
+            if (! isValid) {
+                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                throw TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(key, false) + " is not of type " + __ITEMTYPE);
+            }
+        });
+
+    return [ __CONFIG, __NAME, __KEY ];
+}
+
 // Prueft ein Objekt, ob es eine syntaktisch valide (ueber Menu) gesetzte Option ist
 // opt: Zu validierendes Options-Objekt
 // key: Falls bekannt, der Item-Key dieser Option (wird auf Korrektheit ueberprueft)
@@ -127,6 +254,36 @@ function checkOptSet(optSet) {
     Object.entries(optSet).forEach(([item, opt]) => checkOpt(opt, item));
 
     return optSet;
+}
+
+// Prueft alle Objekt in einer optConfig, ob sie syntaktisch valide Konfigurationen der (ueber Menu) gesetzte Optionen sind
+// optConfig: Zu validierende Konfigurations-Objekte fuer Optionen
+// preInit: Falls true, dann geht es um die Grundinitialisierung, in der keine internen Optionen erlaubt sind!
+// return Das uebergeben optConfig (falls alle Optionen valide sind)
+function checkOptConfig(optConfig, preInit = false) {
+    const __OPTCONFIG = optConfig;
+    const __ENTRIES = Object.entries(__OPTCONFIG);
+    const __NAMEUSE = { };
+
+    // Jede einzelne Option ueberpruefen...
+    __ENTRIES.forEach(([item, config]) => checkOptItem(config, item, preInit));
+
+    // Benutzte (interne Speicher-) Namen auf doppelte Eintraege ueberpruefen...
+    __ENTRIES.forEach(([item, config]) => {
+            const __NAME = config.Name;  // Muss vorhanden sein, da vorher ueberprueft!
+            const __USED = __NAMEUSE[__NAME];
+
+            if (__USED) {
+                __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
+                throw RangeError("Internal name of option " + __LOG.info(key, false) + " already used in option " + __LOG.info(__USED, false));
+            } else {
+                __NAMEUSE[__NAME] = item;
+            }
+        });
+
+    __LOG[2](Object.keys(__OPTCONFIG).length + " Optionen erfolgreich \u00FCberpr\u00FCft...");
+
+    return __OPTCONFIG;
 }
 
 // Gibt eine Option sicher zurueck
@@ -290,7 +447,7 @@ function setOpt(opt, value, reload = false, onFulfilled = undefined, onRejected 
 
 // Ermittelt die naechste moegliche Option
 // opt: Config und Value der Option
-// defValue: Ggfs. zu setzender Wert
+// defValue: Ggfs. zu setzender Wert fuer den Fall, dass nichts gesetzt ist
 // return Zu setzender Wert
 function getNextOpt(opt, defValue = undefined) {
     const [ __CONFIG ] = checkOpt(opt);

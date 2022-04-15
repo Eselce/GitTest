@@ -148,7 +148,7 @@ function deleteOption(opt, force = false, reset = true) {
     const [ __CONFIG, __NAME ] = checkOpt(opt);
 
     if (force || ! __CONFIG.Permanent) {
-        const __VALUE = getOptValue(opt, undefined, false);
+        const __VALUE = getOptValue(opt, undefined);
         let newValue;
 
         return discardValue(__NAME).then(() => {

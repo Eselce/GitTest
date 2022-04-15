@@ -107,11 +107,11 @@ function getHeader() {
 					}
 					popen = newopen;
 					if (inopen === true) {
-						document.getElementById('script_' + id).style.display = 'none';
-						document.getElementById('openclose_' + id).src = 'img/geschlossen.gif';
+						getElementById('script_' + id).style.display = 'none';
+						getElementById('openclose_' + id).src = 'img/geschlossen.gif';
 					} else {
-						document.getElementById('script_' + id).style.display = "";
-						document.getElementById('openclose_' + id).src = 'img/offen.gif';
+						getElementById('script_' + id).style.display = "";
+						getElementById('openclose_' + id).src = 'img/offen.gif';
 						popen.push(id);
 					}
 				}
@@ -194,7 +194,7 @@ function getHeader() {
 					tr.firstChild.setAttribute('colspan', 5);
 				}
 				function fillScriptTable(id, scriptMetaInfos, filter = Object.keys(scriptMeta), sortFun = undefined) {
-					var table = document.getElementById(id);
+					var table = getElementById(id);
 					if (table && ! table.children.length) {
 						var scriptIds = ((typeof filter == 'function') ? Object.keys(scriptMeta).filter(filter) : filter).sort(sortFun);
 						addRow(table, [

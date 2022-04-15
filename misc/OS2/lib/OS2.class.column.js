@@ -238,7 +238,6 @@ Class.define(ColumnManager, Object, {
                                const __IDXPRI = getIdxPriSkills(player.getPos());
                                const __COLOR = __WARNDRAW.getColor(player.isGoalie ? getColor('TOR') : color); // Angepasst an Ziehwarnung
                                const __POS1COLOR = getColor((player.getPosPercent() > 99.99) ? 'LEI' : player.getPos());
-                               const __OSBLAU = getColor("");
 
                                // Aktuelle Werte
                                if (this.fpId) {

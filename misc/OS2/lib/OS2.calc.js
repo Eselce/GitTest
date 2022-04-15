@@ -25,6 +25,12 @@ const __OLDSAISONZATS   = 70;   // Anzahl der ZATs pro Saison, nur in der 1. und
 const __OLDMONATZATS    =  7;   // Anzahl der ZATs pro Abrechnungs-Monat, nur in der 1. Saison
 const __OLDSAISONFIRST  =  1;   // Erste Saison mit diesen Parametern, ab Saison 1
 
+const __OSBLAU          = '#111166';    // Globale Hintergrundfarbe bei OS2
+
+const __NUMOPTI         = 27;
+const __NUMSKILLS       = 17;
+const __NUMTRAINABLE    = 11;
+
 // ==================== Ende Abschnitt fuer konstante Parameter bei OS2 ====================
 
 // ==================== Abschnitt fuer dezimales Alter (Potential-Berechnung) ====================

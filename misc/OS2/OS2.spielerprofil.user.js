@@ -214,6 +214,7 @@ const __OPTCONFIG = {
                    'FormPrio'  : undefined,
                    'Name'      : "oldStorage",
                    'Type'      : __OPTTYPES.SD,
+                   'ValType'   : 'String',
                    'PreInit'   : true,
                    'AutoReset' : true,
                    'Hidden'    : true
@@ -272,7 +273,7 @@ function showSpieler(currZAT) {
 
     // Skills auslesen...
     for (let i = 1, count = 0; i < 7; i++) {
-        for (let j = 0; (j < 3) && (count < 17); j++) {
+        for (let j = 0; (j < 3) && (count < __NUMSKILLS); j++) {
             const __TEXT = __ROWS2[i].cells[2 * j].textContent;
 
             __SKILLS[count++] = getNumber(__TEXT.substring(__TEXT.length - 2, __TEXT.length));

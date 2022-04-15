@@ -17,8 +17,9 @@
 // Verarbeitet die URL der Seite und ermittelt die Nummer der gewuenschten Unterseite
 // url: Adresse der Seite
 // leafs: Liste von Filenamen mit Basis-Seitennummern (zu denen ggfs. Query-Parameter addiert wird)
-// item: Query-Parameter, der die Nummer der Unterseite angibt (wird zur Basisnummer addiert)
-// return Parameter aus der URL der Seite als Nummer
+// item: Query-Parameter, der die Nummer der Unterseite angibt (wird zur Basisnummer addiert),
+//      allerdings nur, wenn Basis-Seitennummer positiv ist, ansonsten Absolutwert ohne Unterseite
+// return Parameter aus der URL der Seite als Nummer (-1, falls nicht gefunden)
 function getPageIdFromURL(url, leafs, item = 'page') {
     const __URI = new URI(url);
     const __LEAF = __URI.getLeaf();
@@ -26,8 +27,9 @@ function getPageIdFromURL(url, leafs, item = 'page') {
     for (let leaf in leafs) {
         if (__LEAF === leaf) {
             const __BASE = getValue(leafs[leaf], 0);
+            const __ITEM = getValue(__URI.getQueryPar(item), 0);
 
-            return __BASE + getValue(__URI.getQueryPar(item), 0);
+            return Math.abs(__BASE) + ((__BASE >= 0) ? __ITEM : 0);
         }
     }
 
