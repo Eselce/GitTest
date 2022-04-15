@@ -1670,7 +1670,7 @@ function checkObjClass(obj, cls, strict = false, label = "", objName = undefined
     return ((obj instanceof cls) || checkType(obj, 'object', strict, __LABEL, __OBJ, __TYPE));
 }
 
-// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
+// Funktion zum Testen eines Wertes auf einen bestimmten Typen
 // value: Der zu pruefende Wert
 // type: Erforderlicher Typ
 // strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
@@ -1694,7 +1694,35 @@ function checkType(value, type, strict = false, label = "", valName = undefined,
     return true;
 }
 
-// ==================== Ende Hilfsfunktionen fuer Typueberpruefungens ====================
+// Funktion zum Testen eines Wertes auf ein bestimmtes "Enum"-Objekt
+// value: Der zu pruefende Wert
+// enumObj: Objekt mit den "Enum"-Mappings (Typen)
+// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
+// label: Prefix fuer die Fehlerzeile
+// valName: Name des Wertes oder der Variablen
+// enumName: Name des "Enums" fuer die Fehlermeldung
+// throw Wirft im Fehlerfall (also, wenn der Typ nicht stimmt) einen TypeError
+// return true, falls kein Error geworfen wurde
+function checkEnumObj(value, enumObj, strict = false, label = "", valName = undefined, enumName = undefined) {
+    const __TYPE = (enumName || enumObj);
+    const __VAL = (valName || "Value");
+    const __LABEL = (label || "Error");
+
+    // enumObj sollte ein "Enum"-Objekt sein...
+    checkType(enumObj, 'object', true, "checkEnumObj(" + __LOG.info(valName, false) + ')', "enumObj", "Object");
+
+    if (strict || ((value !== undefined) && (value !== null))) {
+        const __VALUES = Object.values(enumObj);
+        if (! __VALUES.includes(value)) {
+            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                            __LOG.info(value, true, true) + ' ' + String(value));
+        }
+    }
+
+    return true;
+}
+
+// ==================== Ende Hilfsfunktionen fuer Typueberpruefungen ====================
 
 // Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
 // ex: Exception, Error o.ae. mit 'stack' Eigenschaft, die ein Stacktrace enthaelt
@@ -2631,7 +2659,7 @@ function removeEvent(obj, type, callback, capture = false) {
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
 function addDocEvent(id, type, callback, capture = false) {
-    const __OBJ = document.getElementById(id);
+    const __OBJ = getElementById(id);
 
     return addEvent(__OBJ, type, callback, capture);
 }
@@ -2643,7 +2671,7 @@ function addDocEvent(id, type, callback, capture = false) {
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
 function removeDocEvent(id, type, callback, capture = false) {
-    const __OBJ = document.getElementById(id);
+    const __OBJ = getElementById(id);
 
     return removeEvent(__OBJ, type, callback, capture);
 }
@@ -2700,13 +2728,33 @@ function getElementByName(name, index = 0, doc = document) {
     return __ELEMENT;
 }
 
+// Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber die ID
+// id: ID des Elements (siehe "id=")
+// doc: Dokument (document)
+// return Gesuchtes Element oder undefined (falls nicht gefunden)
+function getElementById(id, doc = document) {
+    const __ELEMENT = doc.getElementById(id);
+
+    return __ELEMENT;
+}
+
+// Hilfsfunktion fuer die Ermittlung aller Elemente der Seite (Default: Tabelle)
+// tag: Tag des Elements ('table')
+// doc: Dokument (document)
+// return Gesuchte Elemente
+function getTags(tag = 'table', doc = document) {
+    const __TAGS = doc.getElementsByTagName(tag);
+
+    return __TAGS;
+}
+
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
 // tag: Tag des Elements ('table')
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
-function getTable(index, tag = 'table', doc = document) {
-    const __TAGS = doc.getElementsByTagName(tag);
+function getTable(index = 0, tag = 'table', doc = document) {
+    const __TAGS = getTags(tag, doc);
     const __TABLE = (__TAGS ? __TAGS[index] : undefined);
 
     return __TABLE;
@@ -2736,12 +2784,13 @@ function getRows(selector = 'table', index = 0, doc = document) {
     return __ROWS;
 }
 
-// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle
+// Hilfsfunktion fuer die Ermittlung der Zeilen eines Elements (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
+// tag: Tag des Elements ('table')
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getTableRows(index, doc = document) {
-    const __TABLE = getTable(index, 'table', doc);
+function getTableRows(index = 0, tag = 'table', doc = document) {
+    const __TABLE = getTable(index, tag, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
     return __ROWS;
@@ -2752,7 +2801,7 @@ function getTableRows(index, doc = document) {
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
 function getRowsById(id, doc = document) {
-    const __TABLE = doc.getElementById(id);
+    const __TABLE = getElementById(id, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
     return __ROWS;
@@ -2930,7 +2979,7 @@ function getUpperClassNameFromElement(element) {
 // defValue: Default-Wert, falls nichts selektiert ist
 // return Array mit den Options-Werten
 function getSelectionArray(element, valType = 'String', valFun = getSelectedValue, defValue = undefined) {
-    const __SELECT = ((typeof element) === 'string' ? getValue(document.getElementsByName(element), [])[0] : element);
+    const __SELECT = ((typeof element) === 'string' ? getElementByName(element) : element);
 
     return (__SELECT ? [].map.call(__SELECT.options, function(option) {
                                                          return this[valType](getValue(valFun(option), defValue));
@@ -2944,7 +2993,7 @@ function getSelectionArray(element, valType = 'String', valFun = getSelectedValu
 // defValue: Default-Wert, falls nichts selektiert ist
 // return Ausgewaehlter Wert
 function getSelection(element, valType = 'String', valFun = getSelectedOptionText, defValue = undefined) {
-    const __SELECT = ((typeof element) === 'string' ? getValue(document.getElementsByName(element), [])[0] : element);
+    const __SELECT = ((typeof element) === 'string' ? getElementByName(element) : element);
 
     return this[valType](getValue(valFun(__SELECT), defValue));
 }
@@ -4262,6 +4311,71 @@ const __OPTACTION = {
     'RST' : "reset options"
 };
 
+// Notwendigkeit der Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
+const __OPTNEED = {
+    'MAN'   : "mandatory parameter",        // Muss-Parameter, darf nicht fehlen!
+    'DAT'   : "mandatory data parameter",   // Muss-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
+    'REC'   : "recommended parameter",      // Soll-Parameter: Nutzung dieser Parameter wird empfohlen
+    'VAL'   : "recommended parameter",      // Soll-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
+    'SEL'   : "recommended parameter",      // Soll-Parameter fuer Datentyp __OPTTYPES.MC
+    'OPT'   : "optional parameter",         // Optionale Parameter ohne Pficht
+    'INT'   : "internal parameter"          // Nicht in __OPTCONFIG verwenden!
+};
+
+// Abgeleitete Typen gemappt auf Haupttypen...
+const __OPTITEMTYPES = {
+    'Array'     : 'Object', // Array.isArray()
+    'Char'      : 'String', // String.length === 1
+    'Code'      : 'String', // TODO Code-Schutz
+    'Integer'   : 'Number', // Number.isInteger()
+};
+
+// Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
+const __OPTITEMS = {
+    'Action'    : [ "Aktions-Typ bei Optionswechsel",   '__OPTACTION',  "NXT, RST, SET",            __OPTNEED.MAN ],
+    'AltAction' : [ "Alt Aktions-Typ (abweichend)",     '__OPTACTION',  "NXT, RST, SET",            __OPTNEED.OPT ],
+    'AltHotkey' : [ "Alt Schnellanwahl im Men\u00FC",   'Char',         "'A'",                      __OPTNEED.REC ],
+    'AltLabel'  : [ "Alt Options-Ausgabename",          'String',       "Option aus: $",            __OPTNEED.MAN ],
+    'AltTitle'  : [ "Alt Titel",                        'String',       "$V schlie\u00DFen",        __OPTNEED.OPT ],
+    'AutoReset' : [ "Beim Laden immer auf Default",     'Boolean',      "false, true",              __OPTNEED.OPT ],
+    'Choice'    : [ "Auswahlliste der Optionswerte",    'Array',        "[ 0, 1, 2, 3, 4 ]",        __OPTNEED.REC ],
+    'Cols'      : [ "Ausgabebreite in Textfenster",     'Integer',      "1, 3, 20, 25, 36",         __OPTNEED.REC ],
+    'Config'    : [ "INTERNAL: Verweis auf optConfig",  'Object',       "{ }",                      __OPTNEED.INT ],
+    'Default'   : [ "Startwert der Option",             'any',          "1, true, '', [], { }",     __OPTNEED.REC ],
+    'FormLabel' : [ "Options-Ausgabe auf Seite",        'String',       "Option:|$",                __OPTNEED.MAN ],
+    'FormPrio'  : [ "Steuert die Reihenfolge",          'Integer',      "undefined, 1",             __OPTNEED.OPT ],
+    'FormType'  : [ "Typ der Option auf Seite",         '__OPTTYPES',   "SI",                       __OPTNEED.OPT ],
+    'FreeValue' : [ "Freitext m\u00F6glich",            'Boolean',      "false, true",              __OPTNEED.VAL ],
+    'Hidden'    : [ "Versteckte Option auf Seite",      'Boolean',      "false, true",              __OPTNEED.REC ],
+    'HiddenMenu': [ "INTERNAL: Kein Kontextmen\u00FC",  'Boolean',      "false, true",              __OPTNEED.INT ],
+    'Hotkey'    : [ "Schnellanwahl im Men\u00FC",       'Char',         "'A'",                      __OPTNEED.REC ],
+    'Item'      : [ "INTERNAL: Kopie des Schluessels",  'String',       "",                         __OPTNEED.INT ],
+    'Label'     : [ "Options-Ausgabename",              'String',       "Option: $",                __OPTNEED.MAN ],
+    'Loaded'    : [ "INTERNAL: Value ist geladen",      'Boolean',      "false, true",              __OPTNEED.INT ],
+    'MinChoice' : [ "Abfrage ab wieviel Elementen?",    'Integer',      "0, 3",                     __OPTNEED.OPT ],
+    'Name'      : [ "Interner Speichername",            'String',       "",                         __OPTNEED.MAN ],
+    'Permanent' : [ "Bei AutoReset nicht zuruecksetzen",'Boolean',      "false, true",              __OPTNEED.OPT ],
+    'PreInit'   : [ "Initialisierung in erster Phase",  'Boolean',      "true",                     __OPTNEED.OPT ],
+    'Promise'   : [ "INTERNAL: Promise fuers Laden",    'Promise',      "",                         __OPTNEED.INT ],
+    'ReadOnly'  : [ "Daten unveraenderlich",            'Boolean',      "false, true",              __OPTNEED.OPT ],
+    'Replace'   : [ "Ausgabe-Element-Formatierung",     'Function',     "null, replaceArrayFun(padStartFun(4))",
+                                                                                                    __OPTNEED.OPT ],
+    'Rows'      : [ "Ausgabe-Zeilen in Textfenster",    'Integer',      "1, 2, 3, 6, 7, 10, 20",    __OPTNEED.OPT ],
+    'SetValue'  : [ "Zu setzender DefaultWert bei Wahl",'any',          "",                         __OPTNEED.OPT ],
+    'SelValue'  : [ "Ist Wert aus fester Liste?",       'Boolean',      "false, true",              __OPTNEED.SEL ],
+    'Serial'    : [ "Speicherung per serialize()",      'Boolean',      "true",                     __OPTNEED.REC ],
+    'Shared'    : [ "Objektreferenz auf Option",        'Object',       "{ 'namespace' : 'http://os.ongapo.com/', 'module' : 'OS2.haupt', 'item' : '$' }",
+                                                                                                    __OPTNEED.OPT ],
+    'SharedData': [ "INTERNAL: Daten Objektreferenz",   'Object',       "",                         __OPTNEED.INT ],
+    'Space'     : [ "Ausgabe-Spaces bei Listen",        'Integer',      "0, 1, 4",                  __OPTNEED.OPT ],
+    'Submit'    : [ "onKeyDown-Code",                   'Code',         "",                         __OPTNEED.OPT ],
+    'Title'     : [ "Titel",                            'String',       "$V Optionen",              __OPTNEED.OPT ],
+    'Type'      : [ "Typ der Option",                   '__OPTTYPES',   "MC, SD, SI, SW",           __OPTNEED.REC ],
+    'ValType'   : [ "Datentyp der Werte",               'String',       "'Number', 'String'",       __OPTNEED.DAT ],
+    'Value'     : [ "INTERNAL: Gesetzter Wert",         'any',          "",                         __OPTNEED.INT ]
+};
+const __OPTITEMSBYNEED = reverseMapping(__OPTITEMS, mappingPush);
+
 // ==================== Ende Abschnitt Moegliche Typen fuer Optionen ====================
 
 // *** EOF ***
@@ -4361,6 +4475,133 @@ function getSharedRef(shared, item = undefined) {
 
 // ==================== Abschnitt fuer Zugriff auf Options-Parameter ====================
 
+// Prueft ein Objekt, ob es eine syntaktisch valide Konfiguration einer (ueber Menu) gesetzten Option ist
+// optItem: Zu validierendes Konfigurations-Item-Objekt
+// key: Falls bekannt, der Item-Key dieser Option (wird auf Korrektheit ueberprueft)
+// preInit: Falls true, dann geht es um die Grundinitialisierung, in der keine internen Optionen erlaubt sind!
+// return [__CONFIG, __NAME, __KEY, ...] Konfiguration und ggfs. Name und/oder Key der Option
+function checkOptItem(optItem, key = undefined, preInit = false) {
+    const __CONFIG = optItem;
+    const __OPTTYPE = __CONFIG.Type;
+    const __ITEMS = Object.keys(__CONFIG);
+    const __NAME = __CONFIG.Name;  // TODO Shared Ref
+    const __KEY = key;
+    const __MAN = __OPTITEMSBYNEED[__OPTNEED.MAN];  // Muss-Parameter
+    const __DAT = __OPTITEMSBYNEED[__OPTNEED.DAT];  // Muss-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
+    const __REC = __OPTITEMSBYNEED[__OPTNEED.REC];  // Soll-Parameter
+    const __VAL = __OPTITEMSBYNEED[__OPTNEED.VAL];  // Soll-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
+    const __SEL = __OPTITEMSBYNEED[__OPTNEED.SEL];  // Soll-Parameter fuer __OPTTYPES.MC
+
+    // Redundante Pruefung auf Namen der Option (spaeter Ueberpruefung von __MAN)...
+    if (__NAME === undefined) {
+        __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+        throw Error("Unknown 'Name' for option " + __LOG.info(key, false));
+    }
+
+    // Ueberpruefung der Pflichtparameter...
+    __MAN.forEach(item => {
+            const __ITEM = __CONFIG[item];
+
+            if (! __ITEM) {
+                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                throw Error("Option " + __LOG.info(key, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
+            }
+        });
+    __DAT.forEach(item => {
+            const __ITEM = __CONFIG[item];
+
+            if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
+                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                throw Error("Option " + __LOG.info(key, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
+            }
+        });
+
+    // Ueberpruefung der Pflichtparameter...
+    __REC.forEach(item => {
+            const __ITEM = __CONFIG[item];
+
+            if (! __ITEM) {
+                __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended parameter " + __LOG.info(item, false) + "...");
+            }
+        });
+    __VAL.forEach(item => {
+            const __ITEM = __CONFIG[item];
+
+            if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
+                __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended data parameter " + __LOG.info(item, false) + "...");
+            }
+        });
+    __SEL.forEach(item => {
+            const __ITEM = __CONFIG[item];
+
+            if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
+                __LOG[2]("checkOptItem(): Option " + __LOG.info(key, false) + " is missing recommended select parameter " + __LOG.info(item, false) + "...");
+            }
+        });
+
+    // Ueberpruefung der angegebenen Parameter auf Bekanntheit und Typen...
+    __ITEMS.forEach(item => {
+            const __ITEMVALUE = __CONFIG[item];
+            const __ITEMINFO = __OPTITEMS[item];
+            const [ __ITEMTEXT, __ITEMTYPE, __ITEMEXAMPLES, __ITEMNEED] =
+                    (__ITEMINFO || [ "Error", undefined, "", __OPTNEED.OPT ]);
+            const __KEYITEM = key + '[' + item + ']';
+            const __TYPE = (__OPTITEMTYPES[__ITEMTYPE] || __ITEMTYPE);
+            let isValid = true;
+
+            if (! __ITEMINFO) {
+                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                throw Error("Unknown parameter " + __LOG.info(item, false) + " for option " + __LOG.info(key, false));
+            }
+
+            if (preInit && (__ITEMNEED === __OPTNEED.INT)) {
+                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                throw TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(key, false));
+            }
+
+            switch (__TYPE) {
+                case 'Boolean'    :
+                case 'Function'   :
+                case 'Number'     :
+                case 'Object'     :
+                case 'Promise'    :
+                case 'String'     :
+                                    checkType(__ITEMVALUE, __TYPE.toLowerCase(), false, "checkOptItem()", __KEYITEM, __TYPE);
+                                    break;
+                case '__OPTACTION':
+                                    checkEnumObj(__ITEMVALUE, __OPTACTION, true, "checkOptItem()", __KEYITEM, __TYPE);
+                                    break;
+                case '__OPTTYPES' :
+                                    checkEnumObj(__ITEMVALUE, __OPTTYPES, true, "checkOptItem()", __KEYITEM, __TYPE);
+                                    break;
+                case 'any'        : break;  // OK
+                default           : __LOG[1]("checkOptItem(): Internal error in " + codeLine(true, true, true, false));
+                                    throw TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(key, false));
+            }
+
+            if (__ITEMVALUE) {
+                switch (__ITEMTYPE) {
+                    case 'Array'      : isValid = Array.isArray(__ITEMVALUE);
+                                        break;
+                    case 'Char'       : isValid = (__ITEMVALUE.length === 1);
+                                        break;
+                    case 'Code'       : isValid = false;  // TODO Code-Schutz verfeinern (bisher: gesperrt)
+                                        break;
+                    case 'Integer'    : isValid = Number.isInteger(__ITEMVALUE);
+                                        break;
+                    default           : isValid = true;
+                                        break;
+                }
+            }
+            if (! isValid) {
+                __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                throw TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(key, false) + " is not of type " + __ITEMTYPE);
+            }
+        });
+
+    return [ __CONFIG, __NAME, __KEY ];
+}
+
 // Prueft ein Objekt, ob es eine syntaktisch valide (ueber Menu) gesetzte Option ist
 // opt: Zu validierendes Options-Objekt
 // key: Falls bekannt, der Item-Key dieser Option (wird auf Korrektheit ueberprueft)
@@ -4399,6 +4640,36 @@ function checkOptSet(optSet) {
     Object.entries(optSet).forEach(([item, opt]) => checkOpt(opt, item));
 
     return optSet;
+}
+
+// Prueft alle Objekt in einer optConfig, ob sie syntaktisch valide Konfigurationen der (ueber Menu) gesetzte Optionen sind
+// optConfig: Zu validierende Konfigurations-Objekte fuer Optionen
+// preInit: Falls true, dann geht es um die Grundinitialisierung, in der keine internen Optionen erlaubt sind!
+// return Das uebergeben optConfig (falls alle Optionen valide sind)
+function checkOptConfig(optConfig, preInit = false) {
+    const __OPTCONFIG = optConfig;
+    const __ENTRIES = Object.entries(__OPTCONFIG);
+    const __NAMEUSE = { };
+
+    // Jede einzelne Option ueberpruefen...
+    __ENTRIES.forEach(([item, config]) => checkOptItem(config, item, preInit));
+
+    // Benutzte (interne Speicher-) Namen auf doppelte Eintraege ueberpruefen...
+    __ENTRIES.forEach(([item, config]) => {
+            const __NAME = config.Name;  // Muss vorhanden sein, da vorher ueberprueft!
+            const __USED = __NAMEUSE[__NAME];
+
+            if (__USED) {
+                __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
+                throw RangeError("Internal name of option " + __LOG.info(key, false) + " already used in option " + __LOG.info(__USED, false));
+            } else {
+                __NAMEUSE[__NAME] = item;
+            }
+        });
+
+    __LOG[2](Object.keys(__OPTCONFIG).length + " Optionen erfolgreich \u00FCberpr\u00FCft...");
+
+    return __OPTCONFIG;
 }
 
 // Gibt eine Option sicher zurueck
@@ -4562,7 +4833,7 @@ function setOpt(opt, value, reload = false, onFulfilled = undefined, onRejected 
 
 // Ermittelt die naechste moegliche Option
 // opt: Config und Value der Option
-// defValue: Ggfs. zu setzender Wert
+// defValue: Ggfs. zu setzender Wert fuer den Fall, dass nichts gesetzt ist
 // return Zu setzender Wert
 function getNextOpt(opt, defValue = undefined) {
     const [ __CONFIG ] = checkOpt(opt);
@@ -4992,7 +5263,7 @@ function deleteOption(opt, force = false, reset = true) {
     const [ __CONFIG, __NAME ] = checkOpt(opt);
 
     if (force || ! __CONFIG.Permanent) {
-        const __VALUE = getOptValue(opt, undefined, false);
+        const __VALUE = getOptValue(opt, undefined);
         let newValue;
 
         return discardValue(__NAME).then(() => {
@@ -5920,11 +6191,12 @@ function getFormActionEvent(opt, isAlt = false, value = undefined, type = 'click
 
 // Zeigt eine Option auf der Seite als Auswahlbox an
 // opt: Anzuzeigende Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // return String mit dem HTML-Code
-function getOptionSelect(opt) {
+function getOptionSelect(opt, defValue = undefined) {
     const __CONFIG = getOptConfig(opt);
     const __NAME = getOptName(opt);
-    const __VALUE = getOptValue(opt);
+    const __VALUE = getOptValue(opt, defValue);
     const __ACTION = getFormActionEvent(opt, false, undefined, 'change', undefined);
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __CONFIG.Label, true);
     const __TITLE = substParam(getValue(__CONFIG.Title, __CONFIG.Label), __VALUE);
@@ -5946,11 +6218,12 @@ function getOptionSelect(opt) {
 
 // Zeigt eine Option auf der Seite als Radiobutton an
 // opt: Anzuzeigende Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // return String mit dem HTML-Code
-function getOptionRadio(opt) {
+function getOptionRadio(opt, defValue = false) {
     const __CONFIG = getOptConfig(opt);
     const __NAME = getOptName(opt);
-    const __VALUE = getOptValue(opt, false);
+    const __VALUE = getOptValue(opt, defValue);
     const __ACTION = getFormActionEvent(opt, false, true, 'click', false);
     const __ALTACTION = getFormActionEvent(opt, true, false, 'click', false);
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel);  // nur nutzen, falls angegeben
@@ -5978,11 +6251,12 @@ function getOptionRadio(opt) {
 
 // Zeigt eine Option auf der Seite als Checkbox an
 // opt: Anzuzeigende Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // return String mit dem HTML-Code
-function getOptionCheckbox(opt) {
+function getOptionCheckbox(opt, defValue = false) {
     const __CONFIG = getOptConfig(opt);
     const __NAME = getOptName(opt);
-    const __VALUE = getOptValue(opt, false);
+    const __VALUE = getOptValue(opt, defValue);
     const __ACTION = getFormActionEvent(opt, __VALUE, ! __VALUE, 'click', false);
     const __VALUELABEL = (__VALUE ? __CONFIG.Label : getValue(__CONFIG.AltLabel, __CONFIG.Label));
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __CONFIG.Label);
@@ -5996,11 +6270,12 @@ function getOptionCheckbox(opt) {
 
 // Zeigt eine Option auf der Seite als Daten-Textfeld an
 // opt: Anzuzeigende Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // return String mit dem HTML-Code
-function getOptionTextarea(opt) {
+function getOptionTextarea(opt, defValue = "") {
     const __CONFIG = getOptConfig(opt);
     const __NAME = getOptName(opt);
-    const __VALUE = getOptValue(opt);
+    const __VALUE = getOptValue(opt, defValue);
     const __ACTION = getFormActionEvent(opt, false, undefined, 'submit', undefined);
     const __SUBMIT = getValue(__CONFIG.Submit, "");
     //const __ONSUBMIT = (__SUBMIT.length ? ' onKeyDown="' + __SUBMIT + '"': "");
@@ -6017,11 +6292,12 @@ function getOptionTextarea(opt) {
 
 // Zeigt eine Option auf der Seite als Button an
 // opt: Anzuzeigende Option
+// defValue: Default-Wert fuer den Fall, dass nichts gesetzt ist
 // return String mit dem HTML-Code
-function getOptionButton(opt) {
+function getOptionButton(opt, defValue = false) {
     const __CONFIG = getOptConfig(opt);
     const __NAME = getOptName(opt);
-    const __VALUE = getOptValue(opt, false);
+    const __VALUE = getOptValue(opt, defValue);
     const __ACTION = getFormActionEvent(opt, __VALUE, ! __VALUE, 'click', false);
     const __BUTTONLABEL = (__VALUE ? getValue(__CONFIG.AltLabel, __CONFIG.Label) : __CONFIG.Label);
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __BUTTONLABEL);
@@ -6266,13 +6542,13 @@ function buildOptionForm(anchor, optSet, optParams = { }) {
 // optAction: Typ der Funktion
 // item: Key der Option
 // optSet: Platz fuer die gesetzten Optionen (und Config)
-// optConfig: Konfiguration der Option
+// config: Konfiguration der Option
 // return Funktion fuer die Option
-function initOptAction(optAction, item = undefined, optSet = undefined, optConfig = undefined) {
+function initOptAction(optAction, item = undefined, optSet = undefined, config = undefined) {
     let fun;
 
     if (optAction !== undefined) {
-        const __CONFIG = ((optConfig !== undefined) ? optConfig : getOptConfig(getOptByName(optSet, item)));
+        const __CONFIG = ((config !== undefined) ? config : getOptConfig(getOptByName(optSet, item)));
         const __RELOAD = getValue(getValue(__CONFIG, { }).ActionReload, true);
 
         switch (optAction) {
@@ -6301,11 +6577,11 @@ function initOptAction(optAction, item = undefined, optSet = undefined, optConfi
 }
 
 // Gibt diese Config oder, falls 'Shared', ein Referenz-Objekt mit gemeinsamen Daten zurueck
-// optConfig: Konfiguration der Option
+// config: Konfiguration der Option
 // item: Key der Option
-// return Entweder optConfig oder gemergete Daten auf Basis des in 'Shared' angegebenen Objekts
-function getSharedConfig(optConfig, item = undefined) {
-    let config = getValue(optConfig, { });
+// return Entweder config oder gemergete Daten auf Basis des in 'Shared' angegebenen Objekts
+function getSharedConfig(config, item = undefined) {
+    let newConfig = getValue(config, { });
     const __SHARED = config.Shared;
 
     if (__SHARED !== undefined) {
@@ -6314,39 +6590,42 @@ function getSharedConfig(optConfig, item = undefined) {
         if (getValue(__SHARED.item, '$') !== '$') {  // __OBJREF ist ein Item
             const __REF = valueOf(__OBJREF);
 
-            config = { };  // Neu aufbauen...
-            addProps(config, getOptConfig(__REF));
-            addProps(config, optConfig);
-            config.setConst('SharedData', getOptValue(__REF), false);   // Wert muss schon da sein, NICHT nachladen, sonst ggfs. Promise
+            newConfig = { };  // Neu aufbauen...
+            addProps(newConfig, getOptConfig(__REF));
+            addProps(newConfig, config);
+            newConfig.setConst('SharedData', getOptValue(__REF), false);   // Wert muss schon da sein, NICHT nachladen, sonst ggfs. Promise
         } else {  // __OBJREF enthaelt die Daten selbst
-            if (! config.Name) {
-                config.Name = __OBJREF.getPath();
+            if (! newConfig.Name) {
+                newConfig.Name = __OBJREF.getPath();
             }
-            config.setConst('SharedData', __OBJREF);  // Achtung: Ggfs. zirkulaer!
+            newConfig.setConst('SharedData', __OBJREF);  // Achtung: Ggfs. zirkulaer!
         }
     }
 
-    return config;
+    return newConfig;
 }
 
-// Initialisiert die gesetzten Optionen
+// Initialisiert die gesetzten Optionen. Man beachte:
+// Diese Funktion wird erst mit preInit = true, dann mit preInit = false aufgerufen!
 // optConfig: Konfiguration der Optionen
 // optSet: Platz fuer die gesetzten Optionen
 // preInit: Vorinitialisierung einzelner Optionen mit 'PreInit'-Attribut
 // return Gefuelltes Objekt mit den gesetzten Optionen
 function initOptions(optConfig, optSet = undefined, preInit = undefined) {
+    const __OPTCONFIG = optConfig;  // Konfiguration wird in startOptions ueberprueft!
+
     if (optSet === undefined) {
         optSet = new Options();
     }
 
     for (let opt in optConfig) {
-        const __OPTCONFIG = optConfig[opt];
-        const __PREINIT = getValue(__OPTCONFIG.PreInit, false, true);
-        const __ISSHARED = getValue(__OPTCONFIG.Shared, false, true);
+        const __CONFIG = optConfig[opt];
+        const __PREINIT = getValue(__CONFIG.PreInit, false, true);
+        const __ISSHARED = getValue(__CONFIG.Shared, false, true);
 
         if ((preInit === undefined) || (__PREINIT === preInit)) {
-            const __CONFIG = getSharedConfig(__OPTCONFIG, opt);
-            const __ALTACTION = getValue(__CONFIG.AltAction, __CONFIG.Action);
+            const __SHAREDCONFIG = getSharedConfig(__CONFIG, opt);
+            const __ALTACTION = getValue(__SHAREDCONFIG.AltAction, __SHAREDCONFIG.Action);
             // Gab es vorher einen Aufruf, der einen Stub-Eintrag erzeugt hat, und wurden Daten geladen?
             const __LOADED = ((preInit === false) && optSet[opt].Loaded);
             const __PROMISE = ((__LOADED || ! optSet[opt]) ? undefined : optSet[opt].Promise);
@@ -6354,23 +6633,23 @@ function initOptions(optConfig, optSet = undefined, preInit = undefined) {
 
             optSet[opt] = {
                 'Item'      : opt,
-                'Config'    : __CONFIG,
+                'Config'    : __SHAREDCONFIG,
                 'Loaded'    : (__ISSHARED || __LOADED),
                 'Promise'   : __PROMISE,
-                'Value'     : initOptValue(__CONFIG, __VALUE),
-                'SetValue'  : __CONFIG.SetValue,
-                'ReadOnly'  : (__ISSHARED || __CONFIG.ReadOnly),
-                'Action'    : initOptAction(__CONFIG.Action, opt, optSet, __CONFIG),
-                'AltAction' : initOptAction(__ALTACTION, opt, optSet, __CONFIG)
+                'Value'     : initOptValue(__SHAREDCONFIG, __VALUE),
+                'SetValue'  : __SHAREDCONFIG.SetValue,
+                'ReadOnly'  : (__ISSHARED || __SHAREDCONFIG.ReadOnly),
+                'Action'    : initOptAction(__SHAREDCONFIG.Action, opt, optSet, __SHAREDCONFIG),
+                'AltAction' : initOptAction(__ALTACTION, opt, optSet, __SHAREDCONFIG)
             };
         } else if (preInit) {  // erstmal nur Stub
             optSet[opt] = {
                 'Item'      : opt,
-                'Config'    : __OPTCONFIG,
+                'Config'    : __CONFIG,
                 'Loaded'    : false,
                 'Promise'   : undefined,
-                'Value'     : initOptValue(__OPTCONFIG),
-                'ReadOnly'  : (__ISSHARED || __OPTCONFIG.ReadOnly)
+                'Value'     : initOptValue(__CONFIG),
+                'ReadOnly'  : (__ISSHARED || __CONFIG.ReadOnly)
             };
         }
     }
@@ -6555,27 +6834,29 @@ Class.define(ClassificationPair, Classification, {
 // optSet: Platz fuer die gesetzten Optionen
 // return Promise auf gefuelltes Objekt mit den gesetzten Optionen
 async function startOptions(optConfig, optSet = undefined, classification = undefined) {
-    optSet = initOptions(optConfig, optSet, true);  // PreInit
+    // Ueberpruefung der uebergebenen Konfiguration der Optionen...
+    const __OPTCONFIG = checkOptConfig(optConfig, true);
+    const __PREOPTSET = initOptions(__OPTCONFIG, optSet, true);  // PreInit
 
     // Memory Storage fuer vorherige Speicherung...
-    myOptMemSize = getMemSize(myOptMem = await restoreMemoryByOpt(optSet.oldStorage));
+    myOptMemSize = getMemSize(myOptMem = await restoreMemoryByOpt(__PREOPTSET.oldStorage));
 
     // Zwischengespeicherte Befehle auslesen...
     const __STOREDCMDS = getStoredCmds(myOptMem);
 
     // ... ermittelte Befehle ausfuehren...
-    const __LOADEDCMDS = await runStoredCmds(__STOREDCMDS, optSet, true);  // BeforeLoad
+    const __LOADEDCMDS = await runStoredCmds(__STOREDCMDS, __PREOPTSET, true);  // BeforeLoad
 
     // Bisher noch nicht geladenene Optionen laden...
-    await loadOptions(optSet);
+    await loadOptions(__PREOPTSET);
 
     // Memory Storage fuer naechste Speicherung...
-    myOptMemSize = getMemSize(myOptMem = startMemoryByOpt(optSet.storage, optSet.oldStorage));
+    myOptMemSize = getMemSize(myOptMem = startMemoryByOpt(__PREOPTSET.storage, __PREOPTSET.oldStorage));
 
     // Globale Daten ermitteln...
-    initScriptDB(optSet);
+    initScriptDB(__PREOPTSET);
 
-    optSet = initOptions(optConfig, optSet, false);  // Rest
+    const __OPTSET = initOptions(__OPTCONFIG, __PREOPTSET, false);  // Rest
 
     if (classification !== undefined) {
         // Umbenennungen durchfuehren...
@@ -6583,12 +6864,12 @@ async function startOptions(optConfig, optSet = undefined, classification = unde
     }
 
     // ... ermittelte Befehle ausfuehren...
-    await runStoredCmds(__LOADEDCMDS, optSet, false);  // Rest
+    await runStoredCmds(__LOADEDCMDS, __OPTSET, false);  // Rest
 
     // Als globale Daten speichern...
-    updateScriptDB(optSet);
+    updateScriptDB(__OPTSET);
 
-    return optSet;
+    return __OPTSET;
 }
 
 // ==================== Abschnitt Anzeige der Optionen ====================
@@ -7044,6 +7325,8 @@ const __INTSPIELPLAN = {
     };
 const __INTZATLABOSE = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSE);
 const __INTZATLABOSC = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSC);
+const __INTLABOSEZAT = reverseMapping(__INTZATLABOSE);
+const __INTLABOSCZAT = reverseMapping(__INTZATLABOSC);
 const __INTOSEALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSE, __COLINTSPIELPLAN.ZAT, mappingPush);
 const __INTOSCALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSC, __COLINTSPIELPLAN.ZAT, mappingPush);
 const __INTOSECUPS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.CupOSE, mappingPush);
@@ -7178,10 +7461,13 @@ function getLigaSizeById(ID, defValue = __TLALIGASIZE.undefined) {
 // searchCup: Gesuchter Wettbewerb ('OSC', 'OSCQ', 'OSE', 'OSEQ')
 // searchRunde: Gesuchte Runde im Wettbewerb ('1. Runde', ...)
 // currZAT: Der aktuelle ZAT (fuer die Frage, ob vergangene oder kommende Runde)
-// return ZAT, Event der Runde und deren OS2-Webseite
-function calcZATEventByCupRunde(searchCup, searchRunde, currZAT) {
+// lastRnd: Letzte Runde finden (statt erreichter Runde): Ergebnisse liegen in der Vergangenheit
+// return ZAT, Event der Runde und deren OS2-Webseite der erreichten (bzw. vergangenen) Runde
+function calcZATEventByCupRunde(searchCup, searchRunde, currZAT, lastRnd) {
     const __CUP = searchCup;
     const __RUNDE = searchRunde;
+    const __CURRZAT = currZAT;
+    const __LASTRND = lastRnd;
     const __CUPS = getArrValue(__INTOSECUPS, __RUNDE).concat(
                         getArrValue(__INTOSCCUPS, __RUNDE));
     const __EVTS = getArrValue(__INTOSEEVTS, __RUNDE).concat(
@@ -7195,8 +7481,10 @@ function calcZATEventByCupRunde(searchCup, searchRunde, currZAT) {
                 const __ZAT = getValue(__ZATS[index]);
                 const __EVT = getValue(__EVTS[index]);
 
-                if ((! ~ ret[0]) || (ret[0] <= currZAT)) {  // in der Zukunft nur den ersten Treffer...
-                    ret = [ __ZAT, __EVT, __EVT.toLowerCase() + '.php' ];
+                if ((! ~ ret[0]) || (ret[0] <= __CURRZAT)) {  // in der Zukunft nur den ersten Treffer...
+                    if ((! __LASTRND) || (__ZAT <= __CURRZAT)) {  // bei __LASTRND keine zukuenftigen Runden...
+                        ret = [ __ZAT, __EVT, __EVT.toLowerCase() + '.php' ];
+                    }
                 }
             }
         });
@@ -7326,7 +7614,7 @@ function getColor(pos) {
         case 'OMI' : return '#FF66FF';
         case 'STU' : return '#FF0000';
         case 'LEI' : return '#FFFFFF';
-        case "" :    return '#111166';  // osBlau
+        case "" :    return __OSBLAU;
         default :    return "";
     }
 }
@@ -7365,6 +7653,12 @@ const __SAISON6ZATMONAT =  2;   // Erste Saison mit 6 ZATs pro Monat, ab Saison 
 const __OLDSAISONZATS   = 70;   // Anzahl der ZATs pro Saison, nur in der 1. und 2. Saison
 const __OLDMONATZATS    =  7;   // Anzahl der ZATs pro Abrechnungs-Monat, nur in der 1. Saison
 const __OLDSAISONFIRST  =  1;   // Erste Saison mit diesen Parametern, ab Saison 1
+
+const __OSBLAU          = '#111166';    // Globale Hintergrundfarbe bei OS2
+
+const __NUMOPTI         = 27;
+const __NUMSKILLS       = 17;
+const __NUMTRAINABLE    = 11;
 
 // ==================== Ende Abschnitt fuer konstante Parameter bei OS2 ====================
 
@@ -7877,8 +8171,9 @@ function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
 // Verarbeitet die URL der Seite und ermittelt die Nummer der gewuenschten Unterseite
 // url: Adresse der Seite
 // leafs: Liste von Filenamen mit Basis-Seitennummern (zu denen ggfs. Query-Parameter addiert wird)
-// item: Query-Parameter, der die Nummer der Unterseite angibt (wird zur Basisnummer addiert)
-// return Parameter aus der URL der Seite als Nummer
+// item: Query-Parameter, der die Nummer der Unterseite angibt (wird zur Basisnummer addiert),
+//      allerdings nur, wenn Basis-Seitennummer positiv ist, ansonsten Absolutwert ohne Unterseite
+// return Parameter aus der URL der Seite als Nummer (-1, falls nicht gefunden)
 function getPageIdFromURL(url, leafs, item = 'page') {
     const __URI = new URI(url);
     const __LEAF = __URI.getLeaf();
@@ -7886,8 +8181,9 @@ function getPageIdFromURL(url, leafs, item = 'page') {
     for (let leaf in leafs) {
         if (__LEAF === leaf) {
             const __BASE = getValue(leafs[leaf], 0);
+            const __ITEM = getValue(__URI.getQueryPar(item), 0);
 
-            return __BASE + getValue(__URI.getQueryPar(item), 0);
+            return Math.abs(__BASE) + ((__BASE >= 0) ? __ITEM : 0);
         }
     }
 
@@ -9136,7 +9432,7 @@ Class.define(PlayerRecord, Object, {
                                       return sumSkills;
                                   },
         'getSkill'              : function(when = this.__TIME.now) {
-                                      return this.getSkillSum(when) / 17;
+                                      return this.getSkillSum(when) / __NUMSKILLS;
                                   },
         'getOpti'               : function(pos, when = this.__TIME.now) {
                                       const __SUMALLSKILLS = this.getSkillSum(when);
@@ -9146,9 +9442,9 @@ Class.define(PlayerRecord, Object, {
     console.error("__OVERFLOW = " + __OVERFLOW);
     console.error("__SUMALLSKILLS = " + __SUMALLSKILLS);
     console.error("__SUMPRISKILLS = " + __SUMPRISKILLS);
-    console.error("getOpti(" + pos + ") = " + ((4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / 27));
+    console.error("getOpti(" + pos + ") = " + ((4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / __NUMOPTI));
 }*/
-                                      return (4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / 27;
+                                      return (4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / __NUMOPTI;
                                   },
         'getPrios'              : function(pos, when = this.__TIME.now) {
                                       return Math.min(this.__MAXPRISKILLS, this.getSkillSum(when, getIdxPriSkills(pos), 2 * 4)) / 4;
@@ -9531,7 +9827,6 @@ Class.define(ColumnManager, Object, {
                                const __IDXPRI = getIdxPriSkills(player.getPos());
                                const __COLOR = __WARNDRAW.getColor(player.isGoalie ? getColor('TOR') : color); // Angepasst an Ziehwarnung
                                const __POS1COLOR = getColor((player.getPosPercent() > 99.99) ? 'LEI' : player.getPos());
-                               const __OSBLAU = getColor("");
 
                                // Aktuelle Werte
                                if (this.fpId) {

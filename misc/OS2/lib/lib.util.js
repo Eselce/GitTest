@@ -1641,7 +1641,7 @@ function checkObjClass(obj, cls, strict = false, label = "", objName = undefined
     return ((obj instanceof cls) || checkType(obj, 'object', strict, __LABEL, __OBJ, __TYPE));
 }
 
-// Funktion zum Testen eines Objekts auf eine bestimmte Basisklasse
+// Funktion zum Testen eines Wertes auf einen bestimmten Typen
 // value: Der zu pruefende Wert
 // type: Erforderlicher Typ
 // strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
@@ -1665,7 +1665,35 @@ function checkType(value, type, strict = false, label = "", valName = undefined,
     return true;
 }
 
-// ==================== Ende Hilfsfunktionen fuer Typueberpruefungens ====================
+// Funktion zum Testen eines Wertes auf ein bestimmtes "Enum"-Objekt
+// value: Der zu pruefende Wert
+// enumObj: Objekt mit den "Enum"-Mappings (Typen)
+// strict: Wird ein nicht gesetzter Wert ebenfalls als falsch angesehen?
+// label: Prefix fuer die Fehlerzeile
+// valName: Name des Wertes oder der Variablen
+// enumName: Name des "Enums" fuer die Fehlermeldung
+// throw Wirft im Fehlerfall (also, wenn der Typ nicht stimmt) einen TypeError
+// return true, falls kein Error geworfen wurde
+function checkEnumObj(value, enumObj, strict = false, label = "", valName = undefined, enumName = undefined) {
+    const __TYPE = (enumName || enumObj);
+    const __VAL = (valName || "Value");
+    const __LABEL = (label || "Error");
+
+    // enumObj sollte ein "Enum"-Objekt sein...
+    checkType(enumObj, 'object', true, "checkEnumObj(" + __LOG.info(valName, false) + ')', "enumObj", "Object");
+
+    if (strict || ((value !== undefined) && (value !== null))) {
+        const __VALUES = Object.values(enumObj);
+        if (! __VALUES.includes(value)) {
+            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                            __LOG.info(value, true, true) + ' ' + String(value));
+        }
+    }
+
+    return true;
+}
+
+// ==================== Ende Hilfsfunktionen fuer Typueberpruefungen ====================
 
 // Ermittlung der gerade signifikanten Quellcode-Stelle des Programmablaufs
 // ex: Exception, Error o.ae. mit 'stack' Eigenschaft, die ein Stacktrace enthaelt
@@ -2602,7 +2630,7 @@ function removeEvent(obj, type, callback, capture = false) {
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
 function addDocEvent(id, type, callback, capture = false) {
-    const __OBJ = document.getElementById(id);
+    const __OBJ = getElementById(id);
 
     return addEvent(__OBJ, type, callback, capture);
 }
@@ -2614,7 +2642,7 @@ function addDocEvent(id, type, callback, capture = false) {
 // capture: Event fuer Parent zuerst (true) oder Child (false als Default)
 // return false bei Misserfolg
 function removeDocEvent(id, type, callback, capture = false) {
-    const __OBJ = document.getElementById(id);
+    const __OBJ = getElementById(id);
 
     return removeEvent(__OBJ, type, callback, capture);
 }
@@ -2671,13 +2699,33 @@ function getElementByName(name, index = 0, doc = document) {
     return __ELEMENT;
 }
 
+// Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber die ID
+// id: ID des Elements (siehe "id=")
+// doc: Dokument (document)
+// return Gesuchtes Element oder undefined (falls nicht gefunden)
+function getElementById(id, doc = document) {
+    const __ELEMENT = doc.getElementById(id);
+
+    return __ELEMENT;
+}
+
+// Hilfsfunktion fuer die Ermittlung aller Elemente der Seite (Default: Tabelle)
+// tag: Tag des Elements ('table')
+// doc: Dokument (document)
+// return Gesuchte Elemente
+function getTags(tag = 'table', doc = document) {
+    const __TAGS = doc.getElementsByTagName(tag);
+
+    return __TAGS;
+}
+
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
 // tag: Tag des Elements ('table')
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
-function getTable(index, tag = 'table', doc = document) {
-    const __TAGS = doc.getElementsByTagName(tag);
+function getTable(index = 0, tag = 'table', doc = document) {
+    const __TAGS = getTags(tag, doc);
     const __TABLE = (__TAGS ? __TAGS[index] : undefined);
 
     return __TABLE;
@@ -2707,12 +2755,13 @@ function getRows(selector = 'table', index = 0, doc = document) {
     return __ROWS;
 }
 
-// Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle
+// Hilfsfunktion fuer die Ermittlung der Zeilen eines Elements (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
+// tag: Tag des Elements ('table')
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getTableRows(index, doc = document) {
-    const __TABLE = getTable(index, 'table', doc);
+function getTableRows(index = 0, tag = 'table', doc = document) {
+    const __TABLE = getTable(index, tag, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
     return __ROWS;
@@ -2723,7 +2772,7 @@ function getTableRows(index, doc = document) {
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
 function getRowsById(id, doc = document) {
-    const __TABLE = doc.getElementById(id);
+    const __TABLE = getElementById(id, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
     return __ROWS;
@@ -2901,7 +2950,7 @@ function getUpperClassNameFromElement(element) {
 // defValue: Default-Wert, falls nichts selektiert ist
 // return Array mit den Options-Werten
 function getSelectionArray(element, valType = 'String', valFun = getSelectedValue, defValue = undefined) {
-    const __SELECT = ((typeof element) === 'string' ? getValue(document.getElementsByName(element), [])[0] : element);
+    const __SELECT = ((typeof element) === 'string' ? getElementByName(element) : element);
 
     return (__SELECT ? [].map.call(__SELECT.options, function(option) {
                                                          return this[valType](getValue(valFun(option), defValue));
@@ -2915,7 +2964,7 @@ function getSelectionArray(element, valType = 'String', valFun = getSelectedValu
 // defValue: Default-Wert, falls nichts selektiert ist
 // return Ausgewaehlter Wert
 function getSelection(element, valType = 'String', valFun = getSelectedOptionText, defValue = undefined) {
-    const __SELECT = ((typeof element) === 'string' ? getValue(document.getElementsByName(element), [])[0] : element);
+    const __SELECT = ((typeof element) === 'string' ? getElementByName(element) : element);
 
     return this[valType](getValue(valFun(__SELECT), defValue));
 }

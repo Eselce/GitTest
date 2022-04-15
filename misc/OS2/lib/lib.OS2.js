@@ -294,6 +294,8 @@ const __INTSPIELPLAN = {
     };
 const __INTZATLABOSE = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSE);
 const __INTZATLABOSC = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSC);
+const __INTLABOSEZAT = reverseMapping(__INTZATLABOSE);
+const __INTLABOSCZAT = reverseMapping(__INTZATLABOSC);
 const __INTOSEALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSE, __COLINTSPIELPLAN.ZAT, mappingPush);
 const __INTOSCALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSC, __COLINTSPIELPLAN.ZAT, mappingPush);
 const __INTOSECUPS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.CupOSE, mappingPush);
@@ -428,10 +430,13 @@ function getLigaSizeById(ID, defValue = __TLALIGASIZE.undefined) {
 // searchCup: Gesuchter Wettbewerb ('OSC', 'OSCQ', 'OSE', 'OSEQ')
 // searchRunde: Gesuchte Runde im Wettbewerb ('1. Runde', ...)
 // currZAT: Der aktuelle ZAT (fuer die Frage, ob vergangene oder kommende Runde)
-// return ZAT, Event der Runde und deren OS2-Webseite
-function calcZATEventByCupRunde(searchCup, searchRunde, currZAT) {
+// lastRnd: Letzte Runde finden (statt erreichter Runde): Ergebnisse liegen in der Vergangenheit
+// return ZAT, Event der Runde und deren OS2-Webseite der erreichten (bzw. vergangenen) Runde
+function calcZATEventByCupRunde(searchCup, searchRunde, currZAT, lastRnd) {
     const __CUP = searchCup;
     const __RUNDE = searchRunde;
+    const __CURRZAT = currZAT;
+    const __LASTRND = lastRnd;
     const __CUPS = getArrValue(__INTOSECUPS, __RUNDE).concat(
                         getArrValue(__INTOSCCUPS, __RUNDE));
     const __EVTS = getArrValue(__INTOSEEVTS, __RUNDE).concat(
@@ -445,8 +450,10 @@ function calcZATEventByCupRunde(searchCup, searchRunde, currZAT) {
                 const __ZAT = getValue(__ZATS[index]);
                 const __EVT = getValue(__EVTS[index]);
 
-                if ((! ~ ret[0]) || (ret[0] <= currZAT)) {  // in der Zukunft nur den ersten Treffer...
-                    ret = [ __ZAT, __EVT, __EVT.toLowerCase() + '.php' ];
+                if ((! ~ ret[0]) || (ret[0] <= __CURRZAT)) {  // in der Zukunft nur den ersten Treffer...
+                    if ((! __LASTRND) || (__ZAT <= __CURRZAT)) {  // bei __LASTRND keine zukuenftigen Runden...
+                        ret = [ __ZAT, __EVT, __EVT.toLowerCase() + '.php' ];
+                    }
                 }
             }
         });
@@ -576,7 +583,7 @@ function getColor(pos) {
         case 'OMI' : return '#FF66FF';
         case 'STU' : return '#FF0000';
         case 'LEI' : return '#FFFFFF';
-        case "" :    return '#111166';  // osBlau
+        case "" :    return __OSBLAU;
         default :    return "";
     }
 }
@@ -615,6 +622,12 @@ const __SAISON6ZATMONAT =  2;   // Erste Saison mit 6 ZATs pro Monat, ab Saison 
 const __OLDSAISONZATS   = 70;   // Anzahl der ZATs pro Saison, nur in der 1. und 2. Saison
 const __OLDMONATZATS    =  7;   // Anzahl der ZATs pro Abrechnungs-Monat, nur in der 1. Saison
 const __OLDSAISONFIRST  =  1;   // Erste Saison mit diesen Parametern, ab Saison 1
+
+const __OSBLAU          = '#111166';    // Globale Hintergrundfarbe bei OS2
+
+const __NUMOPTI         = 27;
+const __NUMSKILLS       = 17;
+const __NUMTRAINABLE    = 11;
 
 // ==================== Ende Abschnitt fuer konstante Parameter bei OS2 ====================
 
@@ -1127,8 +1140,9 @@ function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
 // Verarbeitet die URL der Seite und ermittelt die Nummer der gewuenschten Unterseite
 // url: Adresse der Seite
 // leafs: Liste von Filenamen mit Basis-Seitennummern (zu denen ggfs. Query-Parameter addiert wird)
-// item: Query-Parameter, der die Nummer der Unterseite angibt (wird zur Basisnummer addiert)
-// return Parameter aus der URL der Seite als Nummer
+// item: Query-Parameter, der die Nummer der Unterseite angibt (wird zur Basisnummer addiert),
+//      allerdings nur, wenn Basis-Seitennummer positiv ist, ansonsten Absolutwert ohne Unterseite
+// return Parameter aus der URL der Seite als Nummer (-1, falls nicht gefunden)
 function getPageIdFromURL(url, leafs, item = 'page') {
     const __URI = new URI(url);
     const __LEAF = __URI.getLeaf();
@@ -1136,8 +1150,9 @@ function getPageIdFromURL(url, leafs, item = 'page') {
     for (let leaf in leafs) {
         if (__LEAF === leaf) {
             const __BASE = getValue(leafs[leaf], 0);
+            const __ITEM = getValue(__URI.getQueryPar(item), 0);
 
-            return __BASE + getValue(__URI.getQueryPar(item), 0);
+            return Math.abs(__BASE) + ((__BASE >= 0) ? __ITEM : 0);
         }
     }
 
@@ -2386,7 +2401,7 @@ Class.define(PlayerRecord, Object, {
                                       return sumSkills;
                                   },
         'getSkill'              : function(when = this.__TIME.now) {
-                                      return this.getSkillSum(when) / 17;
+                                      return this.getSkillSum(when) / __NUMSKILLS;
                                   },
         'getOpti'               : function(pos, when = this.__TIME.now) {
                                       const __SUMALLSKILLS = this.getSkillSum(when);
@@ -2396,9 +2411,9 @@ Class.define(PlayerRecord, Object, {
     console.error("__OVERFLOW = " + __OVERFLOW);
     console.error("__SUMALLSKILLS = " + __SUMALLSKILLS);
     console.error("__SUMPRISKILLS = " + __SUMPRISKILLS);
-    console.error("getOpti(" + pos + ") = " + ((4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / 27));
+    console.error("getOpti(" + pos + ") = " + ((4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / __NUMOPTI));
 }*/
-                                      return (4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / 27;
+                                      return (4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / __NUMOPTI;
                                   },
         'getPrios'              : function(pos, when = this.__TIME.now) {
                                       return Math.min(this.__MAXPRISKILLS, this.getSkillSum(when, getIdxPriSkills(pos), 2 * 4)) / 4;
@@ -2781,7 +2796,6 @@ Class.define(ColumnManager, Object, {
                                const __IDXPRI = getIdxPriSkills(player.getPos());
                                const __COLOR = __WARNDRAW.getColor(player.isGoalie ? getColor('TOR') : color); // Angepasst an Ziehwarnung
                                const __POS1COLOR = getColor((player.getPosPercent() > 99.99) ? 'LEI' : player.getPos());
-                               const __OSBLAU = getColor("");
 
                                // Aktuelle Werte
                                if (this.fpId) {
