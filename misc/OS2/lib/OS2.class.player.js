@@ -341,7 +341,7 @@ Class.define(PlayerRecord, Object, {
                                       return sumSkills;
                                   },
         'getSkill'              : function(when = this.__TIME.now) {
-                                      return this.getSkillSum(when) / 17;
+                                      return this.getSkillSum(when) / __NUMSKILLS;
                                   },
         'getOpti'               : function(pos, when = this.__TIME.now) {
                                       const __SUMALLSKILLS = this.getSkillSum(when);
@@ -351,9 +351,9 @@ Class.define(PlayerRecord, Object, {
     console.error("__OVERFLOW = " + __OVERFLOW);
     console.error("__SUMALLSKILLS = " + __SUMALLSKILLS);
     console.error("__SUMPRISKILLS = " + __SUMPRISKILLS);
-    console.error("getOpti(" + pos + ") = " + ((4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / 27));
+    console.error("getOpti(" + pos + ") = " + ((4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / __NUMOPTI));
 }*/
-                                      return (4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / 27;
+                                      return (4 * (__SUMPRISKILLS - __OVERFLOW) + __SUMALLSKILLS) / __NUMOPTI;
                                   },
         'getPrios'              : function(pos, when = this.__TIME.now) {
                                       return Math.min(this.__MAXPRISKILLS, this.getSkillSum(when, getIdxPriSkills(pos), 2 * 4)) / 4;
