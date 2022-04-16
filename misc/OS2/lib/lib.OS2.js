@@ -1010,7 +1010,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
 // ==================== Abschnitt fuer Ermittlung des Teams von einer OS2-Seite ====================
 
 const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uuml;ro von TEAM</b><br>LIGA LAND<a href=..."
-        'Tabelle'   : 'table table',  // Erste Tabelle innerhalb einer Tabelle...
+        'Tabelle'   : 'TABLE TABLE',  // Erste Tabelle innerhalb einer Tabelle...
         'Zeile'     : 0,
         'Spalte'    : 1,
         'start'     : " von ",
@@ -1021,7 +1021,7 @@ const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uu
     };
 
 const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LAND</a></b>"
-        'Tabelle'   : 'table table',  // Erste Tabelle innerhalb einer Tabelle...
+        'Tabelle'   : 'TABLE TABLE',  // Erste Tabelle innerhalb einer Tabelle...
         'Zeile'     : 0,
         'Spalte'    : 0,
         'start'     : "<b>",
@@ -1032,7 +1032,7 @@ const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LA
     };
 
 const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>...<a href="livegame/index.php?spiele=TEAMID,ZAT">LIVEGAME</a>"
-        'Tabelle'   : 'table',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #6 "Deine Spiele in")...
+        'Tabelle'   : 'TABLE',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #6 "Deine Spiele in")...
         'Zeile'     : 6,
         'Spalte'    : 0,
         'start'     : '<a href="livegame/index.php?spiele=',
@@ -1041,7 +1041,7 @@ const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>.
     };
 
 const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="javascript:tabellenplatz(TEAMID)">Tabellenpl\u00E4tze</a>"
-        'Tabelle'   : 'table',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #1/Spalte #1 "Tabellenplaetze")...
+        'Tabelle'   : 'TABLE',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #1/Spalte #1 "Tabellenplaetze")...
         'Zeile'     : 1,
         'Spalte'    : 1,
         'start'     : '<a hspace="20" href="javascript:tabellenplatz(',
@@ -1060,7 +1060,7 @@ const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="jav
 function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
     // Ermittlung von Team, Liga und Land...
     const __TEAMSEARCH   = getValue(teamSearch, __TEAMSEARCHHAUPT);
-    const __TEAMTABLE    = getElement(getValue(__TEAMSEARCH.Tabelle, 'table table'), 0, doc);
+    const __TEAMTABLE    = getElement(getValue(__TEAMSEARCH.Tabelle, 'TABLE TABLE'), 0, doc);
     const __TEAMCELLROW  = getValue(__TEAMSEARCH.Zeile, 0);
     const __TEAMCELLCOL  = getValue(__TEAMSEARCH.Spalte, 0);
     const __TEAMCELLSTR  = (__TEAMTABLE === undefined) ? "" : __TEAMTABLE.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
@@ -1095,7 +1095,7 @@ function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
 
     // Ermittlung der Team-ID (indirekt ueber den Livegame- bzw. Tabellenplatz-Link)...
     const __TEAMIDSEARCH   = getValue(teamIdSearch, __TEAMIDSEARCHHAUPT);
-    const __TEAMIDTABLE    = getElement(getValue(__TEAMIDSEARCH.Tabelle, 'table'), 0, doc);
+    const __TEAMIDTABLE    = getElement(getValue(__TEAMIDSEARCH.Tabelle, 'TABLE'), 0, doc);
     const __TEAMIDCELLROW  = getValue(__TEAMIDSEARCH.Zeile, 6);
     const __TEAMIDCELLCOL  = getValue(__TEAMIDSEARCH.Spalte, 0);  // Alternativ: 'a[href^=livegame]' (outerHTML)
     const __TEAMIDCELLSTR  = (__TEAMIDTABLE === undefined) ? "" : __TEAMIDTABLE.rows[__TEAMIDCELLROW].cells[__TEAMIDCELLCOL].innerHTML;
@@ -1962,13 +1962,13 @@ Class.define(WarnDrawMessage, Object, {
                                   return this.tagText(tag, this.tagText(this.getSubTag(tag), text));
                               },
         'getSubTag'         : function(tag) {
-                                  return ((tag === 'tr') ? 'td' + this.getColorTD() : ((tag === 'p') ? this.getColorTag() : undefined));
+                                  return (this.isTag(tag, 'TR') ? 'TD' + this.getColorTD() : (this.isTag(tag, 'P') ? this.getColorTag() : undefined));
                               },
         'getSuperTag'       : function(tag) {
-                                  return ((tag === 'p') ? 'div' : undefined);
+                                  return (this.isTag(tag, 'P') ? 'DIV' : undefined);
                               },
         'getOpeningTag'     : function(tag) {
-                                  return '<' + tag + '>';
+                                  return '<' + (tag || "").toUpperCase() + '>';
                               },
         'getClosingTag'     : function(tag) {
                                   const __INDEX1 = (tag ? tag.indexOf(' ') : -1);
@@ -1976,7 +1976,10 @@ Class.define(WarnDrawMessage, Object, {
                                   const __INDEX = ((~ __INDEX1) && (~ __INDEX2)) ? Math.min(__INDEX1, __INDEX2) : Math.max(__INDEX1, __INDEX2);
                                   const __TAGNAME = ((~ __INDEX) ? tag.substring(0, __INDEX) : tag);
 
-                                  return "</" + __TAGNAME + '>';
+                                  return this.getOpeningTag('/' + __TAGNAME);
+                              },
+        'isTag'             : function(tag, compareTag) {
+                                  return (tag && compareTag && (tag.toUpperCase() === compareTag.toUpperCase()));
                               },
         'getLink'           : function() {
                                   return './ju.php';
@@ -1993,16 +1996,16 @@ Class.define(WarnDrawMessage, Object, {
         'getColorTD'        : function() {
                                   return " class='STU'";  // rot
                               },
-        'getHTML'           : function(tag = 'p') {
+        'getHTML'           : function(tag = 'P') {
                                   return this.tagParagraph((this.out.supertag ? this.getSuperTag(tag) : undefined), (this.out.top ? this.getTopHTML(tag) : "") +
-                                         this.tagParagraph(tag, this.tagText('b', this.tagText((this.out.link ? "a href='" + this.getLink() + "'" : undefined),
+                                         this.tagParagraph(tag, this.tagText('A', this.tagText((this.out.link ? "A href='" + this.getLink() + "'" : undefined),
                                          (this.out.label ? this.label + ": " : "") + this.when + this.text))) + (this.out.bottom ? this.getBottomHTML(tag) : ""));
                               }
     });
 
 Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
         get : function() {
-                  return this.getHTML('p');
+                  return this.getHTML('P');
               }
     });
 

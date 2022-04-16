@@ -38,7 +38,7 @@
     const __RESOLVED = (() => Promise.resolve(true));
     const __REJECTED = (() => Promise.reject(false));
     const __ERRORMSG = "Erroneous";
-    const __ERRONEOUS = function() { throw Error(__ERRORMSG); };
+    const __ERRONEOUS = function() { Error(__ERRORMSG); };
     const __USEDCASE = sameValue;
 
     // Funktionalitaet der ASSERT-Funktionen...

@@ -593,6 +593,7 @@ function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
 }
 
 // Erzeugt ein Mapping innerhalb der Werte eines Objekts ueber Spaltenindizes.
+// Ein Spaltenindex von -1 (bzw. undefined oder null) referenziert dabei die Schluessel.
 // obj: Objekt mit key => value
 // keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
 // - newValue: Neuer Wert (zu konvertieren)
@@ -616,8 +617,10 @@ function selectMapping(obj, keyIndex, valueIndex, keyValFun, valKeyFun) {
     checkType(keyValFun, 'function', false, 'selectMapping', 'keyValFun', 'Function');
     checkType(valKeyFun, 'function', false, 'selectMapping', 'valKeyFun', 'Function');
 
-    const __KEYVALFUN = mappingValueSelect.bind(this, valueIndex, keyValFun);
-    const __VALUESFUN = mappingValuesFunSelect.bind(this, keyIndex);
+    const __KEYINDEX = getValue(keyIndex, -1);      // Bei Index -1, undefined oder null werden die Schluessel selektiert
+    const __VALUEINDEX = getValue(valueIndex, -1);  // Bei Index -1, undefined oder null werden die Schluessel selektiert
+    const __KEYVALFUN = ((~ __VALUEINDEX) ? mappingValueSelect.bind(this, __VALUEINDEX, keyValFun) : keyValFun);
+    const __VALUESFUN = ((~ __KEYINDEX) ? mappingValuesFunSelect.bind(this, __KEYINDEX) : null);
     const __VALKEYFUN = valKeyFun;
 
     return reverseMapping(obj, __KEYVALFUN, __VALUESFUN, __VALKEYFUN);
@@ -1171,7 +1174,7 @@ Object.defineProperty(Array.prototype, 'Reduce', {
     'value'           : function(reduceFun, value) {
         try {
             if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-                throw TypeError("Invalid reduce() function!");
+                TypeError("Invalid reduce() function!");
             }
 
             const __LEN = this.length;
@@ -1216,7 +1219,7 @@ Object.defineProperty(Array.prototype, 'ReduceRight', {
     'value'           : function(reduceFun, value) {
         try {
             if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-                throw TypeError("Invalid reduceRight() function!");
+                TypeError("Invalid reduceRight() function!");
             }
 
             const __LEN = this.length;
@@ -1686,8 +1689,8 @@ function checkType(value, type, strict = false, label = "", valName = undefined,
 
     if (strict || ((value !== undefined) && (value !== null))) {
         if ((typeof value) !== type) {
-            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
-                            __LOG.info(value, true, true) + ' ' + String(value));
+            TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                    __LOG.info(value, true, true) + ' ' + String(value));
         }
     }
 
@@ -1714,8 +1717,8 @@ function checkEnumObj(value, enumObj, strict = false, label = "", valName = unde
     if (strict || ((value !== undefined) && (value !== null))) {
         const __VALUES = Object.values(enumObj);
         if (! __VALUES.includes(value)) {
-            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
-                            __LOG.info(value, true, true) + ' ' + String(value));
+            TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                    __LOG.info(value, true, true) + ' ' + String(value));
         }
     }
 
@@ -2280,7 +2283,7 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
         __LOG[2]("Initializing", XHRname, '...');
     } else {
         __LOG[1]("Can't initialize", XHRname, "with", __LOG.info(XHRopenFun));
-        //throw TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
+        //TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
         return { __XMLREQUEST };
     }
 
@@ -2595,7 +2598,7 @@ function addInputField(form, props, type = 'hidden') {
     for (let fieldName in props) {
         let field = form[fieldName];
         if (! field) {
-            field = document.createElement('input');
+            field = document.createElement('INPUT');
             field.type = type;
             field.name = fieldName;
             form.appendChild(field);
@@ -2695,21 +2698,26 @@ function insertBefore(element, anchor) {
 }
 
 // Hilfsfunktion fuer die Ermittlung aller Elements desselben Typs auf der Seite ueber CSS Selector (Default: Tabelle)
-// selector: CSS Selector des Elements ('table')
+// selector: CSS Selector des Elements ('TABLE')
 // doc: Dokument (document)
 // return Kollektion aller gesuchten Elemente oder leer
-function getElements(selector = 'table', doc = document) {
+function getElements(selector = 'TABLE', doc = document) {
+    checkType(selector, 'string', true, 'getElements', 'selector', 'String');
+
     const __ELEMENTS = doc.querySelectorAll(selector);
 
     return __ELEMENTS;
 }
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber CSS Selector (Default: Tabelle)
-// selector: CSS Selector des Elements ('table')
+// selector: CSS Selector des Elements ('TABLE')
 // index: Laufende Nummer des Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
-function getElement(selector = 'table', index = 0, doc = document) {
+function getElement(selector = 'TABLE', index = 0, doc = document) {
+    checkType(selector, 'string', true, 'getElement', 'selector', 'String');
+    checkType(index, 'number', true, 'getElement', 'index', 'Number');
+
     const __ELEMENTS = doc.querySelectorAll(selector);
     const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
 
@@ -2722,6 +2730,9 @@ function getElement(selector = 'table', index = 0, doc = document) {
 // doc: Dokument (document)
 // return Gesuchtes Element mit der lfd. Nummer index oder undefined (falls nicht gefunden)
 function getElementByName(name, index = 0, doc = document) {
+    checkType(name, 'string', true, 'getElementByName', 'name', 'String');
+    checkType(index, 'number', true, 'getElementByName', 'index', 'Number');
+
     const __ELEMENTS = doc.getElementsByName(name);
     const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
 
@@ -2733,16 +2744,20 @@ function getElementByName(name, index = 0, doc = document) {
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
 function getElementById(id, doc = document) {
+    checkType(id, 'string', true, 'getElementById', 'id', 'String');
+
     const __ELEMENT = doc.getElementById(id);
 
     return __ELEMENT;
 }
 
 // Hilfsfunktion fuer die Ermittlung aller Elemente der Seite (Default: Tabelle)
-// tag: Tag des Elements ('table')
+// tag: Tag des Elements ('TABLE')
 // doc: Dokument (document)
 // return Gesuchte Elemente
-function getTags(tag = 'table', doc = document) {
+function getTags(tag = 'TABLE', doc = document) {
+    checkType(tag, 'string', true, 'getTags', 'tag', 'String');
+
     const __TAGS = doc.getElementsByTagName(tag);
 
     return __TAGS;
@@ -2750,10 +2765,13 @@ function getTags(tag = 'table', doc = document) {
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
-// tag: Tag des Elements ('table')
+// tag: Tag des Elements ('TABLE')
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
-function getTable(index = 0, tag = 'table', doc = document) {
+function getTable(index = 0, tag = 'TABLE', doc = document) {
+    checkType(tag, 'string', true, 'getTable', 'tag', 'String');
+    checkType(index, 'number', true, 'getTable', 'index', 'Number');
+
     const __TAGS = getTags(tag, doc);
     const __TABLE = (__TAGS ? __TAGS[index] : undefined);
 
@@ -2766,6 +2784,9 @@ function getTable(index = 0, tag = 'table', doc = document) {
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
 function getRowsByName(name, index = 0, doc = document) {
+    checkType(name, 'string', true, 'getRowsByName', 'name', 'String');
+    checkType(index, 'number', true, 'getRowsByName', 'index', 'Number');
+
     const __TABLE = getElementByName(name, index, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -2773,11 +2794,14 @@ function getRowsByName(name, index = 0, doc = document) {
 }
 
 // Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle ueber CSS Selector (Default: Tabelle)
-// selector: CSS Selector des Elements ('table')
+// selector: CSS Selector des Elements ('TABLE')
 // index: Laufende Nummer des Tabellen-Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getRows(selector = 'table', index = 0, doc = document) {
+function getRows(selector = 'TABLE', index = 0, doc = document) {
+    checkType(selector, 'string', true, 'getRows', 'selector', 'String');
+    checkType(index, 'number', true, 'getRows', 'index', 'Number');
+
     const __TABLE = getElement(selector, index, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -2786,10 +2810,13 @@ function getRows(selector = 'table', index = 0, doc = document) {
 
 // Hilfsfunktion fuer die Ermittlung der Zeilen eines Elements (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
-// tag: Tag des Elements ('table')
+// tag: Tag des Elements ('TABLE')
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getTableRows(index = 0, tag = 'table', doc = document) {
+function getTableRows(index = 0, tag = 'TABLE', doc = document) {
+    checkType(index, 'number', true, 'getTableRows', 'index', 'Number');
+    checkType(tag, 'string', true, 'getTableRows', 'tag', 'String');
+
     const __TABLE = getTable(index, tag, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -2801,6 +2828,8 @@ function getTableRows(index = 0, tag = 'table', doc = document) {
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
 function getRowsById(id, doc = document) {
+    checkType(id, 'string', true, 'getRowsById', 'id', 'String');
+
     const __TABLE = getElementById(id, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -3041,6 +3070,8 @@ function getSelectedValue(element) {
 // colIdxInt: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als Zahl (-1 fuer "keine Zahl", undefined fuer "nicht gefunden")
 function getIntFromHTML(cells, colIdxInt) {
+    checkType(colIdxInt, 'number', true, 'getIntFromHTML', 'colIdxInt', 'Number');
+
     const __CELL = getValue(cells[colIdxInt], { });
     const __TEXT = __CELL.textContent;
 
@@ -3064,6 +3095,8 @@ function getIntFromHTML(cells, colIdxInt) {
 // colIdxInt: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als Dezimalzahl (undefined fuer "keine Zahl" oder "nicht gefunden")
 function getFloatFromHTML(cells, colIdxFloat) {
+    checkType(colIdxFloat, 'number', true, 'getFloatFromHTML', 'colIdxFloat', 'Number');
+
     const __CELL = getValue(cells[colIdxFloat], { });
     const __TEXT = __CELL.textContent;
 
@@ -3081,6 +3114,8 @@ function getFloatFromHTML(cells, colIdxFloat) {
 // colIdxStr: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als String ("" fuer "nicht gefunden")
 function getStringFromHTML(cells, colIdxStr) {
+    checkType(colIdxStr, 'number', true, 'getStringFromHTML', 'colIdxStr', 'Number');
+
     const __CELL = getValue(cells[colIdxStr], { });
     const __TEXT = __CELL.textContent;
 
@@ -3089,10 +3124,12 @@ function getStringFromHTML(cells, colIdxStr) {
 
 // Liest ein erstes Element aus der Spalte einer Zeile der Tabelle aus
 // cells: Die Zellen einer Zeile
-// colIdxStr: Spaltenindex der gesuchten Werte
+// colIdxElem: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als Element (null fuer "nicht gefunden")
-function getElementFromHTML(cells, colIdxStr) {
-    const __CELL = getValue(cells[colIdxStr], { });
+function getElementFromHTML(cells, colIdxElem) {
+    checkType(colIdxElem, 'number', true, 'getElementFromHTML', 'colIdxElem', 'Number');
+
+    const __CELL = getValue(cells[colIdxElem], { });
 
     return __CELL.firstElementChild;
 }
@@ -3103,6 +3140,9 @@ function getElementFromHTML(cells, colIdxStr) {
 // convertFun: Funktion, die den Wert konvertiert
 // return Spalteneintrag als String ("" fuer "nicht gefunden")
 function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
+    checkType(colIdxStr, 'number', true, 'convertStringFromHTML', 'colIdxStr', 'Number');
+    checkType(convertFun, 'function', true, 'convertStringFromHTML', 'convertFun', 'Function');
+
     const __CELL = getValue(cells[colIdxStr], { });
     const __TEXT = convertFun(__CELL.textContent, __CELL, colIdxStr, 0);
 
@@ -3123,6 +3163,9 @@ function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
 // convertFun: Funktion, die die Werte konvertiert
 // return Array mit Spalteneintraegen als String ("" fuer "nicht gefunden")
 function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sameValue) {
+    checkType(colIdxArr, 'number', true, 'convertArrayFromHTML', 'colIdxArr', 'Number');
+    checkType(convertFun, 'function', true, 'convertArrayFromHTML', 'convertFun', 'Function');
+
     const __ARR = (((typeof arrOrLength) === 'string') ? [ arrOrLength ] :
                     (((typeof arrOrLength) === 'number') ? [] : arrOrLength));
     const __LENGTH = (__ARR.length || arrOrLength);
@@ -3171,7 +3214,7 @@ function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sa
 // return Promise auf das Laden des Scriptes
 function loadScript(url) {
     return new Promise(function(resolve, reject) {
-            const __SCRIPT = document.createElement('script');
+            const __SCRIPT = document.createElement('SCRIPT');
 
             __SCRIPT.type = 'text/javascript';
             __SCRIPT.src = url;
@@ -4314,11 +4357,14 @@ const __OPTACTION = {
 // Notwendigkeit der Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
 const __OPTNEED = {
     'MAN'   : "mandatory parameter",            // Muss-Parameter, darf nicht fehlen!
-    'DAT'   : "mandatory data parameter",       // Muss-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
+    'DAT'   : "mandatory data parameter",       // Muss-Parameter fuer Datentypen __OPTTYPES.MC und __OPTTYPES.SD
     'CHO'   : "mandytory select parameter",     // Muss-Parameter fuer Datentyp __OPTTYPES.MC
+    'SWI'   : "mandatory switch parameter",     // Muss-Parameter fuer Datentypen __OPTTYPES.SW und __OPTTYPES.TF
     'REC'   : "recommended parameter",          // Soll-Parameter: Nutzung dieser Parameter wird empfohlen
-    'VAL'   : "recommended data parameter",     // Soll-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
+    'COM'   : "recommended complex parameter",  // Soll-Parameter fuer alle Datentypen ausser __OPTTYPES.SI
+    'VAL'   : "recommended data parameter",     // Soll-Parameter fuer Datentypen __OPTTYPES.MC und __OPTTYPES.SD
     'SEL'   : "recommended select parameter",   // Soll-Parameter fuer Datentyp __OPTTYPES.MC
+    'TOG'   : "recommended switch parameter",   // Soll-Parameter fuer Datentypen __OPTTYPES.SW und __OPTTYPES.TF
     'OPT'   : "optional parameter",             // Optionale Parameter ohne Pficht
     'INT'   : "internal parameter"              // Nicht in __OPTCONFIG verwenden!
 };
@@ -4331,23 +4377,30 @@ const __OPTITEMTYPES = {
     'Integer'   : 'Number', // Number.isInteger()
 };
 
+const __COLOPTITEMS = {
+        'INFO'      : 0,
+        'TYPE'      : 1,
+        'EXAM'      : 2,
+        'NEED'      : 3
+    };
+
 // Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
 const __OPTITEMS = {
     'Action'    : [ "Aktions-Typ bei Optionswechsel",   '__OPTACTION',  "NXT, RST, SET",            __OPTNEED.MAN ],
-    'AltAction' : [ "Alt Aktions-Typ (abweichend)",     '__OPTACTION',  "NXT, RST, SET",            __OPTNEED.OPT ],
-    'AltHotkey' : [ "Alt Schnellanwahl im Men\u00FC",   'Char',         "'A'",                      __OPTNEED.REC ],
-    'AltLabel'  : [ "Alt Options-Ausgabename",          'String',       "Option aus: $",            __OPTNEED.MAN ],
-    'AltTitle'  : [ "Alt Titel",                        'String',       "$V schlie\u00DFen",        __OPTNEED.OPT ],
+    'AltAction' : [ "Alt Aktions-Typ (abweichend)",     '__OPTACTION',  "NXT, RST, SET",            __OPTNEED.TOG ],
+    'AltHotkey' : [ "Alt Schnellanwahl im Men\u00FC",   'Char',         "'A'",                      __OPTNEED.SWI ],
+    'AltLabel'  : [ "Alt Options-Ausgabename",          'String',       "Option aus: $",            __OPTNEED.TOG ],
+    'AltTitle'  : [ "Alt Titel",                        'String',       "$V schlie\u00DFen",        __OPTNEED.TOG ],
     'AutoReset' : [ "Beim Laden immer auf Default",     'Boolean',      "false, true",              __OPTNEED.OPT ],
     'Choice'    : [ "Auswahlliste der Optionswerte",    'Array',        "[ 0, 1, 2, 3, 4 ]",        __OPTNEED.REC ],
-    'Cols'      : [ "Ausgabebreite in Textfenster",     'Integer',      "1, 3, 20, 25, 36",         __OPTNEED.REC ],
+    'Cols'      : [ "Ausgabebreite in Textfenster",     'Integer',      "1, 3, 20, 25, 36",         __OPTNEED.OPT ],
     'Config'    : [ "INTERNAL: Verweis auf optConfig",  'Object',       "{ }",                      __OPTNEED.INT ],
-    'Default'   : [ "Startwert der Option",             'any',          "1, true, '', [], { }",     __OPTNEED.REC ],
-    'FormLabel' : [ "Options-Ausgabe auf Seite",        'String',       "Option:|$",                __OPTNEED.MAN ],
+    'Default'   : [ "Startwert der Option",             'any',          "1, true, '', [], { }",     __OPTNEED.COM ],
+    'FormLabel' : [ "Options-Ausgabe auf Seite",        'String',       "Option:|$",                __OPTNEED.OPT ],
     'FormPrio'  : [ "Steuert die Reihenfolge",          'Integer',      "undefined, 1",             __OPTNEED.OPT ],
     'FormType'  : [ "Typ der Option auf Seite",         '__OPTTYPES',   "SI",                       __OPTNEED.OPT ],
-    'FreeValue' : [ "Freitext m\u00F6glich",            'Boolean',      "false, true",              __OPTNEED.VAL ],
-    'Hidden'    : [ "Versteckte Option auf Seite",      'Boolean',      "false, true",              __OPTNEED.REC ],
+    'FreeValue' : [ "Freitext m\u00F6glich",            'Boolean',      "false, true",              __OPTNEED.SEL ],
+    'Hidden'    : [ "Versteckte Option auf Seite",      'Boolean',      "false, true",              __OPTNEED.OPT ],
     'HiddenMenu': [ "INTERNAL: Kein Kontextmen\u00FC",  'Boolean',      "false, true",              __OPTNEED.INT ],
     'Hotkey'    : [ "Schnellanwahl im Men\u00FC",       'Char',         "'A'",                      __OPTNEED.REC ],
     'Item'      : [ "INTERNAL: Kopie des Schluessels",  'String',       "",                         __OPTNEED.INT ],
@@ -4364,7 +4417,7 @@ const __OPTITEMS = {
     'Rows'      : [ "Ausgabe-Zeilen in Textfenster",    'Integer',      "1, 2, 3, 6, 7, 10, 20",    __OPTNEED.OPT ],
     'SetValue'  : [ "Zu setzender DefaultWert bei Wahl",'any',          "",                         __OPTNEED.OPT ],
     'SelValue'  : [ "Ist Wert aus fester Liste?",       'Boolean',      "false, true",              __OPTNEED.SEL ],
-    'Serial'    : [ "Speicherung per serialize()",      'Boolean',      "true",                     __OPTNEED.REC ],
+    'Serial'    : [ "Speicherung per serialize()",      'Boolean',      "true",                     __OPTNEED.VAL ],
     'Shared'    : [ "Objektreferenz auf Option",        'Object',       "{ 'namespace' : 'http://os.ongapo.com/', 'module' : 'OS2.haupt', 'item' : '$' }",
                                                                                                     __OPTNEED.OPT ],
     'SharedData': [ "INTERNAL: Daten Objektreferenz",   'Object',       "",                         __OPTNEED.INT ],
@@ -4375,7 +4428,7 @@ const __OPTITEMS = {
     'ValType'   : [ "Datentyp der Werte",               'String',       "'Number', 'String'",       __OPTNEED.CHO ],
     'Value'     : [ "INTERNAL: Gesetzter Wert",         'any',          "",                         __OPTNEED.INT ]
 };
-const __OPTITEMSBYNEED = reverseMapping(__OPTITEMS, mappingPush);
+const __OPTITEMSBYNEED = selectMapping(__OPTITEMS, __COLOPTITEMS.NEED, -1, mappingPush);
 
 // ==================== Ende Abschnitt Moegliche Typen fuer Optionen ====================
 
@@ -4476,6 +4529,11 @@ function getSharedRef(shared, item = undefined) {
 
 // ==================== Abschnitt fuer Zugriff auf Options-Parameter ====================
 
+// Temporaere Aussetzung der Exceptions...
+const __ERRORLOG = __LOG[1];
+const __ERRORFUN = (__ERRORLOG || Error);
+const __RANGEERRORFUN = (__ERRORLOG || RangeError);
+
 // Prueft ein Objekt, ob es eine syntaktisch valide Konfiguration einer (ueber Menu) gesetzten Option ist
 // optItem: Zu validierendes Konfigurations-Item-Objekt
 // key: Falls bekannt, der Item-Key dieser Option (wird auf Korrektheit ueberprueft)
@@ -4491,15 +4549,18 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
     const __MAN = getValue(__OPTITEMSBYNEED[__OPTNEED.MAN], []);    // Muss-Parameter
     const __DAT = getValue(__OPTITEMSBYNEED[__OPTNEED.DAT], []);    // Muss-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
     const __CHO = getValue(__OPTITEMSBYNEED[__OPTNEED.CHO], []);    // Muss-Parameter fuer __OPTTYPES.MC
+    const __SWI = getValue(__OPTITEMSBYNEED[__OPTNEED.SWI], []);    // Muss-Parameter fuer __OPTTYPES.SW und __OPTTYPES.TF
     const __REC = getValue(__OPTITEMSBYNEED[__OPTNEED.REC], []);    // Soll-Parameter
+    const __COM = getValue(__OPTITEMSBYNEED[__OPTNEED.COM], []);    // Soll-Parameter fuer alle Datentypen ausser __OPTTYPES.SI
     const __VAL = getValue(__OPTITEMSBYNEED[__OPTNEED.VAL], []);    // Soll-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
+    const __TOG = getValue(__OPTITEMSBYNEED[__OPTNEED.TOG], []);    // Soll-Parameter fuer __OPTTYPES.SW und __OPTTYPES.TF
     const __SEL = getValue(__OPTITEMSBYNEED[__OPTNEED.SEL], []);    // Soll-Parameter fuer __OPTTYPES.MC
 
     if (! __ISSHARED) {  // TODO Shared Ref
         // Redundante Pruefung auf Namen der Option (spaeter Ueberpruefung von __MAN)...
         if (__NAME === undefined) {
             __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-            throw Error("Unknown 'Name' for option " + __LOG.info(__KEY, false));
+            __ERRORFUN("Unknown 'Name' for option " + __LOG.info(__KEY, false));
         }
 
         // Ueberpruefung der Pflichtparameter...
@@ -4508,7 +4569,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
                 if (! __ITEM) {
                     __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    throw Error("Option " + __LOG.info(__KEY, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
+                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
                 }
             });
         __DAT.forEach(item => {
@@ -4516,15 +4577,23 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
                 if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
                     __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    throw Error("Option " + __LOG.info(__KEY, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
+                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
                 }
             });
-        __DAT.forEach(item => {
+        __CHO.forEach(item => {
                 const __ITEM = __CONFIG[item];
 
                 if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
                     __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    throw Error("Option " + __LOG.info(__KEY, false) + " is missing mandatory select parameter " + __LOG.info(item, false) + "...");
+                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory select parameter " + __LOG.info(item, false) + "...");
+                }
+            });
+        __SWI.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.SW) || (__OPTTYPE === __OPTTYPES.TF))) {
+                    __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory switch parameter " + __LOG.info(item, false) + "...");
                 }
             });
 
@@ -4534,6 +4603,13 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
                 if (! __ITEM) {
                     __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended parameter " + __LOG.info(item, false) + "...");
+                }
+            });
+        __COM.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if ((! __ITEM) && (__OPTTYPE !== __OPTTYPES.SI)) {
+                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended complex parameter " + __LOG.info(item, false) + "...");
                 }
             });
         __VAL.forEach(item => {
@@ -4550,6 +4626,13 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
                     __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended select parameter " + __LOG.info(item, false) + "...");
                 }
             });
+        __TOG.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.SW) || (__OPTTYPE === __OPTTYPES.TF))) {
+                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended switch parameter " + __LOG.info(item, false) + "...");
+                }
+            });
     }
 
     // Ueberpruefung der angegebenen Parameter auf Bekanntheit und Typen...
@@ -4564,12 +4647,12 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
             if (! __ITEMINFO) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw Error("Unknown parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false));
+                __ERRORFUN("Unknown parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false));
             }
 
             if (preInit && (__ITEMNEED === __OPTNEED.INT)) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(__KEY, false));
+                TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(__KEY, false));
             }
 
             switch (__TYPE) {
@@ -4589,7 +4672,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
                                     break;
                 case 'any'        : break;  // OK
                 default           : __LOG[1]("checkOptItem(): Internal error in " + codeLine(true, true, true, false));
-                                    throw TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(__KEY, false));
+                                    TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(__KEY, false));
             }
 
             if (__ITEMVALUE) {
@@ -4608,7 +4691,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
             }
             if (! isValid) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false) + " is not of type " + __ITEMTYPE);
+                TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false) + " is not of type " + __ITEMTYPE);
             }
         });
 
@@ -4626,12 +4709,12 @@ function checkOpt(opt, key = undefined) {
 
     if (__NAME === undefined) {  // NOTE opt === undefined liefert __NAME === undefined
         __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-        throw Error("Unknown option " + __LOG.info(key, false));
+        Error("Unknown option " + __LOG.info(key, false));
     }
 
     if (((typeof key) !== 'undefined') && (key !== __KEY)) {
         __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-        throw RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
+        RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
     }
 
     if (! opt.validOption) {
@@ -4639,7 +4722,7 @@ function checkOpt(opt, key = undefined) {
             opt.validOption = true;
         } else {
             __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-            throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
+            TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
         }
     }
 
@@ -4679,7 +4762,7 @@ function checkOptConfig(optConfig, preInit = false) {
 
                 if (__USED) {
                     __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-                    throw RangeError("Internal name " + __LOG.info(__NAME, false) + " of option " +
+                    RangeError("Internal name " + __LOG.info(__NAME, false) + " of option " +
                             __LOG.info(__KEY, false) + " was already used in option " + __LOG.info(__USED, false));
                 } else {
                     __NAMEUSE[__NAME] = __KEY;
@@ -4794,7 +4877,7 @@ function setOptValue(opt, value, initialLoad = false) {
 
             opt.Value = value;
         } else {
-            throw TypeError("Can't modify read-only option " + __LOG.info(__KEY, false) + " (" + __NAME + ')');
+            TypeError("Can't modify read-only option " + __LOG.info(__KEY, false) + " (" + __NAME + ')');
         }
 
         return opt.Value;
@@ -5227,9 +5310,9 @@ function loadOption(opt, force = false) {
         opt.Promise = Promise.resolve(value).then(value => {
                 // Paranoide Sicherheitsabfrage (das sollte nie passieren!)...
                 if (opt.Loaded || ! opt.Promise) {
-                    throw Error("Unerwarteter Widerspruch zwischen Loaded und Promise in Option " +
-                                    __LOG.info(__KEY, false) + " (" + __NAME + ')',
-                                    { 'cause' : __LOG.info(opt, true, true) });
+                    Error("Unerwarteter Widerspruch zwischen Loaded und Promise in Option " +
+                            __LOG.info(__KEY, false) + " (" + __NAME + ')',
+                            { 'cause' : __LOG.info(opt, true, true) });
                 }
                 __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value, true, true));
 
@@ -6357,7 +6440,7 @@ function getOptionElement(opt) {
         }
 
         if ((typeof element) !== 'string') {
-            element = '<div>' + Array.from(element).join('<br />') + '</div>';
+            element = '<DIV>' + Array.from(element).join('<BR />') + '</DIV>';
         }
     }
 
@@ -8061,7 +8144,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
 // ==================== Abschnitt fuer Ermittlung des Teams von einer OS2-Seite ====================
 
 const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uuml;ro von TEAM</b><br>LIGA LAND<a href=..."
-        'Tabelle'   : 'table table',  // Erste Tabelle innerhalb einer Tabelle...
+        'Tabelle'   : 'TABLE TABLE',  // Erste Tabelle innerhalb einer Tabelle...
         'Zeile'     : 0,
         'Spalte'    : 1,
         'start'     : " von ",
@@ -8072,7 +8155,7 @@ const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uu
     };
 
 const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LAND</a></b>"
-        'Tabelle'   : 'table table',  // Erste Tabelle innerhalb einer Tabelle...
+        'Tabelle'   : 'TABLE TABLE',  // Erste Tabelle innerhalb einer Tabelle...
         'Zeile'     : 0,
         'Spalte'    : 0,
         'start'     : "<b>",
@@ -8083,7 +8166,7 @@ const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LA
     };
 
 const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>...<a href="livegame/index.php?spiele=TEAMID,ZAT">LIVEGAME</a>"
-        'Tabelle'   : 'table',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #6 "Deine Spiele in")...
+        'Tabelle'   : 'TABLE',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #6 "Deine Spiele in")...
         'Zeile'     : 6,
         'Spalte'    : 0,
         'start'     : '<a href="livegame/index.php?spiele=',
@@ -8092,7 +8175,7 @@ const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>.
     };
 
 const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="javascript:tabellenplatz(TEAMID)">Tabellenpl\u00E4tze</a>"
-        'Tabelle'   : 'table',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #1/Spalte #1 "Tabellenplaetze")...
+        'Tabelle'   : 'TABLE',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #1/Spalte #1 "Tabellenplaetze")...
         'Zeile'     : 1,
         'Spalte'    : 1,
         'start'     : '<a hspace="20" href="javascript:tabellenplatz(',
@@ -8111,7 +8194,7 @@ const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="jav
 function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
     // Ermittlung von Team, Liga und Land...
     const __TEAMSEARCH   = getValue(teamSearch, __TEAMSEARCHHAUPT);
-    const __TEAMTABLE    = getElement(getValue(__TEAMSEARCH.Tabelle, 'table table'), 0, doc);
+    const __TEAMTABLE    = getElement(getValue(__TEAMSEARCH.Tabelle, 'TABLE TABLE'), 0, doc);
     const __TEAMCELLROW  = getValue(__TEAMSEARCH.Zeile, 0);
     const __TEAMCELLCOL  = getValue(__TEAMSEARCH.Spalte, 0);
     const __TEAMCELLSTR  = (__TEAMTABLE === undefined) ? "" : __TEAMTABLE.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
@@ -8146,7 +8229,7 @@ function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
 
     // Ermittlung der Team-ID (indirekt ueber den Livegame- bzw. Tabellenplatz-Link)...
     const __TEAMIDSEARCH   = getValue(teamIdSearch, __TEAMIDSEARCHHAUPT);
-    const __TEAMIDTABLE    = getElement(getValue(__TEAMIDSEARCH.Tabelle, 'table'), 0, doc);
+    const __TEAMIDTABLE    = getElement(getValue(__TEAMIDSEARCH.Tabelle, 'TABLE'), 0, doc);
     const __TEAMIDCELLROW  = getValue(__TEAMIDSEARCH.Zeile, 6);
     const __TEAMIDCELLCOL  = getValue(__TEAMIDSEARCH.Spalte, 0);  // Alternativ: 'a[href^=livegame]' (outerHTML)
     const __TEAMIDCELLSTR  = (__TEAMIDTABLE === undefined) ? "" : __TEAMIDTABLE.rows[__TEAMIDCELLROW].cells[__TEAMIDCELLCOL].innerHTML;
@@ -9013,13 +9096,13 @@ Class.define(WarnDrawMessage, Object, {
                                   return this.tagText(tag, this.tagText(this.getSubTag(tag), text));
                               },
         'getSubTag'         : function(tag) {
-                                  return ((tag === 'tr') ? 'td' + this.getColorTD() : ((tag === 'p') ? this.getColorTag() : undefined));
+                                  return (this.isTag(tag, 'TR') ? 'TD' + this.getColorTD() : (this.isTag(tag, 'P') ? this.getColorTag() : undefined));
                               },
         'getSuperTag'       : function(tag) {
-                                  return ((tag === 'p') ? 'div' : undefined);
+                                  return (this.isTag(tag, 'P') ? 'DIV' : undefined);
                               },
         'getOpeningTag'     : function(tag) {
-                                  return '<' + tag + '>';
+                                  return '<' + (tag || "").toUpperCase() + '>';
                               },
         'getClosingTag'     : function(tag) {
                                   const __INDEX1 = (tag ? tag.indexOf(' ') : -1);
@@ -9027,7 +9110,10 @@ Class.define(WarnDrawMessage, Object, {
                                   const __INDEX = ((~ __INDEX1) && (~ __INDEX2)) ? Math.min(__INDEX1, __INDEX2) : Math.max(__INDEX1, __INDEX2);
                                   const __TAGNAME = ((~ __INDEX) ? tag.substring(0, __INDEX) : tag);
 
-                                  return "</" + __TAGNAME + '>';
+                                  return this.getOpeningTag('/' + __TAGNAME);
+                              },
+        'isTag'             : function(tag, compareTag) {
+                                  return (tag && compareTag && (tag.toUpperCase() === compareTag.toUpperCase()));
                               },
         'getLink'           : function() {
                                   return './ju.php';
@@ -9044,16 +9130,16 @@ Class.define(WarnDrawMessage, Object, {
         'getColorTD'        : function() {
                                   return " class='STU'";  // rot
                               },
-        'getHTML'           : function(tag = 'p') {
+        'getHTML'           : function(tag = 'P') {
                                   return this.tagParagraph((this.out.supertag ? this.getSuperTag(tag) : undefined), (this.out.top ? this.getTopHTML(tag) : "") +
-                                         this.tagParagraph(tag, this.tagText('b', this.tagText((this.out.link ? "a href='" + this.getLink() + "'" : undefined),
+                                         this.tagParagraph(tag, this.tagText('A', this.tagText((this.out.link ? "A href='" + this.getLink() + "'" : undefined),
                                          (this.out.label ? this.label + ": " : "") + this.when + this.text))) + (this.out.bottom ? this.getBottomHTML(tag) : ""));
                               }
     });
 
 Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
         get : function() {
-                  return this.getHTML('p');
+                  return this.getHTML('P');
               }
     });
 

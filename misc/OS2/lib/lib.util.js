@@ -564,6 +564,7 @@ function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
 }
 
 // Erzeugt ein Mapping innerhalb der Werte eines Objekts ueber Spaltenindizes.
+// Ein Spaltenindex von -1 (bzw. undefined oder null) referenziert dabei die Schluessel.
 // obj: Objekt mit key => value
 // keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
 // - newValue: Neuer Wert (zu konvertieren)
@@ -587,8 +588,10 @@ function selectMapping(obj, keyIndex, valueIndex, keyValFun, valKeyFun) {
     checkType(keyValFun, 'function', false, 'selectMapping', 'keyValFun', 'Function');
     checkType(valKeyFun, 'function', false, 'selectMapping', 'valKeyFun', 'Function');
 
-    const __KEYVALFUN = mappingValueSelect.bind(this, valueIndex, keyValFun);
-    const __VALUESFUN = mappingValuesFunSelect.bind(this, keyIndex);
+    const __KEYINDEX = getValue(keyIndex, -1);      // Bei Index -1, undefined oder null werden die Schluessel selektiert
+    const __VALUEINDEX = getValue(valueIndex, -1);  // Bei Index -1, undefined oder null werden die Schluessel selektiert
+    const __KEYVALFUN = ((~ __VALUEINDEX) ? mappingValueSelect.bind(this, __VALUEINDEX, keyValFun) : keyValFun);
+    const __VALUESFUN = ((~ __KEYINDEX) ? mappingValuesFunSelect.bind(this, __KEYINDEX) : null);
     const __VALKEYFUN = valKeyFun;
 
     return reverseMapping(obj, __KEYVALFUN, __VALUESFUN, __VALKEYFUN);
@@ -1142,7 +1145,7 @@ Object.defineProperty(Array.prototype, 'Reduce', {
     'value'           : function(reduceFun, value) {
         try {
             if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-                throw TypeError("Invalid reduce() function!");
+                TypeError("Invalid reduce() function!");
             }
 
             const __LEN = this.length;
@@ -1187,7 +1190,7 @@ Object.defineProperty(Array.prototype, 'ReduceRight', {
     'value'           : function(reduceFun, value) {
         try {
             if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-                throw TypeError("Invalid reduceRight() function!");
+                TypeError("Invalid reduceRight() function!");
             }
 
             const __LEN = this.length;
@@ -1657,8 +1660,8 @@ function checkType(value, type, strict = false, label = "", valName = undefined,
 
     if (strict || ((value !== undefined) && (value !== null))) {
         if ((typeof value) !== type) {
-            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
-                            __LOG.info(value, true, true) + ' ' + String(value));
+            TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                    __LOG.info(value, true, true) + ' ' + String(value));
         }
     }
 
@@ -1685,8 +1688,8 @@ function checkEnumObj(value, enumObj, strict = false, label = "", valName = unde
     if (strict || ((value !== undefined) && (value !== null))) {
         const __VALUES = Object.values(enumObj);
         if (! __VALUES.includes(value)) {
-            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
-                            __LOG.info(value, true, true) + ' ' + String(value));
+            TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                    __LOG.info(value, true, true) + ' ' + String(value));
         }
     }
 
@@ -2251,7 +2254,7 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
         __LOG[2]("Initializing", XHRname, '...');
     } else {
         __LOG[1]("Can't initialize", XHRname, "with", __LOG.info(XHRopenFun));
-        //throw TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
+        //TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
         return { __XMLREQUEST };
     }
 
@@ -2566,7 +2569,7 @@ function addInputField(form, props, type = 'hidden') {
     for (let fieldName in props) {
         let field = form[fieldName];
         if (! field) {
-            field = document.createElement('input');
+            field = document.createElement('INPUT');
             field.type = type;
             field.name = fieldName;
             form.appendChild(field);
@@ -2666,21 +2669,26 @@ function insertBefore(element, anchor) {
 }
 
 // Hilfsfunktion fuer die Ermittlung aller Elements desselben Typs auf der Seite ueber CSS Selector (Default: Tabelle)
-// selector: CSS Selector des Elements ('table')
+// selector: CSS Selector des Elements ('TABLE')
 // doc: Dokument (document)
 // return Kollektion aller gesuchten Elemente oder leer
-function getElements(selector = 'table', doc = document) {
+function getElements(selector = 'TABLE', doc = document) {
+    checkType(selector, 'string', true, 'getElements', 'selector', 'String');
+
     const __ELEMENTS = doc.querySelectorAll(selector);
 
     return __ELEMENTS;
 }
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber CSS Selector (Default: Tabelle)
-// selector: CSS Selector des Elements ('table')
+// selector: CSS Selector des Elements ('TABLE')
 // index: Laufende Nummer des Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
-function getElement(selector = 'table', index = 0, doc = document) {
+function getElement(selector = 'TABLE', index = 0, doc = document) {
+    checkType(selector, 'string', true, 'getElement', 'selector', 'String');
+    checkType(index, 'number', true, 'getElement', 'index', 'Number');
+
     const __ELEMENTS = doc.querySelectorAll(selector);
     const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
 
@@ -2693,6 +2701,9 @@ function getElement(selector = 'table', index = 0, doc = document) {
 // doc: Dokument (document)
 // return Gesuchtes Element mit der lfd. Nummer index oder undefined (falls nicht gefunden)
 function getElementByName(name, index = 0, doc = document) {
+    checkType(name, 'string', true, 'getElementByName', 'name', 'String');
+    checkType(index, 'number', true, 'getElementByName', 'index', 'Number');
+
     const __ELEMENTS = doc.getElementsByName(name);
     const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
 
@@ -2704,16 +2715,20 @@ function getElementByName(name, index = 0, doc = document) {
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
 function getElementById(id, doc = document) {
+    checkType(id, 'string', true, 'getElementById', 'id', 'String');
+
     const __ELEMENT = doc.getElementById(id);
 
     return __ELEMENT;
 }
 
 // Hilfsfunktion fuer die Ermittlung aller Elemente der Seite (Default: Tabelle)
-// tag: Tag des Elements ('table')
+// tag: Tag des Elements ('TABLE')
 // doc: Dokument (document)
 // return Gesuchte Elemente
-function getTags(tag = 'table', doc = document) {
+function getTags(tag = 'TABLE', doc = document) {
+    checkType(tag, 'string', true, 'getTags', 'tag', 'String');
+
     const __TAGS = doc.getElementsByTagName(tag);
 
     return __TAGS;
@@ -2721,10 +2736,13 @@ function getTags(tag = 'table', doc = document) {
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
-// tag: Tag des Elements ('table')
+// tag: Tag des Elements ('TABLE')
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
-function getTable(index = 0, tag = 'table', doc = document) {
+function getTable(index = 0, tag = 'TABLE', doc = document) {
+    checkType(tag, 'string', true, 'getTable', 'tag', 'String');
+    checkType(index, 'number', true, 'getTable', 'index', 'Number');
+
     const __TAGS = getTags(tag, doc);
     const __TABLE = (__TAGS ? __TAGS[index] : undefined);
 
@@ -2737,6 +2755,9 @@ function getTable(index = 0, tag = 'table', doc = document) {
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
 function getRowsByName(name, index = 0, doc = document) {
+    checkType(name, 'string', true, 'getRowsByName', 'name', 'String');
+    checkType(index, 'number', true, 'getRowsByName', 'index', 'Number');
+
     const __TABLE = getElementByName(name, index, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -2744,11 +2765,14 @@ function getRowsByName(name, index = 0, doc = document) {
 }
 
 // Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle ueber CSS Selector (Default: Tabelle)
-// selector: CSS Selector des Elements ('table')
+// selector: CSS Selector des Elements ('TABLE')
 // index: Laufende Nummer des Tabellen-Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getRows(selector = 'table', index = 0, doc = document) {
+function getRows(selector = 'TABLE', index = 0, doc = document) {
+    checkType(selector, 'string', true, 'getRows', 'selector', 'String');
+    checkType(index, 'number', true, 'getRows', 'index', 'Number');
+
     const __TABLE = getElement(selector, index, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -2757,10 +2781,13 @@ function getRows(selector = 'table', index = 0, doc = document) {
 
 // Hilfsfunktion fuer die Ermittlung der Zeilen eines Elements (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
-// tag: Tag des Elements ('table')
+// tag: Tag des Elements ('TABLE')
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getTableRows(index = 0, tag = 'table', doc = document) {
+function getTableRows(index = 0, tag = 'TABLE', doc = document) {
+    checkType(index, 'number', true, 'getTableRows', 'index', 'Number');
+    checkType(tag, 'string', true, 'getTableRows', 'tag', 'String');
+
     const __TABLE = getTable(index, tag, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -2772,6 +2799,8 @@ function getTableRows(index = 0, tag = 'table', doc = document) {
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
 function getRowsById(id, doc = document) {
+    checkType(id, 'string', true, 'getRowsById', 'id', 'String');
+
     const __TABLE = getElementById(id, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -3012,6 +3041,8 @@ function getSelectedValue(element) {
 // colIdxInt: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als Zahl (-1 fuer "keine Zahl", undefined fuer "nicht gefunden")
 function getIntFromHTML(cells, colIdxInt) {
+    checkType(colIdxInt, 'number', true, 'getIntFromHTML', 'colIdxInt', 'Number');
+
     const __CELL = getValue(cells[colIdxInt], { });
     const __TEXT = __CELL.textContent;
 
@@ -3035,6 +3066,8 @@ function getIntFromHTML(cells, colIdxInt) {
 // colIdxInt: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als Dezimalzahl (undefined fuer "keine Zahl" oder "nicht gefunden")
 function getFloatFromHTML(cells, colIdxFloat) {
+    checkType(colIdxFloat, 'number', true, 'getFloatFromHTML', 'colIdxFloat', 'Number');
+
     const __CELL = getValue(cells[colIdxFloat], { });
     const __TEXT = __CELL.textContent;
 
@@ -3052,6 +3085,8 @@ function getFloatFromHTML(cells, colIdxFloat) {
 // colIdxStr: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als String ("" fuer "nicht gefunden")
 function getStringFromHTML(cells, colIdxStr) {
+    checkType(colIdxStr, 'number', true, 'getStringFromHTML', 'colIdxStr', 'Number');
+
     const __CELL = getValue(cells[colIdxStr], { });
     const __TEXT = __CELL.textContent;
 
@@ -3060,10 +3095,12 @@ function getStringFromHTML(cells, colIdxStr) {
 
 // Liest ein erstes Element aus der Spalte einer Zeile der Tabelle aus
 // cells: Die Zellen einer Zeile
-// colIdxStr: Spaltenindex der gesuchten Werte
+// colIdxElem: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als Element (null fuer "nicht gefunden")
-function getElementFromHTML(cells, colIdxStr) {
-    const __CELL = getValue(cells[colIdxStr], { });
+function getElementFromHTML(cells, colIdxElem) {
+    checkType(colIdxElem, 'number', true, 'getElementFromHTML', 'colIdxElem', 'Number');
+
+    const __CELL = getValue(cells[colIdxElem], { });
 
     return __CELL.firstElementChild;
 }
@@ -3074,6 +3111,9 @@ function getElementFromHTML(cells, colIdxStr) {
 // convertFun: Funktion, die den Wert konvertiert
 // return Spalteneintrag als String ("" fuer "nicht gefunden")
 function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
+    checkType(colIdxStr, 'number', true, 'convertStringFromHTML', 'colIdxStr', 'Number');
+    checkType(convertFun, 'function', true, 'convertStringFromHTML', 'convertFun', 'Function');
+
     const __CELL = getValue(cells[colIdxStr], { });
     const __TEXT = convertFun(__CELL.textContent, __CELL, colIdxStr, 0);
 
@@ -3094,6 +3134,9 @@ function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
 // convertFun: Funktion, die die Werte konvertiert
 // return Array mit Spalteneintraegen als String ("" fuer "nicht gefunden")
 function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sameValue) {
+    checkType(colIdxArr, 'number', true, 'convertArrayFromHTML', 'colIdxArr', 'Number');
+    checkType(convertFun, 'function', true, 'convertArrayFromHTML', 'convertFun', 'Function');
+
     const __ARR = (((typeof arrOrLength) === 'string') ? [ arrOrLength ] :
                     (((typeof arrOrLength) === 'number') ? [] : arrOrLength));
     const __LENGTH = (__ARR.length || arrOrLength);
@@ -3142,7 +3185,7 @@ function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sa
 // return Promise auf das Laden des Scriptes
 function loadScript(url) {
     return new Promise(function(resolve, reject) {
-            const __SCRIPT = document.createElement('script');
+            const __SCRIPT = document.createElement('SCRIPT');
 
             __SCRIPT.type = 'text/javascript';
             __SCRIPT.src = url;

@@ -54,11 +54,14 @@ const __OPTACTION = {
 // Notwendigkeit der Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
 const __OPTNEED = {
     'MAN'   : "mandatory parameter",            // Muss-Parameter, darf nicht fehlen!
-    'DAT'   : "mandatory data parameter",       // Muss-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
+    'DAT'   : "mandatory data parameter",       // Muss-Parameter fuer Datentypen __OPTTYPES.MC und __OPTTYPES.SD
     'CHO'   : "mandytory select parameter",     // Muss-Parameter fuer Datentyp __OPTTYPES.MC
+    'SWI'   : "mandatory switch parameter",     // Muss-Parameter fuer Datentypen __OPTTYPES.SW und __OPTTYPES.TF
     'REC'   : "recommended parameter",          // Soll-Parameter: Nutzung dieser Parameter wird empfohlen
-    'VAL'   : "recommended data parameter",     // Soll-Parameter fuer Datentypen __OPTTYPES.SD und __OPTTYPES.MC
+    'COM'   : "recommended complex parameter",  // Soll-Parameter fuer alle Datentypen ausser __OPTTYPES.SI
+    'VAL'   : "recommended data parameter",     // Soll-Parameter fuer Datentypen __OPTTYPES.MC und __OPTTYPES.SD
     'SEL'   : "recommended select parameter",   // Soll-Parameter fuer Datentyp __OPTTYPES.MC
+    'TOG'   : "recommended switch parameter",   // Soll-Parameter fuer Datentypen __OPTTYPES.SW und __OPTTYPES.TF
     'OPT'   : "optional parameter",             // Optionale Parameter ohne Pficht
     'INT'   : "internal parameter"              // Nicht in __OPTCONFIG verwenden!
 };
@@ -71,23 +74,30 @@ const __OPTITEMTYPES = {
     'Integer'   : 'Number', // Number.isInteger()
 };
 
+const __COLOPTITEMS = {
+        'INFO'      : 0,
+        'TYPE'      : 1,
+        'EXAM'      : 2,
+        'NEED'      : 3
+    };
+
 // Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
 const __OPTITEMS = {
     'Action'    : [ "Aktions-Typ bei Optionswechsel",   '__OPTACTION',  "NXT, RST, SET",            __OPTNEED.MAN ],
-    'AltAction' : [ "Alt Aktions-Typ (abweichend)",     '__OPTACTION',  "NXT, RST, SET",            __OPTNEED.OPT ],
-    'AltHotkey' : [ "Alt Schnellanwahl im Men\u00FC",   'Char',         "'A'",                      __OPTNEED.REC ],
-    'AltLabel'  : [ "Alt Options-Ausgabename",          'String',       "Option aus: $",            __OPTNEED.MAN ],
-    'AltTitle'  : [ "Alt Titel",                        'String',       "$V schlie\u00DFen",        __OPTNEED.OPT ],
+    'AltAction' : [ "Alt Aktions-Typ (abweichend)",     '__OPTACTION',  "NXT, RST, SET",            __OPTNEED.TOG ],
+    'AltHotkey' : [ "Alt Schnellanwahl im Men\u00FC",   'Char',         "'A'",                      __OPTNEED.SWI ],
+    'AltLabel'  : [ "Alt Options-Ausgabename",          'String',       "Option aus: $",            __OPTNEED.TOG ],
+    'AltTitle'  : [ "Alt Titel",                        'String',       "$V schlie\u00DFen",        __OPTNEED.TOG ],
     'AutoReset' : [ "Beim Laden immer auf Default",     'Boolean',      "false, true",              __OPTNEED.OPT ],
     'Choice'    : [ "Auswahlliste der Optionswerte",    'Array',        "[ 0, 1, 2, 3, 4 ]",        __OPTNEED.REC ],
-    'Cols'      : [ "Ausgabebreite in Textfenster",     'Integer',      "1, 3, 20, 25, 36",         __OPTNEED.REC ],
+    'Cols'      : [ "Ausgabebreite in Textfenster",     'Integer',      "1, 3, 20, 25, 36",         __OPTNEED.OPT ],
     'Config'    : [ "INTERNAL: Verweis auf optConfig",  'Object',       "{ }",                      __OPTNEED.INT ],
-    'Default'   : [ "Startwert der Option",             'any',          "1, true, '', [], { }",     __OPTNEED.REC ],
-    'FormLabel' : [ "Options-Ausgabe auf Seite",        'String',       "Option:|$",                __OPTNEED.MAN ],
+    'Default'   : [ "Startwert der Option",             'any',          "1, true, '', [], { }",     __OPTNEED.COM ],
+    'FormLabel' : [ "Options-Ausgabe auf Seite",        'String',       "Option:|$",                __OPTNEED.OPT ],
     'FormPrio'  : [ "Steuert die Reihenfolge",          'Integer',      "undefined, 1",             __OPTNEED.OPT ],
     'FormType'  : [ "Typ der Option auf Seite",         '__OPTTYPES',   "SI",                       __OPTNEED.OPT ],
-    'FreeValue' : [ "Freitext m\u00F6glich",            'Boolean',      "false, true",              __OPTNEED.VAL ],
-    'Hidden'    : [ "Versteckte Option auf Seite",      'Boolean',      "false, true",              __OPTNEED.REC ],
+    'FreeValue' : [ "Freitext m\u00F6glich",            'Boolean',      "false, true",              __OPTNEED.SEL ],
+    'Hidden'    : [ "Versteckte Option auf Seite",      'Boolean',      "false, true",              __OPTNEED.OPT ],
     'HiddenMenu': [ "INTERNAL: Kein Kontextmen\u00FC",  'Boolean',      "false, true",              __OPTNEED.INT ],
     'Hotkey'    : [ "Schnellanwahl im Men\u00FC",       'Char',         "'A'",                      __OPTNEED.REC ],
     'Item'      : [ "INTERNAL: Kopie des Schluessels",  'String',       "",                         __OPTNEED.INT ],
@@ -104,7 +114,7 @@ const __OPTITEMS = {
     'Rows'      : [ "Ausgabe-Zeilen in Textfenster",    'Integer',      "1, 2, 3, 6, 7, 10, 20",    __OPTNEED.OPT ],
     'SetValue'  : [ "Zu setzender DefaultWert bei Wahl",'any',          "",                         __OPTNEED.OPT ],
     'SelValue'  : [ "Ist Wert aus fester Liste?",       'Boolean',      "false, true",              __OPTNEED.SEL ],
-    'Serial'    : [ "Speicherung per serialize()",      'Boolean',      "true",                     __OPTNEED.REC ],
+    'Serial'    : [ "Speicherung per serialize()",      'Boolean',      "true",                     __OPTNEED.VAL ],
     'Shared'    : [ "Objektreferenz auf Option",        'Object',       "{ 'namespace' : 'http://os.ongapo.com/', 'module' : 'OS2.haupt', 'item' : '$' }",
                                                                                                     __OPTNEED.OPT ],
     'SharedData': [ "INTERNAL: Daten Objektreferenz",   'Object',       "",                         __OPTNEED.INT ],
@@ -115,7 +125,7 @@ const __OPTITEMS = {
     'ValType'   : [ "Datentyp der Werte",               'String',       "'Number', 'String'",       __OPTNEED.CHO ],
     'Value'     : [ "INTERNAL: Gesetzter Wert",         'any',          "",                         __OPTNEED.INT ]
 };
-const __OPTITEMSBYNEED = reverseMapping(__OPTITEMS, mappingPush);
+const __OPTITEMSBYNEED = selectMapping(__OPTITEMS, __COLOPTITEMS.NEED, -1, mappingPush);
 
 // ==================== Ende Abschnitt Moegliche Typen fuer Optionen ====================
 
@@ -216,6 +226,11 @@ function getSharedRef(shared, item = undefined) {
 
 // ==================== Abschnitt fuer Zugriff auf Options-Parameter ====================
 
+// Temporaere Aussetzung der Exceptions...
+const __ERRORLOG = __LOG[1];
+const __ERRORFUN = (__ERRORLOG || Error);
+const __RANGEERRORFUN = (__ERRORLOG || RangeError);
+
 // Prueft ein Objekt, ob es eine syntaktisch valide Konfiguration einer (ueber Menu) gesetzten Option ist
 // optItem: Zu validierendes Konfigurations-Item-Objekt
 // key: Falls bekannt, der Item-Key dieser Option (wird auf Korrektheit ueberprueft)
@@ -231,15 +246,18 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
     const __MAN = getValue(__OPTITEMSBYNEED[__OPTNEED.MAN], []);    // Muss-Parameter
     const __DAT = getValue(__OPTITEMSBYNEED[__OPTNEED.DAT], []);    // Muss-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
     const __CHO = getValue(__OPTITEMSBYNEED[__OPTNEED.CHO], []);    // Muss-Parameter fuer __OPTTYPES.MC
+    const __SWI = getValue(__OPTITEMSBYNEED[__OPTNEED.SWI], []);    // Muss-Parameter fuer __OPTTYPES.SW und __OPTTYPES.TF
     const __REC = getValue(__OPTITEMSBYNEED[__OPTNEED.REC], []);    // Soll-Parameter
+    const __COM = getValue(__OPTITEMSBYNEED[__OPTNEED.COM], []);    // Soll-Parameter fuer alle Datentypen ausser __OPTTYPES.SI
     const __VAL = getValue(__OPTITEMSBYNEED[__OPTNEED.VAL], []);    // Soll-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
+    const __TOG = getValue(__OPTITEMSBYNEED[__OPTNEED.TOG], []);    // Soll-Parameter fuer __OPTTYPES.SW und __OPTTYPES.TF
     const __SEL = getValue(__OPTITEMSBYNEED[__OPTNEED.SEL], []);    // Soll-Parameter fuer __OPTTYPES.MC
 
     if (! __ISSHARED) {  // TODO Shared Ref
         // Redundante Pruefung auf Namen der Option (spaeter Ueberpruefung von __MAN)...
         if (__NAME === undefined) {
             __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-            throw Error("Unknown 'Name' for option " + __LOG.info(__KEY, false));
+            __ERRORFUN("Unknown 'Name' for option " + __LOG.info(__KEY, false));
         }
 
         // Ueberpruefung der Pflichtparameter...
@@ -248,7 +266,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
                 if (! __ITEM) {
                     __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    throw Error("Option " + __LOG.info(__KEY, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
+                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
                 }
             });
         __DAT.forEach(item => {
@@ -256,15 +274,23 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
                 if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
                     __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    throw Error("Option " + __LOG.info(__KEY, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
+                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
                 }
             });
-        __DAT.forEach(item => {
+        __CHO.forEach(item => {
                 const __ITEM = __CONFIG[item];
 
                 if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
                     __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    throw Error("Option " + __LOG.info(__KEY, false) + " is missing mandatory select parameter " + __LOG.info(item, false) + "...");
+                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory select parameter " + __LOG.info(item, false) + "...");
+                }
+            });
+        __SWI.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.SW) || (__OPTTYPE === __OPTTYPES.TF))) {
+                    __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory switch parameter " + __LOG.info(item, false) + "...");
                 }
             });
 
@@ -274,6 +300,13 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
                 if (! __ITEM) {
                     __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended parameter " + __LOG.info(item, false) + "...");
+                }
+            });
+        __COM.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if ((! __ITEM) && (__OPTTYPE !== __OPTTYPES.SI)) {
+                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended complex parameter " + __LOG.info(item, false) + "...");
                 }
             });
         __VAL.forEach(item => {
@@ -290,6 +323,13 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
                     __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended select parameter " + __LOG.info(item, false) + "...");
                 }
             });
+        __TOG.forEach(item => {
+                const __ITEM = __CONFIG[item];
+
+                if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.SW) || (__OPTTYPE === __OPTTYPES.TF))) {
+                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended switch parameter " + __LOG.info(item, false) + "...");
+                }
+            });
     }
 
     // Ueberpruefung der angegebenen Parameter auf Bekanntheit und Typen...
@@ -304,12 +344,12 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
             if (! __ITEMINFO) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw Error("Unknown parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false));
+                __ERRORFUN("Unknown parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false));
             }
 
             if (preInit && (__ITEMNEED === __OPTNEED.INT)) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(__KEY, false));
+                TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(__KEY, false));
             }
 
             switch (__TYPE) {
@@ -329,7 +369,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
                                     break;
                 case 'any'        : break;  // OK
                 default           : __LOG[1]("checkOptItem(): Internal error in " + codeLine(true, true, true, false));
-                                    throw TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(__KEY, false));
+                                    TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(__KEY, false));
             }
 
             if (__ITEMVALUE) {
@@ -348,7 +388,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
             }
             if (! isValid) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                throw TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false) + " is not of type " + __ITEMTYPE);
+                TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false) + " is not of type " + __ITEMTYPE);
             }
         });
 
@@ -366,12 +406,12 @@ function checkOpt(opt, key = undefined) {
 
     if (__NAME === undefined) {  // NOTE opt === undefined liefert __NAME === undefined
         __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-        throw Error("Unknown option " + __LOG.info(key, false));
+        Error("Unknown option " + __LOG.info(key, false));
     }
 
     if (((typeof key) !== 'undefined') && (key !== __KEY)) {
         __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-        throw RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
+        RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
     }
 
     if (! opt.validOption) {
@@ -379,7 +419,7 @@ function checkOpt(opt, key = undefined) {
             opt.validOption = true;
         } else {
             __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-            throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
+            TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
         }
     }
 
@@ -419,7 +459,7 @@ function checkOptConfig(optConfig, preInit = false) {
 
                 if (__USED) {
                     __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-                    throw RangeError("Internal name " + __LOG.info(__NAME, false) + " of option " +
+                    RangeError("Internal name " + __LOG.info(__NAME, false) + " of option " +
                             __LOG.info(__KEY, false) + " was already used in option " + __LOG.info(__USED, false));
                 } else {
                     __NAMEUSE[__NAME] = __KEY;
@@ -534,7 +574,7 @@ function setOptValue(opt, value, initialLoad = false) {
 
             opt.Value = value;
         } else {
-            throw TypeError("Can't modify read-only option " + __LOG.info(__KEY, false) + " (" + __NAME + ')');
+            TypeError("Can't modify read-only option " + __LOG.info(__KEY, false) + " (" + __NAME + ')');
         }
 
         return opt.Value;
@@ -967,9 +1007,9 @@ function loadOption(opt, force = false) {
         opt.Promise = Promise.resolve(value).then(value => {
                 // Paranoide Sicherheitsabfrage (das sollte nie passieren!)...
                 if (opt.Loaded || ! opt.Promise) {
-                    throw Error("Unerwarteter Widerspruch zwischen Loaded und Promise in Option " +
-                                    __LOG.info(__KEY, false) + " (" + __NAME + ')',
-                                    { 'cause' : __LOG.info(opt, true, true) });
+                    Error("Unerwarteter Widerspruch zwischen Loaded und Promise in Option " +
+                            __LOG.info(__KEY, false) + " (" + __NAME + ')',
+                            { 'cause' : __LOG.info(opt, true, true) });
                 }
                 __LOG[6]("LOAD " + __NAME + ": " + __LOG.changed(__DEFAULT, value, true, true));
 
@@ -2097,7 +2137,7 @@ function getOptionElement(opt) {
         }
 
         if ((typeof element) !== 'string') {
-            element = '<div>' + Array.from(element).join('<br />') + '</div>';
+            element = '<DIV>' + Array.from(element).join('<BR />') + '</DIV>';
         }
     }
 
