@@ -1228,7 +1228,7 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
 
         return {
                 'teamParams' : __TEAMPARAMS,
-//                'menuAnchor' : getElement('div'),
+//                'menuAnchor' : getElement('DIV'),
                 'hideMenu'   : true,
                 'showForm'   : {
                                    'zeigeWarnung'         : true,
@@ -1243,7 +1243,7 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
             };
     }, async optSet => {
             //const __ZATCELL = getProp(getProp(getRows(), 2), 'cells', { })[0];
-            const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
+            const __ZATCELL = getElement('TD[style] B');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
             const __CURRZAT = __NEXTZAT - 1;
             const __DATAZAT = optSet.getOptValue('datenZat');
@@ -1276,11 +1276,11 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
 
             const __MSG = new WarnDrawMessage(optSet, __CURRZAT);
             const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(optSet, __CURRZAT);
-            const __ANCHOR = getElement('tbody');
+            const __ANCHOR = getElement('TBODY');
 
-            __MSG.showMessage(__ANCHOR, 'tr', true);
+            __MSG.showMessage(__ANCHOR, 'TR', true);
             __MSG.showDialog(showAlert);
-            __MSGAUFSTIEG.showMessage(__ANCHOR, 'tr', true);
+            __MSGAUFSTIEG.showMessage(__ANCHOR, 'TR', true);
 
             return true;
         });
@@ -1288,7 +1288,7 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
 // Verarbeitet Ansicht "Optionen" zur Ermittlung der Jugendfoerderung
 const procOptionen = new PageManager("Optionen", __TEAMCLASS, () => {
         return {
-                'menuAnchor'  : getElement('div'),
+                'menuAnchor'  : getElement('DIV'),
                 'hideMenu'    : true,
                 'getDonation' : true,
                 'showForm'    : {
@@ -1310,13 +1310,13 @@ const procOptionen = new PageManager("Optionen", __TEAMCLASS, () => {
 
 // Verarbeitet Ansicht "Teamuebersicht"
 const procTeamuebersicht = new PageManager("Team\u00FCbersicht", __TEAMCLASS, () => {
-        if (getElementByName('transfer') !== undefined) {  // getElement("input[name='transfer']")...
+        if (getElementByName('transfer') !== undefined) {  // getElement("INPUT[name='transfer']")...
             __LOG[1]("Ziehen-Seite");
-        } else if (getRows('form table') === undefined) {  // #1: Tabelle innerhalb des Forms zum Ziehen
+        } else if (getRows('FORM TABLE') === undefined) {  // #1: Tabelle innerhalb des Forms zum Ziehen
             __LOG[1]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
-                    'menuAnchor' : getElement('div'),
+                    'menuAnchor' : getElement('DIV'),
                     'showForm'   : {
                                        'kennzeichenEnde'      : true,
                                        'shortAufw'            : true,
@@ -1388,7 +1388,7 @@ const procTeamuebersicht = new PageManager("Team\u00FCbersicht", __TEAMCLASS, ()
                     'Zus'   : 9
                 };
 
-            const __ROWS = getRows('form table');  // #1: Tabelle innerhalb des Forms zum Ziehen
+            const __ROWS = getRows('FORM TABLE');  // #1: Tabelle innerhalb des Forms zum Ziehen
             const __HEADERS = __ROWS[0];
             const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
@@ -1422,8 +1422,8 @@ const procTeamuebersicht = new PageManager("Team\u00FCbersicht", __TEAMCLASS, ()
             const __CURRZAT = optSet.getOptValue('datenZat');
             const __MSG = new WarnDrawMessage(optSet, __CURRZAT);
             const __MSGAUFSTIEG = new WarnDrawMessageAufstieg(optSet, __CURRZAT);
-            const __ANCHOR = getElement('div');
-            const __SEARCH = '<form method="POST">';
+            const __ANCHOR = getElement('DIV');
+            const __SEARCH = '<FORM method="POST">';
 
             // Kompaktere Darstellung und ohne Links...
             __MSG.out.top = false;
@@ -1445,11 +1445,11 @@ const procTeamuebersicht = new PageManager("Team\u00FCbersicht", __TEAMCLASS, ()
 
 // Verarbeitet Ansicht "Spielereinzelwerte"
 const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS, () => {
-        if (getRows('table.jugend') === undefined) {  // #1:  Tabelle mit Klasse 'jugend'
+        if (getRows('TABLE.jugend') === undefined) {  // #1:  Tabelle mit Klasse 'jugend'
             __LOG[1]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
-                    'menuAnchor' : getElement('div'),
+                    'menuAnchor' : getElement('DIV'),
                     'hideForm'   : {
                                        'zeigeWarnung'         : false,
                                        'zeigeWarnungMonat'    : false,
@@ -1506,7 +1506,7 @@ const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS
                     'Zus'   : 22     // Zusaetze hinter den Einzelskills
                 };
 
-            const __ROWS = getRows('table.jugend');  // #1:  Tabelle mit Klasse 'jugend'
+            const __ROWS = getRows('TABLE.jugend');  // #1:  Tabelle mit Klasse 'jugend'
             const __HEADERS = __ROWS[0];
             const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
@@ -1535,11 +1535,11 @@ const procSpielereinzelwerte = new PageManager("Spielereinzelwerte", __TEAMCLASS
 
 // Verarbeitet Ansicht "Opt. Skill"
 const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
-        if (getRows('table[border][align][cellspacing]') === undefined) {  // #1: Tabelle mit speziellen Attributen
+        if (getRows('TABLE[border][align][cellspacing]') === undefined) {  // #1: Tabelle mit speziellen Attributen
             __LOG[1]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
-                    'menuAnchor' : getElement('div'),
+                    'menuAnchor' : getElement('DIV'),
                     'showForm'   : {
                                        'kennzeichenEnde'      : true,
                                        'sepStyle'             : true,
@@ -1614,7 +1614,7 @@ const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
                     'Zus'   : 11     // Zusaetze hinter den OptSkills
                 };
 
-            const __ROWS = getRows('table[border][align][cellspacing]');  // #1: Tabelle mit speziellen Attributen
+            const __ROWS = getRows('TABLE[border][align][cellspacing]');  // #1: Tabelle mit speziellen Attributen
             const __HEADERS = __ROWS[0];
             const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
 
@@ -1664,7 +1664,7 @@ const procOptSkill = new PageManager("Opt. Skill", __TEAMCLASS, () => {
 function prepareOptions(optSet, optParams) {
     if (optParams.getDonation) {
         // Jugendfoerderung aus der Options-HTML-Seite ermitteln...
-        const __BOXDONATION = getTags('option');
+        const __BOXDONATION = getTags('OPTION');
         const __DONATION = getSelectionFromComboBox(__BOXDONATION, 10000, 'Number');
 
         __LOG[4]("Jugendf\u00F6rderung: " + __DONATION + " Euro");

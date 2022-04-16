@@ -19,7 +19,7 @@
 // return Promise auf das Laden des Scriptes
 function loadScript(url) {
     return new Promise(function(resolve, reject) {
-            const __SCRIPT = document.createElement('script');
+            const __SCRIPT = document.createElement('SCRIPT');
 
             __SCRIPT.type = 'text/javascript';
             __SCRIPT.src = url;

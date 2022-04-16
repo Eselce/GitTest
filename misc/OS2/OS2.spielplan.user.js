@@ -377,11 +377,11 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
         this.__COLUMNINDEX = __COLUMNINDEX;
 
         return {
-                'Tab'         : getElement('form+table'),  // #2: Tabelle direkt hinter der Saisonauswahl
+                'Tab'         : getElement('FORM+TABLE'),  // #2: Tabelle direkt hinter der Saisonauswahl
                 'Zei'         : __ROWOFFSETUPPER,
                 'Spa'         : __COLUMNINDEX.Art,
                 'teamParams'  : __TEAMPARAMS,
-                'menuAnchor'  : getElement('div'),
+                'menuAnchor'  : getElement('DIV'),
                 'hideForm'    : {
                                     'team'  : true
                                 },
@@ -399,7 +399,7 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
 
         const __ZAT = firstZAT(optSet.getOptValue('saison'), optSet.getOptValue('ligaSize'));
 
-        const __ROWS = getRows('form+table');  // #2: Tabelle direkt hinter der Saisonauswahl
+        const __ROWS = getRows('FORM+TABLE');  // #2: Tabelle direkt hinter der Saisonauswahl
 
         if (! __ROWS) {
             __LOG[1]("Kein Spielplan vorhanden!");
@@ -506,7 +506,7 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
 // return Gefuelltes Objekt mit den gesetzten Optionen
 function prepareOptions(optSet, optParams) {
     // Werte aus der HTML-Seite ermitteln...
-    const __BOXSAISONS = getTags('option');
+    const __BOXSAISONS = getTags('OPTION');
     const __SAISON = getSelectionFromComboBox(__BOXSAISONS, 0, 'Number');
     const __LIGASIZE = (optParams.Tab ? getLigaSizeFromSpielplan(optParams.Tab.rows, optParams.Zei, optParams.Spa, optSet.getOptValue('saison')) : undefined);
 

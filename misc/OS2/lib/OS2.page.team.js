@@ -15,7 +15,7 @@
 // ==================== Abschnitt fuer Ermittlung des Teams von einer OS2-Seite ====================
 
 const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uuml;ro von TEAM</b><br>LIGA LAND<a href=..."
-        'Tabelle'   : 'table table',  // Erste Tabelle innerhalb einer Tabelle...
+        'Tabelle'   : 'TABLE TABLE',  // Erste Tabelle innerhalb einer Tabelle...
         'Zeile'     : 0,
         'Spalte'    : 1,
         'start'     : " von ",
@@ -26,7 +26,7 @@ const __TEAMSEARCHHAUPT = {  // Parameter zum Team "<b>Willkommen im Managerb&uu
     };
 
 const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LAND</a></b>"
-        'Tabelle'   : 'table table',  // Erste Tabelle innerhalb einer Tabelle...
+        'Tabelle'   : 'TABLE TABLE',  // Erste Tabelle innerhalb einer Tabelle...
         'Zeile'     : 0,
         'Spalte'    : 0,
         'start'     : "<b>",
@@ -37,7 +37,7 @@ const __TEAMSEARCHTEAM = {  // Parameter zum Team "<b>TEAM - LIGA <a href=...>LA
     };
 
 const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>...<a href="livegame/index.php?spiele=TEAMID,ZAT">LIVEGAME</a>"
-        'Tabelle'   : 'table',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #6 "Deine Spiele in")...
+        'Tabelle'   : 'TABLE',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #6 "Deine Spiele in")...
         'Zeile'     : 6,
         'Spalte'    : 0,
         'start'     : '<a href="livegame/index.php?spiele=',
@@ -46,7 +46,7 @@ const __TEAMIDSEARCHHAUPT = {  // Parameter zur Team-ID "<b>Deine Spiele in</b>.
     };
 
 const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="javascript:tabellenplatz(TEAMID)">Tabellenpl\u00E4tze</a>"
-        'Tabelle'   : 'table',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #1/Spalte #1 "Tabellenplaetze")...
+        'Tabelle'   : 'TABLE',  // Aeussere Tabelle, erste ueberhaupt (darunter die Zeile #1/Spalte #1 "Tabellenplaetze")...
         'Zeile'     : 1,
         'Spalte'    : 1,
         'start'     : '<a hspace="20" href="javascript:tabellenplatz(',
@@ -65,7 +65,7 @@ const __TEAMIDSEARCHTEAM = {  // Parameter zur Team-ID "<a hspace="20" href="jav
 function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
     // Ermittlung von Team, Liga und Land...
     const __TEAMSEARCH   = getValue(teamSearch, __TEAMSEARCHHAUPT);
-    const __TEAMTABLE    = getElement(getValue(__TEAMSEARCH.Tabelle, 'table table'), 0, doc);
+    const __TEAMTABLE    = getElement(getValue(__TEAMSEARCH.Tabelle, 'TABLE TABLE'), 0, doc);
     const __TEAMCELLROW  = getValue(__TEAMSEARCH.Zeile, 0);
     const __TEAMCELLCOL  = getValue(__TEAMSEARCH.Spalte, 0);
     const __TEAMCELLSTR  = (__TEAMTABLE === undefined) ? "" : __TEAMTABLE.rows[__TEAMCELLROW].cells[__TEAMCELLCOL].innerHTML;
@@ -100,7 +100,7 @@ function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
 
     // Ermittlung der Team-ID (indirekt ueber den Livegame- bzw. Tabellenplatz-Link)...
     const __TEAMIDSEARCH   = getValue(teamIdSearch, __TEAMIDSEARCHHAUPT);
-    const __TEAMIDTABLE    = getElement(getValue(__TEAMIDSEARCH.Tabelle, 'table'), 0, doc);
+    const __TEAMIDTABLE    = getElement(getValue(__TEAMIDSEARCH.Tabelle, 'TABLE'), 0, doc);
     const __TEAMIDCELLROW  = getValue(__TEAMIDSEARCH.Zeile, 6);
     const __TEAMIDCELLCOL  = getValue(__TEAMIDSEARCH.Spalte, 0);  // Alternativ: 'a[href^=livegame]' (outerHTML)
     const __TEAMIDCELLSTR  = (__TEAMIDTABLE === undefined) ? "" : __TEAMIDTABLE.rows[__TEAMIDCELLROW].cells[__TEAMIDCELLCOL].innerHTML;

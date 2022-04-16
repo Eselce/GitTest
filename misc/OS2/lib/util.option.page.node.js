@@ -171,7 +171,7 @@ function getOptionElement(opt) {
         }
 
         if ((typeof element) !== 'string') {
-            element = '<div>' + Array.from(element).join('<br />') + '</div>';
+            element = '<DIV>' + Array.from(element).join('<BR />') + '</DIV>';
         }
     }
 

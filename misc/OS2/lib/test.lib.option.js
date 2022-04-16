@@ -41,7 +41,7 @@ Class.define(UnitTestOption, UnitTest, {
                                 const __MANAGER = new PageManager("Test-Umgebung", __TESTTEAMCLASS, () => {
                                         return {
                                                 'teamParams'  : __TEAMPARAMS,
-                                                'menuAnchor'  : getElement('div', 1),
+                                                'menuAnchor'  : getTable(1, 'DIV'),
                                                 'hideMenu'    : true,
                                                 'hideForm'    : {
                                                                     'team'  : true

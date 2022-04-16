@@ -298,7 +298,7 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
     }
 
     if (__TABLE && __CREATEROW) {
-        const __ROW = doc.createElement('tr');
+        const __ROW = doc.createElement('TR');
 
         if (__SHOWRESULT) {
             appendCell(__ROW, __UNITTEST.name);
@@ -326,13 +326,13 @@ UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = docum
     let table = getElementById(tableId, doc);
 
     if (! table) {  // Anlegen...
-        table = doc.createElement('table');
+        table = doc.createElement('TABLE');
         table.id = tableId;
         doc.body.appendChild(table);
     }
 
     if (! table.rows.length) {
-        const __ROW = doc.createElement('tr');
+        const __ROW = doc.createElement('TR');
         const __COLOR = undefined;
 
         appendCell(__ROW, "Modul", __COLOR);
