@@ -116,7 +116,7 @@ Object.defineProperty(Array.prototype, 'Reduce', {
     'value'           : function(reduceFun, value) {
         try {
             if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-                throw TypeError("Invalid reduce() function!");
+                TypeError("Invalid reduce() function!");
             }
 
             const __LEN = this.length;
@@ -161,7 +161,7 @@ Object.defineProperty(Array.prototype, 'ReduceRight', {
     'value'           : function(reduceFun, value) {
         try {
             if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-                throw TypeError("Invalid reduceRight() function!");
+                TypeError("Invalid reduceRight() function!");
             }
 
             const __LEN = this.length;
