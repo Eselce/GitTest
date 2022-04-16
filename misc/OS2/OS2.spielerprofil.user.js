@@ -259,9 +259,9 @@ __TEAMCLASS.optSelect = {
 //==================== Anzeige Spieler-Profil ====================
 
 function showSpieler(currZAT) {
-    const __TABLE1 = getElement('div#a table')  // #0: Erste Tabelle auf dem Reiter '#a' - neben dem Bild
+    const __TABLE1 = getElement('DIV#a TABLE')  // #0: Erste Tabelle auf dem Reiter '#a' - neben dem Bild
     const __ROWS1 = __TABLE1.rows;
-    const __ROWS2 = getRows('table+table')      // #1: Angrenzende Tabelle auf dem Reiter '#a' - Skills
+    const __ROWS2 = getRows('TABLE+TABLE')      // #1: Angrenzende Tabelle auf dem Reiter '#a' - Skills
 
     const __ZAT = currZAT
     const __SKILLS = [];
@@ -317,7 +317,7 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
             };
     }, async optSet => {
         //const __ZATCELL = getProp(getProp(getRows(), 2), 'cells', { })[0];
-        const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
+        const __ZATCELL = getElement('TD[style] B');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;
         const __DATAZAT = optSet.getOptValue('datenZat');
@@ -350,11 +350,11 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
 
 // Verarbeitet Ansicht "Spielerprofil"
 const procSpieler = new PageManager("Spielerprofil", __TEAMCLASS, () => {
-        if (getRows('div div#a table') === undefined) {  // #0: Erste Tabelle auf erstem Reiter
+        if (getRows('DIV DIV#a TABLE') === undefined) {  // #0: Erste Tabelle auf erstem Reiter
             __LOG[2]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
-                    'menuAnchor' : getElement('div'),  // #0: Aeusseres <div> auf erstem Reiter
+                    'menuAnchor' : getElement('DIV'),  // #0: Aeusseres <div> auf erstem Reiter
                     'showForm'   : {
                                        'sepStyle'           : true,
                                        'sepColor'           : true,

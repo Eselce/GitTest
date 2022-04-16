@@ -24,7 +24,7 @@ function addInputField(form, props, type = 'hidden') {
     for (let fieldName in props) {
         let field = form[fieldName];
         if (! field) {
-            field = document.createElement('input');
+            field = document.createElement('INPUT');
             field.type = type;
             field.name = fieldName;
             form.appendChild(field);
@@ -124,21 +124,26 @@ function insertBefore(element, anchor) {
 }
 
 // Hilfsfunktion fuer die Ermittlung aller Elements desselben Typs auf der Seite ueber CSS Selector (Default: Tabelle)
-// selector: CSS Selector des Elements ('table')
+// selector: CSS Selector des Elements ('TABLE')
 // doc: Dokument (document)
 // return Kollektion aller gesuchten Elemente oder leer
-function getElements(selector = 'table', doc = document) {
+function getElements(selector = 'TABLE', doc = document) {
+    checkType(selector, 'string', true, 'getElements', 'selector', 'String');
+
     const __ELEMENTS = doc.querySelectorAll(selector);
 
     return __ELEMENTS;
 }
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite ueber CSS Selector (Default: Tabelle)
-// selector: CSS Selector des Elements ('table')
+// selector: CSS Selector des Elements ('TABLE')
 // index: Laufende Nummer des Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
-function getElement(selector = 'table', index = 0, doc = document) {
+function getElement(selector = 'TABLE', index = 0, doc = document) {
+    checkType(selector, 'string', true, 'getElement', 'selector', 'String');
+    checkType(index, 'number', true, 'getElement', 'index', 'Number');
+
     const __ELEMENTS = doc.querySelectorAll(selector);
     const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
 
@@ -151,6 +156,9 @@ function getElement(selector = 'table', index = 0, doc = document) {
 // doc: Dokument (document)
 // return Gesuchtes Element mit der lfd. Nummer index oder undefined (falls nicht gefunden)
 function getElementByName(name, index = 0, doc = document) {
+    checkType(name, 'string', true, 'getElementByName', 'name', 'String');
+    checkType(index, 'number', true, 'getElementByName', 'index', 'Number');
+
     const __ELEMENTS = doc.getElementsByName(name);
     const __ELEMENT = (__ELEMENTS ? __ELEMENTS[index] : undefined);
 
@@ -162,16 +170,20 @@ function getElementByName(name, index = 0, doc = document) {
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
 function getElementById(id, doc = document) {
+    checkType(id, 'string', true, 'getElementById', 'id', 'String');
+
     const __ELEMENT = doc.getElementById(id);
 
     return __ELEMENT;
 }
 
 // Hilfsfunktion fuer die Ermittlung aller Elemente der Seite (Default: Tabelle)
-// tag: Tag des Elements ('table')
+// tag: Tag des Elements ('TABLE')
 // doc: Dokument (document)
 // return Gesuchte Elemente
-function getTags(tag = 'table', doc = document) {
+function getTags(tag = 'TABLE', doc = document) {
+    checkType(tag, 'string', true, 'getTags', 'tag', 'String');
+
     const __TAGS = doc.getElementsByTagName(tag);
 
     return __TAGS;
@@ -179,10 +191,13 @@ function getTags(tag = 'table', doc = document) {
 
 // Hilfsfunktion fuer die Ermittlung eines Elements der Seite (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
-// tag: Tag des Elements ('table')
+// tag: Tag des Elements ('TABLE')
 // doc: Dokument (document)
 // return Gesuchtes Element oder undefined (falls nicht gefunden)
-function getTable(index = 0, tag = 'table', doc = document) {
+function getTable(index = 0, tag = 'TABLE', doc = document) {
+    checkType(tag, 'string', true, 'getTable', 'tag', 'String');
+    checkType(index, 'number', true, 'getTable', 'index', 'Number');
+
     const __TAGS = getTags(tag, doc);
     const __TABLE = (__TAGS ? __TAGS[index] : undefined);
 
@@ -195,6 +210,9 @@ function getTable(index = 0, tag = 'table', doc = document) {
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
 function getRowsByName(name, index = 0, doc = document) {
+    checkType(name, 'string', true, 'getRowsByName', 'name', 'String');
+    checkType(index, 'number', true, 'getRowsByName', 'index', 'Number');
+
     const __TABLE = getElementByName(name, index, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -202,11 +220,14 @@ function getRowsByName(name, index = 0, doc = document) {
 }
 
 // Hilfsfunktion fuer die Ermittlung der Zeilen einer Tabelle ueber CSS Selector (Default: Tabelle)
-// selector: CSS Selector des Elements ('table')
+// selector: CSS Selector des Elements ('TABLE')
 // index: Laufende Nummer des Tabellen-Elements (0-based), Default: 0
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getRows(selector = 'table', index = 0, doc = document) {
+function getRows(selector = 'TABLE', index = 0, doc = document) {
+    checkType(selector, 'string', true, 'getRows', 'selector', 'String');
+    checkType(index, 'number', true, 'getRows', 'index', 'Number');
+
     const __TABLE = getElement(selector, index, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -215,10 +236,13 @@ function getRows(selector = 'table', index = 0, doc = document) {
 
 // Hilfsfunktion fuer die Ermittlung der Zeilen eines Elements (Default: Tabelle)
 // index: Laufende Nummer des Elements (0-based)
-// tag: Tag des Elements ('table')
+// tag: Tag des Elements ('TABLE')
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
-function getTableRows(index = 0, tag = 'table', doc = document) {
+function getTableRows(index = 0, tag = 'TABLE', doc = document) {
+    checkType(index, 'number', true, 'getTableRows', 'index', 'Number');
+    checkType(tag, 'string', true, 'getTableRows', 'tag', 'String');
+
     const __TABLE = getTable(index, tag, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -230,6 +254,8 @@ function getTableRows(index = 0, tag = 'table', doc = document) {
 // doc: Dokument (document)
 // return Gesuchte Zeilen oder undefined (falls nicht gefunden)
 function getRowsById(id, doc = document) {
+    checkType(id, 'string', true, 'getRowsById', 'id', 'String');
+
     const __TABLE = getElementById(id, doc);
     const __ROWS = (__TABLE ? __TABLE.rows : undefined);
 
@@ -470,6 +496,8 @@ function getSelectedValue(element) {
 // colIdxInt: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als Zahl (-1 fuer "keine Zahl", undefined fuer "nicht gefunden")
 function getIntFromHTML(cells, colIdxInt) {
+    checkType(colIdxInt, 'number', true, 'getIntFromHTML', 'colIdxInt', 'Number');
+
     const __CELL = getValue(cells[colIdxInt], { });
     const __TEXT = __CELL.textContent;
 
@@ -493,6 +521,8 @@ function getIntFromHTML(cells, colIdxInt) {
 // colIdxInt: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als Dezimalzahl (undefined fuer "keine Zahl" oder "nicht gefunden")
 function getFloatFromHTML(cells, colIdxFloat) {
+    checkType(colIdxFloat, 'number', true, 'getFloatFromHTML', 'colIdxFloat', 'Number');
+
     const __CELL = getValue(cells[colIdxFloat], { });
     const __TEXT = __CELL.textContent;
 
@@ -510,6 +540,8 @@ function getFloatFromHTML(cells, colIdxFloat) {
 // colIdxStr: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als String ("" fuer "nicht gefunden")
 function getStringFromHTML(cells, colIdxStr) {
+    checkType(colIdxStr, 'number', true, 'getStringFromHTML', 'colIdxStr', 'Number');
+
     const __CELL = getValue(cells[colIdxStr], { });
     const __TEXT = __CELL.textContent;
 
@@ -518,10 +550,12 @@ function getStringFromHTML(cells, colIdxStr) {
 
 // Liest ein erstes Element aus der Spalte einer Zeile der Tabelle aus
 // cells: Die Zellen einer Zeile
-// colIdxStr: Spaltenindex der gesuchten Werte
+// colIdxElem: Spaltenindex der gesuchten Werte
 // return Spalteneintrag als Element (null fuer "nicht gefunden")
-function getElementFromHTML(cells, colIdxStr) {
-    const __CELL = getValue(cells[colIdxStr], { });
+function getElementFromHTML(cells, colIdxElem) {
+    checkType(colIdxElem, 'number', true, 'getElementFromHTML', 'colIdxElem', 'Number');
+
+    const __CELL = getValue(cells[colIdxElem], { });
 
     return __CELL.firstElementChild;
 }
@@ -532,6 +566,9 @@ function getElementFromHTML(cells, colIdxStr) {
 // convertFun: Funktion, die den Wert konvertiert
 // return Spalteneintrag als String ("" fuer "nicht gefunden")
 function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
+    checkType(colIdxStr, 'number', true, 'convertStringFromHTML', 'colIdxStr', 'Number');
+    checkType(convertFun, 'function', true, 'convertStringFromHTML', 'convertFun', 'Function');
+
     const __CELL = getValue(cells[colIdxStr], { });
     const __TEXT = convertFun(__CELL.textContent, __CELL, colIdxStr, 0);
 
@@ -552,6 +589,9 @@ function convertStringFromHTML(cells, colIdxStr, convertFun = sameValue) {
 // convertFun: Funktion, die die Werte konvertiert
 // return Array mit Spalteneintraegen als String ("" fuer "nicht gefunden")
 function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sameValue) {
+    checkType(colIdxArr, 'number', true, 'convertArrayFromHTML', 'colIdxArr', 'Number');
+    checkType(convertFun, 'function', true, 'convertArrayFromHTML', 'convertFun', 'Function');
+
     const __ARR = (((typeof arrOrLength) === 'string') ? [ arrOrLength ] :
                     (((typeof arrOrLength) === 'number') ? [] : arrOrLength));
     const __LENGTH = (__ARR.length || arrOrLength);

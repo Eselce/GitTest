@@ -858,7 +858,7 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
 // Verarbeitet Ansicht "Fairplaytabelle"
 const procFairplay = new PageManager("Fairplaytabelle", __TEAMCLASS, () => {
         return {
-                'menuAnchor' : getElement('div'),
+                'menuAnchor' : getElement('DIV'),
                 'hideForm'   : {
                                    'saison'        : true,
                                    'liga'          : true,
@@ -995,7 +995,7 @@ const procEuropa = new PageManager("Internationales Finale", __TEAMCLASS, (optSe
         UNUSED(optSet, finale);
 
         return {
-                'menuAnchor' : getElement('div'),
+                'menuAnchor' : getElement('DIV'),
                 'hideForm'   : {
                                    'land'          : true,
                                    'liga'          : true,
@@ -1092,7 +1092,7 @@ const procPokal = new PageManager("Landespokalfinale", __TEAMCLASS, (optSet, fin
         UNUSED(optSet, finale);
 
         return {
-                'menuAnchor' : getElement('div'),
+                'menuAnchor' : getElement('DIV'),
                 'hideForm'   : {
                                    'liga'          : true,
                                    'tabTyp'        : true,
@@ -1176,7 +1176,7 @@ console.log(__ERGEBNIS);
 // Verarbeitet Ansicht "Ligatabelle"
 const procTabelle = new PageManager("Ligatabelle", __TEAMCLASS, () => {
         return {
-                'menuAnchor' : getElement('div'),
+                'menuAnchor' : getElement('DIV'),
                 'hideForm'   : {
                                    'Prunde'        : true,
                                    'OSCrunde'      : true,
@@ -1205,7 +1205,7 @@ const procTabelle = new PageManager("Ligatabelle", __TEAMCLASS, () => {
                 'Punkte' : 10
             };
 
-        const __TABLEMAN = new TableManager(optSet, __COLUMNINDEX, getRows('table#kader1.sortable'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
+        const __TABLEMAN = new TableManager(optSet, __COLUMNINDEX, getRows('TABLE#kader1.sortable'), __ROWOFFSETUPPER, __ROWOFFSETLOWER);
 
         const __SAISON = __TABLEMAN.saison;
         const __LAND = __TABLEMAN.land;
@@ -1297,9 +1297,9 @@ const procTabelle = new PageManager("Ligatabelle", __TEAMCLASS, () => {
             const __TITEL = { };
             const __LTITEL = { };
 
-            const __LEGENDE = getElement('br+table');  // #1: Legenden-Tabelle hinter <br>-Abschnitt, der von der Ligatabelle absetzt
-            const __ROWS = (__LEGENDE ? __LEGENDE.getElementsByTagName("tr") : { });
-            const __TABCOLORS = getStyleFromElements(__ROWS, "backgroundColor", getUpperClassNameFromElement);  // Faerbungen aus Legende ermitteln
+            const __LEGENDE = getElement('BR+TABLE');  // #1: Legenden-Tabelle hinter <BR>-Abschnitt, der von der Ligatabelle absetzt
+            const __ROWS = (__LEGENDE ? getTags('TR', __LEGENDE) : { });
+            const __TABCOLORS = getStyleFromElements(__ROWS, 'backgroundColor', getUpperClassNameFromElement);  // Faerbungen aus Legende ermitteln
 /*
             const __TABCOLORS = {
                     'OSC'  : 'darkgreen',

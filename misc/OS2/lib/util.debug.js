@@ -114,8 +114,8 @@ function checkType(value, type, strict = false, label = "", valName = undefined,
 
     if (strict || ((value !== undefined) && (value !== null))) {
         if ((typeof value) !== type) {
-            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
-                            __LOG.info(value, true, true) + ' ' + String(value));
+            TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                    __LOG.info(value, true, true) + ' ' + String(value));
         }
     }
 
@@ -142,8 +142,8 @@ function checkEnumObj(value, enumObj, strict = false, label = "", valName = unde
     if (strict || ((value !== undefined) && (value !== null))) {
         const __VALUES = Object.values(enumObj);
         if (! __VALUES.includes(value)) {
-            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
-                            __LOG.info(value, true, true) + ' ' + String(value));
+            TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+                    __LOG.info(value, true, true) + ' ' + String(value));
         }
     }
 

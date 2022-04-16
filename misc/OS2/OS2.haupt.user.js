@@ -223,7 +223,7 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
 
         return {
                 'teamParams'  : __TEAMPARAMS,
-                'menuAnchor'  : getElement('div#a'),
+                'menuAnchor'  : getElement('DIV#a'),
                 'hideForm'    : {
                                     'team'  : true
                                 }
@@ -231,7 +231,7 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
     }, async optSet => {
         const __ZAT = firstZAT(optSet.getOptValue('saison'), optSet.getOptValue('ligaSize'));
         //const __ZATCELL = getProp(getProp(getRows(), 2), 'cells', { })[0];
-        const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
+        const __ZATCELL = getElement('TD[style] B');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;
 

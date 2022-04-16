@@ -225,13 +225,13 @@ Class.define(WarnDrawMessage, Object, {
                                   return this.tagText(tag, this.tagText(this.getSubTag(tag), text));
                               },
         'getSubTag'         : function(tag) {
-                                  return ((tag === 'tr') ? 'td' + this.getColorTD() : ((tag === 'p') ? this.getColorTag() : undefined));
+                                  return (this.isTag(tag, 'TR') ? 'TD' + this.getColorTD() : (this.isTag(tag, 'P') ? this.getColorTag() : undefined));
                               },
         'getSuperTag'       : function(tag) {
-                                  return ((tag === 'p') ? 'div' : undefined);
+                                  return (this.isTag(tag, 'P') ? 'DIV' : undefined);
                               },
         'getOpeningTag'     : function(tag) {
-                                  return '<' + tag + '>';
+                                  return '<' + (tag || "").toUpperCase() + '>';
                               },
         'getClosingTag'     : function(tag) {
                                   const __INDEX1 = (tag ? tag.indexOf(' ') : -1);
@@ -239,7 +239,10 @@ Class.define(WarnDrawMessage, Object, {
                                   const __INDEX = ((~ __INDEX1) && (~ __INDEX2)) ? Math.min(__INDEX1, __INDEX2) : Math.max(__INDEX1, __INDEX2);
                                   const __TAGNAME = ((~ __INDEX) ? tag.substring(0, __INDEX) : tag);
 
-                                  return "</" + __TAGNAME + '>';
+                                  return this.getOpeningTag('/' + __TAGNAME);
+                              },
+        'isTag'             : function(tag, compareTag) {
+                                  return (tag && compareTag && (tag.toUpperCase() === compareTag.toUpperCase()));
                               },
         'getLink'           : function() {
                                   return './ju.php';
@@ -256,16 +259,16 @@ Class.define(WarnDrawMessage, Object, {
         'getColorTD'        : function() {
                                   return " class='STU'";  // rot
                               },
-        'getHTML'           : function(tag = 'p') {
+        'getHTML'           : function(tag = 'P') {
                                   return this.tagParagraph((this.out.supertag ? this.getSuperTag(tag) : undefined), (this.out.top ? this.getTopHTML(tag) : "") +
-                                         this.tagParagraph(tag, this.tagText('b', this.tagText((this.out.link ? "a href='" + this.getLink() + "'" : undefined),
+                                         this.tagParagraph(tag, this.tagText('A', this.tagText((this.out.link ? "A href='" + this.getLink() + "'" : undefined),
                                          (this.out.label ? this.label + ": " : "") + this.when + this.text))) + (this.out.bottom ? this.getBottomHTML(tag) : ""));
                               }
     });
 
 Object.defineProperty(WarnDrawMessage.prototype, 'innerHTML', {
         get : function() {
-                  return this.getHTML('p');
+                  return this.getHTML('P');
               }
     });
 

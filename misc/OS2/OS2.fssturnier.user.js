@@ -3459,14 +3459,14 @@ __TEAMCLASS.optSelect = {
 // table: Tabelle mit der Rangliste
 // optSet: Platz fuer die gesetzten Optionen
 function calcRanksFromTable(table, optSet) {
-    const __RANKBOXES = getElements('span.fsst_team', table);
+    const __RANKBOXES = getElements('SPAN.fsst_team', table);
     const __RANKIDS = [];
     const __TEAMIDS = { };
     const __TEAMNAMES = { };
 
     for (let team of __RANKBOXES) {
         const __TEXT = team.textContent;
-        const __TEAMLINK = getElement('a', 0, team);
+        const __TEAMLINK = getElement('A', 0, team);
         const __TEAMNAME = __TEAMLINK.textContent;
         const __HREF = __TEAMLINK.href;
         const __RANKMATCH = /^\d+\./.exec(__TEXT);
@@ -3493,15 +3493,15 @@ function calcRanksFromTable(table, optSet) {
 // page: Enthaelt Liste mit den Herausforderungen
 // optSet: Platz fuer die gesetzten Optionen
 function calcChallengesFromHTML(page, optSet) {
-    const __OLISTS = page.getElementsByTagName('ol');
+    const __OLISTS = getTags('OL', page);
 
     if (__OLISTS && (__OLISTS.length === 3)) {
         const __CHALLENGES = __OLISTS[0];
-        const __CHALLBOXES = __CHALLENGES.getElementsByTagName('span');
+        const __CHALLBOXES = getTags('SPAN', __CHALLENGES);
         const __CHALLIDS = [];
 
         for (let team of __CHALLBOXES) {
-            const __TEAMLINK = getElement('a', 0, team);
+            const __TEAMLINK = getElement('A', 0, team);
             const __HREF = __TEAMLINK.href;
             const __TEAMIDMATCH = /\d+$/.exec(__HREF);
             const __TEAMID = parseInt(__TEAMIDMATCH[0], 10);
@@ -3525,7 +3525,7 @@ function calcGegner(games, optSet) {
     const __GEGNER = { };
 
     for (let game of games) {
-        const __TEAMLINKS = game.getElementsByTagName('a');
+        const __TEAMLINKS = getTags('A', game);
         const __HEIMIDMATCH = /\d+$/.exec(__TEAMLINKS[0].href);
         const __GASTIDMATCH = /\d+$/.exec(__TEAMLINKS[1].href);
         const __HEIMID = parseInt(__HEIMIDMATCH[0], 10);
@@ -3562,7 +3562,7 @@ function formatRankBox(box, color, bgColor, substRank) {
 // table: Tabelle mit der Rangliste
 // optSet: Gesetzte Optionen
 function markChanges(table, optSet) {
-    const __RANKBOXES = table.getElementsByTagName('span');
+    const __RANKBOXES = getTags('SPAN', table);
     const __RANKIDS = optSet.getOptValue('rankIds');
     const __OLDRANKIDS = optSet.getOptValue('oldRankIds');
     const __TEAMRANKS = optSet.getOptValue('teamRanks');
@@ -3608,12 +3608,12 @@ function markChanges(table, optSet) {
 // teamName: Name des eigenen Teams
 // teamName: Name des gegnerischen Teams
 function markTeam(table, optSet, teamName, gegnerName) {
-    const __RANKBOXES = table.getElementsByTagName('span');
+    const __RANKBOXES = getTags('SPAN', table);
     const __RANKIDS = optSet.getOptValue('rankIds');
     const __CHALLIDS = optSet.getOptValue('challIds');
 
     for (let team of __RANKBOXES) {
-        const __TEAMLINK = getElement('a', 0, team);
+        const __TEAMLINK = getElement('A', 0, team);
         const __NAME = __TEAMLINK.textContent;
 
         if (__NAME === teamName) {
@@ -3641,13 +3641,13 @@ function markTeam(table, optSet, teamName, gegnerName) {
 // ==================== Erzeugung von Testdaten ====================
 
 function testItemAppend(node, platz, id, name) {
-    const __LI = document.createElement('li');
-    const __SPAN = document.createElement('span');
-    const __B = document.createElement('b');
-    const __BR1 = document.createElement('br');
-    const __BR2 = document.createElement('br');
-    const __A1 = document.createElement('a');
-    const __A2 = document.createElement('a');
+    const __LI = document.createElement('LI');
+    const __SPAN = document.createElement('SPAN');
+    const __B = document.createElement('B');
+    const __BR1 = document.createElement('BR');
+    const __BR2 = document.createElement('BR');
+    const __A1 = document.createElement('A');
+    const __A2 = document.createElement('A');
 
     __B.append(platz + '.');
 
@@ -3668,7 +3668,7 @@ function testItemAppend(node, platz, id, name) {
 }
 
 function testInsertBefore1(node, before) {
-    const __OL = document.createElement('ol');
+    const __OL = document.createElement('OL');
 
     testItemAppend(__OL, 56, 404, "Drovno Siroki Brijeg");
     testItemAppend(__OL, 58, 1933, "Dynamo Astrakhan");
@@ -3678,7 +3678,7 @@ function testInsertBefore1(node, before) {
 }
 
 function testInsertBefore2(node, before) {
-    const __OL = document.createElement('ol');
+    const __OL = document.createElement('OL');
 
     testItemAppend(__OL, 79, 381, "Schleswig Kiel");
     testItemAppend(__OL, 83, 1323, "Atletico Coimbra");
@@ -3701,7 +3701,7 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
             };
     }, async optSet => {
         //const __ZATCELL = getProp(getProp(getRows(), 2), 'cells', { })[0];
-        const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
+        const __ZATCELL = getElement('TD[style] B');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
         const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
         const __CURRZAT = __NEXTZAT - 1;
         const __DATAZAT = optSet.getOptValue('datenZat');
@@ -3734,13 +3734,13 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", __TEAMCLASS, () =>
 
 // Verarbeitet Ansicht "FSS-Turniere" (Register-Tab 'd' : "offizielles FSS-Turnier")
 const procOSFSSTurnier = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
-        const __TAB4 = getElement('div#d');
+        const __TAB4 = getElement('DIV#d');
 
         if ((__TAB4 === undefined) || (__TAB4 === null)) {
             __LOG[1]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             // Nur Test: Daten produzieren...
-            //testInsertBefore1(__TAB4, __TAB4.getElementsByTagName('ol')[0]);
+            //testInsertBefore1(__TAB4, getTable(0, 'OL', __TAB4));
 
             return {
                     'menuAnchor' : __TAB4,
@@ -3751,8 +3751,8 @@ const procOSFSSTurnier = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
         return false;
     }, async optSet => {
             const __TAB4 = getElementById('d');
-            const __TABLE = getElement('table.fsst_table', 0, __TAB4);
-            const __GAMELIST = getElement('ul', 0, __TAB4);
+            const __TABLE = getElement('TABLE.fsst_table', 0, __TAB4);
+            const __GAMELIST = getTable(0, 'UL', __TAB4);
             const __MYTEAM = optSet.getOptValue('team');
             const __GEGNER = optSet.getOptValue('gegner');
             const __TEAMIDS = optSet.getOptValue('teamIds');
@@ -3764,7 +3764,7 @@ const procOSFSSTurnier = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
             markChanges(__TABLE, optSet);
 
             if (__GAMELIST !== undefined) {
-                const __GAMES = __GAMELIST.getElementsByTagName('li');
+                const __GAMES = getTags('LI', __GAMELIST);
 
                 calcGegner(__GAMES, optSet);
             }

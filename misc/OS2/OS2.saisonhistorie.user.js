@@ -372,11 +372,11 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
         this.__COLUMNINDEX = __COLUMNINDEX;
 
         return {
-                'Tab'         : getElement('table#leihe.sortable'),  // #2: Sortierbare Tabelle, die ID '#leihe' ist bestimmt falsch kopiert!
+                'Tab'         : getElement('TABLE#leihe.sortable'),  // #2: Sortierbare Tabelle, die ID 'leihe' ist bestimmt falsch kopiert!
                 'Zei'         : __ROWOFFSETUPPER,
                 'Spa'         : __COLUMNINDEX.Sai,
                 'teamParams'  : __TEAMPARAMS,
-                'menuAnchor'  : getElement('div'),
+                'menuAnchor'  : getElement('DIV'),
                 'hideForm'    : {
                                     'team'  : true
                                 },
@@ -387,7 +387,7 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
         //const __ROWOFFSETUPPER  = this.__ROWOFFSETUPPER;    // von oben!
         //const __ROWOFFSETLOWER  = 0;
 
-        const __ROWS = getRows('table#leihe.sortable');  // #2: Sortierbare Tabelle, die ID '#leihe' ist bestimmt falsch kopiert!
+        const __ROWS = getRows('TABLE#leihe.sortable');  // #2: Sortierbare Tabelle, die ID 'leihe' ist bestimmt falsch kopiert!
 
         if (! __ROWS) {
             __LOG[1]("Keine Saisonhistorie vorhanden!");
@@ -580,7 +580,7 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
                         }
                     });
 /*
-                //Array.from(document.querySelector('#leihe').rows[i].cells).forEach(cell => (cell.style.border = __BORDERSTRING));
+                //Array.from(getElementById('leihe').rows[i].cells).forEach(cell => (cell.style.border = __BORDERSTRING));
 */
             });
 
@@ -594,19 +594,19 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
             }
         }
 
-        const __UL = document.createElement('ul');
+        const __UL = document.createElement('UL');
 
         __REPORTS.forEach(report => {
                 const __REPORT = report.getReport();
                 if (__REPORT) {
-                    const __LI = document.createElement('li');
+                    const __LI = document.createElement('LI');
 
                     __LI.innerHTML = __REPORT;
                     __UL.append(__LI);
                 }
             });
 
-        const __ANCHOR = document.querySelector('#leihe');  // ueber den Namen reden wir noch einmal...
+        const __ANCHOR = getElementById('leihe');  // ueber den Namen reden wir noch einmal...
 
         insertBefore(__UL, __ANCHOR);
 
@@ -634,7 +634,7 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
 // return Gefuelltes Objekt mit den gesetzten Optionen
 function prepareOptions(optSet, optParams) {
     // Werte aus der HTML-Seite ermitteln...
-    const __BOXSAISONS = getTags('option');
+    const __BOXSAISONS = getTags('OPTION');
     const __SAISON = getSelectionFromComboBox(__BOXSAISONS, 0, 'Number');
     const __LIGASIZE = 10; // (optParams.Tab ? getLigaSizeFromSpielplan(optParams.Tab.rows, optParams.Zei, optParams.Spa, optSet.getOptValue('aktuelleSaison')) : undefined);
 

@@ -206,7 +206,7 @@ __LOG.init(window, __LOGLEVEL);
 // Verarbeitet Ansicht "Unit-Test Quellcode" zur Ausfuehrung der UnitTests dieser Datei
 const procHaupt = new PageManager("Unit-Test Quellcode", null, () => {
         return {
-//                'menuAnchor'  : getElement('div'),
+//                'menuAnchor'  : getElement('DIV'),
                 'hideMenu'    : false,
                 'showForm'    : true
             };

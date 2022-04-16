@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Online-Soccer 2.0 - Unit-Tests der Greasemonkey Benutzerscript-Bibliothek</title>
-        <link rel="stylesheet" type="text/css" href="../css/os_styles.css" />
-        <link rel="stylesheet" type="text/css" href="../css/print.css" media="print" />
-        <link rel="shortcut icon" type="image/ico" href="../img/favicon.ico" />
-        <style>
+<HTML>
+    <HEAD>
+        <META charset="utf-8">
+        <TITLE>Online-Soccer 2.0 - Unit-Tests der Greasemonkey Benutzerscript-Bibliothek</TITLE>
+        <LINK rel="stylesheet" type="text/css" href="../css/os_styles.css" />
+        <LINK rel="stylesheet" type="text/css" href="../css/print.css" media="print" />
+        <LINK rel="shortcut icon" type="image/ico" href="../img/favicon.ico" />
+        <STYLE>
             .script {
                 border:2px solid grey;
                 border-collapse:collapse;
             }
-            .script td {
+            .script TD {
                 border:2px solid grey;
                 border-collapse:collapse;
             }
-        </style>
-        <script type="text/javascript">
+        </STYLE>
+        <SCRIPT type="text/javascript">
 //<![CDATA[
 
 const GM_info = {  // Mock GM_info data
@@ -29,91 +29,91 @@ const GM_info = {  // Mock GM_info data
     };
 
 //]]>
-        </script>
+        </SCRIPT>
 
         <!-- ====================== Script-Includes: GM4-Polyfill, Module und Unit-Tests ====================== -->
 
-        <script type="text/javascript" defer src="https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js"></script>
-<!--         <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.gm.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.script.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.warndraw.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.player.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.column.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.table.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.mock.gm.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.assert.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.class.unittest.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.lib.option.js.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/test.assert.test.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/test.bsp.test.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.log.test.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.store.test.js"></script>
-        <script type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.option.api.test.js"></script> -->
-        <script type="text/javascript" defer src="../lib/lib.all.js"></script>
-<!--        <script type="text/javascript" defer src="../lib/lib.test.all.js"></script> -->
-<!--        <script type="text/javascript" defer src="../lib/lib.test.base.js"></script> -->
-<!--        <script type="text/javascript" defer src="../lib/lib.test.js"></script> -->
-        <script type="text/javascript" defer src="../lib/test.mock.gm.js"></script>
-        <script type="text/javascript" defer src="../lib/test.assert.js"></script>
-        <script type="text/javascript" defer src="../lib/test.class.unittest.js"></script>
-        <script type="text/javascript" defer src="../lib/test.lib.option.js"></script>
-        <script type="text/javascript" defer src="test.assert.test.js"></script>
-<!--        <script type="text/javascript" defer src="test.bsp.test.js"></script> -->
-        <script type="text/javascript" defer src="util.log.test.js"></script>
-        <script type="text/javascript" defer src="util.store.test.js"></script>
-        <script type="text/javascript" defer src="util.option.api.test.js"></script>
-        <script type="text/javascript" defer src="util.xhr.test.js"></script>
-        <script type="text/javascript" defer src="util.xhr.gm.test.js"></script>
-    </head>
-    <body>
-        <div>
-            <h3>Unit-Tests zur Benutzerscript-Bibliothek f&uuml;r Online-Soccer 2.0 unter dem Greasemonkey AddOn</h3>
+        <SCRIPT type="text/javascript" defer src="https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js"></SCRIPT>
+<!--         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.gm.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.script.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.warndraw.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.player.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.column.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.table.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.mock.gm.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.assert.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.class.unittest.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.lib.option.js.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/test.assert.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/test.bsp.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.log.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.store.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.option.api.test.js"></SCRIPT> -->
+        <SCRIPT type="text/javascript" defer src="../lib/lib.all.js"></SCRIPT>
+<!--        <SCRIPT type="text/javascript" defer src="../lib/lib.test.all.js"></SCRIPT> -->
+<!--        <SCRIPT type="text/javascript" defer src="../lib/lib.test.base.js"></SCRIPT> -->
+<!--        <SCRIPT type="text/javascript" defer src="../lib/lib.test.js"></SCRIPT> -->
+        <SCRIPT type="text/javascript" defer src="../lib/test.mock.gm.js"></SCRIPT>
+        <SCRIPT type="text/javaSCRIPT" defer src="../lib/test.assert.js"></script>
+        <SCRIPT type="text/javascript" defer src="../lib/test.class.unittest.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/test.lib.option.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="test.assert.test.js"></SCRIPT>
+<!--        <SCRIPT type="text/javascript" defer src="test.bsp.test.js"></SCRIPT> -->
+        <SCRIPT type="text/javascript" defer src="util.log.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="util.store.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="util.option.api.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="util.xhr.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="util.xhr.gm.test.js"></SCRIPT>
+    </HEAD>
+    <BODY>
+        <DIV>
+            <H3>Unit-Tests zur Benutzerscript-Bibliothek f&uuml;r Online-Soccer 2.0 unter dem Greasemonkey AddOn</H3>
 
-            || <a onClick="startMain();return false;" href="index.html">Init</a>
-            || <a onClick="UnitTest.runAll(1);return false;" href="index.html">Unit-Tests starten</a>
-            || <a onClick="UnitTest.runAll(4);return false;" href="index.html">Nur Zusammenfassungen</a>
-            || <a onClick="UnitTest.runAll(0);return false;" href="index.html">Alle Unit-Tests (auch OK) ausgeben</a>
-            || <a onClick="(document.getElementById('UnitTest') || { }).innerHTML='';return false;" href="index.html">Tabelle leeren</a>
+            || <A onClick="startMain();return false;" href="index.html">Init</A>
+            || <A onClick="UnitTest.runAll(1);return false;" href="index.html">Unit-Tests starten</A>
+            || <A onClick="UnitTest.runAll(4);return false;" href="index.html">Nur Zusammenfassungen</A>
+            || <A onClick="UnitTest.runAll(0);return false;" href="index.html">Alle Unit-Tests (auch OK) ausgeben</A>
+            || <A onClick="(getElementById('UnitTest') || { }).innerHTML='';return false;" href="index.html">Tabelle leeren</A>
             ||
-        </div>
-        <br />
+        </DIV>
+        <BR />
 
-        <script type="text/javascript">
+        <SCRIPT type="text/javascript">
 //<![CDATA[
 
 //==================== Hauptprogramm ====================
@@ -128,7 +128,7 @@ const GM_info = {  // Mock GM_info data
 })();
 
 //]]>
-        </script>
-        <noscript>Your browser does not support JavaScript!</noscript>
-    </body>
-</html>
+        </SCRIPT>
+        <NOSCRIPT>Your browser does not support JavaScript!</NOSCRIPT>
+    </BODY>
+</HTML>

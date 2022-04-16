@@ -290,6 +290,7 @@ function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
 }
 
 // Erzeugt ein Mapping innerhalb der Werte eines Objekts ueber Spaltenindizes.
+// Ein Spaltenindex von -1 (bzw. undefined oder null) referenziert dabei die Schluessel.
 // obj: Objekt mit key => value
 // keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
 // - newValue: Neuer Wert (zu konvertieren)
@@ -313,8 +314,10 @@ function selectMapping(obj, keyIndex, valueIndex, keyValFun, valKeyFun) {
     checkType(keyValFun, 'function', false, 'selectMapping', 'keyValFun', 'Function');
     checkType(valKeyFun, 'function', false, 'selectMapping', 'valKeyFun', 'Function');
 
-    const __KEYVALFUN = mappingValueSelect.bind(this, valueIndex, keyValFun);
-    const __VALUESFUN = mappingValuesFunSelect.bind(this, keyIndex);
+    const __KEYINDEX = getValue(keyIndex, -1);      // Bei Index -1, undefined oder null werden die Schluessel selektiert
+    const __VALUEINDEX = getValue(valueIndex, -1);  // Bei Index -1, undefined oder null werden die Schluessel selektiert
+    const __KEYVALFUN = ((~ __VALUEINDEX) ? mappingValueSelect.bind(this, __VALUEINDEX, keyValFun) : keyValFun);
+    const __VALUESFUN = ((~ __KEYINDEX) ? mappingValuesFunSelect.bind(this, __KEYINDEX) : null);
     const __VALKEYFUN = valKeyFun;
 
     return reverseMapping(obj, __KEYVALFUN, __VALUESFUN, __VALKEYFUN);

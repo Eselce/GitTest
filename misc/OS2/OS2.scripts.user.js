@@ -280,12 +280,12 @@ function getScriptFromHTML(pathElement, table) {
 // Verarbeitet eine Script-Ansicht bei GitHub
 const procScript = new PageManager("Script-Ansicht bei GitHub", null, () => {
         return {
-                'menuAnchor' : getElement('ul.d-none.js-jump-to-suggestions-template-container'),
+                'menuAnchor' : getElement('UL.d-none.js-jump-to-suggestions-template-container'),
                 'formWidth'  : 2
             };
     }, async optSet => {
         // Quellcode ermitteln...
-        const __TABLE = getElement('table.highlight.tab-size.js-file-line-container.js-code-nav-container.js-tagsearch-file');
+        const __TABLE = getElement('TABLE.highlight.tab-size.js-file-line-container.js-code-nav-container.js-tagsearch-file');
         const __SCRIPT = getScriptFromHTML('path', __TABLE);
         const __LIB = __SCRIPT.libname;
         const __LIBS = optSet.getOptValue('libs', { });

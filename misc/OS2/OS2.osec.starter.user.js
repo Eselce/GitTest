@@ -288,7 +288,7 @@ __LOG.init(window, __LOGLEVEL);
 // Verarbeitet Ansicht "Haupt" (Managerbuero) zur Ermittlung des aktuellen ZATs
 const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", null, () => {
         return {
-//                'menuAnchor' : getElement('div'),
+//                'menuAnchor' : getElement('DIV'),
                 'hideMenu'   : true,
                 'showForm'   : {
                                    'saison'               : true,
@@ -298,7 +298,7 @@ const procHaupt = new PageManager("Haupt (Managerb\u00FCro)", null, () => {
             };
     }, async optSet => {
             //const __ZATCELL = getProp(getProp(getRows(), 2), 'cells', { })[0];
-            const __ZATCELL = getElement('td[style] b');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
+            const __ZATCELL = getElement('TD[style] B');  // #2,0: Der erste farbige Fetteintrag ('<td style="color:orange"><b>')
             const __NEXTZAT = getZATNrFromCell(__ZATCELL);  // "Der naechste ZAT ist ZAT xx und ..."
             const __CURRZAT = __NEXTZAT - 1;
             const __DATAZAT = optSet.getOptValue('datenZat');
@@ -338,10 +338,10 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
         this.__COLUMNINDEX = __COLUMNINDEX;
 
         return {
-                'header'      : getElements('h2'),              // 4x <h2> fuer 4 Ueberschriften ('OSC', 'OSCQ', 'OSE', 'OSEQ')
+                'header'      : getTags('H2'),              // 4x <h2> fuer 4 Ueberschriften ('OSC', 'OSCQ', 'OSE', 'OSEQ')
                 'listen'      : getElements('.int_teilnehmer'), // 4x <ul> fuer 4 Starterlisten
-                'tabAnchor'   : getElement('h1'),               // Neue Tabelle unter der Ueberschrift
-                'menuAnchor'  : getElements('.int_teilnehmer')[3],
+                'tabAnchor'   : getTags('H1'),               // Neue Tabelle unter der Ueberschrift
+                'menuAnchor'  : getElement('.int_teilnehmer', 3),
                 'hideForm'    : false,
                 'formWidth'   : 3,
                 'formBreak'   : 4
@@ -360,7 +360,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
         if (__SHOWSTATS) {
             // Stil fuer rausgeflogene Teams definieren...
             GM.addStyle(".raus { color: " + __ELIMCOLOR + " }");
-            GM.addStyle("table#intstarter tr.raus a { color: " + __ELIMLINKCOLOR + " }");
+            GM.addStyle("TABLE#intstarter TR.raus A { color: " + __ELIMLINKCOLOR + " }");
 
             const __OPTPARAMS = this.optParams;
             const __HEADER = Array.from(__OPTPARAMS.header);
@@ -380,8 +380,8 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
             if (__LASTRND) {
                 // Phase 1: Zunaechst nur Cup/Runde des Ausscheidens/Sieges berechnen...
                 const __TEAMLISTS = __LISTEN.map((list, indexList) =>
-                            Array.from(getElements('li', list)).forEach(entry => {
-                                        const __ITEMS = getElements('a,div', entry);
+                            Array.from(getTags('li', list)).forEach(entry => {
+                                        const __ITEMS = getElements('A,DIV', entry);
                                         const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
                                         const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
                                         const [ __MANAGER, __PMID ] = getLinkData(__ITEMS[2], 'receiver_id');
@@ -412,8 +412,8 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
 
             // Phase 2: Jetzt kann neben der naechsten Runde auch die letzte Runde berechnet werden...
             const __TEAMLISTS = __LISTEN.map((list, indexList) =>
-                        Array.from(getElements('li', list)).map(entry => {
-                                    const __ITEMS = getElements('a,div', entry);
+                        Array.from(getTags('LI', list)).map(entry => {
+                                    const __ITEMS = getElements('A,DIV', entry);
                                     const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
                                     const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
                                     const [ __MANAGER, __PMID ] = getLinkData(__ITEMS[2], 'receiver_id');
@@ -479,8 +479,8 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
             const __ITEMS = [ 'id', 'lfd', 'landNr', 'cup', 'rundeZAT', 'rundeStr', 'flagStr', 'vereinStr', 'land', 'managerStr', 'ligaStr', 'ligaNr', 'skill', 'opti' ];
             const __HEADS = [ 'ID', '#', 'Land', 'Cup', 'ZAT', 'Runde', 'Flagge', 'Verein', 'Land', 'Manager', 'Liga', 'Liga', 'Skill', 'Opti' ];
             const __ALIGN = 'center';
-            const __TABLE = document.createElement('table');
-            const __TBODY = document.createElement('tbody');
+            const __TABLE = document.createElement('TABLE');
+            const __TBODY = document.createElement('TBODY');
 
             __TABLE.id = 'intstarter';
             //__TABLE.border = 1;
@@ -489,10 +489,10 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
             __TABLE.style.borderColor = '#aaaaaa';
             __TABLE.classList.add('sortable');
 
-            const __THR = document.createElement('tr');
+            const __THR = document.createElement('TR');
 
             __HEADS.forEach(head => {
-                    const __TH = document.createElement('th');
+                    const __TH = document.createElement('TH');
 
                     __TH.textContent = head;
                     __TH.style.borderBottom = __BORDERSTRING;
@@ -512,7 +512,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                             const __SHOW = ((! __RAUS) || __SHOWRAUS);
 
                             if (__SHOW) {
-                                const __TR = document.createElement('tr');
+                                const __TR = document.createElement('TR');
                                 const __BORDERTOP = isFirstEntry;
 
                                 isFirstEntry = false;
@@ -522,7 +522,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                                 }
 
                                 __ITEMS.forEach(item => {
-                                        const __TD = document.createElement('td');
+                                        const __TD = document.createElement('TD');
 
                                         __TD.innerHTML = entry[item];
                                         __TD.align = __ALIGN;
