@@ -340,7 +340,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
         return {
                 'header'      : getTags('H2'),              // 4x <h2> fuer 4 Ueberschriften ('OSC', 'OSCQ', 'OSE', 'OSEQ')
                 'listen'      : getElements('.int_teilnehmer'), // 4x <ul> fuer 4 Starterlisten
-                'tabAnchor'   : getTags('H1'),               // Neue Tabelle unter der Ueberschrift
+                'tabAnchor'   : getElement('H1'),               // Neue Tabelle unter der Ueberschrift
                 'menuAnchor'  : getElement('.int_teilnehmer', 3),
                 'hideForm'    : false,
                 'formWidth'   : 3,
@@ -380,7 +380,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
             if (__LASTRND) {
                 // Phase 1: Zunaechst nur Cup/Runde des Ausscheidens/Sieges berechnen...
                 const __TEAMLISTS = __LISTEN.map((list, indexList) =>
-                            Array.from(getTags('li', list)).forEach(entry => {
+                            Array.from(getTags('LI', list)).forEach(entry => {
                                         const __ITEMS = getElements('A,DIV', entry);
                                         const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
                                         const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
