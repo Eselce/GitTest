@@ -566,6 +566,8 @@ function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
 // Erzeugt ein Mapping innerhalb der Werte eines Objekts ueber Spaltenindizes.
 // Ein Spaltenindex von -1 (bzw. undefined oder null) referenziert dabei die Schluessel.
 // obj: Objekt mit key => value
+// keyIndex: Spaltenindex fuer die neuen Schluessel (-1 fuer alte Schluessel) (Default: -1)
+// valueIndex: Spaltenindex fuer die neuen Werte (-1 fuer alte Schluessel) (Default: 0 fuer 1. Spalte)
 // keyValFun: Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
 // - newValue: Neuer Wert (zu konvertieren)
 // - newKey: Neuer Schluessel (konvertiert)
@@ -581,17 +583,15 @@ function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
 //        (doppelte value-Werte fallen heraus!)
 // Dabei werden die value-Werte zunaechst ueber valKeyFun zu neuen Schluesseln.
 // Ausserdem werden die key-Werte zunaechst ueber keyValFun zu neuen Werten! 
-function selectMapping(obj, keyIndex, valueIndex, keyValFun, valKeyFun) {
+function selectMapping(obj, keyIndex = -1, valueIndex = 0, keyValFun, valKeyFun) {
     checkType(obj, 'object', true, 'selectMapping', 'obj', 'Object');
     checkType(keyIndex, 'number', true, 'selectMapping', 'keyIndex', 'Number');
     checkType(valueIndex, 'number', true, 'selectMapping', 'valueIndex', 'Number');
     checkType(keyValFun, 'function', false, 'selectMapping', 'keyValFun', 'Function');
     checkType(valKeyFun, 'function', false, 'selectMapping', 'valKeyFun', 'Function');
 
-    const __KEYINDEX = getValue(keyIndex, -1);      // Bei Index -1, undefined oder null werden die Schluessel selektiert
-    const __VALUEINDEX = getValue(valueIndex, -1);  // Bei Index -1, undefined oder null werden die Schluessel selektiert
-    const __KEYVALFUN = ((~ __VALUEINDEX) ? mappingValueSelect.bind(this, __VALUEINDEX, keyValFun) : keyValFun);
-    const __VALUESFUN = ((~ __KEYINDEX) ? mappingValuesFunSelect.bind(this, __KEYINDEX) : null);
+    const __KEYVALFUN = mappingValueSelect.bind(this, valueIndex, keyValFun);
+    const __VALUESFUN = mappingValuesFunSelect.bind(this, keyIndex);
     const __VALKEYFUN = valKeyFun;
 
     return reverseMapping(obj, __KEYVALFUN, __VALUESFUN, __VALKEYFUN);
@@ -630,8 +630,9 @@ function mappingSetOrPush(value, key, obj) {
 // obj: Neues Objekt (im Aufbau, alles konvertiert)
 // oldObj: Altes Objekt, aus derem alten Wert selektiert wird (key ist value, der alte Schluessel)
 // return Selektierter neuer Wert (aus einer Spalte des alten Wertes)
-function mappingValueSelect(index = 0, keyValFun = null, value, key, obj, oldObj) {
-    const __VALUE = getArrValue(oldObj[value], index);
+function mappingValueSelect(index, keyValFun = null, value, key, obj, oldObj) {
+    const __INDEX = getValue(index, -1);  // Bei Index -1, undefined oder null werden die Schluessel uebernommen
+    const __VALUE = ((~ __INDEX) ? getArrValue(oldObj[value], index) : value);
     const __NEWVALUE = (keyValFun ? keyValFun(__VALUE, key, obj, oldObj) : __VALUE);
 
     return __NEWVALUE;
@@ -639,13 +640,22 @@ function mappingValueSelect(index = 0, keyValFun = null, value, key, obj, oldObj
 
 // Standard-Selectionsfunktion fuer die neuen Keys aus Spalten der alten Werte
 // fuer die Funktion reverseMapping() (die in Array-Form vorliegen) als keysFun-Parameter.
-// index: Index der Spalte, dessen Array-Eintraege als neuer Key genutzt werden (Default: 0)
+// index: Index der Spalte, dessen Array-Eintraege als neuer Key genutzt werden (Default: -1 fuer Object.keys)
 // obj: Objekt, dessen Werte ermittelt werden (besteht aus Array-Eintraegen)
-// return Array mit alles Keys (siehe Object.values, aber nur bestimmte Spalte)
-function mappingValuesFunSelect(index = 0, obj) {
-    const __VALUES = Object.values(obj);
+// return Array mit allen neuen Keys (siehe Object.values, aber nur bestimmte Spalte)
+function mappingValuesFunSelect(index, obj) {
+    const __INDEX = getValue(index, -1);  // Bei Index -1, undefined oder null werden die Schluessel uebernommen
 
-    return __VALUES.map(valueArr => getArrValue(valueArr, index));
+    if (~ __INDEX) {
+        const __VALUES = Object.values(obj);
+        const __NEWKEYS = __VALUES.map(valueArr => getArrValue(valueArr, __INDEX));
+
+        return __NEWKEYS;
+    } else {
+        const __KEYS = Object.keys(obj);
+
+        return __KEYS;
+    }
 }
 
 // ==================== Ende Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
