@@ -4354,11 +4354,29 @@ const __OPTACTION = {
     'RST' : "reset options"
 };
 
+// Schwere der Notwendigkeit bei den Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
+const __OPTNEEDSEVERITY = {
+    'MAN'   : 'mandatory',      // Muss-Parameter
+    'REC'   : 'recommended',    // Soll-Parameter
+    'OPT'   : 'optional',       // Kann-Parameter (optional)
+    'INT'   : 'internal'        // Belegt-Parameter (nicht in __OPTCONFIG verwenden!)
+};
+
+// Klassifizierung von Untergruppen der Notwendigkeit-Klassen zu Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
+const __OPTNEEDCONDITION = {
+    'ALL'   : [ "parameter",            (optType => true) ],                                                            // Alle Parameter
+    'DAT'   : [ "data parameter",       (optType => ((optType === __OPTTYPES.MC) || (optType === __OPTTYPES.SD))) ],    // Datentypen __OPTTYPES.MC und __OPTTYPES.SD
+    'SEL'   : [ "select parameter",     (optType => (optType === __OPTTYPES.MC)) ],                                     // Datentyp __OPTTYPES.MC
+    'SWI'   : [ "switch parameter",     (optType => ((optType === __OPTTYPES.SW) || (optType === __OPTTYPES.TF))) ],    // Datentypen __OPTTYPES.SW und __OPTTYPES.TF
+    'SIM'   : [ "simple parameter",     (optType => (optType === __OPTTYPES.SI)) ],                                     // Datentyp __OPTTYPES.SI
+    'COM'   : [ "complex parameter",    (optType => (optType !== __OPTTYPES.SI)) ],                                     // alle Datentypen ausser __OPTTYPES.SI
+};
+
 // Notwendigkeit der Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
 const __OPTNEED = {
     'MAN'   : "mandatory parameter",            // Muss-Parameter, darf nicht fehlen!
     'DAT'   : "mandatory data parameter",       // Muss-Parameter fuer Datentypen __OPTTYPES.MC und __OPTTYPES.SD
-    'CHO'   : "mandytory select parameter",     // Muss-Parameter fuer Datentyp __OPTTYPES.MC
+    'CHO'   : "mandatory select parameter",     // Muss-Parameter fuer Datentyp __OPTTYPES.MC
     'SWI'   : "mandatory switch parameter",     // Muss-Parameter fuer Datentypen __OPTTYPES.SW und __OPTTYPES.TF
     'REC'   : "recommended parameter",          // Soll-Parameter: Nutzung dieser Parameter wird empfohlen
     'COM'   : "recommended complex parameter",  // Soll-Parameter fuer alle Datentypen ausser __OPTTYPES.SI
@@ -4369,14 +4387,30 @@ const __OPTNEED = {
     'INT'   : "internal parameter"              // Nicht in __OPTCONFIG verwenden!
 };
 
+// Konfiguration der Ueberpruefung der Notwendigkeit der Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
+const __OPTNEEDCONFIG = { };
+
+__OPTNEEDCONFIG[__OPTNEED.MAN] = [ __OPTNEEDSEVERITY.MAN, __OPTNEEDCONDITION.ALL ]; // Muss-Parameter, darf nicht fehlen!
+__OPTNEEDCONFIG[__OPTNEED.DAT] = [ __OPTNEEDSEVERITY.MAN, __OPTNEEDCONDITION.DAT ]; // Muss-Parameter fuer Datentypen __OPTTYPES.MC und __OPTTYPES.SD
+__OPTNEEDCONFIG[__OPTNEED.CHO] = [ __OPTNEEDSEVERITY.MAN, __OPTNEEDCONDITION.SEL ]; // Muss-Parameter fuer Datentyp __OPTTYPES.MC
+__OPTNEEDCONFIG[__OPTNEED.SWI] = [ __OPTNEEDSEVERITY.MAN, __OPTNEEDCONDITION.SWI ]; // Muss-Parameter fuer Datentypen __OPTTYPES.SW und __OPTTYPES.TF
+__OPTNEEDCONFIG[__OPTNEED.REC] = [ __OPTNEEDSEVERITY.REC, __OPTNEEDCONDITION.ALL ]; // Soll-Parameter: Nutzung dieser Parameter wird empfohlen
+__OPTNEEDCONFIG[__OPTNEED.COM] = [ __OPTNEEDSEVERITY.REC, __OPTNEEDCONDITION.COM ]; // Soll-Parameter fuer alle Datentypen ausser __OPTTYPES.SI
+__OPTNEEDCONFIG[__OPTNEED.VAL] = [ __OPTNEEDSEVERITY.REC, __OPTNEEDCONDITION.DAT ]; // Soll-Parameter fuer Datentypen __OPTTYPES.MC und __OPTTYPES.SD
+__OPTNEEDCONFIG[__OPTNEED.SEL] = [ __OPTNEEDSEVERITY.REC, __OPTNEEDCONDITION.SEL ]; // Soll-Parameter fuer Datentyp __OPTTYPES.MC
+__OPTNEEDCONFIG[__OPTNEED.TOG] = [ __OPTNEEDSEVERITY.REC, __OPTNEEDCONDITION.SWI ]; // Soll-Parameter fuer Datentypen __OPTTYPES.SW und __OPTTYPES.TF
+__OPTNEEDCONFIG[__OPTNEED.OPT] = [ __OPTNEEDSEVERITY.OPT, __OPTNEEDCONDITION.ALL ]; // Optionale Parameter ohne Pficht
+__OPTNEEDCONFIG[__OPTNEED.INT] = [ __OPTNEEDSEVERITY.INT, __OPTNEEDCONDITION.ALL ]; // Nicht in __OPTCONFIG verwenden!
+
 // Abgeleitete Typen gemappt auf Haupttypen...
-const __OPTITEMTYPES = {
+const __OPTITEMTYPEMAPPING = {
     'Array'     : 'Object', // Array.isArray()
     'Char'      : 'String', // String.length === 1
     'Code'      : 'String', // TODO Code-Schutz
     'Integer'   : 'Number', // Number.isInteger()
 };
 
+// Spaltenindizes von __OPTITEMS, den Daten ueber die Item-Typen der Konfiguration der Optionen (__OPTCONFIG)
 const __COLOPTITEMS = {
         'INFO'      : 0,
         'TYPE'      : 1,
@@ -4546,91 +4580,54 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
     const __NAME = __CONFIG.Name;
     const __ISSHARED = getValue(__CONFIG.Shared, false, true);
     const __KEY = key;
-    const __MAN = getValue(__OPTITEMSBYNEED[__OPTNEED.MAN], []);    // Muss-Parameter
-    const __DAT = getValue(__OPTITEMSBYNEED[__OPTNEED.DAT], []);    // Muss-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
-    const __CHO = getValue(__OPTITEMSBYNEED[__OPTNEED.CHO], []);    // Muss-Parameter fuer __OPTTYPES.MC
-    const __SWI = getValue(__OPTITEMSBYNEED[__OPTNEED.SWI], []);    // Muss-Parameter fuer __OPTTYPES.SW und __OPTTYPES.TF
-    const __REC = getValue(__OPTITEMSBYNEED[__OPTNEED.REC], []);    // Soll-Parameter
-    const __COM = getValue(__OPTITEMSBYNEED[__OPTNEED.COM], []);    // Soll-Parameter fuer alle Datentypen ausser __OPTTYPES.SI
-    const __VAL = getValue(__OPTITEMSBYNEED[__OPTNEED.VAL], []);    // Soll-Parameter fuer __OPTTYPES.MC und __OPTTYPES.SD
-    const __TOG = getValue(__OPTITEMSBYNEED[__OPTNEED.TOG], []);    // Soll-Parameter fuer __OPTTYPES.SW und __OPTTYPES.TF
-    const __SEL = getValue(__OPTITEMSBYNEED[__OPTNEED.SEL], []);    // Soll-Parameter fuer __OPTTYPES.MC
 
     if (! __ISSHARED) {  // TODO Shared Ref
-        // Redundante Pruefung auf Namen der Option (spaeter Ueberpruefung von __MAN)...
+        // Pruefung auf Namen der Option (redundant, da spaeter noch Ueberpruefung von __OPTNEED.MAN)...
         if (__NAME === undefined) {
             __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
             __ERRORFUN("Unknown 'Name' for option " + __LOG.info(__KEY, false));
         }
 
-        // Ueberpruefung der Pflichtparameter...
-        __MAN.forEach(item => {
-                const __ITEM = __CONFIG[item];
+        // Ueberpruefung der Notwendigkeit der Parameter...
+        const __ALLNEEDS = Object.keys(__OPTNEED);
 
-                if (! __ITEM) {
-                    __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory parameter " + __LOG.info(item, false) + "...");
-                }
-            });
-        __DAT.forEach(item => {
-                const __ITEM = __CONFIG[item];
+        __ALLNEEDS.forEach(needKey => {  // alle moeglichen Notwendigkeitstypen...
+                const __NEED = __OPTNEED[needKey];
+                const __NEEDCONFIG = __OPTNEEDCONFIG[__NEED];
+                const [ __SEVERITY, [ __CONDPARAM , __CONDFUN ]] = getValue(__NEEDCONFIG, [ null, [ null, null ] ]);
+                const __NEEDED = __CONDFUN(__OPTTYPE);
 
-                if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
-                    __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory data parameter " + __LOG.info(item, false) + "...");
-                }
-            });
-        __CHO.forEach(item => {
-                const __ITEM = __CONFIG[item];
+                if (__NEEDED) {  // die Parameter dieser Klasse sind notwendig fuer die Option mit diesem __OPTTYPE...
+                    const __PARAMETER = __SEVERITY + ' ' + __CONDPARAM; // alternativ (aber weniger eingaengig): __NEED
+                    const __MISSING = "Option " + __LOG.info(__KEY, false) + " is missing " + __PARAMETER + ' ';
+                    const __OPTPARAMS = getValue(__OPTITEMSBYNEED[__NEED], []);
 
-                if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
-                    __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory select parameter " + __LOG.info(item, false) + "...");
-                }
-            });
-        __SWI.forEach(item => {
-                const __ITEM = __CONFIG[item];
+                    __OPTPARAMS.forEach(item => {  // alle notwendigen Parameter dieser Klasse...
+                            const __ITEM = __CONFIG[item];
 
-                if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.SW) || (__OPTTYPE === __OPTTYPES.TF))) {
-                    __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                    __ERRORFUN("Option " + __LOG.info(__KEY, false) + " is missing mandatory switch parameter " + __LOG.info(item, false) + "...");
-                }
-            });
+                            if (! __ITEM) {  // Parameter ist notwendig, fehlt allerdings!
+                                const __ERRORMSG = __MISSING + __LOG.info(item, false) + "...";
 
-        // Ueberpruefung der Pflichtparameter...
-        __REC.forEach(item => {
-                const __ITEM = __CONFIG[item];
-
-                if (! __ITEM) {
-                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended parameter " + __LOG.info(item, false) + "...");
-                }
-            });
-        __COM.forEach(item => {
-                const __ITEM = __CONFIG[item];
-
-                if ((! __ITEM) && (__OPTTYPE !== __OPTTYPES.SI)) {
-                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended complex parameter " + __LOG.info(item, false) + "...");
-                }
-            });
-        __VAL.forEach(item => {
-                const __ITEM = __CONFIG[item];
-
-                if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.MC) || (__OPTTYPE === __OPTTYPES.SD))) {
-                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended data parameter " + __LOG.info(item, false) + "...");
-                }
-            });
-        __SEL.forEach(item => {
-                const __ITEM = __CONFIG[item];
-
-                if ((! __ITEM) && (__OPTTYPE === __OPTTYPES.MC)) {
-                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended select parameter " + __LOG.info(item, false) + "...");
-                }
-            });
-        __TOG.forEach(item => {
-                const __ITEM = __CONFIG[item];
-
-                if ((! __ITEM) && ((__OPTTYPE === __OPTTYPES.SW) || (__OPTTYPE === __OPTTYPES.TF))) {
-                    __LOG[2]("checkOptItem(): Option " + __LOG.info(__KEY, false) + " is missing recommended switch parameter " + __LOG.info(item, false) + "...");
+                                switch (__SEVERITY) {
+                                    case __OPTNEEDSEVERITY.MAN: // Muss-Parameter...
+                                        __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
+                                        __ERRORFUN(__ERRORMSG);
+                                        break;
+                                    case __OPTNEEDSEVERITY.REC: // Soll-Parameter...
+                                        __LOG[2]("checkOptItem(): " + __ERRORMSG);
+                                        break;
+                                    case __OPTNEEDSEVERITY.OPT: // Kann-Parameter...
+                                        __LOG[7]("checkOptItem(): (opt) " + __ERRORMSG);
+                                        break;
+                                    case __OPTNEEDSEVERITY.INT: // Kann-Parameter...
+                                        __LOG[9]("checkOptItem(): (int) " + __ERRORMSG);
+                                        break;
+                                    default:
+                                        __ERRORFUN("checkOptItem(): Internal error: Unknown severity " + __LOG.info(__SEVERITY, false));
+                                        break;
+                                }
+                            }
+                        });
                 }
             });
     }
@@ -4642,7 +4639,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
             const [ __ITEMTEXT, __ITEMTYPE, __ITEMEXAMPLES, __ITEMNEED] =
                     (__ITEMINFO || [ "Error", undefined, "", __OPTNEED.OPT ]);
             const __KEYITEM = __KEY + '[' + item + ']';
-            const __TYPE = (__OPTITEMTYPES[__ITEMTYPE] || __ITEMTYPE);
+            const __TYPE = (__OPTITEMTYPEMAPPING[__ITEMTYPE] || __ITEMTYPE);
             let isValid = true;
 
             if (! __ITEMINFO) {
