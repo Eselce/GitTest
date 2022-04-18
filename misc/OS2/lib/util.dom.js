@@ -123,6 +123,13 @@ function insertBefore(element, anchor) {
     return anchor.parentNode.insertBefore(element, anchor);
 }
 
+// Entfernt ein Element aus dem DOM-Baum ueber das Eltern-Element, das nicht angegeben werden muss.
+// element: Zu loeschendes HTML-Element
+// return Das entfernte Element
+function removeElement(element) {
+    return element.parentNode.removeChild(element);
+}
+
 // Hilfsfunktion fuer die Ermittlung aller Elements desselben Typs auf der Seite ueber CSS Selector (Default: Tabelle)
 // selector: CSS Selector des Elements ('TABLE')
 // doc: Dokument (document)
