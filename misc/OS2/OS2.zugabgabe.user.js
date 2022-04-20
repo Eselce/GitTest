@@ -338,7 +338,7 @@ const __MAINCONFIG = {
 // Selektor (Seite bzw. Parameter) fuer den richtigen PageManager...
 const __LEAFS = {
                     'zugabgabe.php' :  0,   // Ansicht "Zugabgabe" (p = 0, 1, 2)
-                    'haupt.php'     :  3,   // Ansicht "Haupt" (Managerbuero)
+                    'haupt.php'     :  -3   // Ansicht "Haupt" (Managerbuero)
                 };
 const __ITEM = 'p';
 
