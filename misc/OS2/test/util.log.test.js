@@ -25,7 +25,7 @@
     // Funktionalitaet der Logging-Funktionen...
     new UnitTest('util.log.js Logging', "Tools zum Loggen von Meldungen", {
             'logFun'              : function() {
-                                        const __LOGFUN __LOG.logFun;
+                                        const __LOGFUN = __LOG.logFun;
 
                                         ASSERT_EQUAL(__LOGFUN.length, 10, "logFun[] ben\u00F6tigt 10 Funktionen");  // 0, ..., 9
 
