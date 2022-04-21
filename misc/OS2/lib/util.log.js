@@ -151,9 +151,9 @@ __LOG.init(window, 4, false);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(
 
 // Makro fuer die Markierung bewusst ungenutzter Variablen und Parametern
 // params: Beliebig viele Parameter, mit denen nichts gemacht wird
-// return Liefert formal die Parameter zurueck
+// return Liefert formal die Parameter zurueck (wenn moeglich, als Skalar, sonst Array)
 function UNUSED(... unused) {
-    return unused;
+    return ((unused.length < 2) ? unused[0] : unused);
 }
 
 // ==================== Ende Abschnitt fuer UNUSED() ====================
