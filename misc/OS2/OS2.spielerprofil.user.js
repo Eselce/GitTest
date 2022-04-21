@@ -369,7 +369,7 @@ const procSpieler = new PageManager("Spielerprofil", __TEAMCLASS, () => {
                 };
         }
     }, async optSet => {
-            const __CURRZAT = getOptValue(optSet.datenZat);
+            const __CURRZAT = optSet.getOptValue('datenZat');
 
             return showSpieler(__CURRZAT);
         });

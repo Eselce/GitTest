@@ -511,8 +511,8 @@ function prepareOptions(optSet, optParams) {
     const __LIGASIZE = (optParams.Tab ? getLigaSizeFromSpielplan(optParams.Tab.rows, optParams.Zei, optParams.Spa, optSet.getOptValue('saison')) : undefined);
 
     // ... und abspeichern...
-    setOpt(optSet.saison, __SAISON, false);
-    setOpt(optSet.ligaSize, __LIGASIZE, false);
+    optSet.setOpt('saison', __SAISON, false);
+    optSet.setOpt('ligaSize', __LIGASIZE, false);
 
     return optSet;
 }

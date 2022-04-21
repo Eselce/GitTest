@@ -240,10 +240,11 @@ function checkOpt(opt, key = undefined) {
         throw RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
     }
 
-    if (! opt.validOption) {
+    if (! opt.ValidOpt) {
         if (((typeof __NAME) !== 'undefined') && __NAME.length && ((typeof __CONFIG) === 'object')) {
-            opt.validOption = true;
+            opt.ValidOpt = true;
         } else {
+            opt.ValidOpt = false;
             __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
             throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
         }
@@ -298,6 +299,27 @@ function checkOptConfig(optConfig, preInit = false) {
     return __OPTCONFIG;
 }
 
+// Ueberprueft, ob eine bestimmte Option konfiguriert ist
+// optSet: Platz fuer die gesetzten Optionen (und Config)
+// item: Key der Option
+// return true: Option existiert, false: nicht vorhanden
+function hasOpt(optSet, item) {
+    if ((optSet !== undefined) && (item !== undefined)) {
+        const __STRICT = true;  // TODO
+        const __OPTITEM = optSet[item];
+        const __EXISTS = ((__OPTITEM !== undefined) && (__OPTITEM !== null));
+        const __OPT = (__EXISTS ? getOpt(__OPTITEM) : null);
+
+        if (__STRICT) {
+            checkOpt(__OPT, item);
+        }
+
+        return __EXISTS;
+    }
+
+    return false;
+}
+
 // Gibt eine Option sicher zurueck
 // opt: Config und Value der Option, ggfs. undefined
 // defOpt: Rueckgabewert, falls undefined
@@ -312,7 +334,7 @@ function getOpt(opt, defOpt = { }) {
 // defOpt: Rueckgabewert, falls nicht zu finden
 // return Daten zur Option (oder defOpt)
 function getOptByName(optSet, item, defOpt = { }) {
-    const __STRICT = true;
+    const __STRICT = true;  // TODO
     let opt = defOpt;
 
     if ((optSet !== undefined) && (item !== undefined)) {

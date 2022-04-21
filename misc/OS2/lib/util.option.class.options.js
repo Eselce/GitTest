@@ -66,6 +66,9 @@ Class.define(Options, Object, {
 
                                 return retStr;
                             },
+        'hasOpt'          : function(item) {
+                                return hasOpt(this, item);
+                            },
         'getOpt'          : function(item, defOpt = { }) {
                                 return getOptByName(this, item, defOpt);
                             },
@@ -84,22 +87,22 @@ Class.define(Options, Object, {
         'promptNextOpt'   : function(item, defValue = undefined, reload = false, freeValue = false, selValue = true, minChoice = 3, onFulfilled = undefined, onRejected = undefined) {
                                 return promptNextOptByName(this, item, defValue, reload, freeValue, selValue, minChoice, onFulfilled, onRejected);
                             },
-        'invalidate'      : async function(force = false, reload = true) {
+        'invalidateOpts'  : async function(force = false, reload = true) {
                                 return invalidateOpts(this, force, reload);
                             },
-        'load'            : function(force = false) {
+        'loadOptions'     : function(force = false) {
                                 return loadOptions(this, force);
                             },
-        'delete'          : async function(optSelect = undefined, force = false, reset = true) {
+        'deleteOptions'   : async function(optSelect = undefined, force = false, reset = true) {
                                 return deleteOptions(this, optSelect, force, reset);
                             },
-        'save'            : async function(optSelect = undefined) {
+        'saveOptions'     : async function(optSelect = undefined) {
                                 return saveOptions(this, optSelect);
                             },
-        'rename'          : async function(optSelect = undefined, renameParam = undefined, renameFun = undefined) {
+        'renameOptions'   : async function(optSelect = undefined, renameParam = undefined, renameFun = undefined) {
                                 return renameOptions(this, optSelect, renameParam, renameFun);
                             },
-        'reset'           : async function(reload = true) {
+        'resetOptions'    : async function(reload = true) {
                                 return resetOptions(this, reload);
                             }
     });
