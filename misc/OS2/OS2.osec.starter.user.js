@@ -499,11 +499,13 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
             const __TABLE = document.createElement('TABLE');
             const __TBODY = document.createElement('TBODY');
 
-            __TABLE.id = 'intstarter';
-            //__TABLE.border = 1;
-            __TABLE.cellpadding = 10;
+            __TABLE.setAttribute('id', 'intstarter');
+            //__TABLE.setAttribute('border', 1);
+            __TABLE.setAttribute('cellpadding', 10);
+
             __TABLE.style.borderCollapse = 'collapse';
             __TABLE.style.borderColor = '#aaaaaa';
+
             __TABLE.classList.add('sortable');
 
             const __THR = document.createElement('TR');

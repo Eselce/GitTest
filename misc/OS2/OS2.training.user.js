@@ -2795,10 +2795,10 @@ const __MAINCONFIG = {
 // Selektor (Seite bzw. Parameter) fuer den richtigen PageManager...
 const __LEAFS = {
                     'zugabgabe.php' : 0,    // Ansicht "Zugabgabe" (p = 0, 1, 2)
-                    'haupt.php'     : 3,    // Ansicht "Haupt" (Managerbuero)
-                    'trainer.php'   : 4,    // Ansicht "Trainer"
-                    'training.php'  : 5,    // Ansicht "Training"
-                    'zar.php'       : 6     // Ansicht "ZAT-Report"
+                    'haupt.php'     : -3,   // Ansicht "Haupt" (Managerbuero)
+                    'trainer.php'   : -4,   // Ansicht "Trainer"
+                    'training.php'  : -5,   // Ansicht "Training"
+                    'zar.php'       : -6    // Ansicht "ZAT-Report"
                 };
 const __ITEM = 'p';
 

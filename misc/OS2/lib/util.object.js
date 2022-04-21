@@ -325,7 +325,7 @@ function selectMapping(obj, keyIndex = -1, valueIndex = 0, keyValFun, valKeyFun)
 
 // Standard-Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
 // fuer die Funktion reverseMapping() (legt Array mit allen Schluesseln an).
-// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden!
 // value: Neuer Wert (zu konvertierender alter Schluessel)
 // key: Neuer Schluessel (konvertierter alter Wert)
 // obj: Neues Objekt (im Aufbau, alles konvertiert)
@@ -336,13 +336,37 @@ function mappingPush(value, key, obj) {
 
 // Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln fuer die Funktion
 // reverseMapping() (legt Array mit allen Schluesseln an, falls dieser eindeutig ist).
-// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden!
 // value: Neuer Wert (zu konvertierender alter Schluessel)
 // key: Neuer Schluessel (konvertierter alter Wert)
 // obj: Neues Objekt (im Aufbau, alles konvertiert)
 // return Konvertierter neuer Wert (in Form eines Arrays, falls mehr als einmal vorkommend)
 function mappingSetOrPush(value, key, obj) {
     return pushObjValue(obj, key, value, null, true, true);
+}
+
+// Erzeugt Standard-Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// fuer die Funktion reverseMapping() (legt Array mit allen Schluesseln an).
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden!
+// valueFun: Funktion, die die resultierende Funktion auf den Parameter value anwendet
+// return Konvertierter neuer Wert (in Form eines Arrays)
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+function mappingPushFun(valueFun) {
+    return param0Wrapper(mappingPush, valueFun);
+}
+
+// Erzeugt Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln fuer die Funktion
+// reverseMapping() (legt Array mit allen Schluesseln an, falls dieser eindeutig ist).
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden!
+// valueFun: Funktion, die die resultierende Funktion auf den Parameter value anwendet
+// return Konvertierter neuer Wert (in Form eines Arrays, falls mehr als einmal vorkommend)
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+function mappingSetOrPushFun(valueFun) {
+    return param0Wrapper(mappingSetOrPush, valueFun);
 }
 
 // Konvertierfunktion fuer die neuen Werte aus einer Spalte der alten Werte
