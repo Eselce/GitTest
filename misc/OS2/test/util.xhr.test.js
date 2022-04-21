@@ -42,7 +42,7 @@
             'browseXMLCORS' : [ "https://os.ongapo.com/spv.php?action=getListByName&term=Volodimir Oleynikov",  /.*/    ]
         };
 
-    new UnitTestOption('util.xhr', "Schnittstelle zum Verbindungsaufbau", {
+    new UnitTestOption('util.xhr.js', "Schnittstelle zum Verbindungsaufbau", {
             'handlerExists'       : function() {
                                         return ASSERT_SET(__THIS, __LABEL + "Handler nicht gefunden");
                                     },

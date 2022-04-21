@@ -29,7 +29,7 @@
             'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
         };
 
-    new UnitTestOption('util.option.api', "Schnittstelle zur Behandlung von Optionen", {
+    new UnitTestOption('util.option.api.js', "Schnittstelle zur Behandlung von Optionen", {
             'loadOption'          : function() {
                                         const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
                                         const __OPT = this.optSet[__NAME];
