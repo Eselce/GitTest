@@ -83,8 +83,8 @@ const GM_info = {  // Mock GM_info data
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/test.assert.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/test.bsp.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.log.test.js"></SCRIPT>
-        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.store.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.option.api.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.store.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.xhr.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.xhr.gm.test.js"></SCRIPT>
 -->
@@ -100,20 +100,20 @@ const GM_info = {  // Mock GM_info data
         <SCRIPT type="text/javascript" defer src="test.assert.test.js"></SCRIPT>
 <!--        <SCRIPT type="text/javascript" defer src="test.bsp.test.js"></SCRIPT> -->
         <SCRIPT type="text/javascript" defer src="util.log.test.js"></SCRIPT>
-        <SCRIPT type="text/javascript" defer src="util.store.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="util.option.api.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="util.store.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="util.xhr.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="util.xhr.gm.test.js"></SCRIPT>
     </HEAD>
     <BODY>
-        <DIV>
+        <DIV id="run-unittests">
             <H3>Unit-Tests zur Benutzerscript-Bibliothek f&uuml;r Online-Soccer 2.0 unter dem Greasemonkey AddOn</H3>
 
-            || <A onClick="startMain();return false;" href="index.html">Init</A>
-            || <A onClick="UnitTest.runAll(1);return false;" href="index.html">Unit-Tests starten</A>
-            || <A onClick="UnitTest.runAll(4);return false;" href="index.html">Nur Zusammenfassungen</A>
-            || <A onClick="UnitTest.runAll(0);return false;" href="index.html">Alle Unit-Tests (auch OK) ausgeben</A>
-            || <A onClick="(getElementById('UnitTest') || { }).innerHTML='';return false;" href="index.html">Tabelle leeren</A>
+            || <A onClick="startMain(); return false;">Init</A>
+            || <A onClick="UnitTest.runAll(1); return false;">Unit-Tests starten</A>
+            || <A onClick="UnitTest.runAll(4); return false;">Nur Zusammenfassungen</A>
+            || <A onClick="UnitTest.runAll(0); return false;">Alle Unit-Tests (auch OK) ausgeben</A>
+            || <A onClick="(getElementById('UnitTest') || { }).innerHTML=''; return false;">Tabelle leeren</A>
             ||
         </DIV>
         <BR />
@@ -124,11 +124,9 @@ const GM_info = {  // Mock GM_info data
 //==================== Hauptprogramm ====================
 
 (() => {
-    const __LIBPATH = "https://eselce.github.io/GitTest/misc/OS2/lib/";  // Testpfad
-    const __LIBEXT = '.js';
+    // Unit-Test-Ausfuehrung nur nach Klick!
     const __RET = true;
 
-    // Unit-Test-Ausfuehrung nur nach Klick!
     return __RET;
 })();
 
