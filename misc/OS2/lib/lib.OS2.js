@@ -964,15 +964,17 @@ Class.define(Verein, Team, {
 // myTeam: Objekt fuer die Teamdaten
 // return Die Teamdaten oder undefined bei Fehler
 function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team()) {
+    const __HASTEAMOPT = optSet.hasOpt('team');
+
     if (teamParams !== undefined) {
         addProps(myTeam, teamParams, myTeam.__TEAMITEMS);
         __LOG[2]("Ermittelt: " + safeStringify(myTeam));
         // ... und abspeichern, falls erweunscht...
-        if (optSet && optSet.team) {
+        if (__HASTEAMOPT) {
             optSet.setOpt('team', myTeam, false);
         }
     } else {
-        const __TEAM = ((optSet && optSet.team) ? optSet.getOptValue('team') : undefined);  // Gespeicherte Parameter
+        const __TEAM = (__HASTEAMOPT ? optSet.getOptValue('team') : undefined);  // Gespeicherte Parameter
 
         if ((__TEAM !== undefined) && (__TEAM.Land !== undefined)) {
             addProps(myTeam, __TEAM, myTeam.__TEAMITEMS);

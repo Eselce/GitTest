@@ -185,7 +185,7 @@ Class.define(AssertionFailed, Object, {
 function assertionCatch(error, ... attribs) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
     if (error === undefined) {
-        error = new Error("Promise rejected!");
+        error = Error("Promise rejected!");
     }
 
     try {
@@ -299,11 +299,11 @@ const ASSERT_NOT_ONE = function(test, msg, thisArg, ... params) {
 }
 
 const ASSERT_SET = function(test, msg, thisArg, ... params) {
-    return ASSERT(test != undefined, __LOG.info(test, true, true) + " == undefined", msg, thisArg, ... params);
+    return ASSERT(test != null, __LOG.info(test, true, true) + " == null", msg, thisArg, ... params);
 }
 
 const ASSERT_NOT_SET = function(test, msg, thisArg, ... params) {
-    return ASSERT(test == undefined, __LOG.info(test, true, true) + " != undefined", msg, thisArg, ... params);
+    return ASSERT(test == null, __LOG.info(test, true, true) + " != null", msg, thisArg, ... params);
 }
 
 const ASSERT_EQUAL = function(erg, exp, msg, thisArg, ... params) {
@@ -1214,7 +1214,7 @@ __TESTTEAMCLASS.optSelect = {
     const __RESOLVED = (() => Promise.resolve(true));
     const __REJECTED = (() => Promise.reject(false));
     const __ERRORMSG = "Erroneous";
-    const __ERRONEOUS = function() { Error(__ERRORMSG); };
+    const __ERRONEOUS = function() { throw Error(__ERRORMSG); };
     const __USEDCASE = sameValue;
 
     // Funktionalitaet der ASSERT-Funktionen...
@@ -1923,7 +1923,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT_SET failed (undefined == undefined)', "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT_SET failed (undefined == null)', "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -1941,7 +1941,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (undefined == undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (undefined == null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -1961,7 +1961,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (undefined == undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (undefined == null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -1979,7 +1979,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT_NOT_SET failed (String[3] "set" != undefined)', "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT_NOT_SET failed (String[3] "set" != null)', "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -1997,7 +1997,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[3] "set" != undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[3] "set" != null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2017,7 +2017,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
  
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[3] "set" != undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[3] "set" != null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2035,7 +2035,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT_SET failed (object null == undefined)', "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT_SET failed (object null == null)', "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2053,7 +2053,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (object null == undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (object null == null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2073,7 +2073,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (object null == undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (object null == null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2091,7 +2091,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT_NOT_SET failed (String[3] "set" != undefined)', "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT_NOT_SET failed (String[3] "set" != null)', "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2109,7 +2109,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[3] "set" != undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[3] "set" != null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -2129,7 +2129,7 @@ __TESTTEAMCLASS.optSelect = {
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
  
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[3] "set" != undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[3] "set" != null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;

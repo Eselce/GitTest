@@ -1270,7 +1270,7 @@ Object.defineProperty(Array.prototype, 'Reduce', {
     'value'           : function(reduceFun, value) {
         try {
             if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-                TypeError("Invalid reduce() function!");
+                throw TypeError("Invalid reduce() function!");
             }
 
             const __LEN = this.length;
@@ -1315,7 +1315,7 @@ Object.defineProperty(Array.prototype, 'ReduceRight', {
     'value'           : function(reduceFun, value) {
         try {
             if ((! reduceFun) || ((typeof reduceFun) !== 'function')) {
-                TypeError("Invalid reduceRight() function!");
+                throw TypeError("Invalid reduceRight() function!");
             }
 
             const __LEN = this.length;
@@ -1726,7 +1726,7 @@ function showException(label, ex, show = true) {
 // return Liefert die showAlert()-Parameter zurueck
 function defaultCatch(error, show) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
-    error = (error || new Error("Promise rejected!"));
+    error = (error || Error("Promise rejected!"));
 
     if ((typeof error) === 'string') {
         const __CODELINE = codeLine(true, false, true, false);
@@ -1785,7 +1785,7 @@ function checkType(value, type, strict = false, label = "", valName = undefined,
 
     if (strict || ((value !== undefined) && (value !== null))) {
         if ((typeof value) !== type) {
-            TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
                     __LOG.info(value, true, true) + ' ' + String(value));
         }
     }
@@ -1813,7 +1813,7 @@ function checkEnumObj(value, enumObj, strict = false, label = "", valName = unde
     if (strict || ((value !== undefined) && (value !== null))) {
         const __VALUES = Object.values(enumObj);
         if (! __VALUES.includes(value)) {
-            TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
+            throw TypeError(__LABEL + ": " + __VAL + " should be a " + __TYPE + ", but was " +
                     __LOG.info(value, true, true) + ' ' + String(value));
         }
     }
@@ -2379,7 +2379,7 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
         __LOG[2]("Initializing", XHRname, '...');
     } else {
         __LOG[1]("Can't initialize", XHRname, "with", __LOG.info(XHRopenFun));
-        //TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
+        //throw TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
         return { __XMLREQUEST };
     }
 

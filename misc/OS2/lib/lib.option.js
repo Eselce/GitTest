@@ -156,6 +156,7 @@ const __OPTITEMS = {
     'Submit'    : [ "onKeyDown-Code",                   'Code',         "",                         __OPTNEED.OPT ],
     'Title'     : [ "Titel",                            'String',       "$V Optionen",              __OPTNEED.OPT ],
     'Type'      : [ "Typ der Option",                   '__OPTTYPES',   "MC, SD, SI, SW",           __OPTNEED.REC ],
+    'ValidOpt'  : [ "INTERNAL: Option gecheckt",        'Boolean',      "true",                     __OPTNEED.INT ],
     'ValType'   : [ "Datentyp der Werte",               'String',       "'Number', 'String'",       __OPTNEED.CHO ],
     'Value'     : [ "INTERNAL: Gesetzter Wert",         'any',          "",                         __OPTNEED.INT ]
 };
@@ -346,7 +347,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
             if (preInit && (__ITEMNEED === __OPTNEED.INT)) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(__KEY, false));
+                throw TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(__KEY, false));
             }
 
             switch (__TYPE) {
@@ -366,7 +367,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
                                     break;
                 case 'any'        : break;  // OK
                 default           : __LOG[1]("checkOptItem(): Internal error in " + codeLine(true, true, true, false));
-                                    TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(__KEY, false));
+                                    throw TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(__KEY, false));
             }
 
             if (__ITEMVALUE) {
@@ -385,7 +386,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
             }
             if (! isValid) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false) + " is not of type " + __ITEMTYPE);
+                throw TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false) + " is not of type " + __ITEMTYPE);
             }
         });
 
@@ -403,20 +404,21 @@ function checkOpt(opt, key = undefined) {
 
     if (__NAME === undefined) {  // NOTE opt === undefined liefert __NAME === undefined
         __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-        Error("Unknown option " + __LOG.info(key, false));
+        throw Error("Unknown option " + __LOG.info(key, false));
     }
 
     if (((typeof key) !== 'undefined') && (key !== __KEY)) {
         __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-        RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
+        throw RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
     }
 
-    if (! opt.validOption) {
+    if (! opt.ValidOpt) {
         if (((typeof __NAME) !== 'undefined') && __NAME.length && ((typeof __CONFIG) === 'object')) {
-            opt.validOption = true;
+            opt.ValidOpt = true;
         } else {
+            opt.ValidOpt = false;
             __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-            TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
+            throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
         }
     }
 
@@ -456,7 +458,7 @@ function checkOptConfig(optConfig, preInit = false) {
 
                 if (__USED) {
                     __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-                    RangeError("Internal name " + __LOG.info(__NAME, false) + " of option " +
+                    throw RangeError("Internal name " + __LOG.info(__NAME, false) + " of option " +
                             __LOG.info(__KEY, false) + " was already used in option " + __LOG.info(__USED, false));
                 } else {
                     __NAMEUSE[__NAME] = __KEY;
@@ -467,6 +469,27 @@ function checkOptConfig(optConfig, preInit = false) {
     __LOG[2](Object.keys(__OPTCONFIG).length + " Optionen erfolgreich \u00FCberpr\u00FCft...");
 
     return __OPTCONFIG;
+}
+
+// Ueberprueft, ob eine bestimmte Option konfiguriert ist
+// optSet: Platz fuer die gesetzten Optionen (und Config)
+// item: Key der Option
+// return true: Option existiert, false: nicht vorhanden
+function hasOpt(optSet, item) {
+    if ((optSet !== undefined) && (item !== undefined)) {
+        const __STRICT = true;  // TODO
+        const __OPTITEM = optSet[item];
+        const __EXISTS = ((__OPTITEM !== undefined) && (__OPTITEM !== null));
+        const __OPT = (__EXISTS ? getOpt(__OPTITEM) : null);
+
+        if (__STRICT) {
+            checkOpt(__OPT, item);
+        }
+
+        return __EXISTS;
+    }
+
+    return false;
 }
 
 // Gibt eine Option sicher zurueck
@@ -483,7 +506,7 @@ function getOpt(opt, defOpt = { }) {
 // defOpt: Rueckgabewert, falls nicht zu finden
 // return Daten zur Option (oder defOpt)
 function getOptByName(optSet, item, defOpt = { }) {
-    const __STRICT = true;
+    const __STRICT = true;  // TODO
     let opt = defOpt;
 
     if ((optSet !== undefined) && (item !== undefined)) {
@@ -571,7 +594,7 @@ function setOptValue(opt, value, initialLoad = false) {
 
             opt.Value = value;
         } else {
-            TypeError("Can't modify read-only option " + __LOG.info(__KEY, false) + " (" + __NAME + ')');
+            throw TypeError("Can't modify read-only option " + __LOG.info(__KEY, false) + " (" + __NAME + ')');
         }
 
         return opt.Value;
@@ -864,6 +887,9 @@ Class.define(Options, Object, {
 
                                 return retStr;
                             },
+        'hasOpt'          : function(item) {
+                                return hasOpt(this, item);
+                            },
         'getOpt'          : function(item, defOpt = { }) {
                                 return getOptByName(this, item, defOpt);
                             },
@@ -882,22 +908,22 @@ Class.define(Options, Object, {
         'promptNextOpt'   : function(item, defValue = undefined, reload = false, freeValue = false, selValue = true, minChoice = 3, onFulfilled = undefined, onRejected = undefined) {
                                 return promptNextOptByName(this, item, defValue, reload, freeValue, selValue, minChoice, onFulfilled, onRejected);
                             },
-        'invalidate'      : async function(force = false, reload = true) {
+        'invalidateOpts'  : async function(force = false, reload = true) {
                                 return invalidateOpts(this, force, reload);
                             },
-        'load'            : function(force = false) {
+        'loadOptions'     : function(force = false) {
                                 return loadOptions(this, force);
                             },
-        'delete'          : async function(optSelect = undefined, force = false, reset = true) {
+        'deleteOptions'   : async function(optSelect = undefined, force = false, reset = true) {
                                 return deleteOptions(this, optSelect, force, reset);
                             },
-        'save'            : async function(optSelect = undefined) {
+        'saveOptions'     : async function(optSelect = undefined) {
                                 return saveOptions(this, optSelect);
                             },
-        'rename'          : async function(optSelect = undefined, renameParam = undefined, renameFun = undefined) {
+        'renameOptions'   : async function(optSelect = undefined, renameParam = undefined, renameFun = undefined) {
                                 return renameOptions(this, optSelect, renameParam, renameFun);
                             },
-        'reset'           : async function(reload = true) {
+        'resetOptions'    : async function(reload = true) {
                                 return resetOptions(this, reload);
                             }
     });
@@ -1004,7 +1030,7 @@ function loadOption(opt, force = false) {
         opt.Promise = Promise.resolve(value).then(value => {
                 // Paranoide Sicherheitsabfrage (das sollte nie passieren!)...
                 if (opt.Loaded || ! opt.Promise) {
-                    Error("Unerwarteter Widerspruch zwischen Loaded und Promise in Option " +
+                    throw Error("Unerwarteter Widerspruch zwischen Loaded und Promise in Option " +
                             __LOG.info(__KEY, false) + " (" + __NAME + ')',
                             { 'cause' : __LOG.info(opt, true, true) });
                 }

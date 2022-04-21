@@ -178,7 +178,7 @@ Class.define(AssertionFailed, Object, {
 function assertionCatch(error, ... attribs) {
     // Sichern, dass error belegt ist (wie etwa bei GMs 'reject();' in 'GM_setValue())'...
     if (error === undefined) {
-        error = new Error("Promise rejected!");
+        error = Error("Promise rejected!");
     }
 
     try {
@@ -292,11 +292,11 @@ const ASSERT_NOT_ONE = function(test, msg, thisArg, ... params) {
 }
 
 const ASSERT_SET = function(test, msg, thisArg, ... params) {
-    return ASSERT(test != undefined, __LOG.info(test, true, true) + " == undefined", msg, thisArg, ... params);
+    return ASSERT(test != null, __LOG.info(test, true, true) + " == null", msg, thisArg, ... params);
 }
 
 const ASSERT_NOT_SET = function(test, msg, thisArg, ... params) {
-    return ASSERT(test == undefined, __LOG.info(test, true, true) + " != undefined", msg, thisArg, ... params);
+    return ASSERT(test == null, __LOG.info(test, true, true) + " != null", msg, thisArg, ... params);
 }
 
 const ASSERT_EQUAL = function(erg, exp, msg, thisArg, ... params) {
