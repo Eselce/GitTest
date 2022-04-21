@@ -25,7 +25,7 @@
     const __RESOLVED = (() => Promise.resolve(true));
     const __REJECTED = (() => Promise.reject(false));
     const __ERRORMSG = "Erroneous";
-    const __ERRONEOUS = function() { Error(__ERRORMSG); };
+    const __ERRONEOUS = function() { throw Error(__ERRORMSG); };
     const __USEDCASE = sameValue;
 
     // Funktionalitaet der ASSERT-Funktionen...
@@ -734,7 +734,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT_SET failed (undefined == undefined)', "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT_SET failed (undefined == null)', "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -752,7 +752,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (undefined == undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (undefined == null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -772,7 +772,7 @@
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (undefined == undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (undefined == null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -790,7 +790,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT_NOT_SET failed (String[3] "set" != undefined)', "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT_NOT_SET failed (String[3] "set" != null)', "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -808,7 +808,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[3] "set" != undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[3] "set" != null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -828,7 +828,7 @@
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
  
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[3] "set" != undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[3] "set" != null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -846,7 +846,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT_SET failed (object null == undefined)', "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT_SET failed (object null == null)', "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -864,7 +864,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (object null == undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (object null == null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -884,7 +884,7 @@
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
 
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (object null == undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (object null == null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -902,7 +902,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT_NOT_SET failed (String[3] "set" != undefined)', "Fehler bei der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT_NOT_SET failed (String[3] "set" != null)', "Fehler bei der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -920,7 +920,7 @@
                                                         ASSERT_SET(ex, "Exception ist leer");
                                                         ASSERT_INSTANCEOF(ex, AssertionFailed, "Fehler ist kein AssertionFailed");
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
-                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[3] "set" != undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, '42 ist die Wahrheit (String[3] "set" != null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
@@ -940,7 +940,7 @@
                                                         ASSERT_SET(ex.message, "Exception message fehlt");
  
                                                         // this-Parameter wird bei => nicht modifiziert, daher zeigt this auf das Test-Objekt (ohne this.desc)...
-                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[3] "set" != undefined)', "Fehler beim Zusammensetzen der Fehlermeldung");
+                                                        ASSERT_EQUAL(ex.message, 'ASSERT-Funktionen ist die Wahrheit (String[3] "set" != null)', "Fehler beim Zusammensetzen der Fehlermeldung");
 
                                                         // Fehler wurde erkannt...
                                                         return true;
