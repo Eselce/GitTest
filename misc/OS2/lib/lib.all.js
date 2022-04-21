@@ -628,7 +628,7 @@ function selectMapping(obj, keyIndex = -1, valueIndex = 0, keyValFun, valKeyFun)
 
 // Standard-Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
 // fuer die Funktion reverseMapping() (legt Array mit allen Schluesseln an).
-// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden!
 // value: Neuer Wert (zu konvertierender alter Schluessel)
 // key: Neuer Schluessel (konvertierter alter Wert)
 // obj: Neues Objekt (im Aufbau, alles konvertiert)
@@ -639,13 +639,37 @@ function mappingPush(value, key, obj) {
 
 // Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln fuer die Funktion
 // reverseMapping() (legt Array mit allen Schluesseln an, falls dieser eindeutig ist).
-// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden!
 // value: Neuer Wert (zu konvertierender alter Schluessel)
 // key: Neuer Schluessel (konvertierter alter Wert)
 // obj: Neues Objekt (im Aufbau, alles konvertiert)
 // return Konvertierter neuer Wert (in Form eines Arrays, falls mehr als einmal vorkommend)
 function mappingSetOrPush(value, key, obj) {
     return pushObjValue(obj, key, value, null, true, true);
+}
+
+// Erzeugt Standard-Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln
+// fuer die Funktion reverseMapping() (legt Array mit allen Schluesseln an).
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden!
+// valueFun: Funktion, die die resultierende Funktion auf den Parameter value anwendet
+// return Konvertierter neuer Wert (in Form eines Arrays)
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+function mappingPushFun(valueFun) {
+    return param0Wrapper(mappingPush, valueFun);
+}
+
+// Erzeugt Konvertierfunktion fuer die neuen Werte aus den alten Schluesseln fuer die Funktion
+// reverseMapping() (legt Array mit allen Schluesseln an, falls dieser eindeutig ist).
+// Ohne Konvertierfunktion wuerde immer nur der letzte Schluessel gemerkt werden!
+// valueFun: Funktion, die die resultierende Funktion auf den Parameter value anwendet
+// return Konvertierter neuer Wert (in Form eines Arrays, falls mehr als einmal vorkommend)
+// value: Neuer Wert (zu konvertierender alter Schluessel)
+// key: Neuer Schluessel (konvertierter alter Wert)
+// obj: Neues Objekt (im Aufbau, alles konvertiert)
+function mappingSetOrPushFun(valueFun) {
+    return param0Wrapper(mappingSetOrPush, valueFun);
 }
 
 // Konvertierfunktion fuer die neuen Werte aus einer Spalte der alten Werte
@@ -927,6 +951,97 @@ function floorValue(value, dot = '.') {
     } else {
         return value;
     }
+}
+
+// Liefert ein flaches eindimensionales Array zurueck, egal was uebergeben wurde.
+// value: Ein Skalar, Objekt oder Array, Funktion, ...
+// return Ein flaches Array, wenn ein Array uebergeben wurde, ansonsten ein einelementiges Array mit dem Wert
+function toArray(value) {
+    return ((((typeof value) === 'object') && Array.isArray(value)) ? value.flat(1) : [ value ]);
+}
+
+// Liefert ein flaches eindimensionales Array zurueck, aus allen uebergebenen Parametern.
+// .... args: Beliebige Parameter, Skalare, Objekte oder Arrays, Funktionen, ...
+// return Ein flaches Array, das sich aus der Aneinanderkettung all dieser Werte ergibt
+function flatArray(... args) {
+    return args.map(value => toArray(value)).reduce((ret, arr) => ret.concat(arr), []);
+}
+
+// Universeller einfacher Wrapper fuer den 1. Parameter. Es wird eine Funktion
+// zurueckgeliefert, die dasselbe macht wie wrapFun, nur dass vorab der erste
+// Parameter ueber die uebergebene Funktion manipuliert wird.
+// wrapFun: Vorlage fuer die Zielfunktion
+// - beliebige Parameter
+// - return beliebiges Resultat
+// param0Fun: Formatierungsfunktion fuer den 1. Parameter
+// - value: Urspruenglicher Paramter
+// - return Manipulierter Paramter
+// return Liefert eine Funktion, die wrapFun entspricht, ausser dass vorher
+//        param0Fun auf den 1. Parameter angewendet wird
+function param0Wrapper(wrapFun, param0Fun) {
+    return function(... args) {
+            return wrapFun(param0Fun(args.shift()), ... args);
+        };
+}
+
+// Universeller erweiterter Wrapper fuer den 1. Parameter. Es wird eine Funktion
+// zurueckgeliefert, die dasselbe macht wie wrapFun, nur dass vorab der erste
+// Parameter ueber die uebergebene Funktion manipuliert wird. In dieser Version
+// kann diese Funktion ein Array zurueckliefern, das mehrere Parameter bedient.
+// wrapFun: Vorlage fuer die Zielfunktion
+// - beliebige Parameter
+// - return beliebiges Resultat
+// param0Fun: Formatierungsfunktion fuer den 1. Parameter
+// - value: Urspruenglicher Paramter
+// - return Ein oder mehrere manipulierte Paramter (bei mehreren als Array)
+// return Liefert eine Funktion, die wrapFun entspricht, ausser dass vorher param0ArrFun auf
+//        den 1. Parameter angewendet wird - dabei kann sich die Anzahl der Parameter veraendern!
+function param0ArrWrapper(wrapFun, param0ArrFun) {
+    return function(... args) {
+            return wrapFun(... toArray(param0ArrFun(args.shift())), ... args);
+        };
+}
+
+// Universeller Wrapper fuer beliebige Parameter. Es wird eine Funktion zurueckgeliefert,
+// die dasselbe macht wie die wrapFun, nur dass vorab die Parameter laut Konfiguration ueber
+// uebergebene Funktionen manipuliert wird. Hierzu dient ein Array oder Objekt von Funktionen.
+// wrapFun: Vorlage fuer die Zielfunktion
+// - beliebige Parameter
+// - return beliebiges Resultat
+// paramFuns: Formatierungsfunktionen fuer die Paramter (Key ist die lfd. Nummer)
+// [index] = paramFun: Formatierungsfunktion fuer den Parameter an Stelle index
+// - value: Urspruenglicher Paramter
+// - return Manipulierter Paramter
+// return Liefert eine Funktion, die wrapFun entspricht, ausser dass vorher vorhandene
+//        Funktionen auf entsprechende Parameter angewendet werden
+function paramWrapper(wrapFun, paramFuns) {
+    const __FUNS = toArray(paramFuns);
+
+    return function(... args) {
+            return wrapFun(... args.map(((param, index) => (__FUNS[index] ? __FUNS[index](param) : param))));
+        };
+}
+
+// Universeller Wrapper fuer beliebige Parameter. Es wird eine Funktion zurueckgeliefert,
+// die dasselbe macht wie die wrapFun, nur dass vorab die Parameter laut Konfiguration ueber
+// uebergebene Funktionen manipuliert wird. Hierzu dient ein Array oder Objekt von Funktionen.
+// In dieser Version koennen diese Funktion Arrays zurueckliefern, die mehrere Parameter bedienen.
+// wrapFun: Vorlage fuer die Zielfunktion
+// - beliebige Parameter
+// - return beliebiges Resultat
+// paramFuns: Formatierungsfunktionen fuer die Paramter (Key ist die lfd. Nummer)
+// [index] = paramFun: Formatierungsfunktion fuer den Parameter an Stelle index
+// - value: Urspruenglicher Paramter
+// - return Ein oder mehrere manipulierte Paramter (bei mehreren als Array)
+// return Liefert eine Funktion, die wrapFun entspricht, ausser dass vorher vorhandene
+//        Funktionen auf entsprechende Parameter angewendet werden - dabei kann sich
+//        die Anzahl der Parameter veraendern!
+function paramArrWrapper(wrapFun, paramFuns) {
+    const __FUNS = toArray(paramFuns);
+
+    return function(... args) {
+            return wrapFun(... flatArray(args.map(((param, index) => toArray(__FUNS[index] ? __FUNS[index](param) : param)))));
+        };
 }
 
 // Liefert eine generische Funktion zurueck, die die Elemente eines Arrays auf eine vorgegebene Weise formatiert
@@ -7444,14 +7559,14 @@ const __INTZATLABOSE = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __CO
 const __INTZATLABOSC = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSC);
 const __INTLABOSEZAT = reverseMapping(__INTZATLABOSE);
 const __INTLABOSCZAT = reverseMapping(__INTZATLABOSC);
-const __INTOSEALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSE, __COLINTSPIELPLAN.ZAT, mappingPush);
-const __INTOSCALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSC, __COLINTSPIELPLAN.ZAT, mappingPush);
+const __INTOSEALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSE, __COLINTSPIELPLAN.ZAT, mappingPushFun(Number));
+const __INTOSCALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSC, __COLINTSPIELPLAN.ZAT, mappingPushFun(Number));
 const __INTOSECUPS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.CupOSE, mappingPush);
 const __INTOSCCUPS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __COLINTSPIELPLAN.CupOSC, mappingPush);
 const __INTOSEEVTS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.EvtOSE, mappingPush);
 const __INTOSCEVTS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __COLINTSPIELPLAN.EvtOSC, mappingPush);
-const __INTOSEZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.ZAT, mappingPush);
-const __INTOSCZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __COLINTSPIELPLAN.ZAT, mappingPush);
+const __INTOSEZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.ZAT, mappingPushFun(Number));
+const __INTOSCZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __COLINTSPIELPLAN.ZAT, mappingPushFun(Number));
 
 // Beschreibungstexte aller Runden...
 const __POKALRUNDEN = [ "", "1. Runde", "2. Runde", "3. Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale", "Pokalsieger" ];
