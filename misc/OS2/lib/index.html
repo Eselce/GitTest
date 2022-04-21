@@ -2,7 +2,7 @@
 <HTML>
     <HEAD>
         <META charset="utf-8">
-        <TITLE>Online-Soccer 2.0 - Greasemonkey Benutzerscript-Bibliothek</TITLE>
+        <TITLE>Online-Soccer 2.0 - Generator Greasemonkey Benutzerscript-Bibliothek</TITLE>
         <LINK rel="stylesheet" type="text/css" href="../css/os_styles.css" />
         <LINK rel="stylesheet" type="text/css" href="../css/print.css" media="print" />
         <LINK rel="shortcut icon" type="image/ico" href="../img/favicon.ico" />
@@ -24,7 +24,7 @@ const GM_info = {  // Mock GM_info data
                 'name'        : "lib/index.html",
                 'version'     : "0.10",
                 'namespace'   : "http://os.ongapo.com/",
-                'description' : "Online-Soccer 2.0 - Benutzerscript-Bibliotheken unter dem Greasemonkey AddOn"
+                'description' : "Online-Soccer 2.0 - Generator Benutzerscript-Bibliotheken unter dem Greasemonkey AddOn"
             }
     };
 
@@ -52,25 +52,38 @@ const GM_info = {  // Mock GM_info data
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.mock.gm.js"></SCRIPT>
     </HEAD>
     <BODY>
-        <DIV>
-            <H3>Benutzerscript-Bibliotheken unter dem Greasemonkey AddOn</H3>
+        <DIV id="lib-generator">
+            <H3>Generator Benutzerscript-Bibliotheken unter dem Greasemonkey AddOn</H3>
 
-            || <A onClick="__MAIN();return false;" href="index.html">Bibliothek generieren</A>
-            || <A onClick="__BUILDLIB('all');return false;" href="index.html">lib.all.js</A>
-            || <A onClick="__BUILDLIB('util');return false;" href="index.html">lib.util.js</A>
-            || <A onClick="__BUILDLIB('class');return false;" href="index.html">lib.class.js</A>
-            || <A onClick="__BUILDLIB('option');return false;" href="index.html">lib.option.js</A>
-            || <A onClick="__BUILDLIB('OS2.base');return false;" href="index.html">lib.OS2.base.js</A>
-            || <A onClick="__BUILDLIB('OS2');return false;" href="index.html">lib.OS2.js</A>
-            || <A onClick="__BUILDLIB('test.base');return false;" href="index.html">lib.test.base.js</A>
-            || <A onClick="__BUILDLIB('test');return false;" href="index.html">lib.test.js</A>
-            || <A onClick="__BUILDLIB('test.all');return false;" href="index.html">lib.test.all.js</A>
-            ||
+            || <A onClick="__MAIN();return false;">Bibliothek generieren</A> ||
         </DIV>
         <BR />
 
         <SCRIPT type="text/javascript">
 //<![CDATA[
+
+// ==================== Abschnitt fuer das Generator-Menue ====================
+
+const __GENERATEMENU = (((libList, anchor) => {
+    const __ANCHOR = document.querySelector(anchor);
+    const __LIBS = (libList || []);
+
+    __LIBS.forEach(lib => {
+            const __TEXT = document.createTextNode(' || ');
+            const __A = document.createElement('A');
+
+            __A.addEventListener('click', (() => {
+                                                __BUILDLIB(lib);
+                                                return false;
+                                            }));
+            __A.textContent = ('lib.' + lib + '.js');
+
+            __ANCHOR.append(__A);
+            __ANCHOR.append(__TEXT);
+        });
+
+    return true;
+})([ 'all', 'util', 'class', 'option', 'OS2.base', 'OS2', 'test.base', 'test', 'test.all' ], '#lib-generator'));
 
 // ==================== Abschnitt fuer Klasse Requirements ====================
 
@@ -312,7 +325,7 @@ const __MAIN = (async () => {
 
     // Verzweige in unterschiedliche Verarbeitungen je nach Wert von lib:
     const __LIBNUMBER = getPageIdFromURL(window.location.href, {
-                'index.html' : 1   // Ansicht "Bibliothek generieren" (lib = 1, 2, ..., 9 bzw. lib = all, util, class, ...)
+                'index.html' : 0    // Ansicht "Bibliothek generieren" (lib = 1, 2, ..., 9 bzw. lib = all, util, class, ...)
             }, 'lib');
     const __REQS = __BUILDLIB(__LIBNUMBER);
 
