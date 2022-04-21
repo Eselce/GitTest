@@ -74,12 +74,12 @@ Class.define(RundenLink, Object, {
                                      this.uri.setQueryPar(this.prop, this.runde);
                                  }
 
-                                 return "<a " + URI.prototype.formatParams({
+                                 return "<A " + URI.prototype.formatParams({
                                                                       'href'   : this.uri.getPath(),
                                                                       'target' : (target ? target : '_blank')
                                                                   }, function(value) {
                                                                          return '"' + value + '"';
-                                                                     }, ' ', '=') + '>' + this.getLabel() + "</a>";
+                                                                     }, ' ', '=') + '>' + this.getLabel() + "</A>";
                              }
                          }
     });
@@ -388,7 +388,7 @@ function getBilanzLinkFromCell(cell, gameType, label) {
             paarung = paarung.substr(0, paarung.indexOf(')'));
             paarung = paarung.substr(0, paarung.lastIndexOf(','));
             paarung = paarung.substr(0, paarung.lastIndexOf(','));
-            ret = ' <a href="javascript:spielpreview(' + paarung + ',' + __GAMETYPEID + ')">' + label + "</a>";
+            ret = ' <A href="javascript:spielpreview(' + paarung + ',' + __GAMETYPEID + ')">' + label + "</A>";
         }
     }
 

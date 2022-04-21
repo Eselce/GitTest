@@ -39,7 +39,7 @@ function eachLine(text, convFun, separator = '\n', thisArg = undefined, limit = 
 // return String mit dem neuen HTML-Code
 function withTitle(html, title, separator = '|', limit = undefined) {
     if (title && title.length) {
-        return eachLine(html, line => '<abbr title="' + title + '">' + line + '</abbr>', separator, undefined, limit);
+        return eachLine(html, line => '<ABBR title="' + title + '">' + line + '</ABBR>', separator, undefined, limit);
     } else {
         return html;
     }

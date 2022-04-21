@@ -69,7 +69,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
 // opt: Auszufuehrende Option
 // isAlt: Angabe, ob AltAction statt Action gemeint ist
 // value: Ggfs. zu setzender Wert
-// type: Event-Typ fuer <input>, z.B. "click" fuer "onclick="
+// type: Event-Typ fuer <INPUT>, z.B. "click" fuer "onclick="
 // serial: Serialization fuer String-Werte (Select, Textarea)
 // memory: __OPTMEM.normal = unbegrenzt gespeichert (localStorage), __OPTMEM.begrenzt = bis Browserende gespeichert (sessionStorage), __OPTMEM.inaktiv
 // return String mit dem (reinen) Funktionsaufruf

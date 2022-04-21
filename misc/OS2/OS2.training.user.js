@@ -964,7 +964,7 @@ Class.define(ColumnManagerBase, Object, {
                                const __HEIGHT = Math.max(3, getMulValue(zoom / 100, height * (__LENGTH / __WIDTH), 0, 0));
 
                                // HTML-Code fuer Anteilsbalken...
-                               return '<img src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height="' + __HEIGHT + '">';
+                               return '<IMG src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height="' + __HEIGHT + '">';
                            },
         'insertTitles'   : function(table, titleColor = '#FFFFFF') {
                                UNUSED(table, titleColor);
@@ -1654,7 +1654,7 @@ Class.define(PlayerRecordTraining, Object, {
                                       const __PRISKILLNAMES = this.getPriSkillNames();
 
                                       return (! text) ? text : text.replace(/\w+/g, function(name) {
-                                                                                        return ((~ __PRISKILLNAMES.indexOf(name)) ? '<b>' + name + '</b>' : name);
+                                                                                        return ((~ __PRISKILLNAMES.indexOf(name)) ? '<B>' + name + '</B>' : name);
                                                                                     });
                                   },
         'getPriSkillNames'      : function(pos = undefined) {

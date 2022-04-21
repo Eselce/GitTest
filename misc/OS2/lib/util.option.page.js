@@ -53,8 +53,8 @@ function groupData(data, byFun, filterFun, sortFun) {
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
 // return String mit dem HTML-Code
 function getOptionForm(optSet, optParams = { }) {
-    const __FORM = '<form id="options" method="POST"><table><tbody><tr>';
-    const __FORMEND = '</tr></tbody></table></form>';
+    const __FORM = '<FORM id="options" method="POST"><TABLE><TBODY><TR>';
+    const __FORMEND = '</TR></TBODY></TABLE></FORM>';
     const __FORMWIDTH = getValue(optParams.formWidth, 3);
     const __FORMBREAK = getValue(optParams.formBreak, __FORMWIDTH);
     const __SHOWFORM = optSet.getOptValue('showForm', true) ? optParams.showForm : { 'showForm' : true };
@@ -76,9 +76,9 @@ function getOptionForm(optSet, optParams = { }) {
                         }
                     }
                     if (column === 1) {
-                        form += '</tr><tr>';
+                        form += '</TR><TR>';
                     }
-                    form += '\n<td' + __TDOPT + '>' + __ELEMENT.replace('|', '</td><td>') + '</td>';
+                    form += '\n<TD' + __TDOPT + '>' + __ELEMENT.replace('|', '</TD><TD>') + '</TD>';
                 }
             }
         }
@@ -97,9 +97,9 @@ function getOptionForm(optSet, optParams = { }) {
 function getOptionScript(optSet, optParams = { }) {
     UNUSED(optSet, optParams);
 
-    //const __SCRIPT = '<script type="text/javascript">function activateMenu() { console.log("TADAAA!"); }</script>';
-    //const __SCRIPT = '<script type="text/javascript">\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionRst(key, value) { alert("RESET"); }\n</script>';
-    //const __FORM = '<form method="POST"><input type="button" id="showOpts" name="showOpts" value="Optionen anzeigen" onclick="activateMenu()" /></form>';
+    //const __SCRIPT = '<SCRIPT type="text/javascript">function activateMenu() { console.log("TADAAA!"); }</SCRIPT>';
+    //const __SCRIPT = '<SCRIPT type="text/javascript">\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionRst(key, value) { alert("RESET"); }\n</SCRIPT>';
+    //const __FORM = '<FORM method="POST"><input type="button" id="showOpts" name="showOpts" value="Optionen anzeigen" onclick="activateMenu()" /></FORM>';
 
     const __SCRIPT = "";
 

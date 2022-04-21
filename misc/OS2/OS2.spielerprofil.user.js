@@ -354,7 +354,7 @@ const procSpieler = new PageManager("Spielerprofil", __TEAMCLASS, () => {
             __LOG[2]("Diese Seite ist ohne Team nicht verf\u00FCgbar!");
         } else {
             return {
-                    'menuAnchor' : getElement('DIV'),  // #0: Aeusseres <div> auf erstem Reiter
+                    'menuAnchor' : getElement('DIV'),  // #0: Aeusseres <DIV> auf erstem Reiter
                     'showForm'   : {
                                        'sepStyle'           : true,
                                        'sepColor'           : true,

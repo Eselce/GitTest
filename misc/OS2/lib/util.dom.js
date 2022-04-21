@@ -16,7 +16,7 @@
 // ==================== Abschnitt fuer diverse DOM-Utilities ====================
 
 // Legt Input-Felder in einem Form-Konstrukt an, falls noetig
-// form: <form>...</form>
+// form: <FORM>...</FORM>
 // props: Map von name:value-Paaren
 // type: Typ der Input-Felder (Default: unsichtbare Daten)
 // return Ergaenztes Form-Konstrukt
@@ -36,7 +36,7 @@ function addInputField(form, props, type = 'hidden') {
 }
 
 // Legt unsichtbare Input-Daten in einem Form-Konstrukt an, falls noetig
-// form: <form>...</form>
+// form: <FORM>...</FORM>
 // props: Map von name:value-Paaren
 // return Ergaenztes Form-Konstrukt
 function addHiddenField(form, props) {

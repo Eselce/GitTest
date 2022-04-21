@@ -141,7 +141,7 @@ Class.define(ColumnManager, Object, {
                                const __HEIGHT = Math.max(3, getMulValue(zoom / 100, height * (__LENGTH / __WIDTH), 0, 0));
 
                                // HTML-Code fuer Anteilsbalken...
-                               return '<img src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height="' + __HEIGHT + '">';
+                               return '<IMG src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height="' + __HEIGHT + '">';
                            },
         'addTitles'      : function(headers, titleColor = '#FFFFFF') {
                                // Spaltentitel zentrieren
