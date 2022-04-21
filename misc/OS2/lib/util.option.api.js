@@ -92,7 +92,7 @@ function loadOption(opt, force = false) {
         opt.Promise = Promise.resolve(value).then(value => {
                 // Paranoide Sicherheitsabfrage (das sollte nie passieren!)...
                 if (opt.Loaded || ! opt.Promise) {
-                    Error("Unerwarteter Widerspruch zwischen Loaded und Promise in Option " +
+                    throw Error("Unerwarteter Widerspruch zwischen Loaded und Promise in Option " +
                             __LOG.info(__KEY, false) + " (" + __NAME + ')',
                             { 'cause' : __LOG.info(opt, true, true) });
                 }

@@ -175,7 +175,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
 
             if (preInit && (__ITEMNEED === __OPTNEED.INT)) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(__KEY, false));
+                throw TypeError("Internal parameter " + __LOG.info(item, false) + " must not be used for option " + __LOG.info(__KEY, false));
             }
 
             switch (__TYPE) {
@@ -195,7 +195,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
                                     break;
                 case 'any'        : break;  // OK
                 default           : __LOG[1]("checkOptItem(): Internal error in " + codeLine(true, true, true, false));
-                                    TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(__KEY, false));
+                                    throw TypeError("Unknown parameter type " + __LOG.info(__ITEMTYPE, false) + " needed for option " + __LOG.info(__KEY, false));
             }
 
             if (__ITEMVALUE) {
@@ -214,7 +214,7 @@ function checkOptItem(optItem, key = undefined, preInit = false) {
             }
             if (! isValid) {
                 __LOG[1]("checkOptItem(): Error in " + codeLine(true, true, true, false));
-                TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false) + " is not of type " + __ITEMTYPE);
+                throw TypeError("Parameter " + __LOG.info(item, false) + " for option " + __LOG.info(__KEY, false) + " is not of type " + __ITEMTYPE);
             }
         });
 
@@ -232,12 +232,12 @@ function checkOpt(opt, key = undefined) {
 
     if (__NAME === undefined) {  // NOTE opt === undefined liefert __NAME === undefined
         __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-        Error("Unknown option " + __LOG.info(key, false));
+        throw Error("Unknown option " + __LOG.info(key, false));
     }
 
     if (((typeof key) !== 'undefined') && (key !== __KEY)) {
         __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-        RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
+        throw RangeError("Invalid option key (expected " + __LOG.info(key, false) + ", but got " + __LOG.info(__KEY, false) + ')');
     }
 
     if (! opt.validOption) {
@@ -245,7 +245,7 @@ function checkOpt(opt, key = undefined) {
             opt.validOption = true;
         } else {
             __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-            TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
+            throw TypeError("Invalid option (" + __LOG.info(__NAME, false) + "): " + __LOG.info(opt, true));
         }
     }
 
@@ -285,7 +285,7 @@ function checkOptConfig(optConfig, preInit = false) {
 
                 if (__USED) {
                     __LOG[1]("checkOpt(): Error in " + codeLine(true, true, true, false));
-                    RangeError("Internal name " + __LOG.info(__NAME, false) + " of option " +
+                    throw RangeError("Internal name " + __LOG.info(__NAME, false) + " of option " +
                             __LOG.info(__KEY, false) + " was already used in option " + __LOG.info(__USED, false));
                 } else {
                     __NAMEUSE[__NAME] = __KEY;
@@ -400,7 +400,7 @@ function setOptValue(opt, value, initialLoad = false) {
 
             opt.Value = value;
         } else {
-            TypeError("Can't modify read-only option " + __LOG.info(__KEY, false) + " (" + __NAME + ')');
+            throw TypeError("Can't modify read-only option " + __LOG.info(__KEY, false) + " (" + __NAME + ')');
         }
 
         return opt.Value;
