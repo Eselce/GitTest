@@ -501,7 +501,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
 
             __TABLE.setAttribute('id', 'intstarter');
             //__TABLE.setAttribute('border', 1);
-            __TABLE.setAttribute('cellpadding', 10);
+            __TABLE.setAttribute('cellpadding', 8);
 
             __TABLE.style.borderCollapse = 'collapse';
             __TABLE.style.borderColor = '#aaaaaa';
