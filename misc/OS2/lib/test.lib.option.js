@@ -55,7 +55,14 @@ Class.define(UnitTestOption, UnitTest, {
 
                                 const __MAIN = new Main(__TESTOPTCONFIG, null, __MANAGER);
 
-                                const __RET = await __MAIN.run();
+                                let error = null;
+                                const __RET = await __MAIN.run().catch(ex => {
+                                                                        // Fehler fuer ausserhalb der Promise merken...
+                                                                        error = ex;
+                                                                    });
+                                if (error) {
+                                    throw error;
+                                }
 
                                 return __RET;
                             },
