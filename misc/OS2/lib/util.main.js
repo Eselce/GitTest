@@ -89,17 +89,21 @@ Class.define(Main, Object, {
                                                 return defaultCatch(ex);
                                             }
                                         }).then(rc => {
-                                                __LOG[2](String(this.optSet));
-                                                __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
+                                                const __RC = rc;
 
-                                                return Promise.resolve(true);
+                                                __LOG[2](String(this.optSet));
+                                                __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + __RC + ')', '/', __DBMAN.Name);
+
+                                                return Promise.resolve(__RC);
                                             }, ex => {
-                                                __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message,
-                                                            ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1]))) + ')');
+                                                const __ERRMSG = (ex && getValue(ex[0], ex.message,
+                                                            ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1])));
+
+                                                __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + __ERRMSG + ')');
                                                 __LOG[2](String(this.optSet));
                                                 __LOG[1]('SCRIPT END', __DBMAN.Name);
 
-                                                return Promise.resolve(false);
+                                                return Promise.reject(__ERRMSG);
                                             });
                         }
     });
