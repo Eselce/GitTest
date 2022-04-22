@@ -2461,18 +2461,41 @@
 
 // ==================== Abschnitt fuer Logging ====================
 
+    // Funktionalitaet der Logging-Funktionen...
+    new UnitTest('util.log.js Logging', "Tools zum Loggen von Meldungen", {
+            'logFun'              : function() {
+                                        const __LOGFUN = __LOG.logFun;
+
+                                        ASSERT_EQUAL(__LOGFUN.length, 10, "logFun[] ben\u00F6tigt 10 Funktionen");  // 0, ..., 9
+
+                                        __LOGFUN.forEach((fun, index) => {
+                                                ASSERT_TYPEOF(fun, 'function', "logFun[" + index + " mu\u00DF eine Funktion sein");
+                                            });
+
+                                        return true;
+                                    }
+        });
+
 //const __LOG = {
-//                  'logFun'    : [
-//                  'init'      : function(win, logLevel = 1) {
+//                  'init'      : function(win, logLevel = 4, show = true) {
+//                  'createFun' : function(name, fun, bindTo = undefined) {
 //                  'stringify' : safeStringify,      // JSON.stringify
-//                  'changed'   : function(oldVal, newVal) {
+//                  'info'      : function(obj, showType = true, elementType = false) {
+//                  'changed'   : function(oldVal, newVal, showType, elementType, delim = " => ") {
 
 // ==================== Ende Abschnitt fuer Logging ====================
+
+// ==================== Abschnitt fuer UNUSED() ====================
+
+//function UNUSED(... unused) {
+
+// ==================== Ende Abschnitt fuer UNUSED() ====================
 
 // ==================== Abschnitt fuer safeStringify() ====================
 
 //function safeStringify(value, replacer = undefined, space = undefined, cycleReplacer = undefined) {
 //function serializer(replacer = undefined, cycleReplacer = undefined) {
+//cycleReplacer = function(key, value) {
 //function replaceArraySimple(key, value) {
 //function replaceArray(key, value) {
 
@@ -4615,7 +4638,7 @@
             'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
         };
 
-    new UnitTestOption('util.option.api', "Schnittstelle zur Behandlung von Optionen", {
+    new UnitTestOption('util.option.api.js', "Schnittstelle zur Behandlung von Optionen", {
             'loadOption'          : function() {
                                         const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
                                         const __OPT = this.optSet[__NAME];
@@ -4770,7 +4793,7 @@
             'browseXMLCORS' : [ "https://os.ongapo.com/spv.php?action=getListByName&term=Volodimir Oleynikov",  /.*/    ]
         };
 
-    new UnitTestOption('util.xhr', "Schnittstelle zum Verbindungsaufbau", {
+    new UnitTestOption('util.xhr.js', "Schnittstelle zum Verbindungsaufbau", {
             'handlerExists'       : function() {
                                         return ASSERT_SET(__THIS, __LABEL + "Handler nicht gefunden");
                                     },
@@ -4935,7 +4958,7 @@
             'browseXMLCORS' : [ "https://os.ongapo.com/spv.php?action=getListByName&term=Volodimir Oleynikov",  /.*/    ]
         };
 
-    new UnitTestOption('util.xhr.gm', "Schnittstelle zum GM Verbindungsaufbau", {
+    new UnitTestOption('util.xhr.gm.js', "Schnittstelle zum GM Verbindungsaufbau", {
             'handlerExists'       : function() {
                                         return ASSERT_SET(__THIS, __LABEL + "Handler nicht gefunden");
                                     },

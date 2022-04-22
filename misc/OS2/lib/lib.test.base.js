@@ -456,7 +456,9 @@ const __ASSERTEPSILON   = Number.EPSILON;
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 
-const __TESTLOGLEVEL = 9;
+const __SHOWUNITTESTDESC = false;  // Beschreibung als Tooltip (false) oder Text (true)
+
+const __TESTLOGLEVEL = 9;  // Logs ausfuehrlich (9) oder normal (4)
 
 __LOG.init(window, __TESTLOGLEVEL);  // Testphase
 
@@ -645,6 +647,9 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
             const __RESULTS = new UnitTestResults("SUMME", __NAME, __TEST);
             let result;
 
+            // Test initialisieren und zaehlen...
+            __RESULTS.module();
+
             // Ausgabefilter verankern...
             __THIS.minLevel =  minLevel;
 
@@ -740,10 +745,20 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
         const __ROW = doc.createElement('TR');
 
         if (__SHOWRESULT) {
-            appendCell(__ROW, __UNITTEST.name);
-            appendCell(__ROW, __UNITTEST.desc);
+            const __SHOWDESC = __SHOWUNITTESTDESC;
+
+            if (__SHOWDESC) {
+                appendCell(__ROW, __UNITTEST.name);
+                appendCell(__ROW, __UNITTEST.desc);
+            } else {
+                const __UNITTESTINFO = '<ABBR title="' + (__UNITTEST.desc || "") + '">'
+                                                        + (__UNITTEST.name || "") + '</ABBR>';
+                appendCell(__ROW, __UNITTESTINFO);
+            }
+
             appendCell(__ROW, __RESULTS.name);
             appendCell(__ROW, __RESULTS.desc);
+            appendCell(__ROW, __RESULTS.countModules);
             appendCell(__ROW, __RESULTS.countRunning);
             appendCell(__ROW, __RESULTS.countSuccess);
             appendCell(__ROW, __RESULTS.countFailed);
@@ -766,18 +781,24 @@ UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = docum
 
     if (! table) {  // Anlegen...
         table = doc.createElement('TABLE');
-        table.id = tableId;
+        table.setAttribute('id', tableId);
         doc.body.appendChild(table);
     }
 
     if (! table.rows.length) {
+        const __SHOWDESC = __SHOWUNITTESTDESC;
         const __ROW = doc.createElement('TR');
         const __COLOR = undefined;
 
         appendCell(__ROW, "Modul", __COLOR);
-        appendCell(__ROW, "Beschreibung", __COLOR);
+
+        if (__SHOWDESC) {  // Ansonsten verschoben in Tooltip
+            appendCell(__ROW, "Beschreibung", __COLOR);
+        }
+
         appendCell(__ROW, "Test", __COLOR);
         appendCell(__ROW, "Details", __COLOR);
+        appendCell(__ROW, "Module", __COLOR);
         appendCell(__ROW, "Anz", __COLOR);
         appendCell(__ROW, "OK", __COLOR);
         appendCell(__ROW, "FAIL", __COLOR);
@@ -841,6 +862,7 @@ UnitTest.getStyleFromResults = function(results) {
         this.desc = libDesc;
         this.test = (libTest || { });
 
+        this.countModules   = 0;  // Zaehler Module
         this.countRunning   = 0;  // Zaehler Tests
         this.countSuccess   = 0;  // Zaehler OK
         this.countFailed    = 0;  // Zaehler FAIL
@@ -850,6 +872,9 @@ UnitTest.getStyleFromResults = function(results) {
 //}
 
 Class.define(UnitTestResults, Object, {
+                'module'              : function() {
+                                            return ++this.countModules;
+                                        },
                 'running'             : function() {
                                             return ++this.countRunning;
                                         },
@@ -905,6 +930,7 @@ Class.define(UnitTestResults, Object, {
                                             }
                                         },
                 'merge'               : function(resultsToAdd) {
+                                            this.countModules   += resultsToAdd.countModules;
                                             this.countRunning   += resultsToAdd.countRunning;
                                             this.countSuccess   += resultsToAdd.countSuccess;
                                             this.countFailed    += resultsToAdd.countFailed;
@@ -929,6 +955,7 @@ Class.define(UnitTestResults, Object, {
                                             return {
                                                     'name'      : this.name,
                                                     'desc'      : this.desc,
+                                                    'modules'   : this.countModules,
                                                     'running'   : this.countRunning,
                                                     'success'   : this.countSuccess,
                                                     'failed'    : this.countFailed,
@@ -1013,7 +1040,14 @@ Class.define(UnitTestOption, UnitTest, {
 
                                 const __MAIN = new Main(__TESTOPTCONFIG, null, __MANAGER);
 
-                                const __RET = await __MAIN.run();
+                                let error = null;
+                                const __RET = await __MAIN.run().catch(ex => {
+                                                                        // Fehler fuer ausserhalb der Promise merken...
+                                                                        error = ex;
+                                                                    });
+                                if (error) {
+                                    throw error;
+                                }
 
                                 return __RET;
                             },

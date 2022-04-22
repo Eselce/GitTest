@@ -200,9 +200,9 @@ __LOG.init(window, 4, false);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(
 
 // Makro fuer die Markierung bewusst ungenutzter Variablen und Parametern
 // params: Beliebig viele Parameter, mit denen nichts gemacht wird
-// return Liefert formal die Parameter zurueck
+// return Liefert formal die Parameter zurueck (wenn moeglich, als Skalar, sonst Array)
 function UNUSED(... unused) {
-    return unused;
+    return ((unused.length < 2) ? unused[0] : unused);
 }
 
 // ==================== Ende Abschnitt fuer UNUSED() ====================
@@ -2715,7 +2715,7 @@ function GMXMLHttpRequest() { }
 // ==================== Abschnitt fuer diverse DOM-Utilities ====================
 
 // Legt Input-Felder in einem Form-Konstrukt an, falls noetig
-// form: <form>...</form>
+// form: <FORM>...</FORM>
 // props: Map von name:value-Paaren
 // type: Typ der Input-Felder (Default: unsichtbare Daten)
 // return Ergaenztes Form-Konstrukt
@@ -2735,7 +2735,7 @@ function addInputField(form, props, type = 'hidden') {
 }
 
 // Legt unsichtbare Input-Daten in einem Form-Konstrukt an, falls noetig
-// form: <form>...</form>
+// form: <FORM>...</FORM>
 // props: Map von name:value-Paaren
 // return Ergaenztes Form-Konstrukt
 function addHiddenField(form, props) {
@@ -4567,7 +4567,7 @@ const __OPTITEMS = {
     'FormType'  : [ "Typ der Option auf Seite",         '__OPTTYPES',   "SI",                       __OPTNEED.OPT ],
     'FreeValue' : [ "Freitext m\u00F6glich",            'Boolean',      "false, true",              __OPTNEED.SEL ],
     'Hidden'    : [ "Versteckte Option auf Seite",      'Boolean',      "false, true",              __OPTNEED.OPT ],
-    'HiddenMenu': [ "INTERNAL: Kein Kontextmen\u00FC",  'Boolean',      "false, true",              __OPTNEED.INT ],
+    'HiddenMenu': [ "Kein Kontextmen\u00FC",            'Boolean',      "false, true",              __OPTNEED.OPT ],
     'Hotkey'    : [ "Schnellanwahl im Men\u00FC",       'Char',         "'A'",                      __OPTNEED.REC ],
     'Item'      : [ "INTERNAL: Kopie des Schluessels",  'String',       "",                         __OPTNEED.INT ],
     'Label'     : [ "Options-Ausgabename",              'String',       "Option: $",                __OPTNEED.MAN ],
@@ -4593,7 +4593,9 @@ const __OPTITEMS = {
     'Type'      : [ "Typ der Option",                   '__OPTTYPES',   "MC, SD, SI, SW",           __OPTNEED.REC ],
     'ValidOpt'  : [ "INTERNAL: Option gecheckt",        'Boolean',      "true",                     __OPTNEED.INT ],
     'ValType'   : [ "Datentyp der Werte",               'String',       "'Number', 'String'",       __OPTNEED.CHO ],
-    'Value'     : [ "INTERNAL: Gesetzter Wert",         'any',          "",                         __OPTNEED.INT ]
+    'Value'     : [ "INTERNAL: Gesetzter Wert",         'any',          "",                         __OPTNEED.INT ],
+    'config'    : [ "INTERNAL: __OPTCONFIG",            'Object',       "__OPTCONFIG",              __OPTNEED.INT ],
+    'setLabel'  : [ "INTERNAL: Name/Label der Optionen",'String',       "__OPTSET",                 __OPTNEED.INT ]
 };
 const __OPTITEMSBYNEED = selectMapping(__OPTITEMS, __COLOPTITEMS.NEED, -1, mappingPush);
 
@@ -6224,7 +6226,7 @@ function registerOption(opt) {
     const __HIDDEN = __CONFIG.HiddenMenu;
     const __SERIAL = __CONFIG.Serial;
 
-    if (! __CONFIG.HiddenMenu) {
+    if (! __HIDDEN) {
         switch (__CONFIG.Type) {
         case __OPTTYPES.MC : return registerNextMenuOption(__VALUE, __CONFIG.Choice, __LABEL, __ACTION, __HOTKEY);
         case __OPTTYPES.SW : return registerMenuOption(__VALUE, __LABEL, __ACTION, __HOTKEY,
@@ -6303,7 +6305,7 @@ function eachLine(text, convFun, separator = '\n', thisArg = undefined, limit = 
 // return String mit dem neuen HTML-Code
 function withTitle(html, title, separator = '|', limit = undefined) {
     if (title && title.length) {
-        return eachLine(html, line => '<abbr title="' + title + '">' + line + '</abbr>', separator, undefined, limit);
+        return eachLine(html, line => '<ABBR title="' + title + '">' + line + '</ABBR>', separator, undefined, limit);
     } else {
         return html;
     }
@@ -6404,7 +6406,7 @@ function getFormAction(opt, isAlt = false, value = undefined, serial = undefined
 // opt: Auszufuehrende Option
 // isAlt: Angabe, ob AltAction statt Action gemeint ist
 // value: Ggfs. zu setzender Wert
-// type: Event-Typ fuer <input>, z.B. "click" fuer "onclick="
+// type: Event-Typ fuer <INPUT>, z.B. "click" fuer "onclick="
 // serial: Serialization fuer String-Werte (Select, Textarea)
 // memory: __OPTMEM.normal = unbegrenzt gespeichert (localStorage), __OPTMEM.begrenzt = bis Browserende gespeichert (sessionStorage), __OPTMEM.inaktiv
 // return String mit dem (reinen) Funktionsaufruf
@@ -6458,18 +6460,18 @@ function getOptionSelect(opt, defValue = undefined) {
     const __ACTION = getFormActionEvent(opt, false, undefined, 'change', undefined);
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __CONFIG.Label, true);
     const __TITLE = substParam(getValue(__CONFIG.Title, __CONFIG.Label), __VALUE);
-    const __LABEL = '<label for="' + __NAME + '">' + __FORMLABEL + '</label>';
-    let element = '<select name="' + __NAME + '" id="' + __NAME + '"' + __ACTION + '>';
+    const __LABEL = '<LABEL for="' + __NAME + '">' + __FORMLABEL + '</LABEL>';
+    let element = '<SELECT name="' + __NAME + '" id="' + __NAME + '"' + __ACTION + '>';
 
     if (__CONFIG.FreeValue && ! (~ __CONFIG.Choice.indexOf(__VALUE))) {
-        element += '\n<option value="' + __VALUE + '" SELECTED>' + __VALUE + '</option>';
+        element += '\n<OPTION value="' + __VALUE + '" SELECTED>' + __VALUE + '</OPTION>';
     }
     for (let value of __CONFIG.Choice) {
-        element += '\n<option value="' + value + '"' +
+        element += '\n<OPTION value="' + value + '"' +
                    ((value === __VALUE) ? ' SELECTED' : "") +
-                   '>' + value + '</option>';
+                   '>' + value + '</OPTION>';
     }
-    element += '\n</select>';
+    element += '\n</SELECT>';
 
     return withTitle(substParam(__LABEL, element), __TITLE);
 }
@@ -6488,16 +6490,16 @@ function getOptionRadio(opt, defValue = false) {
     const __TITLE = getValue(__CONFIG.Title, '$');
     const __TITLEON = substParam(__TITLE, __CONFIG.Label);
     const __TITLEOFF = substParam(getValue(__CONFIG.AltTitle, __TITLE), __CONFIG.AltLabel);
-    const __ELEMENTON  = '<input type="radio" name="' + __NAME +
+    const __ELEMENTON  = '<INPUT type="radio" name="' + __NAME +
                          '" id="' + __NAME + 'ON" value="1"' +
                          (__VALUE ? ' CHECKED' : __ACTION) +
-                         ' /><label for="' + __NAME + 'ON">' +
-                         __CONFIG.Label + '</label>';
-    const __ELEMENTOFF = '<input type="radio" name="' + __NAME +
+                         ' /><LABEL for="' + __NAME + 'ON">' +
+                         __CONFIG.Label + '</LABEL>';
+    const __ELEMENTOFF = '<INPUT type="radio" name="' + __NAME +
                          '" id="' + __NAME + 'OFF" value="0"' +
                          (__VALUE ? __ALTACTION : ' CHECKED') +
-                         ' /><label for="' + __NAME + 'OFF">' +
-                         __CONFIG.AltLabel + '</label>';
+                         ' /><LABEL for="' + __NAME + 'OFF">' +
+                         __CONFIG.AltLabel + '</LABEL>';
     const __ELEMENT = [
                           withTitle(__FORMLABEL, __VALUE ? __TITLEON : __TITLEOFF),
                           withTitle(__ELEMENTON, __TITLEON),
@@ -6520,10 +6522,10 @@ function getOptionCheckbox(opt, defValue = false) {
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __CONFIG.Label);
     const __TITLE = substParam(getValue(__VALUE ? __CONFIG.Title : getValue(__CONFIG.AltTitle, __CONFIG.Title), '$'), __VALUELABEL);
 
-    return withTitle('<input type="checkbox" name="' + __NAME +
+    return withTitle('<INPUT type="checkbox" name="' + __NAME +
                      '" id="' + __NAME + '" value="' + __VALUE + '"' +
-                     (__VALUE ? ' CHECKED' : "") + __ACTION + ' /><label for="' +
-                     __NAME + '">' + __FORMLABEL + '</label>', __TITLE);
+                     (__VALUE ? ' CHECKED' : "") + __ACTION + ' /><LABEL for="' +
+                     __NAME + '">' + __FORMLABEL + '</LABEL>', __TITLE);
 }
 
 // Zeigt eine Option auf der Seite als Daten-Textfeld an
@@ -6540,10 +6542,10 @@ function getOptionTextarea(opt, defValue = "") {
     const __ONSUBMIT = (__SUBMIT ? ' onKeyDown="' + __SUBMIT + '"': "");
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __CONFIG.Label);
     const __TITLE = substParam(getValue(__CONFIG.Title, '$'), __FORMLABEL);
-    const __ELEMENTLABEL = '<label for="' + __NAME + '">' + __FORMLABEL + '</label>';
-    const __ELEMENTTEXT = '<textarea name="' + __NAME + '" id="' + __NAME + '" cols="' + __CONFIG.Cols +
+    const __ELEMENTLABEL = '<LABEL for="' + __NAME + '">' + __FORMLABEL + '</LABEL>';
+    const __ELEMENTTEXT = '<TEXTAREA name="' + __NAME + '" id="' + __NAME + '" cols="' + __CONFIG.Cols +
                            '" rows="' + __CONFIG.Rows + '"' + __ONSUBMIT + __ACTION + '>' +
-                           safeStringify(__VALUE, __CONFIG.Replace, __CONFIG.Space) + '</textarea>';
+                           safeStringify(__VALUE, __CONFIG.Replace, __CONFIG.Space) + '</TEXTAREA>';
 
     return [ withTitle(__ELEMENTLABEL, __TITLE), __ELEMENTTEXT ];
 }
@@ -6561,8 +6563,8 @@ function getOptionButton(opt, defValue = false) {
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __BUTTONLABEL);
     const __BUTTONTITLE = substParam(getValue(__VALUE ? getValue(__CONFIG.AltTitle, __CONFIG.Title) : __CONFIG.Title, '$'), __BUTTONLABEL);
 
-    return '<label for="' + __NAME + '">' + __FORMLABEL + '</label>' +
-           withTitle('<input type="button" name="' + __NAME +
+    return '<LABEL for="' + __NAME + '">' + __FORMLABEL + '</LABEL>' +
+           withTitle('<INPUT type="button" name="' + __NAME +
                      '" id="' + __NAME + '" value="' + __BUTTONLABEL +
                      '"' + __ACTION + '/>', __BUTTONTITLE);
 }
@@ -6665,8 +6667,8 @@ function groupData(data, byFun, filterFun, sortFun) {
 // 'formBreak': Elementnummer des ersten Zeilenumbruchs
 // return String mit dem HTML-Code
 function getOptionForm(optSet, optParams = { }) {
-    const __FORM = '<form id="options" method="POST"><table><tbody><tr>';
-    const __FORMEND = '</tr></tbody></table></form>';
+    const __FORM = '<FORM id="options" method="POST"><TABLE><TBODY><TR>';
+    const __FORMEND = '</TR></TBODY></TABLE></FORM>';
     const __FORMWIDTH = getValue(optParams.formWidth, 3);
     const __FORMBREAK = getValue(optParams.formBreak, __FORMWIDTH);
     const __SHOWFORM = optSet.getOptValue('showForm', true) ? optParams.showForm : { 'showForm' : true };
@@ -6688,9 +6690,9 @@ function getOptionForm(optSet, optParams = { }) {
                         }
                     }
                     if (column === 1) {
-                        form += '</tr><tr>';
+                        form += '</TR><TR>';
                     }
-                    form += '\n<td' + __TDOPT + '>' + __ELEMENT.replace('|', '</td><td>') + '</td>';
+                    form += '\n<TD' + __TDOPT + '>' + __ELEMENT.replace('|', '</TD><TD>') + '</TD>';
                 }
             }
         }
@@ -6709,9 +6711,9 @@ function getOptionForm(optSet, optParams = { }) {
 function getOptionScript(optSet, optParams = { }) {
     UNUSED(optSet, optParams);
 
-    //const __SCRIPT = '<script type="text/javascript">function activateMenu() { console.log("TADAAA!"); }</script>';
-    //const __SCRIPT = '<script type="text/javascript">\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionRst(key, value) { alert("RESET"); }\n</script>';
-    //const __FORM = '<form method="POST"><input type="button" id="showOpts" name="showOpts" value="Optionen anzeigen" onclick="activateMenu()" /></form>';
+    //const __SCRIPT = '<SCRIPT type="text/javascript">function activateMenu() { console.log("TADAAA!"); }</SCRIPT>';
+    //const __SCRIPT = '<SCRIPT type="text/javascript">\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionNxt(key, value) { alert("SET " + key + " = " + value); }\n\tfunction doActionRst(key, value) { alert("RESET"); }\n</SCRIPT>';
+    //const __FORM = '<FORM method="POST"><input type="button" id="showOpts" name="showOpts" value="Optionen anzeigen" onclick="activateMenu()" /></FORM>';
 
     const __SCRIPT = "";
 
@@ -7255,17 +7257,21 @@ Class.define(Main, Object, {
                                                 return defaultCatch(ex);
                                             }
                                         }).then(rc => {
-                                                __LOG[2](String(this.optSet));
-                                                __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + rc + ')', '/', __DBMAN.Name);
+                                                const __RC = rc;
 
-                                                return Promise.resolve(true);
+                                                __LOG[2](String(this.optSet));
+                                                __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + __RC + ')', '/', __DBMAN.Name);
+
+                                                return Promise.resolve(__RC);
                                             }, ex => {
-                                                __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + (ex && getValue(ex[0], ex.message,
-                                                            ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1]))) + ')');
+                                                const __ERRMSG = (ex && getValue(ex[0], ex.message,
+                                                            ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1])));
+
+                                                __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + __ERRMSG + ')');
                                                 __LOG[2](String(this.optSet));
                                                 __LOG[1]('SCRIPT END', __DBMAN.Name);
 
-                                                return Promise.resolve(false);
+                                                return Promise.reject(__ERRMSG);
                                             });
                         }
     });
@@ -8514,16 +8520,16 @@ function isGoalieFromHTML(cells, colIdxClass = 0) {
 
 // ==================== Abschnitt fuer Hilfsfunktionen ====================
 
-// Liefert umschlossenen textContent und einen der einem <a>-Link uebergebenen Parameter.
+// Liefert umschlossenen textContent und einen der einem <A>-Link uebergebenen Parameter.
 // Als Drittes wird optional der ganze Ziel-Link (das href) zurueckgegeben.
-// element: Eine <a>-Node mit href-Link
+// element: Eine <A>-Node mit href-Link
 // queryID: Name des Parameters innerhalb der URL, der die ID liefert
 // return Text, ID und href-Link
 function getLinkData(element, queryID) {
     checkType(element && element.href, 'string', true, 'getLinkData', 'element.href', 'String');
     checkType(queryID, 'string', false, 'getLinkData', 'queryID', 'String');
 
-    const __A = element; // <a href="https://.../...?QUERYID=ID">TEXT</a>
+    const __A = element; // <A href="https://.../...?QUERYID=ID">TEXT</A>
     const __TEXT = __A.textContent;
     const __HREF = __A.href;
     const __URI = new URI(__HREF);
@@ -8532,47 +8538,47 @@ function getLinkData(element, queryID) {
     return [ __TEXT, __ID, __HREF ];
 }
 
-// Liefert den HTML-Code fuer einen parametrisierten <img>-Link.
+// Liefert den HTML-Code fuer einen parametrisierten <IMG>-Link.
 // imageURL: URL des verlinkten Bildes
 // title: Tooltip des Bildes (Default: null fuer kein Tooltip)
 // altText: ALT-Parameter fuer Ausgabe ohne Bild (Default: Tooltip-Text)
-// return String mit HTML-Code des <img>-Links
+// return String mit HTML-Code des <IMG>-Links
 function getImgLink(imageURL, title = null, altText = title) {
     checkType(imageURL, 'string', true, 'getImgLink', 'imageURL', 'String');
     checkType(title, 'string', false, 'getImgLink', 'title', 'String');
     checkType(altText, 'string', false, 'getImgLink', 'altText', 'String');
 
     const __ALTSTR = (altText ? (' alt="' + altText + '"') : "");
-    const __IMGSTR = '<img src="' + imageURL + '"' + __ALTSTR + ' />';
-    const __RETSTR = (title ? ('<abbr title="' + title + '">' + __IMGSTR + '</abbr>') : __IMGSTR);
+    const __IMGSTR = '<IMG src="' + imageURL + '"' + __ALTSTR + ' />';
+    const __RETSTR = (title ? ('<ABBR title="' + title + '">' + __IMGSTR + '</ABBR>') : __IMGSTR);
 
     return __RETSTR;
 }
 
-// Liefert den HTML-Code fuer einen parametrisierten <a>-Link auf ein OS-Team.
+// Liefert den HTML-Code fuer einen parametrisierten <A>-Link auf ein OS-Team.
 // teamName: Name des Teams fuer den textContent
 // osID: OS-ID des Teams
-// return String mit HTML-Code des <a>-Team-Links
+// return String mit HTML-Code des <A>-Team-Links
 function getTeamLink(teamName, osID) {
     checkType(teamName, 'string', true, 'getTeamLink', 'teamName', 'String');
     checkType(osID, 'number', true, 'getTeamLink', 'osID', 'Number');
 
-    const __RETSTR = '<a href="/st.php?c=' + osID + '" onClick="teaminfo(' + osID + ');return false;">' + teamName + '</a>';
+    const __RETSTR = '<A href="/st.php?c=' + osID + '" onClick="teaminfo(' + osID + '); return false;">' + teamName + '</A>';
 
     return __RETSTR;
 }
 
-// Liefert den HTML-Code fuer einen parametrisierten <a>-Link auf das Manager-PM-Fenster.
+// Liefert den HTML-Code fuer einen parametrisierten <A>-Link auf das Manager-PM-Fenster.
 // managerName: Name des Managers fuer den textContent
 // pmID: User-ID des Managers im PM-System von OS2
-// return String mit HTML-Code des <a>-Manager-Links, falls pmID okay, ansonsten nur Managername geklammert
+// return String mit HTML-Code des <A>-Manager-Links, falls pmID okay, ansonsten nur Managername geklammert
 function getManagerLink(managerName, pmID) {
     checkType(managerName, 'string', true, 'getManagerLink', 'managerName', 'String');
     checkType(pmID, 'number', true, 'getManagerLink', 'pmID', 'Number');
 
-    const __RETSTR = (pmID > -1) ? ('<a href="/osneu/pm?action=writeNew&receiver_id=' + pmID
-                    + '" onclick="writePM(" + pmID + ");return false;" target="_blank">'
-                    + managerName + '</a>') : ('(' + managerName + ')');
+    const __RETSTR = (pmID > -1) ? ('<A href="/osneu/pm?action=writeNew&receiver_id=' + pmID
+                    + '" onclick="writePM(" + pmID + "); return false;" target="_blank">'
+                    + managerName + '</A>') : ('(' + managerName + ')');
 
     return __RETSTR;
 }
@@ -8661,12 +8667,12 @@ Class.define(RundenLink, Object, {
                                      this.uri.setQueryPar(this.prop, this.runde);
                                  }
 
-                                 return "<a " + URI.prototype.formatParams({
+                                 return "<A " + URI.prototype.formatParams({
                                                                       'href'   : this.uri.getPath(),
                                                                       'target' : (target ? target : '_blank')
                                                                   }, function(value) {
                                                                          return '"' + value + '"';
-                                                                     }, ' ', '=') + '>' + this.getLabel() + "</a>";
+                                                                     }, ' ', '=') + '>' + this.getLabel() + "</A>";
                              }
                          }
     });
@@ -8975,7 +8981,7 @@ function getBilanzLinkFromCell(cell, gameType, label) {
             paarung = paarung.substr(0, paarung.indexOf(')'));
             paarung = paarung.substr(0, paarung.lastIndexOf(','));
             paarung = paarung.substr(0, paarung.lastIndexOf(','));
-            ret = ' <a href="javascript:spielpreview(' + paarung + ',' + __GAMETYPEID + ')">' + label + "</a>";
+            ret = ' <A href="javascript:spielpreview(' + paarung + ',' + __GAMETYPEID + ')">' + label + "</A>";
         }
     }
 
@@ -9658,7 +9664,7 @@ Class.define(PlayerRecord, Object, {
                                       const __PRISKILLNAMES = this.getPriSkillNames();
 
                                       return (! text) ? text : text.replace(/\w+/g, function(name) {
-                                                                                        return ((~ __PRISKILLNAMES.indexOf(name)) ? '<b>' + name + '</b>' : name);
+                                                                                        return ((~ __PRISKILLNAMES.indexOf(name)) ? '<B>' + name + '</B>' : name);
                                                                                     });
                                   },
         'getPriSkillNames'      : function(pos = undefined) {
@@ -9993,7 +9999,7 @@ Class.define(ColumnManager, Object, {
                                const __HEIGHT = Math.max(3, getMulValue(zoom / 100, height * (__LENGTH / __WIDTH), 0, 0));
 
                                // HTML-Code fuer Anteilsbalken...
-                               return '<img src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height="' + __HEIGHT + '">';
+                               return '<IMG src="images/balken/' + __IMAGE + '.GIF" width="' + __WIDTH + '" height="' + __HEIGHT + '">';
                            },
         'addTitles'      : function(headers, titleColor = '#FFFFFF') {
                                // Spaltentitel zentrieren
