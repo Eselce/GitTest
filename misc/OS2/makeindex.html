@@ -55,7 +55,7 @@ const GM_info = {  // Mock GM_info data
         <DIV id="index-generator">
             <H3>Generator OS2-Spielwiesen-Benutzerscripts unter dem Greasemonkey AddOn</H3>
 
-            || <A onClick="__MAIN();return false;">index.html generieren</A> ||
+            || <A onClick="__MAIN(); return false;">index.html generieren</A> ||
         </DIV>
         <BR />
 
@@ -205,7 +205,7 @@ function getHeader() {
 					var colText2 = [];
 					colText2.push('&lt;PRE&gt;' + data.meta + '&lt;/PRE&gt;' + install);
 					tr = addRow(table, colText2);
-					tr.id = 'script_' + id;
+					tr.setAttribute('id', 'script_' + id);
 					tr.style.display = 'none';
 					tr.firstChild.setAttribute('colspan', 5);
 				}

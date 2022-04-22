@@ -34,18 +34,18 @@ function getOptionSelect(opt, defValue = undefined) {
     const __ACTION = getFormActionEvent(opt, false, undefined, 'change', undefined);
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __CONFIG.Label, true);
     const __TITLE = substParam(getValue(__CONFIG.Title, __CONFIG.Label), __VALUE);
-    const __LABEL = '<label for="' + __NAME + '">' + __FORMLABEL + '</label>';
-    let element = '<select name="' + __NAME + '" id="' + __NAME + '"' + __ACTION + '>';
+    const __LABEL = '<LABEL for="' + __NAME + '">' + __FORMLABEL + '</LABEL>';
+    let element = '<SELECT name="' + __NAME + '" id="' + __NAME + '"' + __ACTION + '>';
 
     if (__CONFIG.FreeValue && ! (~ __CONFIG.Choice.indexOf(__VALUE))) {
-        element += '\n<option value="' + __VALUE + '" SELECTED>' + __VALUE + '</option>';
+        element += '\n<OPTION value="' + __VALUE + '" SELECTED>' + __VALUE + '</OPTION>';
     }
     for (let value of __CONFIG.Choice) {
-        element += '\n<option value="' + value + '"' +
+        element += '\n<OPTION value="' + value + '"' +
                    ((value === __VALUE) ? ' SELECTED' : "") +
-                   '>' + value + '</option>';
+                   '>' + value + '</OPTION>';
     }
-    element += '\n</select>';
+    element += '\n</SELECT>';
 
     return withTitle(substParam(__LABEL, element), __TITLE);
 }
@@ -64,16 +64,16 @@ function getOptionRadio(opt, defValue = false) {
     const __TITLE = getValue(__CONFIG.Title, '$');
     const __TITLEON = substParam(__TITLE, __CONFIG.Label);
     const __TITLEOFF = substParam(getValue(__CONFIG.AltTitle, __TITLE), __CONFIG.AltLabel);
-    const __ELEMENTON  = '<input type="radio" name="' + __NAME +
+    const __ELEMENTON  = '<INPUT type="radio" name="' + __NAME +
                          '" id="' + __NAME + 'ON" value="1"' +
                          (__VALUE ? ' CHECKED' : __ACTION) +
-                         ' /><label for="' + __NAME + 'ON">' +
-                         __CONFIG.Label + '</label>';
-    const __ELEMENTOFF = '<input type="radio" name="' + __NAME +
+                         ' /><LABEL for="' + __NAME + 'ON">' +
+                         __CONFIG.Label + '</LABEL>';
+    const __ELEMENTOFF = '<INPUT type="radio" name="' + __NAME +
                          '" id="' + __NAME + 'OFF" value="0"' +
                          (__VALUE ? __ALTACTION : ' CHECKED') +
-                         ' /><label for="' + __NAME + 'OFF">' +
-                         __CONFIG.AltLabel + '</label>';
+                         ' /><LABEL for="' + __NAME + 'OFF">' +
+                         __CONFIG.AltLabel + '</LABEL>';
     const __ELEMENT = [
                           withTitle(__FORMLABEL, __VALUE ? __TITLEON : __TITLEOFF),
                           withTitle(__ELEMENTON, __TITLEON),
@@ -96,10 +96,10 @@ function getOptionCheckbox(opt, defValue = false) {
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __CONFIG.Label);
     const __TITLE = substParam(getValue(__VALUE ? __CONFIG.Title : getValue(__CONFIG.AltTitle, __CONFIG.Title), '$'), __VALUELABEL);
 
-    return withTitle('<input type="checkbox" name="' + __NAME +
+    return withTitle('<INPUT type="checkbox" name="' + __NAME +
                      '" id="' + __NAME + '" value="' + __VALUE + '"' +
-                     (__VALUE ? ' CHECKED' : "") + __ACTION + ' /><label for="' +
-                     __NAME + '">' + __FORMLABEL + '</label>', __TITLE);
+                     (__VALUE ? ' CHECKED' : "") + __ACTION + ' /><LABEL for="' +
+                     __NAME + '">' + __FORMLABEL + '</LABEL>', __TITLE);
 }
 
 // Zeigt eine Option auf der Seite als Daten-Textfeld an
@@ -116,10 +116,10 @@ function getOptionTextarea(opt, defValue = "") {
     const __ONSUBMIT = (__SUBMIT ? ' onKeyDown="' + __SUBMIT + '"': "");
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __CONFIG.Label);
     const __TITLE = substParam(getValue(__CONFIG.Title, '$'), __FORMLABEL);
-    const __ELEMENTLABEL = '<label for="' + __NAME + '">' + __FORMLABEL + '</label>';
-    const __ELEMENTTEXT = '<textarea name="' + __NAME + '" id="' + __NAME + '" cols="' + __CONFIG.Cols +
+    const __ELEMENTLABEL = '<LABEL for="' + __NAME + '">' + __FORMLABEL + '</LABEL>';
+    const __ELEMENTTEXT = '<TEXTAREA name="' + __NAME + '" id="' + __NAME + '" cols="' + __CONFIG.Cols +
                            '" rows="' + __CONFIG.Rows + '"' + __ONSUBMIT + __ACTION + '>' +
-                           safeStringify(__VALUE, __CONFIG.Replace, __CONFIG.Space) + '</textarea>';
+                           safeStringify(__VALUE, __CONFIG.Replace, __CONFIG.Space) + '</TEXTAREA>';
 
     return [ withTitle(__ELEMENTLABEL, __TITLE), __ELEMENTTEXT ];
 }
@@ -137,8 +137,8 @@ function getOptionButton(opt, defValue = false) {
     const __FORMLABEL = formatLabel(__CONFIG.FormLabel, __BUTTONLABEL);
     const __BUTTONTITLE = substParam(getValue(__VALUE ? getValue(__CONFIG.AltTitle, __CONFIG.Title) : __CONFIG.Title, '$'), __BUTTONLABEL);
 
-    return '<label for="' + __NAME + '">' + __FORMLABEL + '</label>' +
-           withTitle('<input type="button" name="' + __NAME +
+    return '<LABEL for="' + __NAME + '">' + __FORMLABEL + '</LABEL>' +
+           withTitle('<INPUT type="button" name="' + __NAME +
                      '" id="' + __NAME + '" value="' + __BUTTONLABEL +
                      '"' + __ACTION + '/>', __BUTTONTITLE);
 }

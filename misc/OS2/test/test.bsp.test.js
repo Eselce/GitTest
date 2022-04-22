@@ -22,7 +22,7 @@
 
 // ==================== Abschnitt fuer Beispiel-Tests ====================
 
-    new UnitTest('util.log.js', "Alles rund um das Logging", {
+    new UnitTest('test.bsp.js', "Alles rund um das Logging", {
             'log0'                : function() {
                                         __LOG[4]("Testausgabe!");
 

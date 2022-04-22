@@ -300,10 +300,10 @@ const __BUILDLIB = (async (libNumber) => {
     const __PKGLIBS = (((typeof __PKGDEF) === 'string') ? [ __PKGDEF ] : __PKGDEF);
     const __PKGFUNS = __PKGLIBS.map(libsKey => __LIBSDEF[libsKey].reqs.open(__LIBSDEF[libsKey].libs).appendPre(document.body));
 
-    document.body.innerHTML = "<pre>/****** JavaScript-Bibliothek " + __LOG.info(__LIBNAME, false) + ' ' + __LOG.info(__PKGLIBS, false) + " ******/\n\n"
+    document.body.innerHTML = "<PRE>/****** JavaScript-Bibliothek " + __LOG.info(__LIBNAME, false) + ' ' + __LOG.info(__PKGLIBS, false) + " ******/\n\n"
                             + __PKGLIBS.reduce((pre, libsKey) => pre + __LIBSDEF[libsKey].libs.map(libName => (libName + __LIBSDEF[libsKey].reqs.srcExt)
                                     ).reduce((pre, lib) => pre + "\n//\t" + lib, "\n// " + __LIBSDEF[libsKey].reqs.srcPath + '&lt;' + libsKey + "&gt;: "),
-                                "// Inhaltsverzeichnis:") + "</pre>";
+                                "// Inhaltsverzeichnis:") + "</PRE>";
 
     // Promise-Chain abarbeiten...
     const __LIBREQS = await __PKGFUNS.reduce((prom, fun) => prom.then(fun, defaultCatch), Promise.resolve());

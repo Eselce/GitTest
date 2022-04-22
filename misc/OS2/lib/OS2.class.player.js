@@ -304,7 +304,7 @@ Class.define(PlayerRecord, Object, {
                                       const __PRISKILLNAMES = this.getPriSkillNames();
 
                                       return (! text) ? text : text.replace(/\w+/g, function(name) {
-                                                                                        return ((~ __PRISKILLNAMES.indexOf(name)) ? '<b>' + name + '</b>' : name);
+                                                                                        return ((~ __PRISKILLNAMES.indexOf(name)) ? '<B>' + name + '</B>' : name);
                                                                                     });
                                   },
         'getPriSkillNames'      : function(pos = undefined) {
