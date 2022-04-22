@@ -102,7 +102,7 @@ function registerOption(opt) {
     const __HIDDEN = __CONFIG.HiddenMenu;
     const __SERIAL = __CONFIG.Serial;
 
-    if (! __CONFIG.HiddenMenu) {
+    if (! __HIDDEN) {
         switch (__CONFIG.Type) {
         case __OPTTYPES.MC : return registerNextMenuOption(__VALUE, __CONFIG.Choice, __LABEL, __ACTION, __HOTKEY);
         case __OPTTYPES.SW : return registerMenuOption(__VALUE, __LABEL, __ACTION, __HOTKEY,
