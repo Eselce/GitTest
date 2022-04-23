@@ -24,26 +24,72 @@
 
     const __ERROR = 'ERROR';
     const __ERR = __ERROR;
+    const __KEY = 'key';    // Key fuer Object
+    const __KEY0 = 0;       // Key fuer Array
 
     const __TESTDATA = {
-            'getValueString'    : [ '1',                '1',                'string'    ],
-            'getValueInt'       : [ 42,                 42,                 'number'    ],
-            'getValueBool'      : [ true,               true,               'boolean'   ],
-            'getValueFloat'     : [ 47.11,              47.11,              'number'    ],
-            'getValueArray'     : [ [ 3, 4 ],           [ 3, 4 ],           'object'    ],
-            'getValueObject'    : [ { 3 : 4 },          { 3 : 4 },          'object'    ],
-            'getValueUndef'     : [ undefined,          __ERR,              'string'    ],
-            'getValueNull'      : [ null,               __ERR,              'string'    ],
-            'getValueNaN'       : [ Number.NaN,         Number.NaN,         'number'    ],
-            'getValueSymbol'    : [ Symbol(),           Symbol(),           'symbol'    ],
-            'getValueSymbol2'   : [ Symbol.for('key'),  Symbol.for('key'),  'symbol'    ],
-            'getValueFunction'  : [ function() {},      function() {},      'function'  ],
-            'getValueDefault'   : [ undefined,          __ERR,              'string'    ],
-            'getValueDefault2'  : [ null,               __ERR,              'string'    ],
-            'getValueDefault3'  : [ "",                 "",                 'string'    ],
-            'getValueDefault4'  : [ 0,                  0,                  'number'    ],
-            'getValueDefault5'  : [ false,              false,              'boolean'   ],
-            'getValueRetVal'    : [ true,               __ERROR,            'string'    ]
+            'getValueString'        : [ '1',                            '1',                'string'    ],
+            'getValueInt'           : [ 42,                             42,                 'number'    ],
+            'getValueBool'          : [ true,                           true,               'boolean'   ],
+            'getValueFloat'         : [ 47.11,                          47.11,              'number'    ],
+            'getValueArray'         : [ [ 3, 4 ],                       [ 3, 4 ],           'object'    ],
+            'getValueObject'        : [ { 3 : 4 },                      { 3 : 4 },          'object'    ],
+            'getValueUndef'         : [ undefined,                      undefined,          'undefined' ],
+            'getValueNull'          : [ null,                           undefined,          'undefined' ],
+            'getValueNaN'           : [ Number.NaN,                     Number.NaN,         'number'    ],
+            'getValueSymbol'        : [ Symbol(),                       Symbol(),           'symbol'    ],
+            'getValueSymbol2'       : [ Symbol.for('key'),              Symbol.for('key'),  'symbol'    ],
+            'getValueFunction'      : [ function() {},                  function() {},      'function'  ],
+            'getValueDefault'       : [ undefined,                      __ERR,              'string'    ],
+            'getValueDefault2'      : [ null,                           __ERR,              'string'    ],
+            'getValueDefault3'      : [ "",                             "",                 'string'    ],
+            'getValueDefault4'      : [ 0,                              0,                  'number'    ],
+            'getValueDefault5'      : [ false,                          false,              'boolean'   ],
+            'getValueRetVal'        : [ true,                           __ERROR,            'string'    ],
+            'getObjValueString'     : [ { key : '1' },                  '1',                'string'    ],
+            'getObjValueInt'        : [ { key : 42 },                   42,                 'number'    ],
+            'getObjValueBool'       : [ { key : true },                 true,               'boolean'   ],
+            'getObjValueFloat'      : [ { key : 47.11 },                47.11,              'number'    ],
+            'getObjValueArray'      : [ { key : [ 3, 4 ] },             [ 3, 4 ],           'object'    ],
+            'getObjValueObject'     : [ { key : { 3 : 4 } },            { 3 : 4 },          'object'    ],
+            'getObjValueUndef'      : [ { key : undefined },            undefined,          'undefined' ],
+            'getObjValueUndef2'     : [ { },                            undefined,          'undefined' ],
+            'getObjValueNull'       : [ { key : null },                 undefined,          'undefined' ],
+            'getObjValueNaN'        : [ { key : Number.NaN },           Number.NaN,         'number'    ],
+            'getObjValueSymbol'     : [ { key : Symbol() },             Symbol(),           'symbol'    ],
+            'getObjValueSymbol2'    : [ { key : Symbol.for('key') },    Symbol.for('key'),  'symbol'    ],
+            'getObjValueFunction'   : [ { key : function() {} },        function() {},      'function'  ],
+            'getObjValueDefault'    : [ { key : undefined },            __ERR,              'string'    ],
+            'getObjValueDefault2'   : [ { key : null },                 __ERR,              'string'    ],
+            'getObjValueDefault3'   : [ { key : "" },                   "",                 'string'    ],
+            'getObjValueDefault4'   : [ { key : 0 },                    0,                  'number'    ],
+            'getObjValueDefault5'   : [ { key : false },                false,              'boolean'   ],
+            'getObjValueRetVal'     : [ { key : true },                 __ERROR,            'string'    ],
+            'getObjValueObjUndef'   : [ undefined,                      __ERR,              'string'    ],
+            'getObjValueObjNull'    : [ null,                           __ERR,              'string'    ],
+            'getObjValueObjString'  : [ "",                             __ERR,              'string'    ],
+            'getArrValueString'     : [ [ '1' ],                        '1',                'string'    ],
+            'getArrValueInt'        : [ [ 42 ],                         42,                 'number'    ],
+            'getArrValueBool'       : [ [ true ],                       true,               'boolean'   ],
+            'getArrValueFloat'      : [ [ 47.11 ],                      47.11,              'number'    ],
+            'getArrValueArray'      : [ [ [ 3, 4 ] ],                   [ 3, 4 ],           'object'    ],
+            'getArrValueObject'     : [ [ { 3 : 4 } ],                  { 3 : 4 },          'object'    ],
+            'getArrValueUndef'      : [ [ undefined ],                  undefined,          'undefined' ],
+            'getArrValueUndef2'     : [ [],                             undefined,          'undefined' ],
+            'getArrValueNull'       : [ [ null ],                       undefined,          'undefined' ],
+            'getArrValueNaN'        : [ [ Number.NaN ],                 Number.NaN,         'number'    ],
+            'getArrValueSymbol'     : [ [ Symbol() ],                   Symbol(),           'symbol'    ],
+            'getArrValueSymbol2'    : [ [ Symbol.for('key') ],          Symbol.for('key'),  'symbol'    ],
+            'getArrValueFunction'   : [ [ function() {} ],              function() {},      'function'  ],
+            'getArrValueDefault'    : [ [ undefined ],                  __ERR,              'string'    ],
+            'getArrValueDefault2'   : [ [ null ],                       __ERR,              'string'    ],
+            'getArrValueDefault3'   : [ [ "" ],                         "",                 'string'    ],
+            'getArrValueDefault4'   : [ [ 0 ],                          0,                  'number'    ],
+            'getArrValueDefault5'   : [ [ false ],                      false,              'boolean'   ],
+            'getArrValueRetVal'     : [ [ true ],                       __ERROR,            'string'    ],
+            'getArrValueObjUndef'   : [ undefined,                      __ERR,              'string'    ],
+            'getArrValueObjNull'    : [ null,                           __ERR,              'string'    ],
+            'getArrValueObjString'  : [ "",                             __ERR,              'string'    ]
         };
 
     new UnitTest('util.value.js', "Utilities zur Behandlung von Werten", {
@@ -97,27 +143,27 @@
                                     },
             'getValueUndef'       : function() {
                                         const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueUndef'];
-                                        const __RET = getValue(__VAL, __ERR, undefined);
+                                        const __RET = getValue(__VAL, undefined, undefined);
 
-                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Object zur\u00FCckgeben");
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss undefined zur\u00FCckgeben");
 
-                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Object zur\u00FCckgeben");
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss undefined zur\u00FCckgeben");
                                     },
             'getValueNull'        : function() {
                                         const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueNull'];
-                                        const __RET = getValue(__VAL, __ERR, undefined);
+                                        const __RET = getValue(__VAL, undefined, undefined);
 
-                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Object zur\u00FCckgeben");
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss undefined zur\u00FCckgeben");
 
-                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Object zur\u00FCckgeben");
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss undefined zur\u00FCckgeben");
                                     },
             'getValueNaN'         : function() {
                                         const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueNaN'];
                                         const __RET = getValue(__VAL, __ERR, undefined);
 
-                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Object zur\u00FCckgeben");
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss NaN zur\u00FCckgeben");
 
-                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Object zur\u00FCckgeben");
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss NaN zur\u00FCckgeben");
                                     },
             'getValueSymbol'      : function() {
                                         const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueSymbol'];
@@ -163,9 +209,9 @@
                                         const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueDefault3'];
                                         const __RET = getValue(__VAL, __ERR, undefined);
 
-                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss String zur\u00FCckgeben");
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Leerstring zur\u00FCckgeben");
 
-                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss String zur\u00FCckgeben");
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Leerstring zur\u00FCckgeben");
                                     },
             'getValueDefault4'    : function() {
                                         const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueDefault4'];
@@ -190,12 +236,364 @@
                                         ASSERT_EQUAL(__RET, __EXP, "getValue() muss __ERROR zur\u00FCckgeben");
 
                                         return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getObjValueString'   : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueString'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss String zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss String zur\u00FCckgeben");
+                                    },
+            'getObjValueInt'      : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueInt'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Integer zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Integer zur\u00FCckgeben");
+                                    },
+            'getObjValueBool'     : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueBool'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Boolean zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Boolean zur\u00FCckgeben");
+                                    },
+            'getObjValueFloat'    : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueFloat'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Float zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Float zur\u00FCckgeben");
+                                    },
+            'getObjValueArray'    : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueArray'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Array zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Array zur\u00FCckgeben");
+                                    },
+            'getObjValueObject'   : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueObject'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Object zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Object zur\u00FCckgeben");
+                                    },
+            'getObjValueUndef'    : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueUndef'];
+                                        const __RET = getObjValue(__OBJ, __KEY, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getObjValueUndef2'   : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueUndef2'];
+                                        const __RET = getObjValue(__OBJ, __KEY, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getObjValueNull'     : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueNull'];
+                                        const __RET = getObjValue(__OBJ, __KEY, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getObjValueNaN'      : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueNaN'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss NaN zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss NaN zur\u00FCckgeben");
+                                    },
+            'getObjValueSymbol'   : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueSymbol'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Symbol zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Symbol zur\u00FCckgeben");
+                                    },
+            'getObjValueSymbol2'  : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueSymbol2'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Symbol zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Symbol zur\u00FCckgeben");
+                                    },
+            'getObjValueFunction' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueFunction'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Function zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Function zur\u00FCckgeben");
+                                    },
+            'getObjValueDefault'  : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueDefault'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERR zur\u00FCckgeben");
+                                    },
+            'getObjValueDefault2' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueDefault2'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERR zur\u00FCckgeben");
+                                    },
+            'getObjValueDefault3' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueDefault3'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Leerstring zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Leerstring zur\u00FCckgeben");
+                                    },
+            'getObjValueDefault4' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueDefault4'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Integer zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Integer zur\u00FCckgeben");
+                                    },
+            'getObjValueDefault5' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueDefault5'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Boolean zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Boolean zur\u00FCckgeben");
+                                    },
+            'getObjValueRetVal'   : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueRetVal'];
+                                        const __RET = getObjValue(__OBJ, __KEY, undefined, __ERROR);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERROR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getObjValueObjUndef' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueObjUndef'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getObjValueObjNull'  : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueObjNull'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getObjValueObjString': function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueObjString'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getArrValueString'   : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueString'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss String zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss String zur\u00FCckgeben");
+                                    },
+            'getArrValueInt'      : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueInt'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Integer zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Integer zur\u00FCckgeben");
+                                    },
+            'getArrValueBool'     : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueBool'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Boolean zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Boolean zur\u00FCckgeben");
+                                    },
+            'getArrValueFloat'    : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueFloat'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Float zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Float zur\u00FCckgeben");
+                                    },
+            'getArrValueArray'    : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueArray'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Array zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Array zur\u00FCckgeben");
+                                    },
+            'getArrValueObject'   : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueObject'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Object zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Object zur\u00FCckgeben");
+                                    },
+            'getArrValueUndef'    : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueUndef'];
+                                        const __RET = getArrValue(__ARR, __KEY0, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getArrValueUndef2'   : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueUndef2'];
+                                        const __RET = getArrValue(__ARR, __KEY0, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getArrValueNull'     : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueNull'];
+                                        const __RET = getArrValue(__ARR, __KEY0, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getArrValueNaN'      : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueNaN'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss NaN zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss NaN zur\u00FCckgeben");
+                                    },
+            'getArrValueSymbol'   : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueSymbol'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Symbol zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Symbol zur\u00FCckgeben");
+                                    },
+            'getArrValueSymbol2'  : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueSymbol2'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Symbol zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Symbol zur\u00FCckgeben");
+                                    },
+            'getArrValueFunction' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueFunction'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Function zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Function zur\u00FCckgeben");
+                                    },
+            'getArrValueDefault'  : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueDefault'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERR zur\u00FCckgeben");
+                                    },
+            'getArrValueDefault2' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueDefault2'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERR zur\u00FCckgeben");
+                                    },
+            'getArrValueDefault3' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueDefault3'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Leerstring zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Leerstring zur\u00FCckgeben");
+                                    },
+            'getArrValueDefault4' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueDefault4'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Integer zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Integer zur\u00FCckgeben");
+                                    },
+            'getArrValueDefault5' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueDefault5'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Boolean zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Boolean zur\u00FCckgeben");
+                                    },
+            'getArrValueRetVal'   : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueRetVal'];
+                                        const __RET = getArrValue(__ARR, __KEY0, undefined, __ERROR);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERROR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getArrValueObjUndef' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueObjUndef'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getArrValueObjNull'  : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueObjNull'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getArrValueObjString': function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueObjString'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERROR zur\u00FCckgeben");
                                     }
         });
 
 //+function getValue(value, defValue = undefined, retValue = undefined) {
-//function getObjValue(obj, item, defValue = undefined, retValue = undefined) {
-//function getArrValue(arr, index, defValue = undefined, retValue = undefined) {
+//+function getObjValue(obj, item, defValue = undefined, retValue = undefined) {
+//+function getArrValue(arr, index, defValue = undefined, retValue = undefined) {
 //function pushObjValue(obj, item, value, defValue, returnOnly = false, scalarUnique = false) {
 //function pushArrValue(arr, index, value, defValue, returnOnly = false, scalarUnique = false) {
 //function getValueIn(value, minValue = undefined, maxValue = undefined, defValue = undefined) {
