@@ -87,8 +87,8 @@ Object.entries({
                     return new Promise((resolve, reject) => {
                             try {
                                 resolve(old.apply(this, args));
-                            } catch (e) {
-                                reject(e);
+                            } catch (ex) {
+                                reject(ex);
                             }
                         });
                 };

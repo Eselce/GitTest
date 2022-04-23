@@ -27,7 +27,7 @@
 function UnitTestOption(name, desc, tests, load) {
     'use strict';
 
-    this.register(name, desc, tests, load, this);
+    UnitTest.call(this, name, desc, tests, load);
 }
 
 Class.define(UnitTestOption, UnitTest, {

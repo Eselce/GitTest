@@ -26,7 +26,7 @@
     const __TESTDATA = {
             'prefixName'    : [ "Name",     "Prefix",   "PrefixName"                        ],
             'postfixName'   : [ "Name",     "Postfix",  "NamePostfix"                       ],
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ]
         };
 
     new UnitTestOption('util.option.api.js', "Schnittstelle zur Behandlung von Optionen", {
