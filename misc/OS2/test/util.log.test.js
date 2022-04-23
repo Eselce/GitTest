@@ -30,7 +30,7 @@
                                         ASSERT_EQUAL(__LOGFUN.length, 10, "logFun[] ben\u00F6tigt 10 Funktionen");  // 0, ..., 9
 
                                         __LOGFUN.forEach((fun, index) => {
-                                                ASSERT_TYPEOF(fun, 'function', "logFun[" + index + " mu\u00DF eine Funktion sein");
+                                                ASSERT_TYPEOF(fun, 'function', "logFun[" + index + " muss eine Funktion sein");
                                             });
 
                                         return true;
