@@ -7,9 +7,15 @@
 //  test.lib.option.js
 // https://eselce.github.io/GitTest/misc/OS2/test/<TEST>: 
 //  test.assert.test.js
+//  test.class.unittest.test.js
+//  test.lib.option.test.js
+//  test.mock.gm.test.js
+//  util.debug.test.js
 //  util.log.test.js
-//  util.store.test.js
+//  util.object.test.js
 //  util.option.api.test.js
+//  util.store.test.js
+//  util.value.test.js
 //  util.xhr.test.js
 //  util.xhr.gm.test.js
 
@@ -463,9 +469,10 @@ const __ASSERTEPSILON   = Number.EPSILON;
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 
-const __SHOWUNITTESTDESC = false;  // Beschreibung als Tooltip (false) oder Text (true)
+const __SHOWMODULECOUNT = false;    // Zeige Spalte mit Anzahl der Module
+const __SHOWUNITTESTDESC = false;   // Beschreibung als Tooltip (false) oder Text (true)
 
-const __TESTLOGLEVEL = 9;  // Logs ausfuehrlich (9) oder normal (4)
+const __TESTLOGLEVEL = 9;           // Logs ausfuehrlich (9) oder normal (4)
 
 __LOG.init(window, __TESTLOGLEVEL);  // Testphase
 
@@ -479,7 +486,11 @@ __LOG.init(window, __TESTLOGLEVEL);  // Testphase
 function UnitTest(name, desc, tests, load) {
     'use strict';
 
-    this.register(name, desc, tests, load, this);
+    try {
+        this.register(name, desc, tests, load, this);
+    } catch (ex) {
+        showException(ex);
+    }
 }
 
 Class.define(UnitTest, Object, {
@@ -514,6 +525,14 @@ Class.define(UnitTest, Object, {
                                                                               throw __MSG;
                                                                           });
                                     }
+                                }
+
+                                if (__ALLLIBS[__LIBNAME]) {
+                                    const __MSG = "Test module " + __LOG.info(__LIBNAME, false) + " ("
+                                                                + __LOG.info(__LIBDESC, false) + " already exists as "
+                                                                + __LOG.info(__ALLLIBS[__LIBNAME].desc, false);
+                                    __LOG[1](__MSG);
+                                    throw __MSG;
                                 }
 
                                 __ALLLIBS[__LIBNAME] = __LIBENTRY;
@@ -765,7 +784,11 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
 
             appendCell(__ROW, __RESULTS.name);
             appendCell(__ROW, __RESULTS.desc);
-            appendCell(__ROW, __RESULTS.countModules);
+
+            if (__SHOWMODULECOUNT) {
+                appendCell(__ROW, __RESULTS.countModules);
+            }
+
             appendCell(__ROW, __RESULTS.countRunning);
             appendCell(__ROW, __RESULTS.countSuccess);
             appendCell(__ROW, __RESULTS.countFailed);
@@ -805,7 +828,11 @@ UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = docum
 
         appendCell(__ROW, "Test", __COLOR);
         appendCell(__ROW, "Details", __COLOR);
-        appendCell(__ROW, "Module", __COLOR);
+
+        if (__SHOWMODULECOUNT) {
+            appendCell(__ROW, "Module", __COLOR);
+        }
+
         appendCell(__ROW, "Anz", __COLOR);
         appendCell(__ROW, "OK", __COLOR);
         appendCell(__ROW, "FAIL", __COLOR);
@@ -1019,7 +1046,7 @@ const __LIBRESULTS = { };
 function UnitTestOption(name, desc, tests, load) {
     'use strict';
 
-    this.register(name, desc, tests, load, this);
+    UnitTest.call(this, name, desc, tests, load);
 }
 
 Class.define(UnitTestOption, UnitTest, {
@@ -3645,6 +3672,306 @@ __TESTTEAMCLASS.optSelect = {
 
 /*** Ende Modul test.assert.test.js ***/
 
+/*** Modul test.class.unittest.test.js ***/
+
+// ==UserScript==
+// _name         test.class.unittest.test
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2022+
+// _author       Sven Loges (SLC)
+// _description  Unit-Tests JS-lib mit Basisklasse fuer Unit-Tests fuer ein JS-Modul
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
+// _require      https://eselce.github.io/OS2.scripts/test/test.class.unittest.test.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Unit-Tests zu test.class.unittest ====================
+
+(() => {
+
+// ==================== Konfigurations-Abschnitt fuer Optionen ====================
+
+//const __SHOWMODULECOUNT = false;    // Zeige Spalte mit Anzahl der Module
+//const __SHOWUNITTESTDESC = false;   // Beschreibung als Tooltip (false) oder Text (true)
+//const __TESTLOGLEVEL = 9;           // Logs ausfuehrlich (9) oder normal (4)
+
+// ==================== Abschnitt fuer Klasse UnitTest ====================
+
+    const __TESTDATA = {
+            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+        };
+
+    new UnitTest('test.class.unittest.js', "Klasse UnitTest", {
+            'loadOption'          : function() {
+                                        
+                                    }
+        });
+
+//function UnitTest(name, desc, tests, load) {
+//Class.define(UnitTest, Object, {
+//            'register'    : function(name, desc, tests, load, thisArg) {
+//            'addTest'     : function(name, tFun, desc = undefined) {
+//            'prepare'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+//            'cleanup'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+//            'setup'       : async function(name, desc, testFun, thisArg) {
+//            'teardown'    : async function(name, desc, testFun, thisArg) {
+//            'run'         : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+//UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResultFun, tableId, resultObj, thisArg) {
+//UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
+//UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = document) {
+//UnitTest.getStyleFromResults = function(results) {
+
+// ==================== Ende Abschnitt fuer Klasse UnitTest ====================
+
+// ==================== Abschnitt fuer Klasse UnitTestResults ====================
+
+//function UnitTestResults(libName, libDesc, libTest) {
+//Class.define(UnitTestResults, Object, {
+//                'module'              : function() {
+//                'running'             : function() {
+//                'success'             : function() {
+//                'failed'              : function() {
+//                'exception'           : function(ex) {
+//                'error'               : function(ex) {
+//                'checkResult'         : function(result) {
+//                'checkException'      : function(ex) {
+//                'merge'               : function(resultsToAdd) {
+//                'sum'                 : function() {
+
+// ==================== Ende Abschnitt fuer Klasse UnitTestResults ====================
+
+// ==================== Abschnitt fuer globale Variablen ====================
+
+//const __ALLLIBS = { };
+//const __LIBRESULTS = { };
+
+// ==================== Ende Abschnitt fuer globale Variablen ====================
+
+})();
+
+// ==================== Ende Abschnitt fuer Unit-Tests zu test.class.unittest ====================
+
+// *** EOF ***
+
+/*** Ende Modul test.class.unittest.test.js ***/
+
+/*** Modul test.lib.option.test.js ***/
+
+// ==UserScript==
+// _name         test.lib.option.test
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2022+
+// _author       Sven Loges (SLC)
+// _description  Unit-Tests JS-lib mit Basisklasse fuer Unit-Tests fuer ein JS-Modul
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.lib.option.js
+// _require      https://eselce.github.io/OS2.scripts/test/test.lib.option.test.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Unit-Tests zu test.lib.option ====================
+
+(() => {
+
+// ==================== Abschnitt fuer Klasse UnitTestOption ====================
+
+    const __TESTDATA = {
+            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+        };
+
+    new UnitTest('test.lib.option.js', "Klasse UnitTestOption", {
+            'loadOption'          : function() {
+                                        
+                                    }
+        });
+
+//function UnitTestOption(name, desc, tests, load) {
+//Class.define(UnitTestOption, UnitTest, {
+//            'prepare'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+//            'cleanup'     : async function(name, desc, thisArg, resultObj, resultFun, tableId) {
+//            'setup'       : async function(name, desc, testFun, thisArg) {
+//            'teardown'    : async function(name, desc, testFun, thisArg) {
+
+// ==================== Ende Abschnitt fuer Klasse UnitTestOption ====================
+
+// ==================== Ende Abschnitt fuer Test-Konfiguration __TESTCONFIG ====================
+
+//const __TESTOPTCONFIG = {
+//    'saison' : {          // Laufende Saison
+//    'ligaSize' : {        // Ligengroesse
+//    'datenZat' : {        // Stand der Daten zum Team und ZAT
+//    'team' : {            // Datenspeicher fuer Daten des Erst- bzw. Zweitteams
+//    'reset' : {           // Optionen auf die "Werkseinstellungen" zuruecksetzen
+//    'storage' : {         // Browserspeicher fuer die Klicks auf Optionen
+//    'oldStorage' : {      // Vorheriger Browserspeicher fuer die Klicks auf Optionen
+//    'showForm' : {        // Optionen auf der Webseite (true = anzeigen, false = nicht anzeigen)
+
+// ==================== Ende Abschnitt fuer Test-Konfiguration __TESTCONFIG ====================
+
+// ==================== Spezialisierter Abschnitt fuer Optionen ====================
+
+//const __TESTTEAMCLASS = new TeamClassification();
+//__TESTTEAMCLASS.optSelect = {
+
+// ==================== Ende Abschnitt fuer Optionen ====================
+
+})();
+
+// ==================== Ende Abschnitt fuer Unit-Tests zu test.lib.option ====================
+
+// *** EOF ***
+
+/*** Ende Modul test.lib.option.test.js ***/
+
+/*** Modul test.mock.gm.test.js ***/
+
+// ==UserScript==
+// _name         test.mock.gm.test
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2022+
+// _author       Sven Loges (SLC)
+// _description  Unit-Tests JS-lib mit Mock-Funktionen als Ersatz fuer Greasemonkey-Einbindung
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.mock.gm.js
+// _require      https://eselce.github.io/OS2.scripts/test/test.mock.gm.test.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Unit-Tests zu test.mock.gm ====================
+
+(() => {
+
+// ==================== Abschnitt fuer Mock GM3-Funktionen ====================
+
+    const __TESTDATA = {
+            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+        };
+
+    new UnitTest('test.mock.gm.js', "Mock GM3-Funktionen", {
+            'loadOption'          : function() {
+                                        
+                                    }
+        });
+
+//this.GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
+//this.GM_setValue = function(name, value) {  // Mock GM_setValue function
+//this.GM_deleteValue = function(name) {  // Mock GM_deleteValue function
+//this.GM_listValues = function() {  // Mock GM_listValues function
+//const __MOCKSTORAGE = { };
+
+// ==================== Ende Abschnitt fuer Mock GM3-Funktionen ====================
+
+// ==================== Abschnitt fuer Mock GM4-Objekt ====================
+
+//this.GM = { };
+//this.GM['info'] = { };
+//const GM_INFO = this.GM.info;
+//GM_INFO['scriptHandler'] = "Mock Script Handler";
+//GM_INFO['version'] = "0.10";
+//if ((typeof __DBMAN.scriptHandler) === 'undefined') {
+//Object.entries({
+//        'GM_deleteValue' : 'deleteValue',
+//        'GM_getValue'    : 'getValue',
+//        'GM_listValues'  : 'listValues',
+//        'GM_setValue'    : 'setValue'
+//    }).forEach(([oldKey, newKey]) => {
+
+// ==================== Ende Abschnitt fuer Mock GM4-Objekt ====================
+
+})();
+
+// ==================== Ende Abschnitt fuer Unit-Tests zu test.mock.gm ====================
+
+// *** EOF ***
+
+/*** Ende Modul test.mock.gm.test.js ***/
+
+/*** Modul util.debug.test.js ***/
+
+// ==UserScript==
+// _name         util.debug.test
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2022+
+// _author       Sven Loges (SLC)
+// _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Debugging, Error-Handling, usw.
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
+// _require      https://eselce.github.io/OS2.scripts/test/util.debug.test.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Unit-Tests zu util.debug ====================
+
+(() => {
+
+// ==================== Abschnitt fuer Debugging und Error-Handling ====================
+
+    const __TESTDATA = {
+            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+        };
+
+    new UnitTest('util.debug.js', "Utilities zu Debugging und Error-Handling", {
+            'loadOption'          : function() {
+                                        
+                                    }
+        });
+
+//function showAlert(label, message, data = undefined, show = true) {
+//function showException(label, ex, show = true) {
+//function defaultCatch(error, show) {
+
+// ==================== Hilfsfunktionen fuer Typueberpruefungen ====================
+
+//function checkObjClass(obj, cls, strict = false, label = "", objName = undefined, className = undefined) {
+//function checkType(value, type, strict = false, label = "", valName = undefined, typeName = undefined) {
+//function checkEnumObj(value, enumObj, strict = false, label = "", valName = undefined, enumName = undefined) {
+
+// ==================== Ende Hilfsfunktionen fuer Typueberpruefungen ====================
+
+//function codeLineFor(ex, longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
+//function codeLine(longForm = false, showFunName = false, ignoreCaller = false, ignoreLibs = true) {
+//function checkCodeLineBlacklist(funName, fileName, strictFileName = false) {
+//const __CODELINEBLACKLIST = {
+//const __CODELINEBLACKLISTREGEXP = {
+
+// ==================== Ende Abschnitt fuer Debugging, Error-Handling ====================
+
+})();
+
+// ==================== Ende Abschnitt fuer Unit-Tests zu util.debug ====================
+
+// *** EOF ***
+
+/*** Ende Modul util.debug.test.js ***/
+
 /*** Modul util.log.test.js ***/
 
 // ==UserScript==
@@ -3679,7 +4006,7 @@ __TESTTEAMCLASS.optSelect = {
                                         ASSERT_EQUAL(__LOGFUN.length, 10, "logFun[] ben\u00F6tigt 10 Funktionen");  // 0, ..., 9
 
                                         __LOGFUN.forEach((fun, index) => {
-                                                ASSERT_TYPEOF(fun, 'function', "logFun[" + index + " mu\u00DF eine Funktion sein");
+                                                ASSERT_TYPEOF(fun, 'function', "logFun[" + index + " muss eine Funktion sein");
                                             });
 
                                         return true;
@@ -3718,6 +4045,221 @@ __TESTTEAMCLASS.optSelect = {
 // *** EOF ***
 
 /*** Ende Modul util.log.test.js ***/
+
+/*** Modul util.object.test.js ***/
+
+// ==UserScript==
+// _name         util.object.test
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2022+
+// _author       Sven Loges (SLC)
+// _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Details zu Objekten, Arrays, etc.
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
+// _require      https://eselce.github.io/OS2.scripts/test/util.object.test.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Unit-Tests zu util.object ====================
+
+(() => {
+
+// ==================== Abschnitt fuer diverse Utilities fuer Object, Array, etc. ====================
+
+// ==================== Abschnitt fuer detaillierte Ausgabe von Daten ====================
+
+    const __TESTDATA = {
+            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+        };
+
+    new UnitTest('util.object.js', "Utilities fuer Object, Array, etc.", {
+            'loadOption'          : function() {
+                                        
+                                    }
+        });
+
+//Object.Map = function(obj, mapFun, thisArg, filterFun, sortFun) {
+//function getObjInfo(obj, keyStrings, longForm, stepIn) {
+//function getValStr(obj, keyStrings, showType, showLen, stepIn) {
+
+// ==================== Ende Abschnitt fuer detaillierte Ausgabe von Daten ====================
+
+// ==================== Abschnitt Hilfsfunktionen fuer Array-Mapping ====================
+
+//function Arrayfrom(obj, mapFun, thisArg) {
+//function reverseArray(obj, keyValFun, valuesFun, valKeyFun) {
+
+// ==================== Ende Abschnitt Hilfsfunktionen fuer Array-Mapping ====================
+
+// ==================== Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
+
+//function reverseMapping(obj, keyValFun, valuesFun, valKeyFun) {
+//function selectMapping(obj, keyIndex = -1, valueIndex = 0, keyValFun, valKeyFun) {
+//function mappingPush(value, key, obj) {
+//function mappingSetOrPush(value, key, obj) {
+//function mappingPushFun(valueFun) {
+//function mappingSetOrPushFun(valueFun) {
+//function mappingValueSelect(index, keyValFun = null, value, key, obj, oldObj) {
+//function mappingValuesFunSelect(index, obj) {
+
+// ==================== Ende Abschnitt Hilfsfunktionen fuer Object-Mapping ====================
+
+// ==================== Ende Abschnitt fuer diverse Utilities fuer Object, Array, etc. ====================
+
+})();
+
+// ==================== Ende Abschnitt fuer Unit-Tests zu util.object ====================
+
+// *** EOF ***
+
+/*** Ende Modul util.object.test.js ***/
+
+/*** Modul util.option.api.test.js ***/
+
+// ==UserScript==
+// _name         util.option.api.test
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2021+
+// _author       Sven Loges (SLC)
+// _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Zugriff auf die Script-Optionen
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.lib.option.js
+// _require      https://eselce.github.io/OS2.scripts/test/util.option.api.test.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Unit-Tests zu util.option.api ====================
+
+(() => {
+
+// ==================== Abschnitt Operationen auf Optionen ====================
+
+    const __TESTDATA = {
+            'prefixName'    : [ "Name",     "Prefix",   "PrefixName"                        ],
+            'postfixName'   : [ "Name",     "Postfix",  "NamePostfix"                       ],
+            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ]
+        };
+
+    new UnitTestOption('util.option.api.js', "Schnittstelle zur Behandlung von Optionen", {
+            'loadOption'          : function() {
+                                        const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
+                                        const __OPT = this.optSet[__NAME];
+
+                                        return callPromiseChain(invalidateOpt(__OPT, true, false), () => loadOption(__OPT, false), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
+                                            });
+                                    },
+            'loadOptionForce'     : function() {
+                                        const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
+                                        const __OPT = this.optSet[__NAME];
+
+                                        return callPromiseChain(invalidateOpt(__OPT, true, false), () => loadOption(__OPT, true), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
+                                            });
+                                    },
+            'prefixName'          : function() {
+                                        const [ __NAME, __PREFIX, __EXP ] = __TESTDATA['prefixName'];
+
+                                        const __RET = prefixName(__NAME, __PREFIX);
+
+                                        return ASSERT_EQUAL(__RET, __EXP, "Name falsch zusammengesetzt");
+                                    },
+            'postfixName'         : function() {
+                                        const [ __NAME, __POSTFIX, __EXP ] = __TESTDATA['postfixName'];
+
+                                        const __RET = postfixName(__NAME, __POSTFIX);
+
+                                        return ASSERT_EQUAL(__RET, __EXP, "Name falsch zusammengesetzt");
+                                    },
+            'resetOptions'        : async function() {
+                                        const [ __NAME, __VAL, __EXP, __RELOAD ] = __TESTDATA['loadOption'];
+                                        const __OPT = this.optSet[__NAME];
+
+                                        await callPromiseChain(new Promise(function(resolve, reject) { return setOpt(__OPT, __VAL, __RELOAD, resolve, reject); }), () => getOptValue(__OPT), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __VAL, "getOptValue($[" + __LOG.info(__NAME, false) + "]) sollte die gesetzte Saison liefern");
+                                            });
+
+                                        return callPromiseChain(resetOptions(this.optSet, __RELOAD), () => getOptValue(__OPT), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "getOptValue($[" + __LOG.info(__NAME, false) + "]) sollte die Default-Saison liefern");
+                                            });
+                                    },
+            'loadOptValue'        : function() {
+                                        const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
+                                        const __OPT = this.optSet[__NAME];
+
+                                        return callPromiseChain(loadOptValue(__OPT), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
+                                            });
+                                    },
+            'loadOptValueDefault' : function() {
+                                        const [ __NAME, , __EXP, __RELOAD, __ALT ] = __TESTDATA['loadOption'];
+                                        const __OPT = this.optSet[__NAME];
+
+                                        return callPromiseChain(new Promise(function(resolve, reject) { return setOpt(__OPT, __ALT, __RELOAD, resolve, reject); }), () => loadOptValue(__OPT, __EXP), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
+                                            });
+                                    },
+            'loadOptValueSync'    : function() {
+                                        const [ __NAME, , __EXP, , __ALT ] = __TESTDATA['loadOption'];
+                                        const __ASYNC = false;
+                                        const __OPT = this.optSet[__NAME];
+
+                                        return callPromiseChain(Promise.resolve(loadOptValue(__OPT, __ALT, __ASYNC)), value => {
+                                                const __RET = value;
+
+                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
+                                            });
+                                    }
+        });
+
+//function invalidateOpt(opt, force = false, reload = true) {
+//async function invalidateOpts(optSet, force = false, reload = true) {
+//function loadOption(opt, force = false) {
+//function loadOptions(optSet, force = false) {
+//function deleteOption(opt, force = false, reset = true) {
+//async function deleteOptions(optSet, optSelect = undefined, force = false, reset = true) {
+//function saveOption(opt) {
+//async function saveOptions(optSet, optSelect = undefined) {
+//async function renameOption(opt, name, reload = false, force = false) {
+//function prefixName(name, prefix) {
+//function postfixName(name, postfix) {
+//async function renameOptions(optSet, optSelect, renameParam = undefined, renameFun = prefixName) {
+//async function resetOptions(optSet, reload = true) {
+//function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false) {
+
+// ==================== Ende Abschnitt Operationen auf Optionen ====================
+
+})();
+
+// ==================== Ende Abschnitt fuer Unit-Tests zu util.option.api ====================
+
+// *** EOF ***
+
+/*** Ende Modul util.option.api.test.js ***/
 
 /*** Modul util.store.test.js ***/
 
@@ -5815,147 +6357,640 @@ __TESTTEAMCLASS.optSelect = {
 
 /*** Ende Modul util.store.test.js ***/
 
-/*** Modul util.option.api.test.js ***/
+/*** Modul util.value.test.js ***/
 
 // ==UserScript==
-// _name         util.option.api.test
+// _name         util.value.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
-// _copyright    2021+
+// _copyright    2022+
 // _author       Sven Loges (SLC)
-// _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Zugriff auf die Script-Optionen
+// _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Logging, Debugging, Error-Handling, usw.
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
-// _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
-// _require      https://eselce.github.io/OS2.scripts/lib/test.lib.option.js
-// _require      https://eselce.github.io/OS2.scripts/test/util.option.api.test.js
+// _require      https://eselce.github.io/OS2.scripts/test/util.value.test.js
 // ==/UserScript==
 
 // ECMAScript 6:
 /* jshint esnext: true */
 /* jshint moz: true */
 
-// ==================== Abschnitt fuer Unit-Tests zu util.option.api ====================
+// ==================== Abschnitt fuer Unit-Tests zu util.value ====================
 
 (() => {
 
-// ==================== Abschnitt Operationen auf Optionen ====================
+// ==================== Abschnitt fuer diverse Utilities fuer Werte ====================
+
+    const __ERROR = 'ERROR';
+    const __ERR = __ERROR;
+    const __KEY = 'key';    // Key fuer Object
+    const __KEY0 = 0;       // Key fuer Array
 
     const __TESTDATA = {
-            'prefixName'    : [ "Name",     "Prefix",   "PrefixName"                        ],
-            'postfixName'   : [ "Name",     "Postfix",  "NamePostfix"                       ],
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'getValueString'        : [ '1',                            '1',                'string'    ],
+            'getValueInt'           : [ 42,                             42,                 'number'    ],
+            'getValueBool'          : [ true,                           true,               'boolean'   ],
+            'getValueFloat'         : [ 47.11,                          47.11,              'number'    ],
+            'getValueArray'         : [ [ 3, 4 ],                       [ 3, 4 ],           'object'    ],
+            'getValueObject'        : [ { 3 : 4 },                      { 3 : 4 },          'object'    ],
+            'getValueUndef'         : [ undefined,                      undefined,          'undefined' ],
+            'getValueNull'          : [ null,                           undefined,          'undefined' ],
+            'getValueNaN'           : [ Number.NaN,                     Number.NaN,         'number'    ],
+            'getValueSymbol'        : [ Symbol(),                       Symbol(),           'symbol'    ],
+            'getValueSymbol2'       : [ Symbol.for('key'),              Symbol.for('key'),  'symbol'    ],
+            'getValueFunction'      : [ function() {},                  function() {},      'function'  ],
+            'getValueDefault'       : [ undefined,                      __ERR,              'string'    ],
+            'getValueDefault2'      : [ null,                           __ERR,              'string'    ],
+            'getValueDefault3'      : [ "",                             "",                 'string'    ],
+            'getValueDefault4'      : [ 0,                              0,                  'number'    ],
+            'getValueDefault5'      : [ false,                          false,              'boolean'   ],
+            'getValueRetVal'        : [ true,                           __ERROR,            'string'    ],
+            'getObjValueString'     : [ { key : '1' },                  '1',                'string'    ],
+            'getObjValueInt'        : [ { key : 42 },                   42,                 'number'    ],
+            'getObjValueBool'       : [ { key : true },                 true,               'boolean'   ],
+            'getObjValueFloat'      : [ { key : 47.11 },                47.11,              'number'    ],
+            'getObjValueArray'      : [ { key : [ 3, 4 ] },             [ 3, 4 ],           'object'    ],
+            'getObjValueObject'     : [ { key : { 3 : 4 } },            { 3 : 4 },          'object'    ],
+            'getObjValueUndef'      : [ { key : undefined },            undefined,          'undefined' ],
+            'getObjValueUndef2'     : [ { },                            undefined,          'undefined' ],
+            'getObjValueNull'       : [ { key : null },                 undefined,          'undefined' ],
+            'getObjValueNaN'        : [ { key : Number.NaN },           Number.NaN,         'number'    ],
+            'getObjValueSymbol'     : [ { key : Symbol() },             Symbol(),           'symbol'    ],
+            'getObjValueSymbol2'    : [ { key : Symbol.for('key') },    Symbol.for('key'),  'symbol'    ],
+            'getObjValueFunction'   : [ { key : function() {} },        function() {},      'function'  ],
+            'getObjValueDefault'    : [ { key : undefined },            __ERR,              'string'    ],
+            'getObjValueDefault2'   : [ { key : null },                 __ERR,              'string'    ],
+            'getObjValueDefault3'   : [ { key : "" },                   "",                 'string'    ],
+            'getObjValueDefault4'   : [ { key : 0 },                    0,                  'number'    ],
+            'getObjValueDefault5'   : [ { key : false },                false,              'boolean'   ],
+            'getObjValueRetVal'     : [ { key : true },                 __ERROR,            'string'    ],
+            'getObjValueObjUndef'   : [ undefined,                      __ERR,              'string'    ],
+            'getObjValueObjNull'    : [ null,                           __ERR,              'string'    ],
+            'getObjValueObjString'  : [ "",                             __ERR,              'string'    ],
+            'getArrValueString'     : [ [ '1' ],                        '1',                'string'    ],
+            'getArrValueInt'        : [ [ 42 ],                         42,                 'number'    ],
+            'getArrValueBool'       : [ [ true ],                       true,               'boolean'   ],
+            'getArrValueFloat'      : [ [ 47.11 ],                      47.11,              'number'    ],
+            'getArrValueArray'      : [ [ [ 3, 4 ] ],                   [ 3, 4 ],           'object'    ],
+            'getArrValueObject'     : [ [ { 3 : 4 } ],                  { 3 : 4 },          'object'    ],
+            'getArrValueUndef'      : [ [ undefined ],                  undefined,          'undefined' ],
+            'getArrValueUndef2'     : [ [],                             undefined,          'undefined' ],
+            'getArrValueNull'       : [ [ null ],                       undefined,          'undefined' ],
+            'getArrValueNaN'        : [ [ Number.NaN ],                 Number.NaN,         'number'    ],
+            'getArrValueSymbol'     : [ [ Symbol() ],                   Symbol(),           'symbol'    ],
+            'getArrValueSymbol2'    : [ [ Symbol.for('key') ],          Symbol.for('key'),  'symbol'    ],
+            'getArrValueFunction'   : [ [ function() {} ],              function() {},      'function'  ],
+            'getArrValueDefault'    : [ [ undefined ],                  __ERR,              'string'    ],
+            'getArrValueDefault2'   : [ [ null ],                       __ERR,              'string'    ],
+            'getArrValueDefault3'   : [ [ "" ],                         "",                 'string'    ],
+            'getArrValueDefault4'   : [ [ 0 ],                          0,                  'number'    ],
+            'getArrValueDefault5'   : [ [ false ],                      false,              'boolean'   ],
+            'getArrValueRetVal'     : [ [ true ],                       __ERROR,            'string'    ],
+            'getArrValueObjUndef'   : [ undefined,                      __ERR,              'string'    ],
+            'getArrValueObjNull'    : [ null,                           __ERR,              'string'    ],
+            'getArrValueObjString'  : [ "",                             __ERR,              'string'    ]
         };
 
-    new UnitTestOption('util.option.api.js', "Schnittstelle zur Behandlung von Optionen", {
-            'loadOption'          : function() {
-                                        const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
-                                        const __OPT = this.optSet[__NAME];
+    new UnitTest('util.value.js', "Utilities zur Behandlung von Werten", {
+            'getValueString'      : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueString'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
 
-                                        return callPromiseChain(invalidateOpt(__OPT, true, false), () => loadOption(__OPT, false), value => {
-                                                const __RET = value;
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss String zur\u00FCckgeben");
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
-                                            });
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss String zur\u00FCckgeben");
                                     },
-            'loadOptionForce'     : function() {
-                                        const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
-                                        const __OPT = this.optSet[__NAME];
+            'getValueInt'         : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueInt'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
 
-                                        return callPromiseChain(invalidateOpt(__OPT, true, false), () => loadOption(__OPT, true), value => {
-                                                const __RET = value;
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Integer zur\u00FCckgeben");
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
-                                            });
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Integer zur\u00FCckgeben");
                                     },
-            'prefixName'          : function() {
-                                        const [ __NAME, __PREFIX, __EXP ] = __TESTDATA['prefixName'];
+            'getValueBool'        : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueBool'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
 
-                                        const __RET = prefixName(__NAME, __PREFIX);
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Boolean zur\u00FCckgeben");
 
-                                        return ASSERT_EQUAL(__RET, __EXP, "Name falsch zusammengesetzt");
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Boolean zur\u00FCckgeben");
                                     },
-            'postfixName'         : function() {
-                                        const [ __NAME, __POSTFIX, __EXP ] = __TESTDATA['postfixName'];
+            'getValueFloat'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueFloat'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
 
-                                        const __RET = postfixName(__NAME, __POSTFIX);
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Float zur\u00FCckgeben");
 
-                                        return ASSERT_EQUAL(__RET, __EXP, "Name falsch zusammengesetzt");
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Float zur\u00FCckgeben");
                                     },
-            'resetOptions'        : async function() {
-                                        const [ __NAME, __VAL, __EXP, __RELOAD ] = __TESTDATA['loadOption'];
-                                        const __OPT = this.optSet[__NAME];
+            'getValueArray'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueArray'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
 
-                                        await callPromiseChain(new Promise(function(resolve, reject) { return setOpt(__OPT, __VAL, __RELOAD, resolve, reject); }), () => getOptValue(__OPT), value => {
-                                                const __RET = value;
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Array zur\u00FCckgeben");
 
-                                                return ASSERT_EQUAL(__RET, __VAL, "getOptValue($[" + __LOG.info(__NAME, false) + "]) sollte die gesetzte Saison liefern");
-                                            });
-
-                                        return callPromiseChain(resetOptions(this.optSet, __RELOAD), () => getOptValue(__OPT), value => {
-                                                const __RET = value;
-
-                                                return ASSERT_EQUAL(__RET, __EXP, "getOptValue($[" + __LOG.info(__NAME, false) + "]) sollte die Default-Saison liefern");
-                                            });
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Array zur\u00FCckgeben");
                                     },
-            'loadOptValue'        : function() {
-                                        const [ __NAME, , __EXP ] = __TESTDATA['loadOption'];
-                                        const __OPT = this.optSet[__NAME];
+            'getValueObject'      : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueObject'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
 
-                                        return callPromiseChain(loadOptValue(__OPT), value => {
-                                                const __RET = value;
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Object zur\u00FCckgeben");
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
-                                            });
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Object zur\u00FCckgeben");
                                     },
-            'loadOptValueDefault' : function() {
-                                        const [ __NAME, , __EXP, __RELOAD, __ALT ] = __TESTDATA['loadOption'];
-                                        const __OPT = this.optSet[__NAME];
+            'getValueUndef'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueUndef'];
+                                        const __RET = getValue(__VAL, undefined, undefined);
 
-                                        return callPromiseChain(new Promise(function(resolve, reject) { return setOpt(__OPT, __ALT, __RELOAD, resolve, reject); }), () => loadOptValue(__OPT, __EXP), value => {
-                                                const __RET = value;
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss undefined zur\u00FCckgeben");
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
-                                            });
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss undefined zur\u00FCckgeben");
                                     },
-            'loadOptValueSync'    : function() {
-                                        const [ __NAME, , __EXP, , __ALT ] = __TESTDATA['loadOption'];
-                                        const __ASYNC = false;
-                                        const __OPT = this.optSet[__NAME];
+            'getValueNull'        : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueNull'];
+                                        const __RET = getValue(__VAL, undefined, undefined);
 
-                                        return callPromiseChain(Promise.resolve(loadOptValue(__OPT, __ALT, __ASYNC)), value => {
-                                                const __RET = value;
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss undefined zur\u00FCckgeben");
 
-                                                return ASSERT_EQUAL(__RET, __EXP, "loadOption($[" + __LOG.info(__NAME, false) + "]) sollte die aktuelle Saison liefern");
-                                            });
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getValueNaN'         : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueNaN'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss NaN zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss NaN zur\u00FCckgeben");
+                                    },
+            'getValueSymbol'      : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueSymbol'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Symbol zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Symbol zur\u00FCckgeben");
+                                    },
+            'getValueSymbol2'     : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueSymbol2'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Symbol zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Symbol zur\u00FCckgeben");
+                                    },
+            'getValueFunction'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueFunction'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Function zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Function zur\u00FCckgeben");
+                                    },
+            'getValueDefault'     : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueDefault'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss __ERR zur\u00FCckgeben");
+                                    },
+            'getValueDefault2'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueDefault2'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss __ERR zur\u00FCckgeben");
+                                    },
+            'getValueDefault3'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueDefault3'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Leerstring zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Leerstring zur\u00FCckgeben");
+                                    },
+            'getValueDefault4'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueDefault4'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Integer zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Integer zur\u00FCckgeben");
+                                    },
+            'getValueDefault5'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueDefault5'];
+                                        const __RET = getValue(__VAL, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss Boolean zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss Boolean zur\u00FCckgeben");
+                                    },
+            'getValueRetVal'      : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATA['getValueRetVal'];
+                                        const __RET = getValue(__VAL, undefined, __ERROR);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getValue() muss __ERROR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getObjValueString'   : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueString'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss String zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss String zur\u00FCckgeben");
+                                    },
+            'getObjValueInt'      : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueInt'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Integer zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Integer zur\u00FCckgeben");
+                                    },
+            'getObjValueBool'     : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueBool'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Boolean zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Boolean zur\u00FCckgeben");
+                                    },
+            'getObjValueFloat'    : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueFloat'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Float zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Float zur\u00FCckgeben");
+                                    },
+            'getObjValueArray'    : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueArray'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Array zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Array zur\u00FCckgeben");
+                                    },
+            'getObjValueObject'   : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueObject'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Object zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Object zur\u00FCckgeben");
+                                    },
+            'getObjValueUndef'    : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueUndef'];
+                                        const __RET = getObjValue(__OBJ, __KEY, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getObjValueUndef2'   : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueUndef2'];
+                                        const __RET = getObjValue(__OBJ, __KEY, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getObjValueNull'     : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueNull'];
+                                        const __RET = getObjValue(__OBJ, __KEY, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getObjValueNaN'      : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueNaN'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss NaN zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss NaN zur\u00FCckgeben");
+                                    },
+            'getObjValueSymbol'   : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueSymbol'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Symbol zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Symbol zur\u00FCckgeben");
+                                    },
+            'getObjValueSymbol2'  : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueSymbol2'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Symbol zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Symbol zur\u00FCckgeben");
+                                    },
+            'getObjValueFunction' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueFunction'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Function zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Function zur\u00FCckgeben");
+                                    },
+            'getObjValueDefault'  : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueDefault'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERR zur\u00FCckgeben");
+                                    },
+            'getObjValueDefault2' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueDefault2'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERR zur\u00FCckgeben");
+                                    },
+            'getObjValueDefault3' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueDefault3'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Leerstring zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Leerstring zur\u00FCckgeben");
+                                    },
+            'getObjValueDefault4' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueDefault4'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Integer zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Integer zur\u00FCckgeben");
+                                    },
+            'getObjValueDefault5' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueDefault5'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss Boolean zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss Boolean zur\u00FCckgeben");
+                                    },
+            'getObjValueRetVal'   : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueRetVal'];
+                                        const __RET = getObjValue(__OBJ, __KEY, undefined, __ERROR);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERROR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getObjValueObjUndef' : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueObjUndef'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getObjValueObjNull'  : function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueObjNull'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getObjValueObjString': function() {
+                                        const [ __OBJ, __EXP, __TYPE ] = __TESTDATA['getObjValueObjString'];
+                                        const __RET = getObjValue(__OBJ, __KEY, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getObjValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getObjValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getArrValueString'   : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueString'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss String zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss String zur\u00FCckgeben");
+                                    },
+            'getArrValueInt'      : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueInt'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Integer zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Integer zur\u00FCckgeben");
+                                    },
+            'getArrValueBool'     : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueBool'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Boolean zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Boolean zur\u00FCckgeben");
+                                    },
+            'getArrValueFloat'    : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueFloat'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Float zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Float zur\u00FCckgeben");
+                                    },
+            'getArrValueArray'    : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueArray'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Array zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Array zur\u00FCckgeben");
+                                    },
+            'getArrValueObject'   : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueObject'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Object zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Object zur\u00FCckgeben");
+                                    },
+            'getArrValueUndef'    : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueUndef'];
+                                        const __RET = getArrValue(__ARR, __KEY0, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getArrValueUndef2'   : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueUndef2'];
+                                        const __RET = getArrValue(__ARR, __KEY0, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getArrValueNull'     : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueNull'];
+                                        const __RET = getArrValue(__ARR, __KEY0, undefined, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss undefined zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss undefined zur\u00FCckgeben");
+                                    },
+            'getArrValueNaN'      : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueNaN'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss NaN zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss NaN zur\u00FCckgeben");
+                                    },
+            'getArrValueSymbol'   : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueSymbol'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Symbol zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Symbol zur\u00FCckgeben");
+                                    },
+            'getArrValueSymbol2'  : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueSymbol2'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Symbol zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Symbol zur\u00FCckgeben");
+                                    },
+            'getArrValueFunction' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueFunction'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Function zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Function zur\u00FCckgeben");
+                                    },
+            'getArrValueDefault'  : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueDefault'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERR zur\u00FCckgeben");
+                                    },
+            'getArrValueDefault2' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueDefault2'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERR zur\u00FCckgeben");
+                                    },
+            'getArrValueDefault3' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueDefault3'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Leerstring zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Leerstring zur\u00FCckgeben");
+                                    },
+            'getArrValueDefault4' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueDefault4'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Integer zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Integer zur\u00FCckgeben");
+                                    },
+            'getArrValueDefault5' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueDefault5'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss Boolean zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss Boolean zur\u00FCckgeben");
+                                    },
+            'getArrValueRetVal'   : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueRetVal'];
+                                        const __RET = getArrValue(__ARR, __KEY0, undefined, __ERROR);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERROR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getArrValueObjUndef' : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueObjUndef'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getArrValueObjNull'  : function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueObjNull'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERROR zur\u00FCckgeben");
+                                    },
+            'getArrValueObjString': function() {
+                                        const [ __ARR, __EXP, __TYPE ] = __TESTDATA['getArrValueObjString'];
+                                        const __RET = getArrValue(__ARR, __KEY0, __ERR, undefined);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getArrValue() muss __ERR zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getArrValue() muss __ERROR zur\u00FCckgeben");
                                     }
         });
 
-//function invalidateOpt(opt, force = false, reload = true) {
-//async function invalidateOpts(optSet, force = false, reload = true) {
-//function loadOption(opt, force = false) {
-//function loadOptions(optSet, force = false) {
-//function deleteOption(opt, force = false, reset = true) {
-//async function deleteOptions(optSet, optSelect = undefined, force = false, reset = true) {
-//function saveOption(opt) {
-//async function saveOptions(optSet, optSelect = undefined) {
-//async function renameOption(opt, name, reload = false, force = false) {
-//function prefixName(name, prefix) {
-//function postfixName(name, postfix) {
-//async function renameOptions(optSet, optSelect, renameParam = undefined, renameFun = prefixName) {
-//async function resetOptions(optSet, reload = true) {
-//function loadOptValue(opt, defValue = undefined, asyncLoad = true, force = false) {
+//+function getValue(value, defValue = undefined, retValue = undefined) {
+//+function getObjValue(obj, item, defValue = undefined, retValue = undefined) {
+//+function getArrValue(arr, index, defValue = undefined, retValue = undefined) {
+//function pushObjValue(obj, item, value, defValue, returnOnly = false, scalarUnique = false) {
+//function pushArrValue(arr, index, value, defValue, returnOnly = false, scalarUnique = false) {
+//function getValueIn(value, minValue = undefined, maxValue = undefined, defValue = undefined) {
+//function getNextValue(arr, value) {
+//function getMulValue(valueA, valueB, digits = 0, defValue = Number.NaN) {
+//function getOrdinal(value, defValue = '*') {
+//function getNumber(numberString) {
+//function getNumberString(numberString) {
+//function floorValue(value, dot = '.') {
+//function toArray(value) {
+//function flatArray(... args) {
+//function param0Wrapper(wrapFun, param0Fun) {
+//function param0ArrWrapper(wrapFun, param0ArrFun) {
+//function paramWrapper(wrapFun, paramFuns) {
+//function paramArrWrapper(wrapFun, paramFuns) {
+//function replaceArrayFun(formatFun, space = ' ') {
+//function padStartFun(targetLength = 4, padString = ' ') {
+//function padEndFun(targetLength = 4, padString = ' ') {
+//function padLeft(value, size = 4, char = ' ') {
+//function padNumber(value, size = 2, char = '0') {
+//function reverseString(string) {
+//function sameValue(value) {
+//function existValue(value) {
+//function compareNumber(valueA, valueB) {
+//function typeOf(value) {
+//function valueOf(data) {
 
-// ==================== Ende Abschnitt Operationen auf Optionen ====================
+// ==================== Ende Abschnitt fuer diverse Utilities fuer Werte ====================
 
 })();
 
-// ==================== Ende Abschnitt fuer Unit-Tests zu util.option.api ====================
+// ==================== Ende Abschnitt fuer Unit-Tests zu util.value ====================
 
 // *** EOF ***
 
-/*** Ende Modul util.option.api.test.js ***/
+/*** Ende Modul util.value.test.js ***/
 
 /*** Modul util.xhr.test.js ***/
 

@@ -456,9 +456,10 @@ const __ASSERTEPSILON   = Number.EPSILON;
 
 // ==================== Konfigurations-Abschnitt fuer Optionen ====================
 
-const __SHOWUNITTESTDESC = false;  // Beschreibung als Tooltip (false) oder Text (true)
+const __SHOWMODULECOUNT = false;    // Zeige Spalte mit Anzahl der Module
+const __SHOWUNITTESTDESC = false;   // Beschreibung als Tooltip (false) oder Text (true)
 
-const __TESTLOGLEVEL = 9;  // Logs ausfuehrlich (9) oder normal (4)
+const __TESTLOGLEVEL = 9;           // Logs ausfuehrlich (9) oder normal (4)
 
 __LOG.init(window, __TESTLOGLEVEL);  // Testphase
 
@@ -472,7 +473,11 @@ __LOG.init(window, __TESTLOGLEVEL);  // Testphase
 function UnitTest(name, desc, tests, load) {
     'use strict';
 
-    this.register(name, desc, tests, load, this);
+    try {
+        this.register(name, desc, tests, load, this);
+    } catch (ex) {
+        showException(ex);
+    }
 }
 
 Class.define(UnitTest, Object, {
@@ -507,6 +512,14 @@ Class.define(UnitTest, Object, {
                                                                               throw __MSG;
                                                                           });
                                     }
+                                }
+
+                                if (__ALLLIBS[__LIBNAME]) {
+                                    const __MSG = "Test module " + __LOG.info(__LIBNAME, false) + " ("
+                                                                + __LOG.info(__LIBDESC, false) + " already exists as "
+                                                                + __LOG.info(__ALLLIBS[__LIBNAME].desc, false);
+                                    __LOG[1](__MSG);
+                                    throw __MSG;
                                 }
 
                                 __ALLLIBS[__LIBNAME] = __LIBENTRY;
@@ -758,7 +771,11 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
 
             appendCell(__ROW, __RESULTS.name);
             appendCell(__ROW, __RESULTS.desc);
-            appendCell(__ROW, __RESULTS.countModules);
+
+            if (__SHOWMODULECOUNT) {
+                appendCell(__ROW, __RESULTS.countModules);
+            }
+
             appendCell(__ROW, __RESULTS.countRunning);
             appendCell(__ROW, __RESULTS.countSuccess);
             appendCell(__ROW, __RESULTS.countFailed);
@@ -798,7 +815,11 @@ UnitTest.getOrCreateTestResultTable = function(tableId = 'UnitTest', doc = docum
 
         appendCell(__ROW, "Test", __COLOR);
         appendCell(__ROW, "Details", __COLOR);
-        appendCell(__ROW, "Module", __COLOR);
+
+        if (__SHOWMODULECOUNT) {
+            appendCell(__ROW, "Module", __COLOR);
+        }
+
         appendCell(__ROW, "Anz", __COLOR);
         appendCell(__ROW, "OK", __COLOR);
         appendCell(__ROW, "FAIL", __COLOR);
@@ -1012,7 +1033,7 @@ const __LIBRESULTS = { };
 function UnitTestOption(name, desc, tests, load) {
     'use strict';
 
-    this.register(name, desc, tests, load, this);
+    UnitTest.call(this, name, desc, tests, load);
 }
 
 Class.define(UnitTestOption, UnitTest, {
