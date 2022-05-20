@@ -76,7 +76,7 @@ function canUseMemory(memory = undefined) {
     let ret = false;
 
     if (__MEMORY !== undefined) {
-        const __TESTPREFIX = 'canUseStorageTest';
+        const __TESTPREFIX = 'canUseMemoryTest';
         const __TESTDATA = Math.random().toString();
         const __TESTITEM = __TESTPREFIX + __TESTDATA;
 
@@ -85,7 +85,7 @@ function canUseMemory(memory = undefined) {
         __MEMORY.removeItem(__TESTITEM);
     }
 
-    __LOG[4]("canUseStorage(" + __STORAGE.Name + ") = " + ret);
+    __LOG[4]("canUseMemory(" + __STORAGE.Name + ") = " + ret);
 
     return ret;
 }
