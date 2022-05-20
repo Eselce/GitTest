@@ -5,7 +5,10 @@
 // _copyright    2022+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Mock-Funktionen als Ersatz fuer Greasemonkey-Einbindung
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.mock.gm.js

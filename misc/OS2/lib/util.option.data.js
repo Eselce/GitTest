@@ -7,6 +7,7 @@
 // _description  JS-lib mit Funktionen und Utilities fuer Zugriff auf die Script-Optionen
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js

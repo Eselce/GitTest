@@ -281,9 +281,9 @@ const __CODELINEBLACKLIST = {
         'ASSERT'            :   'test.assert',
         'ASSERT_NOT'        :   'test.assert',
         'assertionCatch'    :   'test.assert',
-        'callPromiseChain'  :   'test.assert',
-        'promiseCatch'      :   'test.assert',
-        'promiseChainCatch' :   'test.assert',
+        'callPromiseChain'  :   'util.promise',
+        'promiseCatch'      :   'util.promise',
+        'promiseChainCatch' :   'util.promise',
         'codeLine'          :   'util.debug',
         'defaultCatch'      :   'util.debug',
         'checkOpt'          :   'util.option.data'
