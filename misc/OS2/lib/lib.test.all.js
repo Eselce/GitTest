@@ -14,6 +14,7 @@
 //  util.log.test.js
 //  util.object.test.js
 //  util.option.api.test.js
+//  util.promise.test.js
 //  util.store.test.js
 //  util.value.test.js
 //  util.xhr.test.js
@@ -28,7 +29,9 @@
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit ASSERT-Funktionen aller Art und AssertFailed
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
@@ -37,112 +40,6 @@
 // ECMAScript 6:
 /* jshint esnext: true */
 /* jshint moz: true */
-
-// ==================== Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen ====================
-
-// Funktion zum sequentiellen Aufruf eines Arrays von Funktionen ueber Promises
-// startValue: Promise, das den Startwert oder das Startobjekt beinhaltet
-// funs: Liste oder Array von Funktionen, die jeweils das Zwischenergebnis umwandeln
-// throw Wirft im Fehlerfall eine AssertionFailed-Exception
-// return Ein Promise-Objekt mit dem Endresultat
-async function callPromiseChain(startValue, ... funs) {
-    checkObjClass(startValue, Promise, false, "callPromiseChain()", "startValue", 'Promise')
-
-    funs.forEach((fun, index) => {
-            checkType(fun, 'function', true, "callPromiseChain()", "Parameter #" + (index + 1), 'Function');
-        });
-
-    return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun).catch(
-                                    ex => promiseChainCatch(ex, fun, prom, idx, arr)),
-                                startValue.catch(ex => promiseCatch(ex, startValue))
-                            ).catch(promiseChainFinalCatch);
-}
-
-// Funktion zum parallelen Aufruf eines Arrays von Promises bzw. Promise-basierten Funktionen
-// promises: Liste oder Array von Promises oder Werten
-// throw Wirft im Fehlerfall eine AssertionFailed-Exception
-// return Ein Promise-Objekt mit einem Array von Einzelergebnissen als Endresultat
-async function callPromiseArray(... promises) {
-    return Promise.all(promises.flat(1).map(
-            (val, idx, arr) => Promise.resolve(val).catch(
-                ex => promiseCatch(ex, prom, idx, arr))));
-}
-
-// Parametrisierte Catch-Funktion fuer einen gegebenen Promise-Wert, ggfs. mit Angabe der Herkunft
-// ex: Die zu catchende Exception
-// prom: Promise (rejeted) zum betroffenen Wert
-// idx: Index innerhalb des Werte-Arrays
-// arr: Werte-Array mit den Promises
-// return Liefert eine Assertion und die showAlert()-Parameter zurueck, ergaenzt durch die Attribute
-function promiseCatch(ex, prom, idx = undefined, arr = undefined) {
-    checkObjClass(prom, Promise, true, "promiseCatch()", "prom", 'Promise');
-    checkType(idx, 'number', false, "promiseCatch()", "idx", 'Number');
-    checkObjClass(arr, Array, false, "promiseCatch()", "arr", 'Array');
-
-    const __CODELINE = codeLine(false, true, 3, false);
-    const __ATTRIB = {
-            'promise'   : prom,
-            'location'  : __CODELINE
-        };
-
-    ((idx !== undefined) && (__ATTRIB['index'] = idx));
-    ((arr !== undefined) && (__ATTRIB['array'] = arr));
-
-    __LOG[2]("CATCH:", ex, prom, __LOG.info(__ATTRIB, true, false));
-
-    const __RET = assertionCatch(ex, __LOG.info(__ATTRIB));
-
-    return __RET;
-}
-
-// Parametrisierte Catch-Funktion fuer einen gegebenen Promise-Wert einer Chain, ggfs. mit Angabe der Herkunft
-// ex: Die zu catchende Exception
-// fun: betroffene Funktion innerhalb der Promise-Chain (die eine rejected Rueckgabe produziert)
-// prom: Parameter-Promise zur betroffenen Funktion
-// idx: Index innerhalb des Funktions-Arrays
-// arr: Funktions-Array mit den Promises
-// return Liefert eine Assertion und die showAlert()-Parameter zurueck, ergaenzt durch die Attribute
-function promiseChainCatch(ex, fun, prom = undefined, idx = undefined, arr = undefined) {
-    checkType(fun, 'function', true, "promiseChainCatch()", "fun", 'Function');
-    checkObjClass(prom, Promise, true, "promiseChainCatch()", "Parameter", 'Promise');
-    checkType(idx, 'number', false, "promiseChainCatch()", "idx", 'Number');
-    checkObjClass(arr, Array, false, "promiseChainCatch()", "arr", 'Array');
-
-    // Ist prom nicht rejected oder nicht vorhanden, liefere neue Exception,
-    // ansonsten einfach alten Fehler durchreichen (jeweils rejected)...
-    return (prom || Promise.resolve()).then(() => {
-            const __CODELINE = codeLine(false, true, 3, false);
-            const __ATTRIB = {
-                    'function'  : fun,
-                    'location'  : __CODELINE
-                };
-
-            ((prom !== undefined) && (__ATTRIB['param'] = prom));
-            ((idx  !== undefined) && (__ATTRIB['index'] = idx));
-            ((arr  !== undefined) && (__ATTRIB['array'] = arr));
-
-            __LOG[2]("CATCH[" + idx + "]:", ex, prom, __LOG.info(__ATTRIB, true, false));
-
-            const __RET = assertionCatch(ex, __ATTRIB);
-
-            return __RET;
-        });
-}
-
-// Catch-Funktion, die in einer Chain die Behandlung der Fehler abschliesst
-// ex: Die zu catchende Exception
-// return Liefert eine Rejection mit der richtigen Exception zurueck
-async function promiseChainFinalCatch(ex) {
-    const __EX = ex;
-
-    // TODO Unklar, ob es benoetigt wird!
-
-    const __RET = __EX;
-
-    return Promise.reject(__RET);
-}
-
-// ==================== Ende Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen  ====================
 
 // ==================== Abschnitt fuer Klasse AssertionFailed ====================
 
@@ -457,6 +354,10 @@ const __ASSERTEPSILON   = Number.EPSILON;
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Basisklasse fuer Unit-Tests fuer ein JS-Modul
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
@@ -1024,6 +925,10 @@ const __LIBRESULTS = { };
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Basisklasse fuer Unit-Tests fuer ein JS-Modul
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/lib.option.js
@@ -1255,7 +1160,10 @@ __TESTTEAMCLASS.optSelect = {
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Script-Optionen im Benutzermenue
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
@@ -1269,146 +1177,6 @@ __TESTTEAMCLASS.optSelect = {
 // ==================== Abschnitt fuer Unit-Tests zu test.assert ====================
 
 (() => {
-
-// ==================== Abschnitt fuer Test-Werkzeuge ====================
-
-    const __RESOLVED = (() => Promise.resolve(true));
-    const __REJECTED = (() => Promise.reject(false));
-    const __ERRORMSG = "Erroneous";
-    const __ERRONEOUS = function() { throw Error(__ERRORMSG); };
-    const __USEDCASE = sameValue;
-
-    // Funktionalitaet der ASSERT-Funktionen...
-    new UnitTest('test.assert.js Tools', "Test-Werkzeuge", {
-            'callPromiseChainSimpleOK'        : function() {
-                                                    return callPromiseChain(__RESOLVED()).then(value => {
-                                                            return ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise");
-                                                        }, ex => {
-                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
-                                                        });
-                                                },
-            'callPromiseChainSimpleFAIL'      : function() {
-                                                    return callPromiseChain(__REJECTED()).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
-                                                        });
-                                                },
-            'callPromiseChainUsedCaseOK'      : function() {
-                                                    return callPromiseChain(__RESOLVED(), __USEDCASE).then(value => {
-                                                            return ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise");
-                                                        }, ex => {
-                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
-                                                        });
-                                                },
-            'callPromiseChainUsedCaseFAIL'    : function() {
-                                                    return callPromiseChain(__REJECTED(), __USEDCASE).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
-                                                        });
-                                                },
-            'callPromiseChainErroneousOK'     : function() {
-                                                    return callPromiseChain(__RESOLVED(), __ERRONEOUS).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, async ex => {
-                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
-                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
-                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.array.length, 1, "Falsche Array-Gr\u00F6\u00DFe");
-                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS ], "Falsches Funktionen-Array");
-
-                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise")).catch(assertionCatch);
-                                                        });
-                                                },
-            'callPromiseChainErroneousFAIL'   : function() {
-                                                    return callPromiseChain(__REJECTED(), __ERRONEOUS).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
-                                                        });
-                                                },
-            'callPromiseChainUsedUsedOK'      : function() {
-                                                    return callPromiseChain(__RESOLVED(), __USEDCASE, __USEDCASE).then(value => {
-                                                            return ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise");
-                                                        }, ex => {
-                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
-                                                        });
-                                                },
-            'callPromiseChainUsedUsedFAIL'    : function() {
-                                                    return callPromiseChain(__REJECTED(), __USEDCASE, __USEDCASE).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
-                                                        });
-                                                },
-            'callPromiseChainUsedFailOK'      : function() {
-                                                    return callPromiseChain(__RESOLVED(), __USEDCASE, __ERRONEOUS).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, async ex => {
-                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
-                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
-                                                            ASSERT_EQUAL(ex.index, 1, "Fehler in zweiter Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in zweiter Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\u00F6\u00DFe");
-                                                            ASSERT_EQUAL(ex.array, [ __USEDCASE, __ERRONEOUS ], "Falsches Funktionen-Array");
-
-                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe f\u00FCr Promise-Parameter")).catch(assertionCatch);
-                                                        });
-                                                },
-            'callPromiseChainUsedFailFAIL'    : function() {
-                                                    return callPromiseChain(__REJECTED(), __USEDCASE, __ERRONEOUS).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
-                                                        });
-                                                },
-            'callPromiseChainFailUsedOK'      : function() {
-                                                    return callPromiseChain(__RESOLVED(), __ERRONEOUS, __USEDCASE).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, async ex => {
-                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
-                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
-                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\u00F6\u00DFe");
-                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS, __USEDCASE ], "Falsches Funktionen-Array");
-
-                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe f\u00FCr Promise-Parameter")).catch(assertionCatch);
-                                                        });
-                                                },
-            'callPromiseChainFailUsedFAIL'    : function() {
-                                                    return callPromiseChain(__REJECTED(), __ERRONEOUS, __USEDCASE).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
-                                                        });
-                                                },
-            'callPromiseChainFailFailOK'      : function() {
-                                                    return callPromiseChain(__RESOLVED(), __ERRONEOUS, __ERRONEOUS).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, async ex => {
-                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
-                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
-                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
-                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\u00F6\u00DFe");
-                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS, __ERRONEOUS ], "Falsches Funktionen-Array");
-
-                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe f\u00FCr Promise-Parameter")).catch(assertionCatch);
-                                                        });
-                                                },
-            'callPromiseChainFailFailFAIL'    : function() {
-                                                    return callPromiseChain(__REJECTED(), __ERRONEOUS, __ERRONEOUS).then(value => {
-                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
-                                                        }, ex => {
-                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
-                                                        });
-                                                },
-        });
-
-// ==================== Ende Abschnitt fuer Test-Werkzeuge ====================
 
 // ==================== Abschnitt fuer ASSERT-Funktionen ====================
 
@@ -3681,8 +3449,10 @@ __TESTTEAMCLASS.optSelect = {
 // _copyright    2022+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Basisklasse fuer Unit-Tests fuer ein JS-Modul
-// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
@@ -3772,8 +3542,10 @@ __TESTTEAMCLASS.optSelect = {
 // _copyright    2022+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Basisklasse fuer Unit-Tests fuer ein JS-Modul
-// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
@@ -3848,7 +3620,10 @@ __TESTTEAMCLASS.optSelect = {
 // _copyright    2022+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Mock-Funktionen als Ersatz fuer Greasemonkey-Einbindung
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.mock.gm.js
@@ -3917,8 +3692,10 @@ __TESTTEAMCLASS.optSelect = {
 // _copyright    2022+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Debugging, Error-Handling, usw.
-// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.debug.test.js
@@ -3983,6 +3760,8 @@ __TESTTEAMCLASS.optSelect = {
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Logging und safeStringify()
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.log.test.js
@@ -4055,7 +3834,10 @@ __TESTTEAMCLASS.optSelect = {
 // _copyright    2022+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Details zu Objekten, Arrays, etc.
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.object.test.js
@@ -4128,7 +3910,10 @@ __TESTTEAMCLASS.optSelect = {
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Zugriff auf die Script-Optionen
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.api.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
@@ -4261,6 +4046,180 @@ __TESTTEAMCLASS.optSelect = {
 
 /*** Ende Modul util.option.api.test.js ***/
 
+/*** Modul util.promise.test.js ***/
+
+// ==UserScript==
+// _name         util.promise.test
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2022+
+// _author       Sven Loges (SLC)
+// _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Details zu Objekten, Arrays, etc.
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
+// _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
+// _require      https://eselce.github.io/OS2.scripts/test/util.promise.test.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Unit-Tests zu util.promise ====================
+
+(() => {
+
+// ==================== Abschnitt fuer Test-Werkzeuge ====================
+
+    const __RESOLVED = (() => Promise.resolve(true));
+    const __REJECTED = (() => Promise.reject(false));
+    const __ERRORMSG = "Erroneous";
+    const __ERRONEOUS = function() { throw Error(__ERRORMSG); };
+    const __USEDCASE = sameValue;
+
+    // Funktionalitaet der ASSERT-Funktionen...
+    new UnitTest('test.assert.js Tools', "Test-Werkzeuge", {
+            'callPromiseChainSimpleOK'        : function() {
+                                                    return callPromiseChain(__RESOLVED()).then(value => {
+                                                            return ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise");
+                                                        }, ex => {
+                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
+                                                        });
+                                                },
+            'callPromiseChainSimpleFAIL'      : function() {
+                                                    return callPromiseChain(__REJECTED()).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainUsedCaseOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED(), __USEDCASE).then(value => {
+                                                            return ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise");
+                                                        }, ex => {
+                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
+                                                        });
+                                                },
+            'callPromiseChainUsedCaseFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED(), __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainErroneousOK'     : function() {
+                                                    return callPromiseChain(__RESOLVED(), __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 1, "Falsche Array-Gr\u00F6\u00DFe");
+                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainErroneousFAIL'   : function() {
+                                                    return callPromiseChain(__REJECTED(), __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainUsedUsedOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED(), __USEDCASE, __USEDCASE).then(value => {
+                                                            return ASSERT_TRUE(value, "Falsche R\u00FCckgabe in Promise");
+                                                        }, ex => {
+                                                            return ASSERT(false, __LOG.info(ex), "Promise wurde rejected");
+                                                        });
+                                                },
+            'callPromiseChainUsedUsedFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED(), __USEDCASE, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainUsedFailOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED(), __USEDCASE, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 1, "Fehler in zweiter Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in zweiter Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\u00F6\u00DFe");
+                                                            ASSERT_EQUAL(ex.array, [ __USEDCASE, __ERRONEOUS ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe f\u00FCr Promise-Parameter")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainUsedFailFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED(), __USEDCASE, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainFailUsedOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED(), __ERRONEOUS, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\u00F6\u00DFe");
+                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS, __USEDCASE ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe f\u00FCr Promise-Parameter")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainFailUsedFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED(), __ERRONEOUS, __USEDCASE).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
+                                                        });
+                                                },
+            'callPromiseChainFailFailOK'      : function() {
+                                                    return callPromiseChain(__RESOLVED(), __ERRONEOUS, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, async ex => {
+                                                            ASSERT_INSTANCEOF(ex, Error, "Promise muss Error zur\u00FCckgeben");
+                                                            ASSERT_EQUAL(ex.message, __ERRORMSG, "Fehlertext in Error falsch");
+                                                            ASSERT_EQUAL(ex.index, 0, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.function, __ERRONEOUS, "Fehler in erster Funktion wurde ignoriert");
+                                                            ASSERT_EQUAL(ex.array.length, 2, "Falsche Array-Gr\u00F6\u00DFe");
+                                                            ASSERT_EQUAL(ex.array, [ __ERRONEOUS, __ERRONEOUS ], "Falsches Funktionen-Array");
+
+                                                            return await ex.param.then(value => ASSERT_TRUE(value, "Falsche R\u00FCckgabe f\u00FCr Promise-Parameter")).catch(assertionCatch);
+                                                        });
+                                                },
+            'callPromiseChainFailFailFAIL'    : function() {
+                                                    return callPromiseChain(__REJECTED(), __ERRONEOUS, __ERRONEOUS).then(value => {
+                                                            return ASSERT(false, __LOG.info(value), "Promise wurde nicht rejected");
+                                                        }, ex => {
+                                                            return ASSERT_FALSE(ex, "Falsche R\u00FCckgabe in Rejection");
+                                                        });
+                                                },
+        });
+
+// ==================== Ende Abschnitt fuer Test-Werkzeuge ====================
+
+})();
+
+// ==================== Ende Abschnitt fuer Unit-Tests zu util.promise ====================
+
+// *** EOF ***
+
+/*** Ende Modul util.promise.test.js ***/
+
 /*** Modul util.store.test.js ***/
 
 // ==UserScript==
@@ -4270,7 +4229,10 @@ __TESTTEAMCLASS.optSelect = {
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Script-Optionen im Benutzermenue
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
@@ -6367,7 +6329,10 @@ __TESTTEAMCLASS.optSelect = {
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer Logging, Debugging, Error-Handling, usw.
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.value.test.js
@@ -7001,7 +6966,10 @@ __TESTTEAMCLASS.optSelect = {
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer XHR-Aufrufe
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.xhr.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
@@ -7165,7 +7133,10 @@ __TESTTEAMCLASS.optSelect = {
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  Unit-Tests JS-lib mit Funktionen und Utilities fuer GM XHR-Aufrufe
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.xhr.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.xhr.gm.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js

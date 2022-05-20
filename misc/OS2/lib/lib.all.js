@@ -4,6 +4,7 @@
 // https://eselce.github.io/GitTest/misc/OS2/lib/<ALL>: 
 //  util.log.js
 //  util.object.js
+//  util.promise.js
 //  util.value.js
 //  util.proto.js
 //  util.prop.js
@@ -308,6 +309,7 @@ function replaceArray(key, value) {
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Details zu Objekten, Arrays, etc.
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // ==/UserScript==
 
@@ -718,6 +720,240 @@ function mappingValuesFunSelect(index, obj) {
 // *** EOF ***
 
 /*** Ende Modul util.object.js ***/
+
+/*** Modul util.promise.js ***/
+
+// ==UserScript==
+// _name         util.promise
+// _namespace    http://os.ongapo.com/
+// _version      0.10
+// _copyright    2022+
+// _author       Sven Loges (SLC)
+// _description  JS-lib mit Funktionen und Utilities fuer Details zu Promises
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// ==/UserScript==
+
+// ECMAScript 6:
+/* jshint esnext: true */
+/* jshint moz: true */
+
+// ==================== Abschnitt fuer Promise-Utilities ====================
+
+// getQueuedPromise() - Liefert synchronisiertes Promise (aus Roman Bauers osext2-Project)
+// Wird ueber internes Promise 'pending' synchronisiert. Zeitlicher Ablauf:
+// Pre 1. Anonyme Funktion: () => { }
+// Pre 2. wird ausgefuehrt: (() => { })();
+// Pre 3. setzt pending auf resolved: let pending = Promise.resolve();
+// Pre 4. const run = async (executor) => { ... return new Promise(executor); }
+// Pre 5. und liefert zurueck: (executor) => (pending = run(executor))
+// Bei Aufruf:
+// 1. Executor anlegen: executor = (resolve, reject) => { }
+// 2. Promise anlegen: getQueuedPromise(executor)
+// 3. getQueuedPromise: (executor) => (pending = run(executor))
+// 4. async run: try { await pending; }
+// 5. wartet auf vorherige Operation: await
+// 6. async run: finally { return new Promise(executor); }
+// 7. liefert Promise zurueck: new Promise(executor)
+// 8. setzt pending auf Promise: pending = new Promise(executor)
+// 9. liefert Promise zurueck: (executor) => pending
+const getQueuedPromise = (() => {
+    let pending = Promise.resolve();
+    const run = async (executor) => {
+        try {
+            await pending;
+        } finally {
+            /* eslint no-unsafe-finally: 'off' */
+            return getTimedPromise(executor);
+        }
+    };
+    return (executor) => (pending = run(executor));
+})();
+
+const getQueuedPromiseRombau = (() => {
+    let pending = Promise.resolve();
+    const run = (async executor => {
+            try {
+                await pending;
+            } catch (ex) {
+                return Promise.reject(ex);
+            }
+
+            return getTimedPromise(executor);
+        });
+    return (executor => (pending = run(executor)));
+})();
+
+/***
+function QueuedPromiseFactory() {
+    this._lock = Promise.resolve();
+
+    Object.call(this);
+}
+
+QueuedPromiseFactory.prototype.create = function(executor) {
+        this._promise = getTimedPromise(async (resolve, reject) => {
+                await this._lock;
+                this._pending = (pending = this);
+
+                return executor(resolve, reject);
+            });
+    };
+
+QueuedPromiseFactory.prototype = Object.create(Object.prototype);
+
+QueuedPromiseFactory.prototype.constructor = QueuedPromiseFactory;
+***/
+
+const newPromise = ((executor, millisecs = 15000) => new Promise((resolve, reject) => {
+            const timerID = window.setTimeout((() => reject(Error("Timed out"))), millisecs);
+            return executor((value => (window.clearTimeout(timerID), resolve(value))), reject);
+        }));
+
+function getTimedPromiseSLC(executor, millisecs = 15000) {
+    return new Promise((resolve, reject) => {
+            const timeoutFun = (() => {
+                    return reject(Error("Timed out (" + (millisecs / 1000) + "s)")));
+                });
+            const timerID = setTimeout(timeoutFun, millisecs);
+            const resolveFun = (value => {
+                    clearTimeout(timerID);
+                    return resolve(value);
+                });
+            return executor(resolveFun, reject);
+        });
+}
+
+//const Options = { timeout : 10000 };
+
+/**
+ * Returns a promise with the given executor. The new promise will be rejected after a the given timout in millis,
+ * if the executor doesn't resolve before.
+ *
+ * @param executor a callback used to initialize the promise
+ * @param timeout the timeout in millis
+ * @returns {Promise}
+ */
+const getTimedPromiseRombau = (executor, timeout = 10000 /***Options.timeout***/) => {
+    return new Promise((resolve, reject) => {
+        const timerID = setTimeout(() => reject(new Error('Die Verarbeitung hat zu lange gedauert!')), timeout);
+        return executor(value => {
+            clearTimeout(timerID); 
+            resolve(value);
+        }, reject);
+    });
+}
+
+// ==================== Ende Abschnitt fuer Promise-Utilities ====================
+
+// ==================== Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen ====================
+
+// Funktion zum sequentiellen Aufruf eines Arrays von Funktionen ueber Promises
+// startValue: Promise, das den Startwert oder das Startobjekt beinhaltet
+// funs: Liste oder Array von Funktionen, die jeweils das Zwischenergebnis umwandeln
+// throw Wirft im Fehlerfall eine AssertionFailed-Exception
+// return Ein Promise-Objekt mit dem Endresultat
+async function callPromiseChain(startValue, ... funs) {
+    checkObjClass(startValue, Promise, false, "callPromiseChain()", "startValue", 'Promise')
+
+    funs.forEach((fun, index) => {
+            checkType(fun, 'function', true, "callPromiseChain()", "Parameter #" + (index + 1), 'Function');
+        });
+
+    return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun).catch(
+                                    ex => promiseChainCatch(ex, fun, prom, idx, arr)),
+                                startValue.catch(ex => promiseCatch(ex, startValue))
+                            ).catch(promiseChainFinalCatch);
+}
+
+// Funktion zum parallelen Aufruf eines Arrays von Promises bzw. Promise-basierten Funktionen
+// promises: Liste oder Array von Promises oder Werten
+// throw Wirft im Fehlerfall eine AssertionFailed-Exception
+// return Ein Promise-Objekt mit einem Array von Einzelergebnissen als Endresultat
+async function callPromiseArray(... promises) {
+    return Promise.all(promises.flat(1).map(
+            (val, idx, arr) => Promise.resolve(val).catch(
+                ex => promiseCatch(ex, prom, idx, arr))));
+}
+
+// Parametrisierte Catch-Funktion fuer einen gegebenen Promise-Wert, ggfs. mit Angabe der Herkunft
+// ex: Die zu catchende Exception
+// prom: Promise (rejeted) zum betroffenen Wert
+// idx: Index innerhalb des Werte-Arrays
+// arr: Werte-Array mit den Promises
+// return Liefert eine Assertion und die showAlert()-Parameter zurueck, ergaenzt durch die Attribute
+function promiseCatch(ex, prom, idx = undefined, arr = undefined) {
+    checkObjClass(prom, Promise, true, "promiseCatch()", "prom", 'Promise');
+    checkType(idx, 'number', false, "promiseCatch()", "idx", 'Number');
+    checkObjClass(arr, Array, false, "promiseCatch()", "arr", 'Array');
+
+    const __CODELINE = codeLine(false, true, 3, false);
+    const __ATTRIB = {
+            'promise'   : prom,
+            'location'  : __CODELINE
+        };
+
+    ((idx !== undefined) && (__ATTRIB['index'] = idx));
+    ((arr !== undefined) && (__ATTRIB['array'] = arr));
+
+    __LOG[2]("CATCH:", ex, prom, __LOG.info(__ATTRIB, true, false));
+
+    const __RET = assertionCatch(ex, __LOG.info(__ATTRIB));
+
+    return __RET;
+}
+
+// Parametrisierte Catch-Funktion fuer einen gegebenen Promise-Wert einer Chain, ggfs. mit Angabe der Herkunft
+// ex: Die zu catchende Exception
+// fun: betroffene Funktion innerhalb der Promise-Chain (die eine rejected Rueckgabe produziert)
+// prom: Parameter-Promise zur betroffenen Funktion
+// idx: Index innerhalb des Funktions-Arrays
+// arr: Funktions-Array mit den Promises
+// return Liefert eine Assertion und die showAlert()-Parameter zurueck, ergaenzt durch die Attribute
+function promiseChainCatch(ex, fun, prom = undefined, idx = undefined, arr = undefined) {
+    checkType(fun, 'function', true, "promiseChainCatch()", "fun", 'Function');
+    checkObjClass(prom, Promise, true, "promiseChainCatch()", "Parameter", 'Promise');
+    checkType(idx, 'number', false, "promiseChainCatch()", "idx", 'Number');
+    checkObjClass(arr, Array, false, "promiseChainCatch()", "arr", 'Array');
+
+    // Ist prom nicht rejected oder nicht vorhanden, liefere neue Exception,
+    // ansonsten einfach alten Fehler durchreichen (jeweils rejected)...
+    return (prom || Promise.resolve()).then(() => {
+            const __CODELINE = codeLine(false, true, 3, false);
+            const __ATTRIB = {
+                    'function'  : fun,
+                    'location'  : __CODELINE
+                };
+
+            ((prom !== undefined) && (__ATTRIB['param'] = prom));
+            ((idx  !== undefined) && (__ATTRIB['index'] = idx));
+            ((arr  !== undefined) && (__ATTRIB['array'] = arr));
+
+            __LOG[2]("CATCH[" + idx + "]:", ex, prom, __LOG.info(__ATTRIB, true, false));
+
+            const __RET = assertionCatch(ex, __ATTRIB);
+
+            return __RET;
+        });
+}
+
+// Catch-Funktion, die in einer Chain die Behandlung der Fehler abschliesst
+// ex: Die zu catchende Exception
+// return Liefert eine Rejection mit der richtigen Exception zurueck
+async function promiseChainFinalCatch(ex) {
+    const __EX = ex;
+
+    // TODO Unklar, ob es benoetigt wird!
+
+    const __RET = __EX;
+
+    return Promise.reject(__RET);
+}
+
+// ==================== Ende Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen  ====================
+
+// *** EOF ***
+
+/*** Ende Modul util.promise.js ***/
 
 /*** Modul util.value.js ***/
 
@@ -1981,9 +2217,9 @@ const __CODELINEBLACKLIST = {
         'ASSERT'            :   'test.assert',
         'ASSERT_NOT'        :   'test.assert',
         'assertionCatch'    :   'test.assert',
-        'callPromiseChain'  :   'test.assert',
-        'promiseCatch'      :   'test.assert',
-        'promiseChainCatch' :   'test.assert',
+        'callPromiseChain'  :   'util.promise',
+        'promiseCatch'      :   'util.promise',
+        'promiseChainCatch' :   'util.promise',
         'codeLine'          :   'util.debug',
         'defaultCatch'      :   'util.debug',
         'checkOpt'          :   'util.option.data'
@@ -3449,7 +3685,7 @@ Class.define = function(subClass, baseClass, members = undefined, initFun = unde
 Object.setConst = function(obj, item, value, config) {
         return Object.defineProperty(obj, item, {
                         enumerable   : false,
-                        configurable : (config || true),
+                        configurable : (config || true),  // TODO
                         writable     : false,
                         value        : value
                     });
@@ -3473,6 +3709,8 @@ Object.setConst(Object.prototype, 'subclass', function(baseClass, members, initF
                     Object.setConst(__PROTO, item, __MEMBERS[item]);
                 }
             }
+
+            Object.setConst(__PROTO, 'constructor', this);
 
             Object.setConst(__PROTO, '__class', __CLASS, ! __CREATEPROTO);
 
@@ -4616,6 +4854,7 @@ const __OPTITEMSBYNEED = selectMapping(__OPTITEMS, __COLOPTITEMS.NEED, -1, mappi
 // _description  JS-lib mit Funktionen und Utilities fuer Zugriff auf die Script-Optionen
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
@@ -5265,6 +5504,7 @@ function promptNextOptByName(optSet, item, defValue = undefined, reload = false,
 // _description  JS-lib mit Funktionen und Objekt-Klasse fuer die Script-Optionen
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
@@ -5382,6 +5622,7 @@ Class.define(Options, Object, {
 // _description  JS-lib mit Funktionen und Utilities fuer Zugriff auf die Script-Optionen
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
@@ -5796,7 +6037,7 @@ function canUseMemory(memory = undefined) {
     let ret = false;
 
     if (__MEMORY !== undefined) {
-        const __TESTPREFIX = 'canUseStorageTest';
+        const __TESTPREFIX = 'canUseMemoryTest';
         const __TESTDATA = Math.random().toString();
         const __TESTITEM = __TESTPREFIX + __TESTDATA;
 
@@ -5805,7 +6046,7 @@ function canUseMemory(memory = undefined) {
         __MEMORY.removeItem(__TESTITEM);
     }
 
-    __LOG[4]("canUseStorage(" + __STORAGE.Name + ") = " + ret);
+    __LOG[4]("canUseMemory(" + __STORAGE.Name + ") = " + ret);
 
     return ret;
 }
@@ -7327,7 +7568,7 @@ Class.define(PageManager, Object, {
 
 // ==================== Abschnitt fuer interne IDs auf den Seiten ====================
 
-const __GAMETYPENRN = {    // "Blind FSS gesucht!"
+const __GAMETYPENRN = {    // 'Blind FSS gesucht!'
         'unbekannt'  : -1,
         'reserviert' :  0,
         'Frei'       :  0,
@@ -7344,18 +7585,18 @@ const __GAMETYPENRN = {    // "Blind FSS gesucht!"
 const __GAMETYPES = reverseArray(__GAMETYPENRN);
 
 const __GAMETYPEALIASES = {
-        'unbekannt'  :  "unbekannt",
+        'unbekannt'  :  'unbekannt',
         'reserviert' :  undefined,
         'Frei'       :  undefined,
         'spielfrei'  :  "",
-        'Friendly'   :  "FSS",
+        'Friendly'   :  'FSS',
         'Liga'       :  undefined,
-        'LP'         :  "Pokal",
+        'LP'         :  'Pokal',
         'OSEQ'       :  undefined,
         'OSE'        :  undefined,
         'OSCQ'       :  undefined,
         'OSC'        :  undefined,
-        'Supercup'   : "Super"
+        'Supercup'   : 'Super'
     };
 
 const __LIGANRN = {
@@ -7546,47 +7787,63 @@ const __LIGASIZETLAS = reverseMapping(__TLALIGASIZE, mappingPush);
 // ==================== Abschnitt fuer interne IDs des OS-Spielplans auf den Seiten ====================
 
 const __COLINTSPIELPLAN = {
-        'ZAT2'      : 0,
-        'ZAT'       : 1,
-        'LabOSE'    : 2,
-        'LabOSC'    : 3,
-        'CupOSE'    : 4,
-        'CupOSC'    : 5,
-        'EvtOSE'    : 6,
-        'EvtOSC'    : 7,
-        'RndOSE'    : 8,
-        'RndOSC'    : 9,
-        'HROSE'     : 10,
-        'HROSC'     : 11,
-        'IntOSE'    : 12,
-        'IntOSC'    : 13
+        'Rd'        : 0,
+        'IdOSE'     : 1,
+        'IdOSC'     : 2,
+        'ZAT_S2'    : 3,    // 0,
+        'ZAT'       : 4,    // 1,
+        'LabOSE'    : 5,    // 2,
+        'LabOSC'    : 6,    // 3,
+        'Lfd'       : 7,
+        'CupOSE'    : 8,    // 4,
+        'CupOSC'    : 9,    // 5,
+        'EvtOSE'    : 10,   // 6,
+        'EvtOSC'    : 11,   // 7,
+        'RndOSE'    : 12,   // 8,
+        'RndOSC'    : 13,   // 9,
+        'HROSE'     : 14,   // 10,
+        'HROSC'     : 15,   // 11,
+        'EtOSE'     : 16,
+        'EtOSC'     : 17,
+        'Et2OSE'    : 18,
+        'Et2OSC'    : 19,
+        'IntOSE'    : 20,   // 12,
+        'IntOSC'    : 21    // 13
     };
 
 const __INTSPIELPLAN = {
-        1   : [ 0,  0,  'Saisonstart',              'Saisonstart',              '', '',         'OSEQ', 'OSCQ',     '',                 '',                 0,  0,  '',                 ''              ],
-        2   : [ 4,  5,  '1. Quali Hin',             '1. Quali Hin',             'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 1',          'Runde 1',          1,  1,  '1. Runde',         '1. Runde'      ],
-        3   : [ 6,  7,  '1. Quali R\u00FCck',       '1. Quali R\u00FCck',       'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 1',          'Runde 1',          2,  2,  '1. Runde',         '1. Runde'      ],
-        4   : [ 10, 11, '2. Quali Hin',             '2. Quali Hin',             'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 2',          'Runde 2',          1,  1,  '2. Runde',         '2. Runde'      ],
-        5   : [ 14, 13, '2. Quali R\u00FCck',       '2. Quali R\u00FCck',       'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 2',          'Runde 2',          2,  2,  '2. Runde',         '2. Runde'      ],
-        6   : [ 16, 17, '3. Quali Hin',             '1. Gruppenspiel',          'OSEQ', 'OSC',  'OSEQ', 'OSCHR',    'Runde 3',          'Spiel 1',          1,  1,  '3. Runde',         '1. Runde'      ],  // 1. Spiel
-        7   : [ 22, 19, '3. Quali R\u00FCck',       '2. Gruppenspiel',          'OSEQ', 'OSC',  'OSEQ', 'OSCHR',    'Runde 3',          'Spiel 2',          2,  1,  '3. Runde',         '1. Runde'      ],  // 2. Spiel
-        8   : [ 24, 23, '1. Runde Hin',             '3. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCHR',    'Runde 1',          'Spiel 3',          1,  1,  '1. Runde',         '2. Runde'      ],  // 3. Spiel
-        9   : [ 26, 25, '1. Runde R\u00FCck',       '4. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCHR',    'Runde 1',          'Spiel 4',          2,  2,  '1. Runde',         '2. Runde'      ],  // 4. Spiel
-        10  : [ 34, 29, '2. Runde Hin',             '5. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCHR',    'Runde 2',          'Spiel 5',          1,  2,  '2. Runde',         '3. Runde'      ],  // 5. Spiel
-        11  : [ 36, 31, '2. Runde R\u00FCck',       '6. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCHR',    'Runde 2',          'Spiel 6',          2,  2,  '2. Runde',         '3. Runde'      ],  // 6. Spiel
-        12  : [ 38, 35, '3. Runde Hin',             '7. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCZR',    'Runde 3',          'Spiel 1',          1,  1,  '3. Runde',         '4. Runde'      ],  // 1. Spiel
-        13  : [ 42, 37, '3. Runde R\u00FCck',       '8. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCZR',    'Runde 3',          'Spiel 2',          2,  1,  '3. Runde',         '4. Runde'      ],  // 2. Spiel
-        14  : [ 44, 41, '4. Runde Hin',             '9. Gruppenspiel',          'OSE',  'OSC',  'OSE',  'OSCZR',    'Runde 4',          'Spiel 3',          1,  1,  '4. Runde',         '5. Runde'      ],  // 3. Spiel
-        15  : [ 50, 43, '4. Runde R\u00FCck',       '10. Gruppenspiel',         'OSE',  'OSC',  'OSE',  'OSCZR',    'Runde 4',          'Spiel 4',          2,  2,  '4. Runde',         '5. Runde'      ],  // 4. Spiel
-        16  : [ 52, 47, 'Achtelfinale Hin',         '11. Gruppenspiel',         'OSE',  'OSC',  'OSE',  'OSCZR',    'Achtelfinale',     'Spiel 5',          1,  2,  'Achtelfinale',     '6. Runde'      ],  // 5. Spiel
-        17  : [ 54, 49, 'Achtelfinale R\u00FCck',   '12. Gruppenspiel',         'OSE',  'OSC',  'OSE',  'OSCZR',    'Achtelfinale',     'Spiel 6',          2,  2,  'Achtelfinale',     '6. Runde'      ],  // 6. Spiel
-        18  : [ 56, 53, 'Viertelfinale Hin',        'Viertelfinale Hin',        'OSE',  'OSC',  'OSE',  'OSCFR',    'Viertelfinale',    'Viertelfinale',    1,  2,  'Viertelfinale',    'Viertelfinale' ],
-        19  : [ 60, 55, 'Viertelfinale R\u00FCck',  'Viertelfinale R\u00FCck',  'OSE',  'OSC',  'OSE',  'OSCFR',    'Viertelfinale',    'Viertelfinale',    2,  2,  'Viertelfinale',    'Viertelfinale' ],
-        20  : [ 62, 59, 'Halbfinale Hin',           'Halbfinale Hin',           'OSE',  'OSC',  'OSE',  'OSCFR',    'Halbfinale',       'Halbfinale',       1,  2,  'Halbfinale',       'Halbfinale'    ],
-        21  : [ 66, 61, 'Halbfinale R\u00FCck',     'Halbfinale R\u00FCck',     'OSE',  'OSC',  'OSE',  'OSCFR',    'Halbfinale',       'Halbfinale',       2,  2,  'Halbfinale',       'Halbfinale'    ],
-        22  : [ 70, 71, 'Finale',                   'Finale',                   'OSE',  'OSC',  'OSE',  'OSCFR',    'Finale',           'Finale',           1,  2,  'Finale',           'Finale'        ],
-        23  : [ 99, 99, 'Saisonende',               'Saisonende',               '', '',         'OSE',  'OSCFR',    'Sieger',           'Sieger',           0,  0,  'Sieger',           'Sieger'        ]
+        // Id : Rd OSE OSC ZAT2 ZAT LabOSE                      LabOSC                     Lfd  CupOSE  CupOSC  EvtOSE  EvtOSC      RndOSE              RndOSC             HROSE/C EtOSE/C Et2OSE/C IntOSE              IntOSC
+        1   : [ 1,  0,  0,  0,  0,  'Saisonstart',              'Saisonstart',              1,  'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     '',                 '',                 0,  0,  1,  1,  1,  1,  '',                 ''              ],
+        2   : [ 2,  1,  1,  4,  5,  '1. Quali Hin',             '1. Quali Hin',             2,  'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 1',          'Runde 1',          1,  1,  1,  1,  1,  1,  '1. Runde',         '1. Runde'      ],
+        3   : [ 3,  1,  1,  6,  7,  '1. Quali R\u00FCck',       '1. Quali R\u00FCck',       3,  'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 1',          'Runde 1',          2,  2,  1,  1,  1,  1,  '1. Runde',         '1. Runde'      ],
+        4   : [ 4,  2,  2,  10, 11, '2. Quali Hin',             '2. Quali Hin',             4,  'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 2',          'Runde 2',          1,  1,  1,  1,  1,  1,  '2. Runde',         '2. Runde'      ],
+        5   : [ 5,  2,  2,  14, 13, '2. Quali R\u00FCck',       '2. Quali R\u00FCck',       5,  'OSEQ', 'OSCQ', 'OSEQ', 'OSCQ',     'Runde 2',          'Runde 2',          2,  2,  1,  1,  1,  1,  '2. Runde',         '2. Runde'      ],
+        6   : [ 0,  0,  10, 16, 17, '',                         '',                         8,  '',     'OSC',  '',     'OSC-HR',   '',                 '',                 0,  0,  0,  2,  0,  2,  '',                 ''              ],
+        7   : [ 0,  0,  10, 36, 31, '',                         '',                         13, '',     'OSC',  '',     'OSC-HR',   '',                 '',                 0,  0,  0,  2,  0,  2,  '',                 ''              ],
+        8   : [ 6,  3,  11, 16, 17, '3. Quali Hin',             '1. Gruppenspiel',          8,  'OSEQ', 'OSC',  'OSEQ', 'OSC-HR',   'Runde 3',          'Spiel 1',          1,  1,  1,  2,  1,  2,  '3. Runde',         '1. Runde'      ],  // 1. Spiel
+        9   : [ 7,  3,  12, 22, 19, '3. Quali R\u00FCck',       '2. Gruppenspiel',          9,  'OSEQ', 'OSC',  'OSEQ', 'OSC-HR',   'Runde 3',          'Spiel 2',          2,  1,  1,  2,  1,  2,  '3. Runde',         '1. Runde'      ],  // 2. Spiel
+        10  : [ 8,  11, 13, 24, 23, '1. Runde Hin',             '3. Gruppenspiel',          10, 'OSE',  'OSC',  'OSE',  'OSC-HR',   'Runde 1',          'Spiel 3',          1,  1,  2,  2,  2,  2,  '1. Runde',         '2. Runde'      ],  // 3. Spiel
+        11  : [ 9,  11, 14, 26, 25, '1. Runde R\u00FCck',       '4. Gruppenspiel',          11, 'OSE',  'OSC',  'OSE',  'OSC-HR',   'Runde 1',          'Spiel 4',          2,  2,  2,  2,  2,  2,  '1. Runde',         '2. Runde'      ],  // 4. Spiel
+        12  : [ 10, 12, 15, 34, 29, '2. Runde Hin',             '5. Gruppenspiel',          12, 'OSE',  'OSC',  'OSE',  'OSC-HR',   'Runde 2',          'Spiel 5',          1,  2,  3,  2,  3,  2,  '2. Runde',         '3. Runde'      ],  // 5. Spiel
+        13  : [ 11, 12, 16, 36, 31, '2. Runde R\u00FCck',       '6. Gruppenspiel',          13, 'OSE',  'OSC',  'OSE',  'OSC-HR',   'Runde 2',          'Spiel 6',          2,  2,  3,  2,  3,  2,  '2. Runde',         '3. Runde'      ],  // 6. Spiel
+        14  : [ 0,  0,  20, 38, 35, '',                         '',                         16, '',     'OSC',  '',     'OSC-ZR',   '',                 '',                 0,  0,  0,  3,  0,  3,  '',                 ''              ],
+        15  : [ 0,  0,  20, 54, 49, '',                         '',                         21, '',     'OSC',  '',     'OSC-ZR',   '',                 '',                 0,  0,  0,  3,  0,  3,  '',                 ''              ],
+        16  : [ 12, 13, 21, 38, 35, '3. Runde Hin',             '7. Gruppenspiel',          16, 'OSE',  'OSC',  'OSE',  'OSC-ZR',   'Runde 3',          'Spiel 1',          1,  1,  3,  3,  3,  3,  '3. Runde',         '4. Runde'      ],  // 1. Spiel
+        17  : [ 13, 13, 22, 42, 37, '3. Runde R\u00FCck',       '8. Gruppenspiel',          17, 'OSE',  'OSC',  'OSE',  'OSC-ZR',   'Runde 3',          'Spiel 2',          2,  1,  3,  3,  3,  3,  '3. Runde',         '4. Runde'      ],  // 2. Spiel
+        18  : [ 14, 14, 23, 44, 41, '4. Runde Hin',             '9. Gruppenspiel',          18, 'OSE',  'OSC',  'OSE',  'OSC-ZR',   'Runde 4',          'Spiel 3',          1,  1,  3,  3,  3,  3,  '4. Runde',         '5. Runde'      ],  // 3. Spiel
+        19  : [ 15, 14, 24, 50, 43, '4. Runde R\u00FCck',       '10. Gruppenspiel',         19, 'OSE',  'OSC',  'OSE',  'OSC-ZR',   'Runde 4',          'Spiel 4',          2,  2,  3,  3,  3,  3,  '4. Runde',         '5. Runde'      ],  // 4. Spiel
+        20  : [ 16, 21, 25, 52, 47, 'Achtelfinale Hin',         '11. Gruppenspiel',         20, 'OSE',  'OSC',  'OSE',  'OSC-ZR',   'Achtelfinale',     'Spiel 5',          1,  2,  4,  3,  4,  3,  'Achtelfinale',     '6. Runde'      ],  // 5. Spiel
+        21  : [ 17, 21, 26, 54, 49, 'Achtelfinale R\u00FCck',   '12. Gruppenspiel',         21, 'OSE',  'OSC',  'OSE',  'OSC-ZR',   'Achtelfinale',     'Spiel 6',          2,  2,  4,  3,  4,  3,  'Achtelfinale',     '6. Runde'      ],  // 6. Spiel
+        22  : [ 0,  0,  30, 56, 53, '',                         '',                         24, '',     'OSC',  '',     'OSC-FR',   '',                 '',                 0,  0,  0,  4,  0,  4,  '',                 ''              ],
+        23  : [ 0,  0,  30, 70, 71, '',                         '',                         28, '',     'OSC',  '',     'OSC-FR',   '',                 '',                 0,  0,  0,  4,  0,  4,  '',                 ''              ],
+        24  : [ 18, 31, 31, 56, 53, 'Viertelfinale Hin',        'Viertelfinale Hin',        24, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Viertelfinale',    'Viertelfinale',    1,  1,  4,  4,  5,  4,  'Viertelfinale',    'Viertelfinale' ],
+        25  : [ 19, 31, 31, 60, 55, 'Viertelfinale R\u00FCck',  'Viertelfinale R\u00FCck',  25, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Viertelfinale',    'Viertelfinale',    2,  2,  4,  4,  5,  4,  'Viertelfinale',    'Viertelfinale' ],
+        26  : [ 20, 32, 32, 62, 59, 'Halbfinale Hin',           'Halbfinale Hin',           26, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Halbfinale',       'Halbfinale',       1,  1,  4,  4,  5,  4,  'Halbfinale',       'Halbfinale'    ],
+        27  : [ 21, 32, 32, 66, 61, 'Halbfinale R\u00FCck',     'Halbfinale R\u00FCck',     27, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Halbfinale',       'Halbfinale',       2,  2,  4,  4,  5,  4,  'Halbfinale',       'Halbfinale'    ],
+        28  : [ 22, 33, 33, 70, 71, 'Finale',                   'Finale',                   28, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Finale',           'Finale',           0,  0,  4,  4,  5,  4,  'Finale',           'Finale'        ],
+        29  : [ 23, 40, 40, 99, 99, 'Saisonende',               'Saisonende',               28, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Sieger',           'Sieger',           0,  0,  4,  4,  5,  4,  'Sieger',           'Sieger'        ]
     };
+
 const __INTZATLABOSE = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSE);
 const __INTZATLABOSC = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSC);
 const __INTLABOSEZAT = reverseMapping(__INTZATLABOSE);
@@ -7600,20 +7857,63 @@ const __INTOSCEVTS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __C
 const __INTOSEZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.ZAT, mappingPushFun(Number));
 const __INTOSCZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSC, __COLINTSPIELPLAN.ZAT, mappingPushFun(Number));
 
+const __OSCRUNDEN = {
+        0   : 'Saisonstart',
+        1   : '1. Runde Quali',
+        2   : '2. Runde Quali',
+        3   : 'Sieger Quali',
+        10  : 'Hauptrunde',     // '1. Hauptrunde'
+        11  : 'HR Spiel 1',
+        12  : 'HR Spiel 2',
+        13  : 'HR Spiel 3',
+        14  : 'HR Spiel 4',
+        15  : 'HR Spiel 5',
+        16  : 'HR Spiel 6',
+        20  : 'Zwischenrunde',  // '2. Hauptrunde'
+        21  : 'ZR Spiel 1',
+        22  : 'ZR Spiel 2',
+        23  : 'ZR Spiel 3',
+        24  : 'ZR Spiel 4',
+        25  : 'ZR Spiel 5',
+        26  : 'ZR Spiel 6',
+        31  : 'Viertelfinale',
+        32  : 'Halbfinale',
+        33  : 'Finale',
+        34  : 'OSC-Sieger',
+        40  : 'Saisonende'
+    };
+const __OSERUNDEN = {
+        0   : 'Saisonstart',
+        1   : '1. Runde Quali',
+        2   : '2. Runde Quali',
+        3   : '3. Runde Quali',
+        4   : 'Sieger Quali',
+        11  : '1. Runde',
+        12  : '2. Runde',
+        13  : '3. Runde',
+        14  : '4. Runde',
+        21  : 'Achtelfinale',
+        31  : 'Viertelfinale',
+        32  : 'Halbfinale',
+        33  : 'Finale',
+        34  : 'OSE-Sieger',
+        40  : 'Saisonende'
+    };
+
 // Beschreibungstexte aller Runden...
-const __POKALRUNDEN = [ "", "1. Runde", "2. Runde", "3. Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale", "Pokalsieger" ];
-const __QUALIRUNDEN = [ "", "Quali 1", "Quali 2", "Quali 3" ];
-const __OSCRUNDEN   = [ "", "Viertelfinale", "Halbfinale", "Finale", "OSC-Sieger" ];
-const __OSERUNDEN   = [ "", "Runde 1", "Runde 2", "Runde 3", "Runde 4", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale", "OSE-Sieger" ];
-const __OSCALLRND   = [ "", "1. Runde Quali", "2. Runde Quali", "1. Hauptrunde", "2. Hauptrunde", "Viertelfinale", "Halbfinale", "Finale", "OSC-Sieger" ];
-const __OSEALLRND   = [ "", "1. Runde Quali", "2. Runde Quali", "3. Runde Quali", "1. Runde", "2. Runde", "3. Runde", "4. Runde", "Achtelfinale", "Viertelfinale", "Halbfinale", "Finale", "OSE-Sieger" ];
+const __POKALRUNDEN = [ "", '1. Runde', '2. Runde', '3. Runde', 'Achtelfinale', 'Viertelfinale', 'Halbfinale', 'Finale', 'Pokalsieger' ];
+const __QUALIRUNDEN = [ "", 'Quali 1', 'Quali 2', 'Quali 3' ];
+const __OSCKORUNDEN = [ "", 'Viertelfinale', 'Halbfinale', 'Finale', 'OSC-Sieger' ];
+const __OSEKORUNDEN = [ "", 'Runde 1', 'Runde 2', 'Runde 3', 'Runde 4', 'Achtelfinale', 'Viertelfinale', 'Halbfinale', 'Finale', 'OSE-Sieger' ];
+const __OSCALLRND   = [ "", '1. Runde Quali', '2. Runde Quali', '1. Hauptrunde', '2. Hauptrunde', 'Viertelfinale', 'Halbfinale', 'Finale', 'OSC-Sieger' ];
+const __OSEALLRND   = [ "", '1. Runde Quali', '2. Runde Quali', '3. Runde Quali', '1. Runde', '2. Runde', '3. Runde', '4. Runde', 'Achtelfinale', 'Viertelfinale', 'Halbfinale', 'Finale', 'OSE-Sieger' ];
 const __HINRUECK    = [ " Hin", " R\u00FCck", "" ];
 
 // Ermittlung von Spielrunden...
 const __RUNDEPOKAL  = reverseMapping(__POKALRUNDEN, Number);
 const __RUNDEQUALI  = reverseMapping(__QUALIRUNDEN, Number);
-const __RUNDEOSC    = reverseMapping(__OSCRUNDEN, Number);
-const __RUNDEOSE    = reverseMapping(__OSERUNDEN, Number);
+const __KORUNDEOSC  = reverseMapping(__OSCKORUNDEN, Number);
+const __KORUNDEOSE  = reverseMapping(__OSEKORUNDEN, Number);
 const __ALLRNDOSC   = reverseMapping(__OSCALLRND, Number);
 const __ALLRNDOSE   = reverseMapping(__OSEALLRND, Number);
 
@@ -7628,13 +7928,13 @@ const __HINRUECKNULL    = 2;
 // Gibt die ID fuer den Namen eines Wettbewerbs zurueck
 // gameType: Name des Wettbewerbs eines Spiels
 // defValue: Default-Wert
-// return OS2-ID fuer den Spieltyp (1 bis 7 oder 10), 0 fuer "spielfrei"/"Frei"/"reserviert", -1 fuer ungueltig
+// return OS2-ID fuer den Spieltyp (1 bis 7 oder 10), 0 fuer 'spielfrei'/'Frei'/'reserviert', -1 fuer ungueltig
 function getGameTypeID(gameType, defValue = __GAMETYPENRN.unbekannt) {
     return getValue(__GAMETYPENRN[gameType], defValue);
 }
 
 // Gibt den Namen eines Wettbewerbs zurueck
-// id: OS2-ID des Wettbewerbs eines Spiels (1 bis 7 oder 10), 0 fuer "spielfrei"/"Frei"/"reserviert", -1 fuer ungueltig
+// id: OS2-ID des Wettbewerbs eines Spiels (1 bis 7 oder 10), 0 fuer 'spielfrei'/'Frei'/'reserviert', -1 fuer ungueltig
 // defValue: Default-Wert
 // return Spieltyp fuer die uebergebene OS2-ID
 function getGameType(id, defValue) {
@@ -7659,7 +7959,7 @@ function getLandName(tla, defValue = __TLALAND.undefined) {
 // Gibt den Namen des Landes mit der uebergebenen ID zurueck.
 // ID: OS2-ID des Landes
 // defValue: Default-Wert
-// return Name der Landes, "unbekannt" fuer ungueltig
+// return Name der Landes, 'unbekannt' fuer ungueltig
 function getLandNameById(ID, defValue = __LAENDER[0]) {
     return getValue(__LAENDER[ID], defValue);
 }
@@ -7691,7 +7991,7 @@ function getLigaNr(liga, defValue = __LIGANRN.unbekannt) {
 // Gibt den Namen einer per ID uebergebenen Liga zurueck.
 // ID: OS2-ID der Liga
 // defValue: Default-Wert
-// return Name der Liga, "unbekannt" fuer ungueltig
+// return Name der Liga, 'unbekannt' fuer ungueltig
 function getLigaName(ID, defValue = __LIGANAMES[0]) {
     return getValue(__LIGANAMES[ID], defValue);
 }
@@ -7779,7 +8079,7 @@ function isTrainableSkill(idx) {
 
 // Konvertiert einen Aufwertungstext fuer einen Skillnamen in den fuer einen Torwart
 // name: Allgemeiner Skillname (abgeleitet von den Feldspielern)
-// return Der konvertierte String (z.B. "FAN" statt "KOB") oder unveraendert
+// return Der konvertierte String (z.B. 'FAN' statt 'KOB') oder unveraendert
 function getGoalieSkill(name) {
     const __GOALIESKILLS = {
                                'SCH' : 'ABS',
@@ -7795,7 +8095,7 @@ function getGoalieSkill(name) {
 
 // Konvertiert die allgemeinen Skills in die eines Torwarts
 // value: Ein Text, der die Skillnamen enthaelt
-// return Der konvertierte String mit Aenderungen (z.B. "FAN" statt "KOB") oder unveraendert
+// return Der konvertierte String mit Aenderungen (z.B. 'FAN' statt 'KOB') oder unveraendert
 function convertGoalieSkill(value) {
     if (value !== undefined) {
         value = value.replace(/\w+/g, getGoalieSkill);
@@ -8820,11 +9120,11 @@ function getZatLink(currZAT, team, showLink = true) {
             __LINK.setRunde("", (currZAT.euroRunde % 3) * 2 + 1 + currZAT.hinRueck);
             __LINK.setPage(((currZAT.euroRunde < 6) ? 'oschr' : 'osczr'), __GRUPPENPHASE + "Spiel " + __LINK.runde);
         } else {
-            __LINK.setPage('oscfr', __OSCRUNDEN[currZAT.euroRunde - 8] + __HINRUECK[currZAT.hinRueck]);
+            __LINK.setPage('oscfr', __OSCKORUNDEN[currZAT.euroRunde - 8] + __HINRUECK[currZAT.hinRueck]);
         }
     } else if (currZAT.gameType === 'OSE') {
         __LINK.setRunde('runde', currZAT.euroRunde - 3);
-        __LINK.setPage('ose', __OSERUNDEN[__LINK.runde] + __HINRUECK[currZAT.hinRueck]);
+        __LINK.setPage('ose', __OSEKORUNDEN[__LINK.runde] + __HINRUECK[currZAT.hinRueck]);
     } else if (currZAT.gameType === 'Supercup') {
         __LINK.setRunde("", 1);
         __LINK.setPage('supercup', currZAT.gameType);
