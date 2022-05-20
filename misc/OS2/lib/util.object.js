@@ -5,6 +5,7 @@
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Details zu Objekten, Arrays, etc.
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // ==/UserScript==
 
