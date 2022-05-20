@@ -227,11 +227,11 @@ function getZatLink(currZAT, team, showLink = true) {
             __LINK.setRunde("", (currZAT.euroRunde % 3) * 2 + 1 + currZAT.hinRueck);
             __LINK.setPage(((currZAT.euroRunde < 6) ? 'oschr' : 'osczr'), __GRUPPENPHASE + "Spiel " + __LINK.runde);
         } else {
-            __LINK.setPage('oscfr', __OSCRUNDEN[currZAT.euroRunde - 8] + __HINRUECK[currZAT.hinRueck]);
+            __LINK.setPage('oscfr', __OSCKORUNDEN[currZAT.euroRunde - 8] + __HINRUECK[currZAT.hinRueck]);
         }
     } else if (currZAT.gameType === 'OSE') {
         __LINK.setRunde('runde', currZAT.euroRunde - 3);
-        __LINK.setPage('ose', __OSERUNDEN[__LINK.runde] + __HINRUECK[currZAT.hinRueck]);
+        __LINK.setPage('ose', __OSEKORUNDEN[__LINK.runde] + __HINRUECK[currZAT.hinRueck]);
     } else if (currZAT.gameType === 'Supercup') {
         __LINK.setRunde("", 1);
         __LINK.setPage('supercup', currZAT.gameType);
