@@ -87,7 +87,7 @@ const newPromise = ((executor, millisecs = 15000) => new Promise((resolve, rejec
 function getTimedPromiseSLC(executor, millisecs = 15000) {
     return new Promise((resolve, reject) => {
             const timeoutFun = (() => {
-                    return reject(Error("Timed out (" + (millisecs / 1000) + "s)")));
+                    return reject(Error("Timed out (" + (millisecs / 1000) + "s)"));
                 });
             const timerID = setTimeout(timeoutFun, millisecs);
             const resolveFun = (value => {
