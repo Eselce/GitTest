@@ -5,6 +5,10 @@
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Basisklasse fuer Unit-Tests fuer ein JS-Modul
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js

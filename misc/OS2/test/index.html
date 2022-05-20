@@ -37,9 +37,11 @@ const GM_info = {  // Mock GM_info data
 <!--
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js"></SCRIPT>
@@ -89,18 +91,63 @@ const GM_info = {  // Mock GM_info data
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.log.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.object.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.option.api.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.promise.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.store.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.value.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.xhr.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/test/util.xhr.gm.test.js"></SCRIPT>
 -->
+        <SCRIPT type="text/javascript" defer src="../lib/util.log.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.object.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.promise.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.value.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.proto.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.prop.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.mem.sys.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.mem.mod.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.debug.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.store.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.xhr.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.xhr.gm.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.dom.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.script.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.class.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.class.delim.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.class.path.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.class.uri.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.class.report.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.option.type.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.option.data.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.option.class.options.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.option.api.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.mem.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.mem.db.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.mem.cmd.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.option.menu.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.option.page.label.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.option.page.action.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.option.page.node.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.option.page.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.option.run.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/util.main.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/OS2.list.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/OS2.calc.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/OS2.team.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/OS2.page.team.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/OS2.page.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/OS2.zat.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/OS2.class.warndraw.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/OS2.class.player.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/OS2.class.column.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="../lib/OS2.class.table.js"></SCRIPT>
 
-        <SCRIPT type="text/javascript" defer src="../lib/lib.all.js"></SCRIPT>
+<!--        <SCRIPT type="text/javascript" defer src="../lib/lib.all.js"></SCRIPT> -->
 <!--        <SCRIPT type="text/javascript" defer src="../lib/lib.test.all.js"></SCRIPT> -->
 <!--        <SCRIPT type="text/javascript" defer src="../lib/lib.test.base.js"></SCRIPT> -->
 <!--        <SCRIPT type="text/javascript" defer src="../lib/lib.test.js"></SCRIPT> -->
+
         <SCRIPT type="text/javascript" defer src="../lib/test.mock.gm.js"></SCRIPT>
-        <SCRIPT type="text/javaSCRIPT" defer src="../lib/test.assert.js"></script>
+        <SCRIPT type="text/javascript" defer src="../lib/test.assert.js"></script>
         <SCRIPT type="text/javascript" defer src="../lib/test.class.unittest.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="../lib/test.lib.option.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="test.assert.test.js"></SCRIPT>
@@ -112,6 +159,7 @@ const GM_info = {  // Mock GM_info data
         <SCRIPT type="text/javascript" defer src="util.log.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="util.object.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="util.option.api.test.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="util.promise.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="util.store.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="util.value.test.js"></SCRIPT>
         <SCRIPT type="text/javascript" defer src="util.xhr.test.js"></SCRIPT>

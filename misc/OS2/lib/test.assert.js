@@ -5,7 +5,9 @@
 // _copyright    2021+
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit ASSERT-Funktionen aller Art und AssertFailed
+// _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
+// _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
@@ -14,112 +16,6 @@
 // ECMAScript 6:
 /* jshint esnext: true */
 /* jshint moz: true */
-
-// ==================== Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen ====================
-
-// Funktion zum sequentiellen Aufruf eines Arrays von Funktionen ueber Promises
-// startValue: Promise, das den Startwert oder das Startobjekt beinhaltet
-// funs: Liste oder Array von Funktionen, die jeweils das Zwischenergebnis umwandeln
-// throw Wirft im Fehlerfall eine AssertionFailed-Exception
-// return Ein Promise-Objekt mit dem Endresultat
-async function callPromiseChain(startValue, ... funs) {
-    checkObjClass(startValue, Promise, false, "callPromiseChain()", "startValue", 'Promise')
-
-    funs.forEach((fun, index) => {
-            checkType(fun, 'function', true, "callPromiseChain()", "Parameter #" + (index + 1), 'Function');
-        });
-
-    return funs.flat(1).reduce((prom, fun, idx, arr) => prom.then(fun).catch(
-                                    ex => promiseChainCatch(ex, fun, prom, idx, arr)),
-                                startValue.catch(ex => promiseCatch(ex, startValue))
-                            ).catch(promiseChainFinalCatch);
-}
-
-// Funktion zum parallelen Aufruf eines Arrays von Promises bzw. Promise-basierten Funktionen
-// promises: Liste oder Array von Promises oder Werten
-// throw Wirft im Fehlerfall eine AssertionFailed-Exception
-// return Ein Promise-Objekt mit einem Array von Einzelergebnissen als Endresultat
-async function callPromiseArray(... promises) {
-    return Promise.all(promises.flat(1).map(
-            (val, idx, arr) => Promise.resolve(val).catch(
-                ex => promiseCatch(ex, prom, idx, arr))));
-}
-
-// Parametrisierte Catch-Funktion fuer einen gegebenen Promise-Wert, ggfs. mit Angabe der Herkunft
-// ex: Die zu catchende Exception
-// prom: Promise (rejeted) zum betroffenen Wert
-// idx: Index innerhalb des Werte-Arrays
-// arr: Werte-Array mit den Promises
-// return Liefert eine Assertion und die showAlert()-Parameter zurueck, ergaenzt durch die Attribute
-function promiseCatch(ex, prom, idx = undefined, arr = undefined) {
-    checkObjClass(prom, Promise, true, "promiseCatch()", "prom", 'Promise');
-    checkType(idx, 'number', false, "promiseCatch()", "idx", 'Number');
-    checkObjClass(arr, Array, false, "promiseCatch()", "arr", 'Array');
-
-    const __CODELINE = codeLine(false, true, 3, false);
-    const __ATTRIB = {
-            'promise'   : prom,
-            'location'  : __CODELINE
-        };
-
-    ((idx !== undefined) && (__ATTRIB['index'] = idx));
-    ((arr !== undefined) && (__ATTRIB['array'] = arr));
-
-    __LOG[2]("CATCH:", ex, prom, __LOG.info(__ATTRIB, true, false));
-
-    const __RET = assertionCatch(ex, __LOG.info(__ATTRIB));
-
-    return __RET;
-}
-
-// Parametrisierte Catch-Funktion fuer einen gegebenen Promise-Wert einer Chain, ggfs. mit Angabe der Herkunft
-// ex: Die zu catchende Exception
-// fun: betroffene Funktion innerhalb der Promise-Chain (die eine rejected Rueckgabe produziert)
-// prom: Parameter-Promise zur betroffenen Funktion
-// idx: Index innerhalb des Funktions-Arrays
-// arr: Funktions-Array mit den Promises
-// return Liefert eine Assertion und die showAlert()-Parameter zurueck, ergaenzt durch die Attribute
-function promiseChainCatch(ex, fun, prom = undefined, idx = undefined, arr = undefined) {
-    checkType(fun, 'function', true, "promiseChainCatch()", "fun", 'Function');
-    checkObjClass(prom, Promise, true, "promiseChainCatch()", "Parameter", 'Promise');
-    checkType(idx, 'number', false, "promiseChainCatch()", "idx", 'Number');
-    checkObjClass(arr, Array, false, "promiseChainCatch()", "arr", 'Array');
-
-    // Ist prom nicht rejected oder nicht vorhanden, liefere neue Exception,
-    // ansonsten einfach alten Fehler durchreichen (jeweils rejected)...
-    return (prom || Promise.resolve()).then(() => {
-            const __CODELINE = codeLine(false, true, 3, false);
-            const __ATTRIB = {
-                    'function'  : fun,
-                    'location'  : __CODELINE
-                };
-
-            ((prom !== undefined) && (__ATTRIB['param'] = prom));
-            ((idx  !== undefined) && (__ATTRIB['index'] = idx));
-            ((arr  !== undefined) && (__ATTRIB['array'] = arr));
-
-            __LOG[2]("CATCH[" + idx + "]:", ex, prom, __LOG.info(__ATTRIB, true, false));
-
-            const __RET = assertionCatch(ex, __ATTRIB);
-
-            return __RET;
-        });
-}
-
-// Catch-Funktion, die in einer Chain die Behandlung der Fehler abschliesst
-// ex: Die zu catchende Exception
-// return Liefert eine Rejection mit der richtigen Exception zurueck
-async function promiseChainFinalCatch(ex) {
-    const __EX = ex;
-
-    // TODO Unklar, ob es benoetigt wird!
-
-    const __RET = __EX;
-
-    return Promise.reject(__RET);
-}
-
-// ==================== Ende Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen  ====================
 
 // ==================== Abschnitt fuer Klasse AssertionFailed ====================
 

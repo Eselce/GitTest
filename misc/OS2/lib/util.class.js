@@ -67,7 +67,7 @@ Class.define = function(subClass, baseClass, members = undefined, initFun = unde
 Object.setConst = function(obj, item, value, config) {
         return Object.defineProperty(obj, item, {
                         enumerable   : false,
-                        configurable : (config || true),
+                        configurable : (config || true),  // TODO
                         writable     : false,
                         value        : value
                     });
@@ -91,6 +91,8 @@ Object.setConst(Object.prototype, 'subclass', function(baseClass, members, initF
                     Object.setConst(__PROTO, item, __MEMBERS[item]);
                 }
             }
+
+            Object.setConst(__PROTO, 'constructor', this);
 
             Object.setConst(__PROTO, '__class', __CLASS, ! __CREATEPROTO);
 

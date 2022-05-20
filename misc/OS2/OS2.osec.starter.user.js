@@ -22,6 +22,7 @@
 // @grant        GM_info
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
 // @require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
