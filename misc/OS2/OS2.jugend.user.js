@@ -934,7 +934,7 @@ function init(playerRows, optSet, colIdx, offsetUpper = 1, offsetLower = 0, page
             const __LAND = getStringFromHTML(__CELLS, colIdx.Land);
             const __AGE = getIntFromHTML(__CELLS, colIdx.Age);
             const __ISGOALIE = isGoalieFromHTML(__CELLS, colIdx.Age);
-            const __AKTION = getElementFromHTML(__CELLS, colIdx.Akt);
+            const __AKTION = getElementFromHTML(__CELLS, getValue(colIdx.Akt, -1));  // colIdx.Akt nur in Uebersicht!
 
             const __NEWPLAYER = new PlayerRecord(__LAND, __AGE, __ISGOALIE, __SAISON, __CURRZAT, __DONATION);
 
