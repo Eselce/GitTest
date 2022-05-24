@@ -3470,7 +3470,7 @@ function getElementFromHTML(cells, colIdxElem) {
 
     const __CELL = getValue(cells[colIdxElem], { });
 
-    return __CELL.firstElementChild;
+    return getValue(__CELL.firstElementChild, null);
 }
 
 // Liest einen String aus der Spalte einer Zeile der Tabelle aus, nachdem dieser konvertiert wurde
