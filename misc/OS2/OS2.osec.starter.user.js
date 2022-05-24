@@ -110,8 +110,7 @@ const __OPTCONFIG = {
                    'Hotkey'    : 'l',
                    'AltLabel'  : "Erreichte Runde",
                    'AltHotkey' : 'l',
-                   'FormLabel' : "Letzte Runde",
-                   'Hidden'    : true
+                   'FormLabel' : "Letzte Runde"
                },
     'elimColor' : {       // Farbe der ausgeschiedenen Teams
                    'Name'      : "elimColor",
@@ -381,6 +380,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
         const __MAXLIGALEN = "2. Liga A".length;  // Maximale Laenge der Ligabezeichnung
         const __CUPS = __HEADER.map(element => element.textContent);
         const __RAUSDATA = [];
+        const __REINDATA = [];
         let count = 0;
         let rausCount = 0;
 
@@ -393,7 +393,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
             // Phase 1: Zunaechst nur Cup/Runde des Ausscheidens/Sieges berechnen...
             __LISTEN.map((list, indexList) =>
                         Array.from(getTags('LI', list)).forEach(entry => {
-                                    const __ITEMS = getElements('A,DIV', entry);
+                                    const __ITEMS = getElements('A , DIV', entry);
                                     const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
                                     const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
                                     const [ __MANAGER, __PMID ] = getLinkData(__ITEMS[2], 'receiver_id');
@@ -410,22 +410,21 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                                     incZAT(__ZAT, __INTZAT);
                                     __ZAT.gameType = __CUP;
 
-                                    const __ZATLINK = getZatLink(__ZAT, __VEREIN, true);
                                     const __RAUS = (__CURRZAT >= __INTZAT);
+                                    const __ZATLINK = getZatLink(__ZAT, __VEREIN, true, __RAUS, __LASTRND);
 
-                                    if (__RAUS) {
-                                        __RAUSDATA[__OSID] = [ __INTZAT, __INTEVT, __INTLNK, __ZATLINK, __CUP, __RUNDE ];
-                                    }
+                                    (__RAUS ? __RAUSDATA : __REINDATA)[__OSID] = [ __INTZAT, __INTEVT, __INTLNK, __ZATLINK, __CUP, __RUNDE ];
                                 })
                     );
         }
 
-        __LOG[1](__RAUSDATA);
+        __LOG[9](__RAUSDATA);
+        __LOG[9](__REINDATA);
 
         // Phase 2: Jetzt kann neben der naechsten Runde auch die letzte Runde berechnet werden...
         const __TEAMLISTS = __LISTEN.map((list, indexList) =>
                     Array.from(getTags('LI', list)).map(entry => {
-                                const __ITEMS = getElements('A,DIV', entry);
+                                const __ITEMS = getElements('A , DIV', entry);
                                 const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
                                 const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
                                 const [ __MANAGER, __PMID ] = getLinkData(__ITEMS[2], 'receiver_id');
@@ -452,11 +451,12 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                                 incZAT(__ZAT, __INTZAT);
                                 __ZAT.gameType = __CUP;
 
-                                const __ZATLINK = getZatLink(__ZAT, __VEREIN, true);
+                                const __RAUS = (__CURRZAT >= __INTZAT + (2 * __LASTRND)) && (~ __INTZAT);  // TODO 2 ?
+                                const __WINNER = (__RAUSDATA[__OSID] && __REINDATA[__OSID] && (__CUP === __RAUSDATA[__OSID][4]) && (__CUP === __REINDATA[__OSID][4] + 'Q'));
+                                const __ZATLINK = getZatLink(__ZAT, __VEREIN, true, __RAUS, __LASTRND && ! __WINNER);
                                 const __CUPSWITCHED = ((! ~ __INTZAT) && __RAUSDATA[__OSID]);
                                 const [ __THISZAT, __THISEVT, __THISLNK, __THISZATLINK, __THISCUP, __THISRUNDE ] = (__CUPSWITCHED
                                         ? __CUPSWITCHED : [ __INTZAT, __INTEVT, __INTLNK, __ZATLINK, __CUP, __RUNDE ]);
-                                const __RAUS = (__CURRZAT >= __INTZAT);
                                 const __SHOWRAUS = (__SHOWELIMS || __LASTRND);
 
                                 return {
@@ -464,7 +464,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
                                         'raus'        : __RAUS,
                                         'showraus'    : __SHOWRAUS,
                                         'cup'         : __THISCUP,
-                                        'id'          : __OSID,
+                                        'id'          : __OSID,  // ((__RAUSDATA[__OSID]) ? __RAUSDATA[__OSID][4] + '*' : "") + ((__CUPSWITCHED) ? '*' : "") + __OSID + ((__REINDATA[__OSID]) ? '*' + __REINDATA[__OSID][4] : ""),
                                         'verein'      : __TEAMNAME,
                                         'vereinStr'   : __VEREINSTR,
                                         'pmId'        : __PMID,

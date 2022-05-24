@@ -1298,7 +1298,7 @@ const procTabelle = new PageManager("Ligatabelle", __TEAMCLASS, () => {
             const __TITEL = { };
             const __LTITEL = { };
 
-            const __LEGENDE = getElement('BR+TABLE');  // #1: Legenden-Tabelle hinter <BR>-Abschnitt, der von der Ligatabelle absetzt
+            const __LEGENDE = getElement('BR + TABLE'); // #1: Legenden-Tabelle hinter <BR>-Abschnitt, der von der Ligatabelle absetzt
             const __ROWS = (__LEGENDE ? getTags('TR', __LEGENDE) : { });
             const __TABCOLORS = getStyleFromElements(__ROWS, 'backgroundColor', getUpperClassNameFromElement);  // Faerbungen aus Legende ermitteln
 /*

@@ -378,7 +378,7 @@ const procSpielplan = new PageManager("Spielplan", __TEAMCLASS, () => {
         this.__COLUMNINDEX = __COLUMNINDEX;
 
         return {
-                'Tab'         : getElement('FORM+TABLE'),  // #2: Tabelle direkt hinter der Saisonauswahl
+                'Tab'         : getElement('FORM + TABLE'), // #2: Tabelle direkt hinter der Saisonauswahl
                 'Zei'         : __ROWOFFSETUPPER,
                 'Spa'         : __COLUMNINDEX.Art,
                 'teamParams'  : __TEAMPARAMS,
