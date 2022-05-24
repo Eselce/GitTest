@@ -2642,7 +2642,7 @@ const procZatReport = new PageManager("ZAT-Report", null, () => {
                                             'zeigeErfahrung'     : false
                                         });
 
-        const __TABLE = getElement('TABLE~TABLE');  // #1: Tabelle (Trainingserfolge) mit Geschwistertabelle (Einnahmen / Ausgaben) davor
+        const __TABLE = getElement('TABLE ~ TABLE');    // #1: Tabelle (Trainingserfolge) mit Geschwistertabelle (Einnahmen / Ausgaben) davor
         const __ROWS = __TABLE.rows;
         const __TITLECOLOR = getColor('LEI');  // '#FFFFFF'
         const __DATA = [ 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60 ];

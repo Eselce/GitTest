@@ -393,7 +393,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
             // Phase 1: Zunaechst nur Cup/Runde des Ausscheidens/Sieges berechnen...
             __LISTEN.map((list, indexList) =>
                         Array.from(getTags('LI', list)).forEach(entry => {
-                                    const __ITEMS = getElements('A,DIV', entry);
+                                    const __ITEMS = getElements('A , DIV', entry);
                                     const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
                                     const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
                                     const [ __MANAGER, __PMID ] = getLinkData(__ITEMS[2], 'receiver_id');
@@ -425,7 +425,7 @@ const procIntTeilnehmer = new PageManager("Internationale Teilnehmer", null, () 
         // Phase 2: Jetzt kann neben der naechsten Runde auch die letzte Runde berechnet werden...
         const __TEAMLISTS = __LISTEN.map((list, indexList) =>
                     Array.from(getTags('LI', list)).map(entry => {
-                                const __ITEMS = getElements('A,DIV', entry);
+                                const __ITEMS = getElements('A , DIV', entry);
                                 const __CUP = __CUPS[indexList];  // passende Ueberschrift (Wettbewerb)
                                 const [ __TEAMNAME, __OSID ] = getLinkData(__ITEMS[1], 'c');
                                 const [ __MANAGER, __PMID ] = getLinkData(__ITEMS[2], 'receiver_id');
