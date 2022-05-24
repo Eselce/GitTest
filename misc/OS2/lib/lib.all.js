@@ -7848,6 +7848,8 @@ const __INTZATLABOSE = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __CO
 const __INTZATLABOSC = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.LabOSC);
 const __INTLABOSEZAT = reverseMapping(__INTZATLABOSE);
 const __INTLABOSCZAT = reverseMapping(__INTZATLABOSC);
+const __INTZATIDOSE = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.IdOSE, Number);
+const __INTZATIDOSC = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.ZAT, __COLINTSPIELPLAN.IdOSC, Number);
 const __INTOSEALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSE, __COLINTSPIELPLAN.ZAT, mappingPushFun(Number));
 const __INTOSCALLZATS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.EvtOSC, __COLINTSPIELPLAN.ZAT, mappingPushFun(Number));
 const __INTOSECUPS = selectMapping(__INTSPIELPLAN, __COLINTSPIELPLAN.IntOSE, __COLINTSPIELPLAN.CupOSE, mappingPush);
@@ -9096,8 +9098,15 @@ function incZAT(currZAT, anzZAT = 1) {
 // currZAT: Enthaelt den Spielplanzeiger auf den aktuellen ZAT (inkl. Saison)
 // team: Enthaelt ein Team-Objekt fuer das betroffene Team
 // showLink: Angabe, ob ein Link eingefuegt werden soll (normalerweise true)
+// showRunde: Angabe, ob statt des Namens des Spieltags nur die Runde angegeben werden soll
+// lastRnd: Letzte Runde finden (statt erreichter Runde): Ergebnisse liegen in der Vergangenheit
 // return Beschreibung des Spiels mit Link, falls showLink true ist, sonst Leerstring
-function getZatLink(currZAT, team, showLink = true) {
+function getZatLink(currZAT, team, showLink = true, showRunde = false, lastRnd = false) {
+    const __LASTRND = lastRnd;
+    const __SHOWRUNDE = (showRunde || __LASTRND);
+    const __SHOWLINK = showLink;
+
+    // RundenLink anlegen...
     const __LINK = new RundenLink(currZAT.saison, team);
 
     if (currZAT.gameType === 'Liga') {
@@ -9110,21 +9119,44 @@ function getZatLink(currZAT, team, showLink = true) {
     } else if (currZAT.gameType === 'LP') {
         __LINK.setRunde('stauswahl', currZAT.pokalRunde);
         __LINK.setPage('lp', __POKALRUNDEN[__LINK.runde]);
-    } else if ((currZAT.gameType === 'OSCQ') || (currZAT.gameType === 'OSEQ')) {
-        __LINK.setRunde('runde', currZAT.euroRunde);
-        __LINK.setPage(((currZAT.gameType === 'OSCQ') ? 'oscq' : 'oseq'), __QUALIRUNDEN[__LINK.runde] + __HINRUECK[currZAT.hinRueck]);
+    } else if (currZAT.gameType === 'OSEQ') {
+        const __EURORUNDE = currZAT.euroRunde;
+        const __IDOSE = __INTZATIDOSE[currZAT.ZAT] + ((__EURORUNDE >= 3) && ! __LASTRND);
+        const __RUNDE = (__SHOWRUNDE ? __OSERUNDEN[__IDOSE] : __QUALIRUNDEN[__EURORUNDE] + __HINRUECK[currZAT.hinRueck]);
+
+        __LINK.setRunde('runde', __EURORUNDE);
+        __LINK.setPage('oseq', __RUNDE);
+    } else if (currZAT.gameType === 'OSCQ') {
+        const __EURORUNDE = currZAT.euroRunde;
+        const __IDOSC = __INTZATIDOSC[currZAT.ZAT] + ((__EURORUNDE >= 2) && ! __LASTRND);
+        const __RUNDE = (__SHOWRUNDE ? __OSCRUNDEN[__IDOSC] : __QUALIRUNDEN[__EURORUNDE] + __HINRUECK[currZAT.hinRueck]);
+
+        __LINK.setRunde('runde', __EURORUNDE);
+        __LINK.setPage('oscq', __RUNDE);
     } else if (currZAT.gameType === 'OSC') {
         if (currZAT.euroRunde < 9) {
             const __GRUPPENPHASE = ((currZAT.euroRunde < 6) ? "HR-Grp. " : "ZR-Grp. ");
+            const __EURORUNDE = (currZAT.euroRunde % 3) * 2 + 1 + currZAT.hinRueck;
+            const __IDOSC = __INTZATIDOSC[currZAT.ZAT];
+            const __RUNDE = (__SHOWRUNDE ? __OSCRUNDEN[__IDOSC] : __GRUPPENPHASE + "Spiel " + __EURORUNDE);
 
-            __LINK.setRunde("", (currZAT.euroRunde % 3) * 2 + 1 + currZAT.hinRueck);
-            __LINK.setPage(((currZAT.euroRunde < 6) ? 'oschr' : 'osczr'), __GRUPPENPHASE + "Spiel " + __LINK.runde);
+            __LINK.setRunde("", __EURORUNDE);
+            __LINK.setPage(((currZAT.euroRunde < 6) ? 'oschr' : 'osczr'), __RUNDE);
         } else {
-            __LINK.setPage('oscfr', __OSCKORUNDEN[currZAT.euroRunde - 8] + __HINRUECK[currZAT.hinRueck]);
+            const __EURORUNDE = currZAT.euroRunde - 8;
+            const __IDOSC = __INTZATIDOSC[currZAT.ZAT];
+            const __RUNDE = (__SHOWRUNDE ? __OSCRUNDEN[__IDOSC] : __OSCKORUNDEN[__EURORUNDE] + __HINRUECK[currZAT.hinRueck]);
+
+            __LINK.setRunde("", __EURORUNDE);
+            __LINK.setPage('oscfr', __RUNDE);
         }
     } else if (currZAT.gameType === 'OSE') {
-        __LINK.setRunde('runde', currZAT.euroRunde - 3);
-        __LINK.setPage('ose', __OSEKORUNDEN[__LINK.runde] + __HINRUECK[currZAT.hinRueck]);
+        const __EURORUNDE = currZAT.euroRunde - 3;
+        const __IDOSE = __INTZATIDOSE[currZAT.ZAT];
+        const __RUNDE = (__SHOWRUNDE ? __OSERUNDEN[__IDOSE] : __OSEKORUNDEN[__EURORUNDE] + __HINRUECK[currZAT.hinRueck]);
+
+        __LINK.setRunde('runde', __EURORUNDE);
+        __LINK.setPage('ose', __RUNDE);
     } else if (currZAT.gameType === 'Supercup') {
         __LINK.setRunde("", 1);
         __LINK.setPage('supercup', currZAT.gameType);
@@ -9133,7 +9165,7 @@ function getZatLink(currZAT, team, showLink = true) {
     }
     __LINK.setAnzeigen(true);
 
-    return (showLink ? __LINK.getHTML() : "");
+    return (__SHOWLINK ? __LINK.getHTML() : "");
 }
 
 // Fuegt einen Link auf die Ligatabelle hinzu, falls es ein Ligaspiel ist
