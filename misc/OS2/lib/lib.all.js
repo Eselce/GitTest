@@ -7840,7 +7840,7 @@ const __INTSPIELPLAN = {
         25  : [ 19, 31, 31, 60, 55, 'Viertelfinale R\u00FCck',  'Viertelfinale R\u00FCck',  25, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Viertelfinale',    'Viertelfinale',    2,  2,  4,  4,  5,  4,  '6. Runde',         '3. Runde'      ],
         26  : [ 20, 32, 32, 62, 59, 'Halbfinale Hin',           'Halbfinale Hin',           26, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Halbfinale',       'Halbfinale',       1,  1,  4,  4,  5,  4,  '7. Runde',         '4. Runde'      ],
         27  : [ 21, 32, 32, 66, 61, 'Halbfinale R\u00FCck',     'Halbfinale R\u00FCck',     27, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Halbfinale',       'Halbfinale',       2,  2,  4,  4,  5,  4,  '7. Runde',         '4. Runde'      ],
-        28  : [ 22, 33, 33, 70, 71, 'Finale',                   'Finale',                   28, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Finale',           'Finale',           0,  0,  4,  4,  5,  4,  'Finale',           'Finale'        ],
+        28  : [ 22, 33, 33, 70, 71, 'Finale',                   'Finale',                   28, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Finale',           'Finale',           0,  0,  4,  4,  5,  4,  '8. Runde',         '5. Runde'      ],
         29  : [ 23, 40, 40, 99, 99, 'Saisonende',               'Saisonende',               28, 'OSE',  'OSC',  'OSE',  'OSC-FR',   'Sieger',           'Sieger',           0,  0,  4,  4,  5,  4,  'Sieger',           'Sieger'        ]
     };
 
