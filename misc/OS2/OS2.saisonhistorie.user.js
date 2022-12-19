@@ -340,6 +340,24 @@ Class.define(SaisonhistorieEntry, Object, {
         'isOSCfinale'     : function() {
                                 return (__OSCALLRND[this.OSCNr] === 'Finale');
                             },
+        'isTitelNational' : function() {
+                                return (this.isMeister() || this.isPokalsieger());
+                            },
+        'anzTitelNational': function() {
+                                return (this.isMeister() + this.isPokalsieger());
+                            },
+        'isTitelEuropa'   : function() {
+                                return (this.isOSEsieger() || this.isOSCsieger());
+                            },
+        'isDoubleNational': function() {
+                                return (this.isMeister() && this.isPokalsieger() /*&& ! this.isTriple()*/);
+                            },
+        'isDoubleEuropa'  : function() {
+                                return (this.isTitelEuropa() && this.isTitelNational() /*&& ! this.isTriple()*/);
+                            },
+        'isTriple'        : function() {
+                                return (this.isTitelEuropa() && this.isDoubleNational());
+                            },
         'valueOf'         : function() {
                                 return ('S' + this.saison);
                             },
@@ -440,6 +458,13 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
             const __OSCSIEGER = (entry => entry.isOSCsieger());
             const __OSCFINALIST = (entry => entry.isOSCfinale());
             const __OSCFINALE = (entry => (entry.isOSCfinale() || entry.isOSCsieger()));
+            const __TITELEUROPA = (entry => entry.isTitelEuropa());
+            const __TITELNATIONAL = (entry => entry.isTitelNational());
+            const __TITELANZNATIONAL = (entry => entry.anzTitelNational());
+            const __TITEL = (entry => (entry.anzTitelNational() + entry.isTitelEuropa()));
+            const __DOUBLE = (entry => entry.isDoubleNational());
+            const __DOUBLEEUROPA = (entry => entry.isDoubleEuropa());
+            const __TRIPLE = (entry => entry.isTriple());
             const __PUNKTE = (entry => entry.punkte);
             const __PLATZ = (entry => entry.platz);
             const __POKALRND = (entry => entry.pokalNr);
@@ -471,6 +496,14 @@ const procSaisonhistorie = new PageManager("Saisonhistorie", __TEAMCLASS, () => 
             __LANG(new ReportExists("Drittliga-Meister", __DRITTMEISTER));
             __KURZ(new ReportExists("Pokalsieger", __POKALSIEGER));
             __KURZ(new ReportExists("Pokalfinalist", __POKALFINALIST));
+            __LANG(new ReportExists("Internationaler Titel", __TITELEUROPA));
+            __LANG(new ReportExists("Nationaler Titel", __TITELNATIONAL));
+            __KURZ(new ReportSum("Titel gewonnen", __TITEL, null, __OUTERFOLGE));
+            __LANG(new ReportSum("Internationale Titel", __TITELEUROPA, null, __OUTERFOLGE));
+            __LANG(new ReportSum("Nationale Titel", __TITELANZNATIONAL, null, __OUTERFOLGE));
+            __KURZ(new ReportExists("Triple", __TRIPLE));
+            __KURZ(new ReportExists("Double", __DOUBLE));
+            __KURZ(new ReportExists("Internationales Double", __DOUBLEEUROPA));
             __KURZ(new ReportSum("Gesamtpunkte", __PUNKTE, null, __OUTPUNKTE));
             __KURZ(new ReportMax("Maximale Punkte", __PUNKTE, null, __OUTPUNKTE));
             __LANG(new ReportMin("Minimale Punkte", __PUNKTE, null, __OUTPUNKTE));
@@ -679,11 +712,11 @@ const __ITEM = 's';
 // s=3: Statistik Saison
 // s=4: Statistik Gesamt
 // s=5: Teaminfo
-// s=6: Saisonplan (*) s=6 wird behandelt durch PageManager #0
+// s=6: Saisonplan
 // s=7: Vereinshistorie
 // s=8: Transferhistorie
 // s=9: Leihhistorie
-// s=10: Saisonhistorie
+// s=10: Saisonhistorie (*) s=10 wird behandelt durch PageManager #0
 const __MAIN = new Main(__OPTCONFIG, __MAINCONFIG, procSaisonhistorie);
 
 __MAIN.run(getPageIdFromURL, __LEAFS, __ITEM);
