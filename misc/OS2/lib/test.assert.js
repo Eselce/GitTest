@@ -237,7 +237,7 @@ const ASSERT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILO
 
     const __EPSILON = scale * epsilon;
     const __PROZENT = 100 * __EPSILON;
-    const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
+    const __DELTA = ((exp === 0.0) ? 1.0 : Math.abs(exp)) * __EPSILON;
 
     return ASSERT(Math.abs(erg - exp) <= __DELTA, __LOG.info(erg, true, true) + " != " + __LOG.info(exp, true, true) + " +/- " + __PROZENT + '%', msg, thisArg, ... params);
 }
@@ -248,7 +248,7 @@ const ASSERT_NOT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEP
 
     const __EPSILON = scale * epsilon;
     const __PROZENT = 100 * __EPSILON;
-    const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
+    const __DELTA = ((exp === 0.0) ? 1.0 : Math.abs(exp)) * __EPSILON;
 
     return ASSERT(Math.abs(erg - exp) > __DELTA, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- " + __PROZENT + '%', msg, thisArg, ... params);
 }
