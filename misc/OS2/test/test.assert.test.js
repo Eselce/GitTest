@@ -1486,6 +1486,9 @@
             'ASSERT_IN_DELTA'                 : function() {
                                                     return ASSERT_IN_DELTA(42 + __ASSERTDELTA, 42, __ASSERTDELTA, "ASSERT_IN_DELTA failed");
                                                 },
+            'ASSERT_IN_DELTA NEG'             : function() {
+                                                    return ASSERT_IN_DELTA(-42 + __ASSERTDELTA, -42, __ASSERTDELTA, "ASSERT_IN_DELTA failed");
+                                                },
             'ASSERT_IN_DELTA FAIL'            : function() {
                                                     try {
                                                         ASSERT_IN_DELTA(42 + 1.1 * __ASSERTDELTA, 42, __ASSERTDELTA, "ASSERT_IN_DELTA failed");
@@ -1541,6 +1544,9 @@
                                                 },
             'ASSERT_NOT_IN_DELTA'             : function() {
                                                     return ASSERT_NOT_IN_DELTA(42 + 1.1 * __ASSERTDELTA, 42, __ASSERTDELTA, "ASSERT_NOT_IN_DELTA failed");
+                                                },
+            'ASSERT_NOT_IN_DELTA NEG'         : function() {
+                                                    return ASSERT_NOT_IN_DELTA(-42 + 1.1 * __ASSERTDELTA, -42, __ASSERTDELTA, "ASSERT_NOT_IN_DELTA failed");
                                                 },
             'ASSERT_NOT_IN_DELTA FAIL'        : function() {
                                                     try {
@@ -1598,6 +1604,9 @@
             'ASSERT_IN_EPSILON'               : function() {
                                                     return ASSERT_IN_EPSILON(42 + __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, "ASSERT_IN_EPSILON failed");
                                                 },
+            'ASSERT_IN_EPSILON NEG'           : function() {
+                                                    return ASSERT_IN_EPSILON(-42 + __ASSERTDELTA, -42, 110000000, __ASSERTEPSILON, "ASSERT_IN_EPSILON failed");
+                                                },
             'ASSERT_IN_EPSILON FAIL'          : function() {
                                                     try {
                                                         ASSERT_IN_EPSILON(42 + 1.1 * __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, "ASSERT_IN_EPSILON failed");
@@ -1653,6 +1662,9 @@
                                                 },
             'ASSERT_NOT_IN_EPSILON'           : function() {
                                                     return ASSERT_NOT_IN_EPSILON(42 + 1.1 * __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, "ASSERT_NOT_IN_EPSILON failed");
+                                                },
+            'ASSERT_NOT_IN_EPSILON NEG'       : function() {
+                                                    return ASSERT_NOT_IN_EPSILON(-42 + 1.1 * __ASSERTDELTA, -42, 110000000, __ASSERTEPSILON, "ASSERT_NOT_IN_EPSILON failed");
                                                 },
             'ASSERT_NOT_IN_EPSILON FAIL'      : function() {
                                                     try {
