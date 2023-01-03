@@ -261,7 +261,7 @@ const ASSERT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEPSILO
 
     const __EPSILON = scale * epsilon;
     const __PROZENT = 100 * __EPSILON;
-    const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
+    const __DELTA = ((exp === 0.0) ? 1.0 : Math.abs(exp)) * __EPSILON;
 
     return ASSERT(Math.abs(erg - exp) <= __DELTA, __LOG.info(erg, true, true) + " != " + __LOG.info(exp, true, true) + " +/- " + __PROZENT + '%', msg, thisArg, ... params);
 }
@@ -272,7 +272,7 @@ const ASSERT_NOT_IN_EPSILON = function(erg, exp, scale = 1, epsilon = __ASSERTEP
 
     const __EPSILON = scale * epsilon;
     const __PROZENT = 100 * __EPSILON;
-    const __DELTA = ((exp === 0.0) ? 1.0 : exp) * __EPSILON;
+    const __DELTA = ((exp === 0.0) ? 1.0 : Math.abs(exp)) * __EPSILON;
 
     return ASSERT(Math.abs(erg - exp) > __DELTA, __LOG.info(erg, true, true) + " == " + __LOG.info(exp, true, true) + " +/- " + __PROZENT + '%', msg, thisArg, ... params);
 }
@@ -2641,6 +2641,9 @@ __TESTTEAMCLASS.optSelect = {
             'ASSERT_IN_DELTA'                 : function() {
                                                     return ASSERT_IN_DELTA(42 + __ASSERTDELTA, 42, __ASSERTDELTA, "ASSERT_IN_DELTA failed");
                                                 },
+            'ASSERT_IN_DELTA NEG'             : function() {
+                                                    return ASSERT_IN_DELTA(-42 + __ASSERTDELTA, -42, __ASSERTDELTA, "ASSERT_IN_DELTA failed");
+                                                },
             'ASSERT_IN_DELTA FAIL'            : function() {
                                                     try {
                                                         ASSERT_IN_DELTA(42 + 1.1 * __ASSERTDELTA, 42, __ASSERTDELTA, "ASSERT_IN_DELTA failed");
@@ -2696,6 +2699,9 @@ __TESTTEAMCLASS.optSelect = {
                                                 },
             'ASSERT_NOT_IN_DELTA'             : function() {
                                                     return ASSERT_NOT_IN_DELTA(42 + 1.1 * __ASSERTDELTA, 42, __ASSERTDELTA, "ASSERT_NOT_IN_DELTA failed");
+                                                },
+            'ASSERT_NOT_IN_DELTA NEG'         : function() {
+                                                    return ASSERT_NOT_IN_DELTA(-42 + 1.1 * __ASSERTDELTA, -42, __ASSERTDELTA, "ASSERT_NOT_IN_DELTA failed");
                                                 },
             'ASSERT_NOT_IN_DELTA FAIL'        : function() {
                                                     try {
@@ -2753,6 +2759,9 @@ __TESTTEAMCLASS.optSelect = {
             'ASSERT_IN_EPSILON'               : function() {
                                                     return ASSERT_IN_EPSILON(42 + __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, "ASSERT_IN_EPSILON failed");
                                                 },
+            'ASSERT_IN_EPSILON NEG'           : function() {
+                                                    return ASSERT_IN_EPSILON(-42 + __ASSERTDELTA, -42, 110000000, __ASSERTEPSILON, "ASSERT_IN_EPSILON failed");
+                                                },
             'ASSERT_IN_EPSILON FAIL'          : function() {
                                                     try {
                                                         ASSERT_IN_EPSILON(42 + 1.1 * __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, "ASSERT_IN_EPSILON failed");
@@ -2808,6 +2817,9 @@ __TESTTEAMCLASS.optSelect = {
                                                 },
             'ASSERT_NOT_IN_EPSILON'           : function() {
                                                     return ASSERT_NOT_IN_EPSILON(42 + 1.1 * __ASSERTDELTA, 42, 110000000, __ASSERTEPSILON, "ASSERT_NOT_IN_EPSILON failed");
+                                                },
+            'ASSERT_NOT_IN_EPSILON NEG'       : function() {
+                                                    return ASSERT_NOT_IN_EPSILON(-42 + 1.1 * __ASSERTDELTA, -42, 110000000, __ASSERTEPSILON, "ASSERT_NOT_IN_EPSILON failed");
                                                 },
             'ASSERT_NOT_IN_EPSILON FAIL'      : function() {
                                                     try {
@@ -6353,6 +6365,8 @@ __TESTTEAMCLASS.optSelect = {
     const __KEY = 'key';    // Key fuer Object
     const __KEY0 = 0;       // Key fuer Array
 
+// ==================== Abschnitt fuer getValue(), getObjValue() und getArrValue() ====================
+
     const __TESTDATA = {
             'getValueString'        : [ '1',                            '1',                'string'    ],
             'getValueInt'           : [ 42,                             42,                 'number'    ],
@@ -6917,6 +6931,344 @@ __TESTTEAMCLASS.optSelect = {
                                     }
         });
 
+// ==================== Ende Abschnitt fuer getValue(), getObjValue() und getArrValue() ====================
+
+// ==================== Abschnitt fuer getNumber() ====================
+
+    const __EPSILON = 1e-10; // Ausreichend genau, um Abweichungen von korrekter Umwandlung zu erkennen
+
+    const __TESTDATANUMBER = {
+            'getNumberInt'          : [ '42',                           42,                 'number'    ],
+            'getNumberIntNeg'       : [ '-42',                          -42,                'number'    ],
+            'getNumberIntOne'       : [ '1.234',                        1234,               'number'    ],
+            'getNumberIntOneNeg'    : [ '-1.234',                       -1234,              'number'    ],
+            'getNumberIntTwo'       : [ '12.345.678',                   12345678,           'number'    ],
+            'getNumberIntTwoNeg'    : [ '-12.345.678',                  -12345678,          'number'    ],
+            'getNumberNum1'         : [ '0.9',                          0.9,                'number'    ],
+            'getNumberNum1Neg'      : [ '-0.9',                         -0.9,               'number'    ],
+            'getNumberNum2'         : [ '0.98',                         0.98,               'number'    ],
+            'getNumberNum2Neg'      : [ '-0.98',                        -0.98,              'number'    ],
+            'getNumberNum3Not'      : [ '0.987',                        987,                'number'    ],
+            'getNumberNum3NotNeg'   : [ '-0.987',                       -987,               'number'    ],
+            'getNumberNum4'         : [ '0.9876',                       0.9876,             'number'    ],
+            'getNumberNum4Neg'      : [ '-0.9876',                      -0.9876,            'number'    ],
+            'getNumberNum5'         : [ '0.98765',                      0.98765,            'number'    ],
+            'getNumberNum5Neg'      : [ '-0.98765',                     -0.98765,           'number'    ],
+            'getNumberNum6'         : [ '0.987654',                     0.987654,           'number'    ],
+            'getNumberNum6Neg'      : [ '-0.987654',                    -0.987654,          'number'    ],
+            'getNumberIpc'          : [ '42%',                          0.42,               'number'    ],
+            'getNumberIpcNeg'       : [ '-42%',                         -0.42,              'number'    ],
+            'getNumberIpcOne'       : [ '1.234%',                       12.34,              'number'    ],
+            'getNumberIpcOneNeg'    : [ '-1.234%',                      -12.34,             'number'    ],
+            'getNumberIpcTwo'       : [ '12.345.678%',                  123456.78,          'number'    ],
+            'getNumberIpcTwoNeg'    : [ '-12.345.678%',                 -123456.78,         'number'    ],
+            'getNumberNpc1'         : [ '0.9%',                         0.009,              'number'    ],
+            'getNumberNpc1Neg'      : [ '-0.9%',                        -0.009,             'number'    ],
+            'getNumberNpc2'         : [ '0.98%',                        0.0098,             'number'    ],
+            'getNumberNpc2Neg'      : [ '-0.98%',                       -0.0098,            'number'    ],
+            'getNumberNpc3Not'      : [ '0.987%',                       9.87,               'number'    ],
+            'getNumberNpc3NotNeg'   : [ '-0.987%',                      -9.87,              'number'    ],
+            'getNumberNpc4'         : [ '0.9876%',                      0.009876,           'number'    ],
+            'getNumberNpc4Neg'      : [ '-0.9876%',                     -0.009876,          'number'    ],
+            'getNumberNpc5'         : [ '0.98765%',                     0.0098765,          'number'    ],
+            'getNumberNpc5Neg'      : [ '-0.98765%',                    -0.0098765,         'number'    ],
+            'getNumberNpc6'         : [ '0.987654%',                    0.00987654,         'number'    ],
+            'getNumberNpc6Neg'      : [ '-0.987654%',                   -0.00987654,        'number'    ]
+        };
+
+    new UnitTest('util.value.js Number', "Utilities zur Behandlung von Nummern", {
+            'getNumberInt'        : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberInt'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIntNeg'     : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIntNeg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIntOne'     : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIntOne'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIntOneNeg'  : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIntOneNeg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIntTwo'     : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIntTwo'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIntTwoNeg'  : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIntTwoNeg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum1'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum1'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum1Neg'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum1Neg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum2'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum2'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum2Neg'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum2Neg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum3Not'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum3Not'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum3NotNeg' : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum3NotNeg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum4'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum4'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum4Neg'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum4Neg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum5'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum5'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum5Neg'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum5Neg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum6'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum6'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNum6Neg'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNum6Neg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIpc'        : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIpc'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIpcNeg'     : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIpcNeg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIpcOne'     : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIpcOne'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIpcOneNeg'  : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIpcOneNeg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIpcTwo'     : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIpcTwo'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberIpcTwoNeg'  : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberIpcTwoNeg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_EQUAL(__RET, __EXP, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc1'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc1'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc1Neg'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc1Neg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc2'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc2'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc2Neg'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc2Neg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc3Not'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc3Not'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc3NotNeg' : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc3NotNeg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc4'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc4'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc4Neg'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc4Neg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc5'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc5'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc5Neg'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc5Neg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc6'       : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc6'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    },
+            'getNumberNpc6Neg'    : function() {
+                                        const [ __VAL, __EXP, __TYPE ] = __TESTDATANUMBER['getNumberNpc6Neg'];
+                                        const __RET = getNumber(__VAL);
+
+                                        ASSERT_IN_EPSILON(__RET, __EXP, 1, __EPSILON, "getNumber() muss Zahl zur\u00FCckgeben");
+
+                                        return ASSERT_TYPEOF(__RET, __TYPE, "getNumber() muss Number zur\u00FCckgeben");
+                                    }
+        });
+
+// ==================== Ende Abschnitt fuer getNumber() ====================
+
 //+function getValue(value, defValue = undefined, retValue = undefined) {
 //+function getObjValue(obj, item, defValue = undefined, retValue = undefined) {
 //+function getArrValue(arr, index, defValue = undefined, retValue = undefined) {
@@ -6926,7 +7278,7 @@ __TESTTEAMCLASS.optSelect = {
 //function getNextValue(arr, value) {
 //function getMulValue(valueA, valueB, digits = 0, defValue = Number.NaN) {
 //function getOrdinal(value, defValue = '*') {
-//function getNumber(numberString) {
+//+function getNumber(numberString) {
 //function getNumberString(numberString) {
 //function floorValue(value, dot = '.') {
 //function toArray(value) {

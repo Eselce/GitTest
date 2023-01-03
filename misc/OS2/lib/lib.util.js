@@ -1094,11 +1094,11 @@ function getNumber(numberString) {
     // Ist es eine Prozentzahl?
     const __PERCENT = (__STR.indexOf('%') > -1);
     // Buchstaben und '%' entfernen;
-    // Whitespaces vorne und hintenentfernen...
+    // Whitespaces vorne und hinten entfernen...
     const str = __STR.replace(/[a-zA-Z%]/g, "").trim();
-    const __REGEXPINT     = /^\d+$/;
-    const __REGEXPINTDOTS = /^\d+(\.\d{3}){1,}$/;
-    const __REGEXPNUMBER  = /^\d*\.\d{1,}$/;
+    const __REGEXPINT     = /^[+-]?\d+$/;
+    const __REGEXPINTDOTS = /^[+-]?\d+(\.\d{3})+$/;
+    const __REGEXPNUMBER  = /^[+-]?\d*\.\d+$/;
     let ret = Number.NaN;
 
     // parseXXX interpretiert einen Punkt immer als Dezimaltrennzeichen!
