@@ -27,13 +27,13 @@
 // ==================== Abschnitt fuer Klasse UnitTestOption ====================
 
     const __TESTDATA = {
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'loadOption'    : [ "saison",   42,         19,             false,  undefined   ],
         };
 
     new UnitTest('test.lib.option.js', "Klasse UnitTestOption", {
-            'loadOption'          : function() {
-                                        
-                                    }
+//            'loadOption'          : function() {
+//                                        
+//                                    }
         });
 
 //function UnitTestOption(name, desc, tests, load) {

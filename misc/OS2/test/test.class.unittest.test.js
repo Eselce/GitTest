@@ -32,13 +32,13 @@
 // ==================== Abschnitt fuer Klasse UnitTest ====================
 
     const __TESTDATA = {
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'loadOption'    : [ "saison",   42,         19,             false,  undefined   ],
         };
 
     new UnitTest('test.class.unittest.js', "Klasse UnitTest", {
-            'loadOption'          : function() {
-                                        
-                                    }
+//            'loadOption'          : function() {
+//                                        
+//                                    }
         });
 
 //function UnitTest(name, desc, tests, load) {

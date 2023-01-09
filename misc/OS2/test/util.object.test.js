@@ -27,13 +27,13 @@
 // ==================== Abschnitt fuer detaillierte Ausgabe von Daten ====================
 
     const __TESTDATA = {
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'loadOption'    : [ "saison",   42,         19,             false,  undefined   ],
         };
 
     new UnitTest('util.object.js', "Utilities fuer Object, Array, etc.", {
-            'loadOption'          : function() {
-                                        
-                                    }
+//            'loadOption'          : function() {
+//                                        
+//                                    }
         });
 
 //Object.Map = function(obj, mapFun, thisArg, filterFun, sortFun) {
