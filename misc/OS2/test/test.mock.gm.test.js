@@ -26,13 +26,13 @@
 // ==================== Abschnitt fuer Mock GM3-Funktionen ====================
 
     const __TESTDATA = {
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'loadOption'    : [ "saison",   42,         19,             false,  undefined   ],
         };
 
     new UnitTest('test.mock.gm.js', "Mock GM3-Funktionen", {
-            'loadOption'          : function() {
-                                        
-                                    }
+//            'loadOption'          : function() {
+//                                        
+//                                    }
         });
 
 //this.GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function

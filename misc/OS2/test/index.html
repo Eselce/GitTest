@@ -187,6 +187,14 @@ const GM_info = {  // Mock GM_info data
     // Unit-Test-Ausfuehrung nur nach Klick!
     const __RET = true;
 
+    addEventListener("DOMContentLoaded", function() {
+            if (typeof (GM || { }).log === 'undefined') {  // Fehler beim Laden von 'gm4-polyfill.js'...
+                const __ANCHOR = document.querySelector("#run-unittests");
+
+                __ANCHOR.textContent = "Error loading 'gm4-polyfill.js'...";
+            }
+        });
+
     return __RET;
 })();
 

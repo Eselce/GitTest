@@ -61,6 +61,9 @@
             'browseXML'           : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
 
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
+
                                         return callPromiseChain(__THIS.browse(__URL), doc => {
                                                 const __RET = doc;
 
@@ -69,6 +72,9 @@
                                     },
             'browseXMLonload'     : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
+
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
 
                                         return new Promise(function(resolve, reject) {
                                                 return __THIS.browse(__URL, null, request => {
@@ -95,6 +101,9 @@
                                         const __ERRORTYPE = 'NetworkError';
                                         const __ERRORRESULT = 2152923155;
 
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
+
                                         return callPromiseChain(__THIS.browse(__URL), doc => {
                                                 const __RET = doc;
 
@@ -117,6 +126,9 @@
                                         const __ERRORMSG2 = "Failed to execute 'send' on 'XMLHttpRequest': Failed to load '" + __URL.replaceAll(' ', "%20") + "'.";
                                         const __ERRORTYPE = 'NetworkError';
                                         const __ERRORRESULT = 2152923155;
+
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
 
                                         return new Promise(function(resolve, reject) {
                                                 return __THIS.browse(__URL, null, request => {

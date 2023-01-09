@@ -62,6 +62,9 @@
             'browseXML'           : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
 
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
+
                                         return callPromiseChain(__THIS.browse(__URL), doc => {
                                                 const __RET = doc;
 
@@ -70,6 +73,9 @@
                                     },
             'browseXMLonload'     : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
+
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
 
                                         return new Promise(function(resolve, reject) {
                                                 return __THIS.browse(__URL, null, request => {
@@ -92,6 +98,9 @@
             'browseXMLCORS'       : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
 
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
+
                                         return callPromiseChain(__THIS.browse(__URL), doc => {
                                                 const __RET = doc;
 
@@ -100,6 +109,9 @@
                                     },
             'browseXMLCORSonload' : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
+
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
 
                                         return new Promise(function(resolve, reject) {
                                                 return __THIS.browse(__URL, null, request => {

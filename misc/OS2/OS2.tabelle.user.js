@@ -1445,14 +1445,7 @@ console.log(__LTITEL);
 // Callback-Funktion fuer die Behandlung der Optionen und Laden des Benutzermenus
 // Diese Funktion erledigt nur Modifikationen und kann z.B. einfach optSet zurueckgeben!
 // optSet: Platz fuer die gesetzten Optionen
-// optParams: Eventuell notwendige Parameter zur Initialisierung
-// 'hideMenu': Optionen werden zwar geladen und genutzt, tauchen aber nicht im Benutzermenu auf
-// 'teamParams': Getrennte Daten-Option wird genutzt, hier: Team() mit 'LdNr'/'LgNr' des Erst- bzw. Zweitteams
-// 'menuAnchor': Startpunkt fuer das Optionsmenu auf der Seite
-// 'showForm': Checkliste der auf der Seite sichtbaren Optionen (true fuer sichtbar)
-// 'hideForm': Checkliste der auf der Seite unsichtbaren Optionen (true fuer unsichtbar)
-// 'formWidth': Anzahl der Elemente pro Zeile
-// 'formBreak': Elementnummer des ersten Zeilenumbruchs
+// optParams: Eventuell notwendige Parameter zur Initialisierung (unbenutzt!)
 // return Gefuelltes Objekt mit den gesetzten Optionen
 function prepareOptions(optSet, optParams) {
     UNUSED(optParams);
