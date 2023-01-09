@@ -2353,13 +2353,13 @@
 // ==================== Abschnitt fuer Klasse UnitTest ====================
 
     const __TESTDATA = {
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'loadOption'    : [ "saison",   42,         19,             false,  undefined   ],
         };
 
     new UnitTest('test.class.unittest.js', "Klasse UnitTest", {
-            'loadOption'          : function() {
-                                        
-                                    }
+//            'loadOption'          : function() {
+//                                        
+//                                    }
         });
 
 //function UnitTest(name, desc, tests, load) {
@@ -2441,13 +2441,13 @@
 // ==================== Abschnitt fuer Klasse UnitTestOption ====================
 
     const __TESTDATA = {
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'loadOption'    : [ "saison",   42,         19,             false,  undefined   ],
         };
 
     new UnitTest('test.lib.option.js', "Klasse UnitTestOption", {
-            'loadOption'          : function() {
-                                        
-                                    }
+//            'loadOption'          : function() {
+//                                        
+//                                    }
         });
 
 //function UnitTestOption(name, desc, tests, load) {
@@ -2518,13 +2518,13 @@
 // ==================== Abschnitt fuer Mock GM3-Funktionen ====================
 
     const __TESTDATA = {
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'loadOption'    : [ "saison",   42,         19,             false,  undefined   ],
         };
 
     new UnitTest('test.mock.gm.js', "Mock GM3-Funktionen", {
-            'loadOption'          : function() {
-                                        
-                                    }
+//            'loadOption'          : function() {
+//                                        
+//                                    }
         });
 
 //this.GM_getValue = function(name, defaultValue) {  // Mock GM_getValue function
@@ -2589,13 +2589,13 @@
 // ==================== Abschnitt fuer Debugging und Error-Handling ====================
 
     const __TESTDATA = {
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'loadOption'    : [ "saison",   42,         19,             false,  undefined   ],
         };
 
     new UnitTest('util.debug.js', "Utilities zu Debugging und Error-Handling", {
-            'loadOption'          : function() {
-                                        
-                                    }
+//            'loadOption'          : function() {
+//                                        
+//                                    }
         });
 
 //function showAlert(label, message, data = undefined, show = true) {
@@ -2733,13 +2733,13 @@
 // ==================== Abschnitt fuer detaillierte Ausgabe von Daten ====================
 
     const __TESTDATA = {
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ],
+            'loadOption'    : [ "saison",   42,         19,             false,  undefined   ],
         };
 
     new UnitTest('util.object.js', "Utilities fuer Object, Array, etc.", {
-            'loadOption'          : function() {
-                                        
-                                    }
+//            'loadOption'          : function() {
+//                                        
+//                                    }
         });
 
 //Object.Map = function(obj, mapFun, thisArg, filterFun, sortFun) {
@@ -2811,7 +2811,7 @@
     const __TESTDATA = {
             'prefixName'    : [ "Name",     "Prefix",   "PrefixName"                        ],
             'postfixName'   : [ "Name",     "Postfix",  "NamePostfix"                       ],
-            'loadOption'    : [ "saison",   42,         18,             false,  undefined   ]
+            'loadOption'    : [ "saison",   42,         19,             false,  undefined   ]
         };
 
     new UnitTestOption('util.option.api.js', "Schnittstelle zur Behandlung von Optionen", {
@@ -6239,6 +6239,9 @@
             'browseXML'           : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
 
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
+
                                         return callPromiseChain(__THIS.browse(__URL), doc => {
                                                 const __RET = doc;
 
@@ -6247,6 +6250,9 @@
                                     },
             'browseXMLonload'     : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
+
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
 
                                         return new Promise(function(resolve, reject) {
                                                 return __THIS.browse(__URL, null, request => {
@@ -6273,6 +6279,9 @@
                                         const __ERRORTYPE = 'NetworkError';
                                         const __ERRORRESULT = 2152923155;
 
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
+
                                         return callPromiseChain(__THIS.browse(__URL), doc => {
                                                 const __RET = doc;
 
@@ -6295,6 +6304,9 @@
                                         const __ERRORMSG2 = "Failed to execute 'send' on 'XMLHttpRequest': Failed to load '" + __URL.replaceAll(' ', "%20") + "'.";
                                         const __ERRORTYPE = 'NetworkError';
                                         const __ERRORRESULT = 2152923155;
+
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
 
                                         return new Promise(function(resolve, reject) {
                                                 return __THIS.browse(__URL, null, request => {
@@ -6407,6 +6419,9 @@
             'browseXML'           : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
 
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
+
                                         return callPromiseChain(__THIS.browse(__URL), doc => {
                                                 const __RET = doc;
 
@@ -6415,6 +6430,9 @@
                                     },
             'browseXMLonload'     : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXML'];
+
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
 
                                         return new Promise(function(resolve, reject) {
                                                 return __THIS.browse(__URL, null, request => {
@@ -6437,6 +6455,9 @@
             'browseXMLCORS'       : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
 
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
+
                                         return callPromiseChain(__THIS.browse(__URL), doc => {
                                                 const __RET = doc;
 
@@ -6445,6 +6466,9 @@
                                     },
             'browseXMLCORSonload' : function() {
                                         const [ __URL, __EXP ] = __TESTDATA['browseXMLCORS'];
+
+                                        ASSERT_SET(__THIS.browse, __LABEL + "Methode 'browse' nicht gefunden");
+                                        ASSERT_TYPEOF(__THIS.browse, 'function', __LABEL + "Methode 'browse' ist keine Funktion");
 
                                         return new Promise(function(resolve, reject) {
                                                 return __THIS.browse(__URL, null, request => {
