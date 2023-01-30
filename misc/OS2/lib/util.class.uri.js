@@ -133,7 +133,7 @@ Class.define(URI, Path, {
 
                                          return ((~ __INDEXQUERY) ? path.substring(0, __INDEXQUERY) : path);
                                      },
-               'formatParams'      : function(params, formatFun, delim = ' ', assign = '=') {
+               'formatParams'      : function(params = [], formatFun = sameValue, delim = ' ', assign = '=') {
                                          const __PARAMS = [];
 
                                          for (let param in params) {
