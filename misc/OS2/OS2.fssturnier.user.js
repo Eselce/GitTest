@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.fssturnier
 // @namespace    http://os.ongapo.com/
-// @version      0.10+lib
+// @version      0.20+lib
 // @copyright    2017+
 // @author       Sven Loges (SLC)
 // @description  Script zum offiziellen FSS-Turnier fuer Online Soccer 2.0
@@ -3868,6 +3868,7 @@ const procOSFSSTurnier = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
             const __TAB4 = getElementById('d');
             const __TABLE = getElement('TABLE.fsst_table', 0, __TAB4);
             const __GAMELIST = getTable(0, 'UL', __TAB4);
+            const __GAMES = getTags((__GAMELIST ? 'LI' : ''), __GAMELIST);
             const __MYTEAM = optSet.getOptValue('team');
             const __GEGNER = optSet.getOptValue('gegner');
             const __TEAMIDS = optSet.getOptValue('teamIds');
@@ -3878,11 +3879,7 @@ const procOSFSSTurnier = new PageManager("FSS-Turniere", __TEAMCLASS, () => {
 
             markChanges(__TABLE, optSet);
 
-            if (__GAMELIST !== undefined) {
-                const __GAMES = getTags('LI', __GAMELIST);
-
-                calcGegner(__GAMES, optSet);
-            }
+            calcGegner(__GAMES, optSet);
 
             const __TEAMID = __TEAMIDS[__MYTEAM.Team];
             const __GEGNERID = __GEGNER[__TEAMID];
