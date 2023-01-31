@@ -4261,7 +4261,7 @@ Class.define(URI, Path, {
 
                                          return ((~ __INDEXQUERY) ? path.substring(0, __INDEXQUERY) : path);
                                      },
-               'formatParams'      : function(params, formatFun, delim = ' ', assign = '=') {
+               'formatParams'      : function(params = [], formatFun = sameValue, delim = ' ', assign = '=') {
                                          const __PARAMS = [];
 
                                          for (let param in params) {
@@ -5158,7 +5158,7 @@ function hasOpt(optSet, item) {
         const __EXISTS = ((__OPTITEM !== undefined) && (__OPTITEM !== null));
         const __OPT = (__EXISTS ? getOpt(__OPTITEM) : null);
 
-        if (__STRICT) {
+        if (__OPT && __STRICT) {
             checkOpt(__OPT, item);
         }
 
@@ -5376,7 +5376,7 @@ function promptNextOpt(opt, defValue = undefined, reload = false, freeValue = fa
         return setNextOpt(opt, defValue, reload, onFulfilled, onRejected);
     }
 
-    const __VALUE = getOptValue(opt, value);
+    const __VALUE = getOptValue(opt);
 
     try {
         const __NEXTVAL = getNextValue(__CHOICE, __VALUE);
@@ -9516,7 +9516,8 @@ Class.define(WarnDrawMessage, Object, {
                               },
         'getTextMessage'    : function() {
                                   return "ZAT " + this.abrZAT + ' ' + ((this.anzahl > 1) ? "m\u00FCssen " + this.anzahl : "muss einer") +
-                                         " deiner Jugendspieler in das Profiteam \u00FCbernommen werden, ansonsten verschwinde" + ((this.anzahl > 1) ? "n sie" : "t er") + '!';
+                                         " deiner Jugendspieler in das Profiteam \u00FCbernommen werden, ansonsten verschwinde" +
+                                         ((this.anzahl > 1) ? "n sie" : "t er") + " ersatzlos!";
                               },
         'createMessage'     : function() {
                                   this.label = undefined;

@@ -1980,7 +1980,8 @@ Class.define(WarnDrawMessage, Object, {
                               },
         'getTextMessage'    : function() {
                                   return "ZAT " + this.abrZAT + ' ' + ((this.anzahl > 1) ? "m\u00FCssen " + this.anzahl : "muss einer") +
-                                         " deiner Jugendspieler in das Profiteam \u00FCbernommen werden, ansonsten verschwinde" + ((this.anzahl > 1) ? "n sie" : "t er") + '!';
+                                         " deiner Jugendspieler in das Profiteam \u00FCbernommen werden, ansonsten verschwinde" +
+                                         ((this.anzahl > 1) ? "n sie" : "t er") + " ersatzlos!";
                               },
         'createMessage'     : function() {
                                   this.label = undefined;

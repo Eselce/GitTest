@@ -557,7 +557,7 @@ UnitTest.runAll = async function(minLevel = 1, resultFun = UnitTest.defaultResul
             const __TFUN = __TEST['run'];      // TODO: __TEST.run, aber variabel gehalten!
             const __CFUN = __TEST['cleanup'];  // TODO: __TEST.cleanup, aber variabel gehalten!
             const __THIS = (thisArg || __TEST);
-            const __RESULTS = new UnitTestResults("SUMME", __NAME, __TEST);
+            const __RESULTS = new UnitTestResults("SUMME", __DESC, __TEST);
             let result;
 
             // Test initialisieren und zaehlen...
@@ -639,7 +639,7 @@ UnitTest.defaultResultFun = function(resultObj, tableId, doc = document) {
     const __STYLE = UnitTest.getStyleFromResults(__RESULTS);
     const __SHOW = (__STYLE.__RESULTCLASS >= __MINLEVEL);
     const __ENDSUMMARY = (__RESULTS.name == 'TOTAL');
-    const __SUMMARY = ((__UNITTEST.name === __RESULTS.desc) || __ENDSUMMARY);
+    const __SUMMARY = ((__UNITTEST.desc === __RESULTS.desc) || __ENDSUMMARY);
     const __SHOWRESULT = (__RESULTS.name && (__SHOW || __SUMMARY));
     const __CREATEROW = (__SHOWRESULT || (__MINLEVEL < 1));
 
