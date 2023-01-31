@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OS2.training
 // @namespace    http://os.ongapo.com/
-// @version      0.30beta4+lib
+// @version      0.31+lib
 // @copyright    2013+
 // @author       Sven Loges (SLC) / Andreas Eckes (Strindheim BK)
 // @description  OS 2.0 - Berechnet die Trainingswahrscheinlichkeiten abhaengig von der Art des Einsatzes
@@ -2409,6 +2409,9 @@ const procTraining = new PageManager("Training", null, () => {
 
         const __ROWS = getRows('FORM TABLE');  // #2: Tabelle innerhalb des Forms zur Trainingseinstellung
         const __HEADERS = __ROWS[0];
+        const __OPAQUEUNUSED    = 0.4;
+        const __OPAQUECHANCE    = 0.5;
+        const __OPAQUEEINSATZ   = 1.0;
 
         // Ueberschriften hinzufuegen
         const __ORGLENGTH = __HEADERS.cells.length;
@@ -2430,6 +2433,7 @@ const procTraining = new PageManager("Training", null, () => {
             __HEADERS.cells[i].setAttribute('width', (i < __COL2LENGTH) ? __COLWIDTH : __COLWIDTH2, false);
         }
 
+        const __PROBINDEX = __COLUMNINDEX.Chance;  // entspricht __ORGLENGTH - 1 (derzeit letzte Spalte), enthaelt die Prozente
         const __SLENGTH = __ROWS.length - 1;
         const __TLENGTH = 6;
 
@@ -2462,11 +2466,10 @@ const procTraining = new PageManager("Training", null, () => {
             const __ID = __SPIELER.id;
             const __NAME = __SPIELER.name;
             const __SKILL = getSkill(__CURRENTROW, __COLUMNINDEX.Skill);
-            const __POS = getPos(__CURRENTROW, __COLUMNINDEX.Chance);
+            const __POS = getPos(__CURRENTROW, __PROBINDEX);
             const __COLOR = getColor(__POS);
-            const __PROBINDEX = __ORGLENGTH - 1;  // derzeit letzte Spalte enthaelt die Prozente
             const __EINSART = getValue(__EINSMAP[__ID], __EINSATZ.Trib);  // Daten oben ermittelt
-            const __PROBSTRING = getProbString(__CURRENTROW, __COLUMNINDEX.Chance);
+            const __PROBSTRING = getProbString(__CURRENTROW, __PROBINDEX);
             const __PRACTICE = (getProbabilityStr(__PROBSTRING, __EINSATZ.Trib) !== "");
             const __PRACTICEPS = __PRACTICE && isPrimarySkill(__POS, __SKILL);
 
@@ -2511,10 +2514,18 @@ const procTraining = new PageManager("Training", null, () => {
             __ERFOLGE[__INDEX] = false;
             __BLESSUREN[__INDEX] = 0;
 
+            formatCell(__CURRENTROW.cells[__PROBINDEX + __EINSATZ.Trib], undefined, undefined, undefined, __OPAQUECHANCE);
             for (let j = __EINSATZ.Bank; j <= __EINSATZ.Durch; j++) {
-                appendCell(__CURRENTROW, getProbabilityStr(__PROBSTRING, j), __COLOR);
+                const __CELL = appendCell(__CURRENTROW, getProbabilityStr(__PROBSTRING, j), __COLOR);
+
+                formatCell(__CELL, undefined, undefined, undefined, __OPAQUEUNUSED);
             }
-            formatCell(__CURRENTROW.cells[__PROBINDEX + __EINSART], true);  // fett
+            if (__PRACTICE) {
+                formatCell(__CURRENTROW.cells[__PROBINDEX + __EINSART], true, undefined, undefined, __OPAQUEEINSATZ);  // fett
+            } else if (__EINSART > __EINSATZ.Trib) {  // Inhalt verschieben in die richtige Spalte (Wert ist 0.00 %)
+                __CURRENTROW.cells[__PROBINDEX + __EINSART].innerHTML = __CURRENTROW.cells[__PROBINDEX + __EINSATZ.Trib].innerHTML;
+                __CURRENTROW.cells[__PROBINDEX + __EINSATZ.Trib].textContent = '';
+            }
 
             appendCell(__CURRENTROW, __PRACTICEPS ? __SKILL : "", __COLOR);
             appendCell(__CURRENTROW, __VALUESTR, __COLOR);
