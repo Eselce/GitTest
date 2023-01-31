@@ -529,7 +529,7 @@ function promptNextOpt(opt, defValue = undefined, reload = false, freeValue = fa
         return setNextOpt(opt, defValue, reload, onFulfilled, onRejected);
     }
 
-    const __VALUE = getOptValue(opt, value);
+    const __VALUE = getOptValue(opt);
 
     try {
         const __NEXTVAL = getNextValue(__CHOICE, __VALUE);
