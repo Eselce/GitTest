@@ -311,7 +311,7 @@ function hasOpt(optSet, item) {
         const __EXISTS = ((__OPTITEM !== undefined) && (__OPTITEM !== null));
         const __OPT = (__EXISTS ? getOpt(__OPTITEM) : null);
 
-        if (__STRICT) {
+        if (__OPT && __STRICT) {
             checkOpt(__OPT, item);
         }
 
