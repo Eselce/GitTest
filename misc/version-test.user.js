@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         version-test
 // @namespace    http://os.ongapo.com/
-// @version      0.10
+// @version      0.11
 // @copyright    2023+
 // @author       Sven Loges (SLC)
 // @description  Dummy userscript for version tests and updates
