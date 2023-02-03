@@ -1,10 +1,12 @@
 // ==UserScript==
-// _name         version-test
-// _namespace    http://os.ongapo.com/
-// _version      0.10
-// _copyright    2023+
-// _author       Sven Loges (SLC)
-// _description  Dummy userscript for version tests and updates
+// @name         version-test
+// @namespace    http://os.ongapo.com/
+// @version      0.10
+// @copyright    2023+
+// @author       Sven Loges (SLC)
+// @description  Dummy userscript for version tests and updates
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // ==/UserScript==
 
 (() => {
