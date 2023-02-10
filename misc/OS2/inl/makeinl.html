@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<HTML>
+    <HEAD>
+        <META charset="utf-8">
+        <TITLE>Online-Soccer 2.0 - Generator Greasemonkey inline Benutzerscripte</TITLE>
+        <LINK rel="stylesheet" type="text/css" href="../css/os_styles.css" />
+        <LINK rel="stylesheet" type="text/css" href="../css/print.css" media="print" />
+        <LINK rel="shortcut icon" type="image/ico" href="../img/favicon.ico" />
+        <STYLE>
+            .script {
+                border:2px solid grey;
+                border-collapse:collapse;
+            }
+            .script TD {
+                border:2px solid grey;
+                border-collapse:collapse;
+            }
+        </STYLE>
+        <SCRIPT type="text/javascript">
+//<![CDATA[
+
+const GM_info = {  // Mock GM_info data
+        'script' : {
+                'name'        : "inl/makeinl.html",
+                'version'     : "0.10",
+                'namespace'   : "http://os.ongapo.com/",
+                'description' : "Online-Soccer 2.0 - Generator von inline Benutzerscripten unter dem Greasemonkey AddOn"
+            }
+    };
+
+//]]>
+        </SCRIPT>
+
+        <!-- ====================== Script-Includes: GM4-Polyfill, Module und Unit-Tests ====================== -->
+
+        <SCRIPT type="text/javascript" defer src="https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js"></SCRIPT>
+
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/lib.all.js"></SCRIPT>
+
+<!--
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js"></SCRIPT>
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js"></SCRIPT>
+-->
+
+        <SCRIPT type="text/javascript" defer src="https://eselce.github.io/GitTest/misc/OS2/lib/test.mock.gm.js"></SCRIPT>
+    </HEAD>
+    <BODY>
+        <DIV id="inl-generator">
+            <H3>Generator von inline Benutzerscripten unter dem Greasemonkey AddOn</H3>
+
+            || <A onClick="__MAIN();return false;">Script generieren</A> ||
+        </DIV>
+        <BR />
+
+        <SCRIPT type="text/javascript">
+//<![CDATA[
+
+// ==================== Abschnitt fuer das Generator-Menue ====================
+
+const __SCRIPTNAMES = [ 'ergebnisse', 'fssturnier', 'haupt', 'jugend', 'kontoauszug', 'master',
+    'osec.starter', 'saisonhistorie', 'script.inline', 'scripts', 'spielbericht.XXL', 'spielerprofil',
+    'spielplan', 'tabelle', 'training', 'unittest', 'zugabgabe' ];
+
+const __GENERATEMENU = (((scriptList, anchor) => {
+    const __ANCHOR = document.querySelector(anchor);
+    const __SCRIPTS = (scriptList || []);
+
+    __SCRIPTS.forEach(script => {
+            const __TEXT = document.createTextNode(' || ');
+            const __LBRK = document.createElement('BR');
+            const __A = document.createElement('A');
+
+            __A.addEventListener('click', (() => {
+                                                __BUILDINL(script);
+                                                return false;
+                                            }));
+            __A.textContent = ('OS2.' + script + '.user.js');
+
+            __ANCHOR.append(__LBRK);
+            __ANCHOR.append(__A);
+            __ANCHOR.append(__TEXT);
+        });
+
+    return true;
+})(__SCRIPTNAMES, '#inl-generator'));
+
+// ==================== Abschnitt fuer Hilfsfunktionen ====================
+
+function getMeta(meta) {
+    var data = {
+                'include'   : [],
+                'exclude'   : [],
+                'match'     : [],
+                'require'   : [],
+                'resource'  : [],
+                'grant'     : [],
+                '__pad'     : 17
+            };
+    var match = (meta || "").replaceAll('\r\n', '\n').match(/^\/\/ ==UserScript==\n+([^]*)\n+\/\/ ==\/UserScript==([^]*)$/);
+    data.__meta = (match || [])[1];
+    data.__body = (match || [])[2];
+    var lines = (data.__meta || "").split('\n');
+    var items = [];
+    data.__lines = lines;
+    for (var i = 0; i < lines.length; ++i) {
+        match = lines[i].match(/^\/\/ @(\w+)\s+(.*)\s*$/);
+        if (match) {
+            var item = match[1];
+            var value = match[2];
+            if (! items.includes(item)) {
+                items.push(item);
+            }
+            if ((typeof data[item]) == 'object') {
+                data[item].push(value);
+            } else {
+                data[item] = value;
+            }
+        }
+    }
+
+    data.__items = items;
+    data.__inline = [];console.error(data);
+
+    return data;
+}
+
+function showMeta(data) {
+    var ret = [ "// ==UserScript==" ];
+    data = (data || {
+                'include'   : [],
+                'exclude'   : [],
+                'match'     : [],
+                'require'   : [],
+                'resource'  : [],
+                'grant'     : [],
+                '__lines'   : [],
+                '__items'   : [],
+                '__inline'  : [],
+                '__meta'    : "",
+                '__body'    : "",
+                '__pad'     : 17
+            });
+    var inline = data.__inline;
+    var push = ((label, value) => ret.push(label(inline.includes(value) ? '_' : '@') + value));
+
+    for (var item of data.__items) {
+        if (! item.startsWith("__")) {  // Nur zur Sicherheit!
+            var label = (atChar => ("// " + atChar + item).padEnd(data.__pad - 1, ' ') + ' ');
+
+            values = data[item];
+            if ((typeof values) == 'object') {
+                for (var value of values) {
+                    push(label, value);
+                }
+            } else {
+                push(label, values);
+            }
+        }
+    }
+
+    ret.push("// ==/UserScript==");console.error(ret);
+
+    return ret.join('\n');
+}
+
+// ==================== Abschnitt fuer Klasse Includes ====================
+
+// Klasse fuer das Laden einer Bibliothek aus verschiedenen Includes
+function Includes(path, ext, inls, inline) {
+    'use strict';
+
+    this.open = function(inls, inline = []) {
+                    const __PROMISES = [];
+                    const __INLS = (inls || []);
+                    const __PATTERN = new RegExp('^' + this.srcPath + "\\S+" + this.srcExt + '$');
+
+                    for (let i = 0; i < __INLS.length; i++) {
+                        const __URL = (__INLS[i]);
+                        const __MATCH = __URL.match(__PATTERN);
+                        const __REQUEST = (__MATCH ? (inline.push(__URL), __XHR.browse(__URL)) : Promise.resolve(""));
+
+                        __PROMISES.push(__REQUEST);
+                    }
+
+                    this.inls = __INLS;
+                    this.docs = Promise.all(__PROMISES);
+
+                    return this;
+                };
+
+    this.appendPre = async function(anchor, doc) {
+                        const __DOCUMENT = (doc || document);
+                        const __ANCHOR = (anchor || document.body);
+
+                        return await this.docs.then(docs => {
+                                    for (let i = 0; i < docs.length; i++) {
+                                        const __DOC = docs[i].replaceAll('\r\n', '\n').replaceAll(/^\/\/ ==(\/?)UserScript==$/gm, '// ==$1UserModule==');
+
+                                        if (__DOC) {
+                                            //console.log("Received:", __DOC);
+
+                                            const __PRE = __DOCUMENT.createElement('PRE');
+
+                                            __PRE.textContent = "/*** Modul " + this.inls[i] + " ***/\n\n" + __DOC + '\n'
+                                                                + "/*** Ende Modul " + this.inls[i] + " ***/\n\n";
+
+                                            __ANCHOR.appendChild(__PRE);
+                                        }
+                                }
+
+                                return this;
+                            }, error => {
+                                console.error("Error:", error);
+
+                                return Promise.reject(error);
+                            });
+                    };
+
+    this.srcPath = (path || "https://eselce.github.io/OS2.scripts/lib/");
+    this.srcExt = (ext || '.js');
+
+    this.open(inls, inline);
+}
+
+//==================== Hauptprogramm ====================
+
+const __BUILDINL = (async (scriptID) => {
+    const __SHOWTIME = true;
+    const __SRCPATH  = "https://eselce.github.io/GitTest/misc/OS2/";       // Alternativer Quell-Scriptpfad
+    const __LIBPATH  = "https://eselce.github.io/GitTest/misc/OS2/lib/";   // Alternativer Libpfad
+    const __SRCPRE = 'OS2.';
+    //const __LIBPRE = 'lib.';
+    const __SRCEXT = '.user.js';
+    const __LIBEXT = '.js';
+    //const __TESTEXT = '.test.js';
+
+    // scriptID: Lfd. Nummer der Scripts oder uebergebener Name...
+    const __SCRIPTID = (Number.isInteger(scriptID) ? getArrValue(__SCRIPTNAMES, Number.parseInt(scriptID, 10), 'default') : (scriptID || 'default'));
+    const __SCRIPTNAME = __SRCPRE + __SCRIPTID + __SRCEXT;
+    const __URL = __SRCPATH + __SCRIPTNAME;
+    const __REQUEST = __XHR.browse(__URL);
+
+    return __REQUEST.then(async doc => {
+            // Main file loaded...
+            const __DOC = doc.replaceAll('\r\n', '\n');
+
+            //console.log("Received:", __DOC);
+
+            const __META = getMeta(__DOC);
+            const __REQS = new Includes(__LIBPATH, __LIBEXT, __META.require, __META.__inline);
+            const __VERSION = String(__META.version || "0.10") + "-inl";
+
+            __META.version = __VERSION;
+
+            document.body.innerHTML = "<PRE>\n" + showMeta(__META) + "\n</PRE>";
+
+            // Inlines abarbeiten und Script-body anhaengen...
+            return __REQS.appendPre(document.body).then(async reqs => {
+                    const __DOCUMENT = document;
+                    const __ANCHOR = document.body;
+                    const __NOW = new Date();
+                    const __LOCALE = undefined;  // default Locale
+                    const __DATEFORMAT = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    const __NOWSTR = __NOW.toLocaleDateString(__LOCALE, __DATEFORMAT);
+                    const __PRE = __DOCUMENT.createElement('PRE');
+
+                    __PRE.textContent = "/*** Benutzerskript " + __URL + " ***/" + __META.__body + '\n'
+                                        + "/*** Ende Benutzerskript " + __URL + " ***/\n"
+                                        + (__SHOWTIME ? "\n/*** Automatisch generiert: " + __NOWSTR + " ***/\n" : "");
+
+                    __ANCHOR.appendChild(__PRE);
+
+                    return reqs;
+                }, defaultCatch).catch(defaultCatch);
+        });
+});
+
+const __MAIN = (async () => {
+    // URL-Legende (id=n oder id=scriptname):
+    // id=1:  OS2.ergebnisse.user.js       (id=ergebnisse)
+    // id=2:  OS2.fssturnier.user.js       (id=fssturnier)
+    // id=3:  OS2.haupt.user.js            (id=haupt)
+    // id=4:  OS2.jugend.user.js           (id=jugend)
+    // id=5:  OS2.kontoauszug.user.js      (id=kontoauszug)
+    // id=6:  OS2.master.user.js           (id=master)
+    // id=7:  OS2.osec.starter.user.js     (id=osec.starter)
+    // id=8:  OS2.saisonhistorie.user.js   (id=saisonhistorie)
+    // id=9:  OS2.script.inline.user.js    (id=script.inline)
+    // id=10: OS2.scripts.user.js          (id=scripts)
+    // id=11: OS2.spielbericht.XXL.user.js (id=spielbericht.XXL)
+    // id=12: OS2.spielerprofil.user.js    (id=spielerprofil)
+    // id=13: OS2.spielplan.user.js        (id=spielplan)
+    // id=14: OS2.tabelle.user.js          (id=tabelle)
+    // id=15: OS2.training.user.js         (id=training)
+    // id=16: OS2.unittest.user.js         (id=unittest)
+    // id=17: OS2.zugabgabe.user.js        (id=zugabgabe)
+
+    // Verzweige in unterschiedliche Verarbeitungen je nach Wert von id:
+    const __SCRIPTID = getPageIdFromURL(window.location.href, {
+                'makeinl.html' : 0    // Ansicht "Inline Benutzerscript generieren" (id = 1, 2, ..., 17 bzw. id = 'ergebnisse', 'fssturnier', 'haupt', ...)
+            }, 'id');
+    const __REQS = __BUILDINL(__SCRIPTID);
+
+    return __REQS;
+});
+
+//]]>
+        </SCRIPT>
+        <NOSCRIPT>Your browser does not support JavaScript!</NOSCRIPT>
+    </BODY>
+</HTML>

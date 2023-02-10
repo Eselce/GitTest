@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<HTML>
+    <HEAD>
+        <META charset="utf-8">
+        <TITLE>Online-Soccer 2.0 - Greasemonkey Inline-Benutzerscripts</TITLE>
+        <LINK rel="stylesheet" type="text/css" href="../css/os_styles.css" />
+        <LINK rel="stylesheet" type="text/css" href="../css/print.css" media="print" />
+        <LINK rel="shortcut icon" type="image/ico" href="../img/favicon.ico" />
+        <STYLE>
+            .script {
+                border:2px solid grey;
+                border-collapse:collapse;
+            }
+            .script TD {
+                border:2px solid grey;
+                border-collapse:collapse;
+            }
+        </STYLE>
+    </HEAD>
+    <BODY>
+        <DIV>
+            <SCRIPT type="text/javascript">
+                var popen = new Array();
+                function openclose(id) {
+                    var inopen = false;
+                    var newopen = new Array();
+                    for (var i = 0; i < popen.length; ++i) {
+                        if (popen[i] === id) {
+                            inopen = true;
+                        } else {
+                            newopen.push(popen[i]);
+                        }
+                    }
+                    popen = newopen;
+                    if (inopen === true) {
+                        document.getElementById('script_' + id).style.display = 'none';
+                        document.getElementById('openclose_' + id).src = '../img/geschlossen.gif';
+                    } else {
+                        document.getElementById('script_' + id).style.display = "";
+                        document.getElementById('openclose_' + id).src = '../img/offen.gif';
+                        popen.push(id);
+                    }
+                }
+                function opencloseFun(id){
+                    return (() => openclose(id));
+                }
+                function getMeta(meta) {
+                    var data = {
+                                'include'  : [],
+                                'exclude'  : [],
+                                'match'    : [],
+                                'require'  : [],
+                                'resource' : [],
+                                'grant'    : []
+                            };
+                    var match = (meta || "").replaceAll('\r\n', '\n').match(/^\/\/ ==UserScript==\n+([^]*)\n+\/\/ ==\/UserScript==$/m);
+                    data.meta = (match || [])[1];
+                    var lines = (data.meta || "").split('\n');
+                    for (var i = 0; i < lines.length; ++i) {
+                        match = lines[i].match(/^\/\/ @(\w+)\s+(.*)\s*$/);
+                        if (match) {
+                            var item = match[1];
+                            var value = match[2];
+                            if ((typeof data[item]) == 'object') {
+                                data[item].push(value);
+                            } else {
+                                data[item] = value;
+                            }
+                        }
+                    }
+                    return data;
+                }
+                function addRow(table, colText) {
+                    var tr = document.createElement('TR');
+                    var td;
+                    for (var i = 0; i < colText.length; ++i) {
+                        td = document.createElement('TD');
+                        td.innerHTML = colText[i];
+                        tr.appendChild(td);
+                    }
+                    table.appendChild(tr);
+                    return tr;
+                }
+                function purify(text) {
+                    return (text || "").replace(/\s+\/\s+/g, "<BR />");
+                }
+                function addEntry(table, id, meta) {
+                    var colText1 = [];
+                    var data = getMeta(meta);
+                    if (! data.name) { return; }
+                    var name = purify(data.name);
+                    var version = purify(data.version);
+                    var desc = purify(data.description);
+                    var author = purify(data.author);
+                    var filename = (id ? 'OS2.' + id + '.user.js' : undefined);
+                    var openclose = '"openclose(' + "'" + id + "'" + ')"';
+                    var install = '<FORM method="get" action="./' + filename + '" target="_blank" rel="noopener noreferrer">' +
+                                //  '<INPUT type="hidden" name="scriptid" value="' + id + '" />' +
+                                    '<INPUT type="submit" value="Installieren" /></FORM></TD>';
+                    colText1.push('<IMG src="../img/geschlossen.gif" style="cursor: help;" onclick=' + openclose + ' id="openclose_' + id + '" />\n' +
+                                    '<A href="https://github.com/Eselce/GitTest/blob/master/misc/OS2/inl/' + filename + '">' + name + '</A>');
+                    colText1.push(version);
+                    colText1.push(desc);
+                    colText1.push(author);
+                    colText1.push(install);
+                    var tr = addRow(table, colText1);
+                    [ '20%', '10%', null, '15%', '1%' ].forEach((minWidth, col) => {
+                            var cell = tr.children[col];
+
+                            cell.style.minWidth = minWidth;
+                            if (col > 0) {
+                                cell.addEventListener('click', opencloseFun(id));
+                            }
+                        });
+                    var colText2 = [];
+                    colText2.push('<PRE>' + data.meta + '</PRE>' + install);
+                    tr = addRow(table, colText2);
+                    tr.setAttribute('id', 'script_' + id);
+                    tr.style.display = 'none';
+                    tr.firstChild.setAttribute('colspan', 5);
+                }
+                function fillScriptTable(id, scriptMetaInfos, filter = Object.keys(scriptMeta), sortFun = undefined) {
+                    var table = document.getElementById(id);
+                    if (table && ! table.children.length) {
+                        var scriptIds = ((typeof filter == 'function') ? Object.keys(scriptMeta).filter(filter) : filter).sort(sortFun);
+                        addRow(table, [
+                                        "Name des Scripts",
+                                        "Aktuelle Version",
+                                        "Beschreibung der Funktion",
+                                        "Autor(en)",
+                                        "Aktion"
+                                    ]).style.fontWeight = 'bold';
+                        for (var i = 0; i < scriptIds.length; ++i) {
+                            script = scriptIds[i];
+                            addEntry(table, script, scriptMetaInfos[script]);
+                        }
+                    }
+                }
+
+/****** Benutzerscript-Uebersicht 'index.html' ["ALL"] ******/
+
+// Inhaltsverzeichnis:
+// http://localhost/misc/OS2/inl/<ALL>:
+//  OS2.ergebnisse.user.js
+//  OS2.faces.user.js
+//  OS2.fssturnier.user.js
+//  OS2.haupt.user.js
+//  OS2.jugend.user.js
+//  OS2.kontoauszug.user.js
+//  OS2.master-SLC.user.js
+//  OS2.master.user.js
+//  OS2.osec.user.js
+//  OS2.osec.starter.user.js
+//  OS2.report.user.js
+//  OS2.saisonhistorie.user.js
+//  OS2.scripts.user.js
+//  OS2.spielbericht.user.js
+//  OS2.spielbericht.XXL.user.js
+//  OS2.spielerhistorie.user.js
+//  OS2.spielerprofil.user.js
+//  OS2.spielerstatistik.user.js
+//  OS2.spielersuche.user.js
+//  OS2.spielplan.user.js
+//  OS2.tabelle.user.js
+//  OS2.training.user.js
+//  OS2.unittest.user.js
+//  OS2.vereinshistorie.user.js
+//  OS2.vereinshistorieMitKruecke.user.js
+//  OS2.zugabgabe.user.js
+
+                var scriptMeta = {
+
+                    'ergebnisse' : String.raw`
+// ==UserScript==
+// @name         OS2.ergebnisse
+// @namespace    http://os.ongapo.com/
+// @version      0.32+lib-inl
+// @copyright    2016+
+// @author       Sven Loges (SLC)
+// @description  Aktiviert als Standard die Option "Ergebnisse anzeigen" fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(l[sp]|os(eq?|c(q|[hzf]r))|supercup|zer)\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// ==/UserScript==
+                    `,
+
+                    'faces' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'fssturnier' : String.raw`
+// ==UserScript==
+// @name         OS2.fssturnier
+// @namespace    http://os.ongapo.com/
+// @version      0.20+lib-inl
+// @copyright    2017+
+// @author       Sven Loges (SLC)
+// @description  Script zum offiziellen FSS-Turnier fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/fssturnier\.php(\?(fordern|cancelforderung)=\d+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// ==/UserScript==
+                    `,
+
+                    'haupt' : String.raw`
+// ==UserScript==
+// @name         OS2.haupt
+// @namespace    http://os.ongapo.com/
+// @version      0.42+lib-inl
+// @copyright    2016+
+// @author       Sven Loges (SLC)
+// @description  Managerbuero-Abschnitt aus dem Master-Script fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// ==/UserScript==
+                    `,
+
+                    'jugend' : String.raw`
+// ==UserScript==
+// @name         OS2.jugend
+// @namespace    http://os.ongapo.com/
+// @version      0.74+lib-inl
+// @copyright    2013+
+// @author       Sven Loges (SLC) / Andreas Eckes (Strindheim BK)
+// @description  Jugendteam-Script fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/ju\.php(\?page=\d+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.script.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.warndraw.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.player.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.column.js
+// ==/UserScript==
+                    `,
+
+                    'kontoauszug' : String.raw`
+// ==UserScript==
+// @name         OS2.kontoauszug
+// @namespace    http://os.ongapo.com/
+// @version      0.10+lib-inl
+// @copyright    2022+
+// @author       Sven Loges (SLC)
+// @description  Script zum Kontoauszug der Saison fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(osneu/)?haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(osneu/)?ka\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// ==/UserScript==
+                    `,
+
+                    'master-SLC' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'master' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'osec' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'osec.starter' : String.raw`
+// ==UserScript==
+// @name         OS2.osec.starter
+// @namespace    http://os.ongapo.com/
+// @version      0.10+lib-inl
+// @copyright    2022+
+// @author       Sven Loges (SLC)
+// @description  Script zu den internationalen Teilnehmern bzw. Startern fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(osneu/)?intTeilnehmer(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.addStyle
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_addStyle
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// ==/UserScript==
+                    `,
+
+                    'report' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'saisonhistorie' : String.raw`
+// ==UserScript==
+// @name         OS2.saisonhistorie
+// @namespace    http://os.ongapo.com/
+// @version      0.10+lib-inl
+// @copyright    2022+
+// @author       Sven Loges (SLC)
+// @description  Saisonhistorie-Abschnitt aus dem Master-Script fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(st|showteam)\.php\?s=10(&\w+=?[+\w]+)*(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// ==/UserScript==
+                    `,
+
+                    'scripts' : String.raw`
+// ==UserScript==
+// @name         OS2.scripts
+// @namespace    http://github.com/
+// @version      0.10+lib-inl
+// @copyright    2017+
+// @author       Sven Loges (SLC)
+// @description  Analysiert die Scripts auf GitHub
+// @include      /^https?://(www\.)?github\.com/Eselce/(GitTest|OS2\.scripts)/(tree/|blob/)?master/(misc/OS2/)?(lib/.*\.js|.*\.user\.js)(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// ==/UserScript==
+                    `,
+
+                    'spielbericht' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'spielbericht.XXL' : String.raw`
+// ==UserScript==
+// @name         OS2.spielbericht.XXL
+// @namespace    http://os.ongapo.com/
+// @version      0.71beta3
+// @copyright    2013+
+// @author       Andreas Eckes (Strindheim BK) / Michael Bertram / Sven Loges (SLC)
+// @description  OS 2.0 - Ergaenzt Summen- und Durchschnittswerte bei den Spielerstatistiken im Spielbericht / Zaehlt Textbausteine / Quoten mit Nachkomma / Leere Zeilen nicht genullt / Fenstergroesse
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/rep/saison/\d+/\d+/\d+-\d+.html$/
+// @grant        GM.getResourceUrl
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// @grant        GM_getResourceURL
+// @resource PAS https://eselce.github.io/GitTest/img/pass.png
+// @resource SCH https://eselce.github.io/GitTest/img/sch.png
+// @resource TOR https://eselce.github.io/GitTest/img/tor.png
+// @resource ZWK https://eselce.github.io/GitTest/img/zwk.png
+// ==/UserScript==
+                    `,
+
+                    'spielerhistorie' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'spielerprofil' : String.raw`
+// ==UserScript==
+// @name         OS2.spielerprofil
+// @namespace    http://os.ongapo.com/
+// @version      0.40+lib-inl
+// @copyright    2016+
+// @author       Michael Bertram / Andreas Eckes (Strindheim BK) / Sven Loges (SLC)
+// @description  Alter exakt / Summe der trainierbaren Skills / Talent (trainierbare Skills mit Alter 19.00 bei unterstelltem 17er-Trainer seitdem)
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/sp\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// ==/UserScript==
+                    `,
+
+                    'spielerstatistik' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'spielersuche' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'spielplan' : String.raw`
+// ==UserScript==
+// @name         OS2.spielplan
+// @namespace    http://os.ongapo.com/
+// @version      0.73+lib-inl
+// @copyright    2013+
+// @author       Sven Loges (SLC)
+// @description  Spielplan-Abschnitt aus dem Master-Script fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(st|showteam)\.php\?s=6(&\w+=?[+\w]+)*(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// ==/UserScript==
+                    `,
+
+                    'tabelle' : String.raw`
+// ==UserScript==
+// @name         OS2.tabelle
+// @namespace    http://os.ongapo.com/
+// @version      0.12+lib-inl
+// @copyright    2016+
+// @author       Sven Loges (SLC)
+// @description  Tabellen-Script fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(l[pt]|os(cfr|e)|fpt)\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.table.js
+// ==/UserScript==
+                    `,
+
+                    'training' : String.raw`
+// ==UserScript==
+// @name         OS2.training
+// @namespace    http://os.ongapo.com/
+// @version      0.31+lib-inl
+// @copyright    2013+
+// @author       Sven Loges (SLC) / Andreas Eckes (Strindheim BK)
+// @description  OS 2.0 - Berechnet die Trainingswahrscheinlichkeiten abhaengig von der Art des Einsatzes
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/trainer\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/training\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zar\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zugabgabe\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.script.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.warndraw.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.player.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.column.js
+// ==/UserScript==
+                    `,
+
+                    'unittest' : String.raw`
+// ==UserScript==
+// @name         OS2.unittest
+// @namespace    http://os.ongapo.com/
+// @version      0.10+lib-inl
+// @copyright    2021+
+// @author       Sven Loges (SLC)
+// @description  Unittest-Script fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(eselce\.github\.io|raw\.githubusercontent\.com/Eselce)/(OS2\.scripts|GitTest(/master)?/misc/OS2)/test/\S+\.test\.js(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(eselce\.github\.io|raw\.githubusercontent\.com/Eselce)/(OS2\.scripts|GitTest(/master)?/misc/OS2)/lib/lib\.test(\.\S+)?\.js(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^file:///\w:(/\S+)*/GitHub/GitTest/misc/OS2/test/\S+\.test\.js(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^file:///\w:(/\S+)*/GitHub/GitTest/misc/OS2/lib/lib\.test(\.\S+)?\.js(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.xmlHttpRequest
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_xmlhttpRequest
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.xhr.gm.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.script.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.zat.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.warndraw.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.player.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.column.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.class.table.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/test.assert.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/test.class.unittest.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/test.lib.option.js
+// ==/UserScript==
+                    `,
+
+                    'vereinshistorie' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'vereinshistorieMitKruecke' : String.raw`
+// ==UserScript==
+// ==/UserScript==
+                    `,
+
+                    'zugabgabe' : String.raw`
+// ==UserScript==
+// @name         OS2.zugabgabe
+// @namespace    http://os.ongapo.com/
+// @version      0.10+lib-inl
+// @copyright    2017+
+// @author       Sven Loges (SLC)
+// @description  Zugabgabe-Script fuer Online Soccer 2.0
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/haupt\.php(\?changetosecond=\w+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/zugabgabe\.php(\?p=\d+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.registerMenuCommand
+// @grant        GM.info
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_deleteValue
+// @grant        GM_registerMenuCommand
+// @grant        GM_info
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.log.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.object.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.promise.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.value.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.proto.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.prop.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.sys.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.mod.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.debug.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.store.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.dom.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.delim.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.path.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.uri.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.class.report.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.type.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.data.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.class.options.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.api.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.db.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.mem.cmd.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.menu.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.label.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.action.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.node.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.page.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.option.run.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/util.main.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.list.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.calc.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.team.js
+// _require      https://eselce.github.io/GitTest/misc/OS2/lib/OS2.page.js
+// ==/UserScript==
+                    `,
+
+                    };
+
+                var scripts = [
+                        'ergebnisse',
+                        'faces',
+                    //  'fssturnier',
+                        'haupt',
+                        'jugend',
+                        'kontoauszug',
+                    //  'master-SLC',
+                        'master',
+                    //  'osec',
+                        'osec.starter',
+                    //  'report',
+                        'saisonhistorie',
+                    //  'scripts',
+                        'spielbericht',
+                        'spielbericht.XXL',
+                        'spielerhistorie',
+                        'spielerprofil',
+                        'spielerstatistik',
+                        'spielersuche',
+                        'spielplan',
+                        'tabelle',
+                        'training',
+                    //  'unittest',
+                        'vereinshistorie',
+                        'vereinshistorieMitKruecke',
+                    //  'zugabgabe'
+                    ];
+
+                document.addEventListener("DOMContentLoaded", createScriptTables);
+                function createScriptTables(event) {
+                    fillScriptTable('scripts', scriptMeta, scripts);
+                    fillScriptTable('scriptsBeta', scriptMeta, name => ! scripts.includes(name));
+                }
+            </SCRIPT>
+
+            <H3>Standard-Inline-Benutzerscripts f&uuml;r Online-Soccer 2.0 unter dem Greasemonkey AddOn</H3>
+            <TABLE id="scripts" class="script"></TABLE>
+
+            <H3>Experimentelle Inline-Scripts (Benutzung auf eigenes Risiko)</H3>
+            <TABLE id="scriptsBeta" class="script"></TABLE>
+        </DIV>
+    </BODY>
+</HTML>
