@@ -8,7 +8,7 @@
 
 /*** Modul test.assert.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         test.assert
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -21,7 +21,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -333,7 +333,7 @@ const __ASSERTEPSILON   = Number.EPSILON;
 
 /*** Modul test.class.unittest.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         test.class.unittest
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -348,7 +348,7 @@ const __ASSERTEPSILON   = Number.EPSILON;
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -904,7 +904,7 @@ const __LIBRESULTS = { };
 
 /*** Modul test.lib.option.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         test.lib.option
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -921,7 +921,7 @@ const __LIBRESULTS = { };
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.lib.option.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */

@@ -10,7 +10,7 @@
 
 /*** Modul util.class.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.class
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -19,7 +19,7 @@
 // _description  JS-lib mit Funktionen und Utilities fuer Class-Objekte
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -180,7 +180,7 @@ function getClassName(obj) {
 
 /*** Modul util.class.delim.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.class.delim
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -189,7 +189,7 @@ function getClassName(obj) {
 // _description  JS-lib mit Class-Objekten zu Pfad-Trennern
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.delim.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -327,7 +327,7 @@ Class.define(UriDelims, Delims, {
 
 /*** Modul util.class.path.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.class.path
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -338,7 +338,7 @@ Class.define(UriDelims, Delims, {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.delim.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.path.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -520,7 +520,7 @@ Class.define(ObjRef, Directory, {
 
 /*** Modul util.class.uri.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.class.uri
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -531,7 +531,7 @@ Class.define(ObjRef, Directory, {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.delim.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.path.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.uri.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -761,7 +761,7 @@ Class.define(URI, Path, {
 
 /*** Modul util.class.report.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.class.report
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -772,7 +772,7 @@ Class.define(URI, Path, {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.report.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */

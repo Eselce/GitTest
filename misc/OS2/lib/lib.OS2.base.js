@@ -11,7 +11,7 @@
 
 /*** Modul OS2.list.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         OS2.list
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -20,7 +20,7 @@
 // _description  JS-lib mit Funktionen und Utilities zu OS2-spezifischen Listen
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.list.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -653,7 +653,7 @@ function getColor(pos) {
 
 /*** Modul OS2.calc.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         OS2.calc
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -663,7 +663,7 @@ function getColor(pos) {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.list.js
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.calc.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -885,7 +885,7 @@ function calcMarketValue(age, skill, opti, mwFormel = __MW10FORMEL) {
 
 /*** Modul OS2.team.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         OS2.team
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -900,7 +900,7 @@ function calcMarketValue(age, skill, opti, mwFormel = __MW10FORMEL) {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.option.run.js
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.list.js
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.team.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -1052,7 +1052,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
 
 /*** Modul OS2.page.team.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         OS2.page.team
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -1060,7 +1060,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit OS2-spezifische Funktionen zur Ermittlung des Teams auf den Seiten
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.page.team.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -1180,7 +1180,7 @@ function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
 
 /*** Modul OS2.page.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         OS2.page
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -1188,7 +1188,7 @@ function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit OS2-spezifische Funktionen zur Ermittlung von Daten auf den Seiten
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.page.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -1353,7 +1353,7 @@ function getManagerLink(managerName, pmID) {
 
 /*** Modul OS2.zat.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         OS2.zat
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -1361,7 +1361,7 @@ function getManagerLink(managerName, pmID) {
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit OS2-spezifische Funktionen fuer Spielplan und ZATs und Klasse RundenLink
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.zat.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */

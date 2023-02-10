@@ -19,7 +19,7 @@
 
 /*** Modul test.assert.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         test.assert.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -34,7 +34,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/test.assert.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2320,7 +2320,7 @@
 
 /*** Modul test.class.unittest.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         test.class.unittest.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2335,7 +2335,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/test.class.unittest.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2413,7 +2413,7 @@
 
 /*** Modul test.lib.option.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         test.lib.option.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2429,7 +2429,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.lib.option.js
 // _require      https://eselce.github.io/OS2.scripts/test/test.lib.option.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2491,7 +2491,7 @@
 
 /*** Modul test.mock.gm.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         test.mock.gm.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2506,7 +2506,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.mock.gm.js
 // _require      https://eselce.github.io/OS2.scripts/test/test.mock.gm.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2563,7 +2563,7 @@
 
 /*** Modul util.class.uri.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.class.uri.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2577,7 +2577,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.class.uri.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2675,7 +2675,7 @@
 
 /*** Modul util.debug.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.debug.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2689,7 +2689,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.debug.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2741,7 +2741,7 @@
 
 /*** Modul util.log.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.log.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2755,7 +2755,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.log.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2817,7 +2817,7 @@
 
 /*** Modul util.object.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.object.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2831,7 +2831,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.object.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2893,7 +2893,7 @@
 
 /*** Modul util.option.api.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.option.api.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2909,7 +2909,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.lib.option.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.option.api.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -3038,7 +3038,7 @@
 
 /*** Modul util.promise.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.promise.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -3052,7 +3052,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.promise.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -3212,7 +3212,7 @@
 
 /*** Modul util.store.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.store.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -3227,7 +3227,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.store.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -5311,7 +5311,7 @@
 
 /*** Modul util.value.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.value.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -5326,7 +5326,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.assert.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.value.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -6289,7 +6289,7 @@
 
 /*** Modul util.xhr.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.xhr.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -6305,7 +6305,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.lib.option.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.xhr.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -6468,7 +6468,7 @@
 
 /*** Modul util.xhr.gm.test.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.xhr.gm.test
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -6485,7 +6485,7 @@
 // _require      https://eselce.github.io/OS2.scripts/lib/test.class.unittest.js
 // _require      https://eselce.github.io/OS2.scripts/lib/test.lib.option.js
 // _require      https://eselce.github.io/OS2.scripts/test/util.xhr.gm.test.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */

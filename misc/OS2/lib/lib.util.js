@@ -19,7 +19,7 @@
 
 /*** Modul util.log.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.log
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -28,7 +28,7 @@
 // _description  JS-lib mit Funktionen und Utilities fuer Logging und safeStringify()
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -273,7 +273,7 @@ function replaceArray(key, value) {
 
 /*** Modul util.object.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.object
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -282,7 +282,7 @@ function replaceArray(key, value) {
 // _description  JS-lib mit Funktionen und Utilities fuer Details zu Objekten, Arrays, etc.
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.object.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -694,7 +694,7 @@ function mappingValuesFunSelect(index, obj) {
 
 /*** Modul util.promise.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.promise
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -702,7 +702,7 @@ function mappingValuesFunSelect(index, obj) {
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Details zu Promises
 // _require      https://eselce.github.io/OS2.scripts/lib/util.promise.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -928,7 +928,7 @@ async function promiseChainFinalCatch(ex) {
 
 /*** Modul util.value.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.value
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -936,7 +936,7 @@ async function promiseChainFinalCatch(ex) {
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Logging, Debugging, Error-Handling, usw.
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -1388,7 +1388,7 @@ function valueOf(data) {
 
 /*** Modul util.proto.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.proto
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -1396,7 +1396,7 @@ function valueOf(data) {
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Prototypes
 // _require      https://eselce.github.io/OS2.scripts/lib/util.proto.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -1589,7 +1589,7 @@ Object.defineProperty(Array.prototype, 'ReduceRight', {
 
 /*** Modul util.prop.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.prop
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -1598,7 +1598,7 @@ Object.defineProperty(Array.prototype, 'ReduceRight', {
 // _description  JS-lib mit Funktionen und Utilities fuer Logging, Debugging, Error-Handling, usw.
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -1684,7 +1684,7 @@ function getProp(obj, item, defValue = undefined) {
 
 /*** Modul util.mem.sys.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.mem.sys
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -1695,7 +1695,7 @@ function getProp(obj, item, defValue = undefined) {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.value.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -1798,7 +1798,7 @@ function substManagerParam(text, par1) {
 
 /*** Modul util.mem.mod.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.mem.mod
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -1810,7 +1810,7 @@ function substManagerParam(text, par1) {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.sys.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.mem.mod.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -1905,7 +1905,7 @@ function substParam(text, par1) {
 
 /*** Modul util.debug.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.debug
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -1913,7 +1913,7 @@ function substParam(text, par1) {
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Debugging, Error-Handling, usw.
 // _require      https://eselce.github.io/OS2.scripts/lib/util.debug.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2209,7 +2209,7 @@ const __CODELINEBLACKLISTREGEXP = {
 
 /*** Modul util.store.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.store
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2217,7 +2217,7 @@ const __CODELINEBLACKLISTREGEXP = {
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer Script-Optionen im Benutzermenue
 // _require      https://eselce.github.io/OS2.scripts/lib/util.store.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2536,7 +2536,7 @@ function setNextStored(arr, name, value, reload = false, serial = false, onFulfi
 
 /*** Modul util.xhr.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.xhr
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2545,7 +2545,7 @@ function setNextStored(arr, name, value, reload = false, serial = false, onFulfi
 // _description  JS-lib mit Funktionen und Utilities fuer XHR-Aufrufe
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.xhr.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2837,7 +2837,7 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
 
 /*** Modul util.xhr.gm.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.xhr.gm
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2847,7 +2847,7 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.xhr.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.xhr.gm.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -2904,7 +2904,7 @@ function GMXMLHttpRequest() { }
 
 /*** Modul util.dom.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.dom
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -2913,7 +2913,7 @@ function GMXMLHttpRequest() { }
 // _description  JS-lib mit Funktionen und Utilities fuer DOM-Operationen
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.dom.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */
@@ -3532,7 +3532,7 @@ function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sa
 
 /*** Modul util.script.js ***/
 
-// ==UserScript==
+// ==UserModule==
 // _name         util.script
 // _namespace    http://os.ongapo.com/
 // _version      0.10
@@ -3540,7 +3540,7 @@ function convertArrayFromHTML(cells, colIdxArr, arrOrLength = 1, convertFun = sa
 // _author       Sven Loges (SLC)
 // _description  JS-lib mit Funktionen und Utilities fuer das Laden, Starten und Benutzen von Skripten
 // _require      https://eselce.github.io/OS2.scripts/lib/util.script.js
-// ==/UserScript==
+// ==/UserModule==
 
 // ECMAScript 6:
 /* jshint esnext: true */

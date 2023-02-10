@@ -113,14 +113,13 @@ function Requirements(path, ext, libs) {
 
                          return await this.docs.then(docs => {
                                  for (let i = 0; i < docs.length; i++) {
-                                     const __DOC = docs[i];
+                                     const __DOC = docs[i].replaceAll('\r\n', '\n').replaceAll(/^\/\/ ==(\/?)UserScript==$/gm, '// ==$1UserModule==');
 
                                      //console.log("Received:", __DOC);
 
                                      const __PRE = __DOCUMENT.createElement('PRE');
 
-                                     __PRE.textContent = "/*** Modul " + this.libs[i] + this.srcExt + " ***/\n\n"
-                                                         + __DOC.replaceAll('\r\n', '\n') + '\n'
+                                     __PRE.textContent = "/*** Modul " + this.libs[i] + this.srcExt + " ***/\n\n" + __DOC + '\n'
                                                          + "/*** Ende Modul " + this.libs[i] + this.srcExt + " ***/\n\n";
 
                                      __ANCHOR.appendChild(__PRE);
@@ -129,6 +128,8 @@ function Requirements(path, ext, libs) {
                                  return this;
                              }, error => {
                                  console.error("Error:", error);
+
+                                 return Promise.reject(error);
                              });
                      };
 
