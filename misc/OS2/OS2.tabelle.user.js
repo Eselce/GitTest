@@ -139,7 +139,7 @@ const __OPTCONFIG = {
                    'FreeValue' : true,
                    'SelValue'  : false,
                    'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ],
-                   'Default'   : 19,
+                   'Default'   : 20,
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Aktuelle Saison: $",
                    'Hotkey'    : 'A',
@@ -152,7 +152,7 @@ const __OPTCONFIG = {
                    'FreeValue' : true,
                    'SelValue'  : false,
                    'Choice'    : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 ],
-                   'Default'   : 19,
+                   'Default'   : 20,
                    'Action'    : __OPTACTION.NXT,
                    'Label'     : "Saison: $",
                    'Hotkey'    : 'S',
@@ -687,7 +687,7 @@ function saveQualiData(optSet, data, saison) {
     }
 }
 
-// Setzt statische Daten aus einer alten Saison (Fairplay-Plaetz)
+// Setzt statische Daten aus einer alten Saison (Fairplay-Plaetze)
 // landData: [1] bis [10/18/20], ['P'], ['P2'], ['OSC'], ['OSE'] (['FP'], ['OSC2'] und ['OSE2']) mit je [ ID, Quali-ID ]
 // fpTyp: Typ des vergebenen Platzes ('OSE' bis Saison 6, 'OSEQ' ab Saison 7)
 // teamIds: IDs der qualifizierten Teams
@@ -736,7 +736,8 @@ function initFairplayData(data, laender) {
                          15 : [  346, 1756,  754 ],
                          16 : [  927, 1608, 1466 ],
                          17 : [  266,  346,  693 ],
-                         18 : [ 1501, 1917,  980,   39 ]
+                         18 : [ 1501, 1917,  980,   39 ],
+                         19 : [ 1352,  823, 1320 ]
                      };
 
     for (let saison in __FPDATA) {
