@@ -689,7 +689,7 @@ function saveQualiData(optSet, data, saison) {
 
 // Setzt statische Daten aus einer alten Saison (Fairplay-Plaetze)
 // landData: [1] bis [10/18/20], ['P'], ['P2'], ['OSC'], ['OSE'] (['FP'], ['OSC2'] und ['OSE2']) mit je [ ID, Quali-ID ]
-// fpTyp: Typ des vergebenen Platzes ('OSE' bis Saison 6, 'OSEQ' ab Saison 7)
+// fpTyp: Typ des vergebenen Platzes ('OSE' bis Saison 6, 'OSEQ' ab Saison 7, wieder 'OSE' ab Saison 20)
 // teamIds: IDs der qualifizierten Teams
 // laender: Array mit den Laendernamen der Teams
 function initFairplaySaisonData(saisonData, fpTyp, teamIds, laender) {
@@ -737,12 +737,12 @@ function initFairplayData(data, laender) {
                          16 : [  927, 1608, 1466 ],
                          17 : [  266,  346,  693 ],
                          18 : [ 1501, 1917,  980,   39 ],
-                         19 : [ 1352,  823, 1320 ]
+                         19 : [  179, 1352,  823 ]
                      };
 
     for (let saison in __FPDATA) {
         const __SDATA = getProp(data, saison, { });
-        const __TYP = ((saison < 6) ? 'OSE' : 'OSEQ');
+        const __TYP = (((saison < 6) || (saison >= 19)) ? 'OSE' : 'OSEQ');
 
         initFairplaySaisonData(__SDATA, __TYP, __FPDATA[saison], laender);
     }
@@ -973,7 +973,7 @@ console.log(__TITEL);
             } else if (count-- > 0) {
                 const __LAND = __LAENDER[__TEAMID];
                 const __LDATA = getProp(__SDATA, __LAND, { });
-                const __QUALI = getGameTypeID((__CURRSAISON < 7) ? 'OSE' : 'OSEQ');
+                const __QUALI = getGameTypeID(((__CURRSAISON <= 6) || (__CURRSAISON > 19)) ? 'OSE' : 'OSEQ');
 
                 __LDATA.FP = [ __TEAMID, __QUALI, __QUALI ];
                 getProp(__TITEL, __TEAMID, []).push(__TYPEN.FP);
