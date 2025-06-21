@@ -2352,12 +2352,17 @@ function GM_function(action, label, condition = true, altAction = undefined, lev
     // Nur einmalig ermitteln...
     const __LABEL = ((condition ? '+' : '-') + label);
     const __FUNKEY = (condition ? action : altAction);
+    const __FUN = GM[__FUNKEY];
 
-    return function(... args) {
-            const __NAME = __LOG.info(args[0], false);
-            __LOG[level](__LABEL, __NAME);
-            return GM[__FUNKEY](... args);
-        };
+    return (__FUN ? function(... args) {  // use case (function is implemented)
+                const __NAME = __LOG.info(args[0], false);
+                __LOG[level](__LABEL, __NAME);
+                return GM[__FUNKEY](... args);  // call underlying GM function...
+            } : function(... args) {
+                const __NAME = __LOG.info(args[0], false);
+                __LOG[level](__LABEL, __NAME, "not implemented");
+                return Promise.resolve();  // return valid Promise!
+            });
 }
 
 // ==================== Abschnitt zur Kapselung von GM-Funktionen (GM.getValue, GM.setValue, GM.deleteValue, GM.listValues) und Start-Initialisierungen ====================
