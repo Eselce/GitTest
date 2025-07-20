@@ -962,6 +962,7 @@
 //function padLeft(value, size = 4, char = ' ') {
 //function padNumber(value, size = 2, char = '0') {
 //function reverseString(string) {
+//function trimMS(string) {
 //function sameValue(value) {
 //function existValue(value) {
 //function compareNumber(valueA, valueB) {

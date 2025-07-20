@@ -470,6 +470,16 @@ function reverseString(string) {
     return result;
 }
 
+// Bereiningt einen String von ueberfluessigen Zeilenumbruechen und Leerzeichen
+// string: Eine Zeichenkette
+// return Dieselbe Zeichenkette ohne ueberfluessige Zeilenumbrueche und Leerzeichen
+function trimMS(string) {
+    const __INPUT = (string || "");
+    const __RET = __INPUT.trim().replaceAll(/(\s\s+|\n)/g, " ");
+
+    return __RET;
+}
+
 // Identitaetsfunktion. Konvertiert nichts, sondern liefert einfach den Wert zurueck
 // value: Der uebergebene Wert
 // return Derselbe Wert
