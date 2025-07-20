@@ -3847,6 +3847,7 @@ __TESTTEAMCLASS.optSelect = {
         });
 
 //function showAlert(label, message, data = undefined, show = true) {
+//function askUser(message, dflt, acceptFun) {
 //function showException(label, ex, show = true) {
 //function defaultCatch(error, show) {
 
@@ -7387,6 +7388,10 @@ __TESTTEAMCLASS.optSelect = {
 //+function getArrValue(arr, index, defValue = undefined, retValue = undefined) {
 //function pushObjValue(obj, item, value, defValue, returnOnly = false, scalarUnique = false) {
 //function pushArrValue(arr, index, value, defValue, returnOnly = false, scalarUnique = false) {
+//function clearObj(obj, keepFilter = null) {
+//function clearObjFast(obj, keepFilter = null) {
+//function allItems(item) {
+//function noItems(item) {
 //function getValueIn(value, minValue = undefined, maxValue = undefined, defValue = undefined) {
 //function getNextValue(arr, value) {
 //function getMulValue(valueA, valueB, digits = 0, defValue = Number.NaN) {
@@ -7406,6 +7411,7 @@ __TESTTEAMCLASS.optSelect = {
 //function padLeft(value, size = 4, char = ' ') {
 //function padNumber(value, size = 2, char = '0') {
 //function reverseString(string) {
+//function trimMS(string) {
 //function sameValue(value) {
 //function existValue(value) {
 //function compareNumber(valueA, valueB) {

@@ -895,7 +895,7 @@ function calcMarketValue(age, skill, opti, mwFormel = __MW10FORMEL) {
 // _version      0.10
 // _copyright    2017+
 // _author       Sven Loges (SLC)
-// _description  JS-lib mit OS2-spezifische Funktionen und Utilities zu Teams
+// _description  JS-lib mit OS2-spezifischen Funktionen und Utilities zu Teams
 // _require      https://eselce.github.io/OS2.scripts/lib/util.log.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.prop.js
 // _require      https://eselce.github.io/OS2.scripts/lib/util.class.js
@@ -1062,7 +1062,7 @@ function getMyTeam(optSet = undefined, teamParams = undefined, myTeam = new Team
 // _version      0.10
 // _copyright    2017+
 // _author       Sven Loges (SLC)
-// _description  JS-lib mit OS2-spezifische Funktionen zur Ermittlung des Teams auf den Seiten
+// _description  JS-lib mit OS2-spezifischen Funktionen zur Ermittlung des Teams auf den Seiten
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.page.team.js
 // ==/UserModule==
 
@@ -1190,7 +1190,7 @@ function getTeamParamsFromTable(teamSearch, teamIdSearch, doc = document) {
 // _version      0.10
 // _copyright    2017+
 // _author       Sven Loges (SLC)
-// _description  JS-lib mit OS2-spezifische Funktionen zur Ermittlung von Daten auf den Seiten
+// _description  JS-lib mit OS2-spezifischen Funktionen zur Ermittlung von Daten auf den Seiten
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.page.js
 // ==/UserModule==
 
@@ -1363,7 +1363,7 @@ function getManagerLink(managerName, pmID) {
 // _version      0.10
 // _copyright    2017+
 // _author       Sven Loges (SLC)
-// _description  JS-lib mit OS2-spezifische Funktionen fuer Spielplan und ZATs und Klasse RundenLink
+// _description  JS-lib mit OS2-spezifischen Funktionen fuer Spielplan und ZATs und Klasse RundenLink
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.zat.js
 // ==/UserModule==
 

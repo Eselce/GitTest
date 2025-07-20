@@ -63,6 +63,7 @@ const __LOG = {
                                     console.info,       // [8] Info:  Very verbose
                                     console.debug       // [9] Debug: Testing
                                 ],                      // [""] Log:  Table
+                                                        // ["!"]      Assert
                                                         // [true]     {
                                                         // [false]    }
                   'init'      : function(win, logLevel = 4, show = true) {
@@ -71,8 +72,11 @@ const __LOG = {
                                     //const __NOBIND = ([true].reduce(() => false, true));  // Heuristik ueber Array.prototype.reduce
                                     const __BINDTO = (__NOBIND ? null : (win ? win.console : console));
 
+                                    this.__BINDTO = __BINDTO;
+                                    this.__LOGLEVEL = logLevel;
+
                                     for (let level = 0; level < this.logFun.length; level++) {
-                                        this.createFun(level, ((level > logLevel) ? null : this.logFun[level]), __BINDTO);
+                                        this.createFun(level);
                                     }
                                     this.createFun('""',    console.table);     // console.table
                                     this.createFun("!",     console.assert);    // console.assert(cond, ...)
@@ -82,31 +86,45 @@ const __LOG = {
                                     if (this.__NOBIND === undefined) {
                                         this.__NOBIND = __NOBIND;
                                         if (this.__NOBIND) {
-                                            __LOG[2]("Prototype", Prototype.Version, "detected!");
+                                            this._(2)("Prototype", Prototype.Version, "detected!");
                                         }
                                     }
 
-                                    this.__LOGLEVEL = logLevel;
                                     if (show) {
-                                        __LOG[2]("Loglevel:", this.__LOGLEVEL);
+                                        this._(2)("Loglevel:", this.__LOGLEVEL);
                                     }
 
                                     return this.__LOGLEVEL;
                                 },
-                  'createFun' : function(name, fun, bindTo = undefined) {
-                                    let ret;
+                  'createFun' : function(name, fun) {
+                                    const __NAME = name;
+                                    const __FUN = this.raw(__NAME, fun);
 
-                                    if (! fun) {
-                                        ret = function() { };
+                                    if ((__NAME != null) && __FUN) {
+                                        return (this[__NAME] = __FUN);
                                     } else {
-                                        if (bindTo) {
-                                            ret = fun.bind(bindTo, '[' + name + ']');
-                                        } else {
-                                            ret = fun;
-                                        }
+                                        return null;
                                     }
+                                },
+                  'raw'       : function(name = this.__LOGLEVEL, fun = undefined) {
+                                    const __BINDTO = this.__BINDTO;
+                                    const __NAME = name;
+                                    const __LEVELFUN = (this.hasLevel(__NAME)
+                                                        ? this.logFun[__NAME] : null);
+                                    const __FUN = (fun || __LEVELFUN);
 
-                                    return (this[name] = ret);
+                                    return ((! __FUN) ? function() { } : (__BINDTO
+                                        ? __FUN.bind(__BINDTO, '[' + __NAME + ']') : __FUN));
+                                },
+                  '_'         : function(name) {
+                                    return (this.hasLevel(name) ? this[name] : this[this.__LOGLEVEL]);
+                                },
+                  'hasLevel'     : function(name) {
+                                    const __NAME = name;
+                                    const __LEVEL = Number.parseInt(__NAME, 10);
+
+                                    return (Number.isNaN(__LEVEL) ? (!! this[__NAME])
+                                            : (__LEVEL <= this.__LOGLEVEL));
                                 },
                   'stringify' : safeStringify,      // JSON.stringify
                   'info'      : function(obj, showType = true, elementType = false) {
@@ -146,6 +164,8 @@ __LOG.init(window, 4, false);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(
 // 9    D debug                 nicht-aufgeklappt   (low-prio)
 // --
 // ""   L table                 aufgeklappt     (erzwungene-7)
+// --
+// "!"    assert
 // --
 // true   group
 // false  groupEnd
@@ -708,7 +728,19 @@ function mappingValuesFunSelect(index, obj) {
 /* jshint esnext: true */
 /* jshint moz: true */
 
-// ==================== Abschnitt fuer Promise-Utilities ====================
+// ==================== Abschnitt fuer einfache Promise-Utilities ====================
+
+// Einfache sleep() Funktion fuer den taeglichen Bedarf. Wenn's mal dauern darf.
+// Einfach bedeutet hier, dass es kein Fehlerhandling gibt, nicht mal clearTimeout().
+// millisecs: Anzahl der Millisekunden, die gewartet werden soll
+// return Promise, auf das gewartet werden kann (await, then())
+function sleep(millisecs = 15000) {
+    return new Promise(resolve => setTimeout(resolve, millisecs));
+}
+
+// ==================== Ende Abschnitt fuer einfache Promise-Utilities ====================
+
+// ==================== Abschnitt fuer Promise-Steuereung ====================
 
 // getQueuedPromise() - Liefert synchronisiertes Promise (aus Roman Bauers osext2-Project)
 // Wird ueber internes Promise 'pending' synchronisiert. Zeitlicher Ablauf:
@@ -776,21 +808,26 @@ QueuedPromiseFactory.prototype.constructor = QueuedPromiseFactory;
 ***/
 
 const newPromise = ((executor, millisecs = 15000) => new Promise((resolve, reject) => {
-            const timerID = window.setTimeout((() => reject(Error("Timed out"))), millisecs);
-            return executor((value => (window.clearTimeout(timerID), resolve(value))), reject);
+            const __TIMERID = window.setTimeout((() => reject(Error("Timed out"))), millisecs);
+            return executor((value => (window.clearTimeout(__TIMERID), resolve(value))),
+                            (error => (window.clearTimeout(__TIMERID), reject(error))));
         }));
 
 function getTimedPromiseSLC(executor, millisecs = 15000) {
     return new Promise((resolve, reject) => {
-            const timeoutFun = (() => {
+            const __TIMEOUTFUN = (() => {
                     return reject(Error("Timed out (" + (millisecs / 1000) + "s)"));
                 });
-            const timerID = setTimeout(timeoutFun, millisecs);
-            const resolveFun = (value => {
-                    clearTimeout(timerID);
+            const __TIMERID = setTimeout(__TIMEOUTFUN, millisecs);
+            const __RESOLVEFUN = (value => {
+                    clearTimeout(__TIMERID);
                     return resolve(value);
                 });
-            return executor(resolveFun, reject);
+            const __REJECTFUN = (error => {
+                    clearTimeout(__TIMERID);
+                    return reject(error);
+                });
+            return executor(__RESOLVEFUN, __REJECTFUN);
         });
 }
 
@@ -808,13 +845,16 @@ const getTimedPromiseRombau = (executor, timeout = 10000 /***Options.timeout***/
     return new Promise((resolve, reject) => {
         const timerID = setTimeout(() => reject(new Error('Die Verarbeitung hat zu lange gedauert!')), timeout);
         return executor(value => {
-            clearTimeout(timerID); 
-            resolve(value);
-        }, reject);
+                clearTimeout(timerID); 
+                resolve(value);
+            }, error => {
+                clearTimeout(timerID); 
+                reject(error);
+            });
     });
 }
 
-// ==================== Ende Abschnitt fuer Promise-Utilities ====================
+// ==================== Ende Abschnitt fuer Promise-Steuerung ====================
 
 // ==================== Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen ====================
 
@@ -1023,6 +1063,66 @@ function pushArrValue(arr, index, value, defValue, returnOnly = false, scalarUni
     }
 
     return __RET;
+}
+
+// Entfernt alle Eintraege in einem Object (ausser denen, die per Keep-Filter angegeben sind).
+// Diese Version ist simpel und geradeheraus und kann auch mit konstanten Objects arbeiten.
+// Aber dadurch ist sie auch langsamer. Schneller ist clearObjFast().
+// obj: Das Objekt, das bereinigt werden soll
+// keepFilter: Filter fuer die Elemente, die bleiben sollen (Default: null - alle Eintraege weg)
+// - item: Zu testendes Item
+// return Das bereinigte Object
+function clearObj(obj, keepFilter = null) {
+    const __OBJ = (obj || { });
+    const __FILTER = (keepFilter || noItems);
+
+    for (const __KEY of Object.getOwnPropertyNames(__OBJ)) {
+        if (! __FILTER(__OBJ[__KEY]) {
+            delete __OBJ[__KEY];
+        }
+    }
+
+    return __OBJ;
+}
+
+// Entfernt alle Eintraege in einem Object (ausser denen, die per Keep-Filter angegeben sind).
+// Diese Version ist schneller als clearObj() und ist ein besseres obj = { }.
+// Damit ist es aber auch nicht auf konstante Objects anwendbar!
+// Die Eintraege selber bleiben am Leben und muessten ggfs. woanders geloescht werden. 
+// obj: Das Objekt, das bereinigt werden soll
+// keepFilter: Filter fuer die Elemente, die bleiben sollen (Default: null - alle Eintraege weg)
+// - item: Zu testendes Item
+// return Das bereinigte Object
+function clearObjFast(obj, keepFilter = null) {
+    const __OBJ = Object.create(Object.getPrototypeOf(obj), { });
+
+    if (keepFilter) {  // reconstruct all rejections...
+        const __FILTER = (keepFilter || noItems);
+
+        for (const [__KEY, __VALUE] of Object.entries(obj)) {
+            if (__FILTER(__VALUE)) {
+                __OBJ[__KEY] = __VALUE;
+            }
+        }
+    }
+
+    return __OBJ;
+}
+
+// Einfache Filterfunktion, die immer zutrifft (ausser fuer leere Items).
+// item: Das zu ueberpruefende Item
+// return true (sofern item vorhanden ist)
+function allItems(item) {
+    return getValue(item, false, true);  // false is default, but if item is given, return true!
+}
+
+// Einfache Filterfunktion, die nie zutrifft (auch nicht fuer leere Items).
+// item: Das zu ueberpruefende Item
+// return false
+function noItems(item) {
+    UNUSED(item);
+
+    return false;
 }
 
 // Gibt einen Wert zurueck. Ist dieser nicht definiert, wird ein Alternativwert geliefert
@@ -1256,6 +1356,7 @@ function paramArrWrapper(wrapFun, paramFuns) {
 // - element: Wert des Elements
 // - index: Laufende Nummer des Elements (0-basiert)
 // - arr: Das gesamte Array, wobei arr[index] === element
+// space: whitespace delimiter for array output (Default: ' ')
 // return Generische Funktion, die an Array-Funktionen uebergeben werden kann, z.B. als Replacer fuer safeStringify()
 function replaceArrayFun(formatFun, space = ' ') {
     return function(key, value) {
@@ -1337,6 +1438,16 @@ function reverseString(string) {
     }
 
     return result;
+}
+
+// Bereiningt einen String von ueberfluessigen Zeilenumbruechen und Leerzeichen
+// string: Eine Zeichenkette
+// return Dieselbe Zeichenkette ohne ueberfluessige Zeilenumbrueche und Leerzeichen
+function trimMS(string) {
+    const __INPUT = (string || "");
+    const __RET = __INPUT.trim().replaceAll(/(\s\s+|\n)/g, " ");
+
+    return __RET;
 }
 
 // Identitaetsfunktion. Konvertiert nichts, sondern liefert einfach den Wert zurueck
@@ -1939,6 +2050,27 @@ function showAlert(label, message, data = undefined, show = true) {
     }
 
     return arguments;
+}
+
+// Allgemeine Rueckfrage beim User. Wie bei prompt(). Ggfs. wird Antwort ueberprueft.
+// Ist die Antwort nicht null (Abbruch), dflt (Default) oder lt. Filter erlaubt,
+// wird erneut gefragt. Die Box wird erst zugemacht, wenn die Antwort gueltig ist.
+// message: 1. Parameter fuer prompt(): Meldung (Default: "Are you sure (Y/N)?")
+// dflt: 2. Parameter fuer prompt(): Default-Antwort (Default: 'Y')
+// acceptFun: Antwort-Filter, was ausser Default und Abbruch erlaubt ist (Default: alles)
+// - item: Zu ueberpruefende Antwort
+// return Liefert den anchor zurueck
+function askUser(message, dflt, acceptFun) {
+    const __MESSAGE = (message || "Are you sure (Y/N)?");
+    const __DEFAULT = (dflt || 'Y');
+    const __ACCEPTFUN = (acceptFun || (item => true));  // allItems() in util.value.js
+    let answer;
+
+    do {
+        answer = prompt(__MESSAGE, __DEFAULT);
+    } while ((answer != null) && (answer != __DEFAULT) && ! __ACCEPTFUN(answer));
+
+    return answer;
 }
 
 // Gibt eine Meldung in der Console aus und oeffnet ggfa. ein Bestaetigungsfenster
