@@ -939,6 +939,8 @@
 //+function getArrValue(arr, index, defValue = undefined, retValue = undefined) {
 //function pushObjValue(obj, item, value, defValue, returnOnly = false, scalarUnique = false) {
 //function pushArrValue(arr, index, value, defValue, returnOnly = false, scalarUnique = false) {
+//function clearObj(obj, keepFilter = null) {
+//function clearObjFast(obj, keepFilter = null) {
 //function getValueIn(value, minValue = undefined, maxValue = undefined, defValue = undefined) {
 //function getNextValue(arr, value) {
 //function getMulValue(valueA, valueB, digits = 0, defValue = Number.NaN) {

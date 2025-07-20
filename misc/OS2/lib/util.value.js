@@ -95,6 +95,50 @@ function pushArrValue(arr, index, value, defValue, returnOnly = false, scalarUni
     return __RET;
 }
 
+// Entfernt alle Eintraege in einem Object (ausser denen, die per Keep-Filter angegeben sind).
+// Diese Version ist simpel und geradeheraus und kann auch mit konstanten Objects arbeiten.
+// Aber dadurch ist sie auch langsamer. Schneller ist clearObjFast().
+// obj: Das Objekt, das bereinigt werden soll
+// keepFilter: Filter fuer die Elemente, die bleiben sollen (Default: null - alle Eintraege weg)
+// - item: Zu testendes Item
+// return Das bereinigte Object
+function clearObj(obj, keepFilter = null) {
+    const __OBJ = (obj || { });
+    const __FILTER = (keepFilter || noItems);
+
+    for (const __KEY of Object.getOwnPropertyNames(__OBJ)) {
+        if (! __FILTER(__OBJ[__KEY]) {
+            delete __OBJ[__KEY];
+        }
+    }
+
+    return __OBJ;
+}
+
+// Entfernt alle Eintraege in einem Object (ausser denen, die per Keep-Filter angegeben sind).
+// Diese Version ist schneller als clearObj() und ist ein besseres obj = { }.
+// Damit ist es aber auch nicht auf konstante Objects anwendbar!
+// Die Eintraege selber bleiben am Leben und muessten ggfs. woanders geloescht werden. 
+// obj: Das Objekt, das bereinigt werden soll
+// keepFilter: Filter fuer die Elemente, die bleiben sollen (Default: null - alle Eintraege weg)
+// - item: Zu testendes Item
+// return Das bereinigte Object
+function clearObjFast(obj, keepFilter = null) {
+    const __OBJ = Object.create(Object.getPrototypeOf(obj), { });
+
+    if (keepFilter) {  // reconstruct all rejections...
+        const __FILTER = (keepFilter || noItems);
+
+        for (const [__KEY, __VALUE] of Object.entries(obj)) {
+            if (__FILTER(__VALUE)) {
+                __OBJ[__KEY] = __VALUE;
+            }
+        }
+    }
+
+    return __OBJ;
+}
+
 // Gibt einen Wert zurueck. Ist dieser nicht definiert, wird ein Alternativwert geliefert
 // value: Ein Wert. Ist dieser definiet und in den Grenzen, wird er zurueckgeliefert
 // minValue: Untere Grenze fuer den Wert, falls angegeben
@@ -326,6 +370,7 @@ function paramArrWrapper(wrapFun, paramFuns) {
 // - element: Wert des Elements
 // - index: Laufende Nummer des Elements (0-basiert)
 // - arr: Das gesamte Array, wobei arr[index] === element
+// space: whitespace delimiter for array output (Default: ' ')
 // return Generische Funktion, die an Array-Funktionen uebergeben werden kann, z.B. als Replacer fuer safeStringify()
 function replaceArrayFun(formatFun, space = ' ') {
     return function(key, value) {
