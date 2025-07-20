@@ -34,6 +34,27 @@ function showAlert(label, message, data = undefined, show = true) {
     return arguments;
 }
 
+// Allgemeine Rueckfrage beim User. Wie bei prompt(). Ggfs. wird Antwort ueberprueft.
+// Ist die Antwort nicht null (Abbruch), dflt (Default) oder lt. Filter erlaubt,
+// wird erneut gefragt. Die Box wird erst zugemacht, wenn die Antwort gueltig ist.
+// message: 1. Parameter fuer prompt(): Meldung (Default: "Are you sure (Y/N)?")
+// dflt: 2. Parameter fuer prompt(): Default-Antwort (Default: 'Y')
+// acceptFun: Antwort-Filter, was ausser Default und Abbruch erlaubt ist (Default: alles)
+// - item: Zu ueberpruefende Antwort
+// return Liefert den anchor zurueck
+function askUser(message, dflt, acceptFun) {
+    const __MESSAGE = (message || "Are you sure (Y/N)?");
+    const __DEFAULT = (dflt || 'Y');
+    const __ACCEPTFUN = (acceptFun || (item => true));  // allItems() in util.value.js
+    let answer;
+
+    do {
+        answer = prompt(__MESSAGE, __DEFAULT);
+    } while ((answer != null) && (answer != __DEFAULT) && ! __ACCEPTFUN(answer));
+
+    return answer;
+}
+
 // Gibt eine Meldung in der Console aus und oeffnet ggfa. ein Bestaetigungsfenster
 // mit der Meldung zu einer Exception oder einer Fehlermeldung
 // label: Eine Ueberschrift

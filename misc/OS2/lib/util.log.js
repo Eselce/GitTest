@@ -42,6 +42,7 @@ const __LOG = {
                                     console.info,       // [8] Info:  Very verbose
                                     console.debug       // [9] Debug: Testing
                                 ],                      // [""] Log:  Table
+                                                        // ["!"]      Assert
                                                         // [true]     {
                                                         // [false]    }
                   'init'      : function(win, logLevel = 4, show = true) {
@@ -50,8 +51,11 @@ const __LOG = {
                                     //const __NOBIND = ([true].reduce(() => false, true));  // Heuristik ueber Array.prototype.reduce
                                     const __BINDTO = (__NOBIND ? null : (win ? win.console : console));
 
+                                    this.__BINDTO = __BINDTO;
+                                    this.__LOGLEVEL = logLevel;
+
                                     for (let level = 0; level < this.logFun.length; level++) {
-                                        this.createFun(level, ((level > logLevel) ? null : this.logFun[level]), __BINDTO);
+                                        this.createFun(level);
                                     }
                                     this.createFun('""',    console.table);     // console.table
                                     this.createFun("!",     console.assert);    // console.assert(cond, ...)
@@ -61,31 +65,45 @@ const __LOG = {
                                     if (this.__NOBIND === undefined) {
                                         this.__NOBIND = __NOBIND;
                                         if (this.__NOBIND) {
-                                            __LOG[2]("Prototype", Prototype.Version, "detected!");
+                                            this._(2)("Prototype", Prototype.Version, "detected!");
                                         }
                                     }
 
-                                    this.__LOGLEVEL = logLevel;
                                     if (show) {
-                                        __LOG[2]("Loglevel:", this.__LOGLEVEL);
+                                        this._(2)("Loglevel:", this.__LOGLEVEL);
                                     }
 
                                     return this.__LOGLEVEL;
                                 },
-                  'createFun' : function(name, fun, bindTo = undefined) {
-                                    let ret;
+                  'createFun' : function(name, fun) {
+                                    const __NAME = name;
+                                    const __FUN = this.raw(__NAME, fun);
 
-                                    if (! fun) {
-                                        ret = function() { };
+                                    if ((__NAME != null) && __FUN) {
+                                        return (this[__NAME] = __FUN);
                                     } else {
-                                        if (bindTo) {
-                                            ret = fun.bind(bindTo, '[' + name + ']');
-                                        } else {
-                                            ret = fun;
-                                        }
+                                        return null;
                                     }
+                                },
+                  'raw'       : function(name = this.__LOGLEVEL, fun = undefined) {
+                                    const __BINDTO = this.__BINDTO;
+                                    const __NAME = name;
+                                    const __LEVELFUN = (this.hasLevel(__NAME)
+                                                        ? this.logFun[__NAME] : null);
+                                    const __FUN = (fun || __LEVELFUN);
 
-                                    return (this[name] = ret);
+                                    return ((! __FUN) ? function() { } : (__BINDTO
+                                        ? __FUN.bind(__BINDTO, '[' + __NAME + ']') : __FUN));
+                                },
+                  '_'         : function(name) {
+                                    return (this.hasLevel(name) ? this[name] : this[this.__LOGLEVEL]);
+                                },
+                  'hasLevel'     : function(name) {
+                                    const __NAME = name;
+                                    const __LEVEL = Number.parseInt(__NAME, 10);
+
+                                    return (Number.isNaN(__LEVEL) ? (!! this[__NAME])
+                                            : (__LEVEL <= this.__LOGLEVEL));
                                 },
                   'stringify' : safeStringify,      // JSON.stringify
                   'info'      : function(obj, showType = true, elementType = false) {
@@ -125,6 +143,8 @@ __LOG.init(window, 4, false);  // Zunaechst mal Loglevel 4, erneutes __LOG.init(
 // 9    D debug                 nicht-aufgeklappt   (low-prio)
 // --
 // ""   L table                 aufgeklappt     (erzwungene-7)
+// --
+// "!"    assert
 // --
 // true   group
 // false  groupEnd

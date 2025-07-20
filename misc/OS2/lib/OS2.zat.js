@@ -4,7 +4,7 @@
 // _version      0.10
 // _copyright    2017+
 // _author       Sven Loges (SLC)
-// _description  JS-lib mit OS2-spezifische Funktionen fuer Spielplan und ZATs und Klasse RundenLink
+// _description  JS-lib mit OS2-spezifischen Funktionen fuer Spielplan und ZATs und Klasse RundenLink
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.zat.js
 // ==/UserScript==
 
