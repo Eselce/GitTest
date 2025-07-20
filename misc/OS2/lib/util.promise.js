@@ -12,7 +12,19 @@
 /* jshint esnext: true */
 /* jshint moz: true */
 
-// ==================== Abschnitt fuer Promise-Utilities ====================
+// ==================== Abschnitt fuer einfache Promise-Utilities ====================
+
+// Einfache sleep() Funktion fuer den taeglichen Bedarf. Wenn's mal dauern darf.
+// Einfach bedeutet hier, dass es kein Fehlerhandling gibt, nicht mal clearTimeout().
+// millisecs: Anzahl der Millisekunden, die gewartet werden soll
+// return Promise, auf das gewartet werden kann (await, then())
+function sleep(millisecs = 15000) {
+    return new Promise(resolve => setTimeout(resolve, millisecs));
+}
+
+// ==================== Ende Abschnitt fuer einfache Promise-Utilities ====================
+
+// ==================== Abschnitt fuer Promise-Steuereung ====================
 
 // getQueuedPromise() - Liefert synchronisiertes Promise (aus Roman Bauers osext2-Project)
 // Wird ueber internes Promise 'pending' synchronisiert. Zeitlicher Ablauf:
@@ -80,21 +92,26 @@ QueuedPromiseFactory.prototype.constructor = QueuedPromiseFactory;
 ***/
 
 const newPromise = ((executor, millisecs = 15000) => new Promise((resolve, reject) => {
-            const timerID = window.setTimeout((() => reject(Error("Timed out"))), millisecs);
-            return executor((value => (window.clearTimeout(timerID), resolve(value))), reject);
+            const __TIMERID = window.setTimeout((() => reject(Error("Timed out"))), millisecs);
+            return executor((value => (window.clearTimeout(__TIMERID), resolve(value))),
+                            (error => (window.clearTimeout(__TIMERID), reject(error))));
         }));
 
 function getTimedPromiseSLC(executor, millisecs = 15000) {
     return new Promise((resolve, reject) => {
-            const timeoutFun = (() => {
+            const __TIMEOUTFUN = (() => {
                     return reject(Error("Timed out (" + (millisecs / 1000) + "s)"));
                 });
-            const timerID = setTimeout(timeoutFun, millisecs);
-            const resolveFun = (value => {
-                    clearTimeout(timerID);
+            const __TIMERID = setTimeout(__TIMEOUTFUN, millisecs);
+            const __RESOLVEFUN = (value => {
+                    clearTimeout(__TIMERID);
                     return resolve(value);
                 });
-            return executor(resolveFun, reject);
+            const __REJECTFUN = (error => {
+                    clearTimeout(__TIMERID);
+                    return reject(error);
+                });
+            return executor(__RESOLVEFUN, __REJECTFUN);
         });
 }
 
@@ -112,13 +129,16 @@ const getTimedPromiseRombau = (executor, timeout = 10000 /***Options.timeout***/
     return new Promise((resolve, reject) => {
         const timerID = setTimeout(() => reject(new Error('Die Verarbeitung hat zu lange gedauert!')), timeout);
         return executor(value => {
-            clearTimeout(timerID); 
-            resolve(value);
-        }, reject);
+                clearTimeout(timerID); 
+                resolve(value);
+            }, error => {
+                clearTimeout(timerID); 
+                reject(error);
+            });
     });
 }
 
-// ==================== Ende Abschnitt fuer Promise-Utilities ====================
+// ==================== Ende Abschnitt fuer Promise-Steuerung ====================
 
 // ==================== Abschnitt fuer einfaches Testen von Arrays von Promises und Funktionen ====================
 
