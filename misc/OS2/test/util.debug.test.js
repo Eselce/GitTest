@@ -35,6 +35,7 @@
         });
 
 //function showAlert(label, message, data = undefined, show = true) {
+//function askUser(message, dflt, acceptFun) {
 //function showException(label, ex, show = true) {
 //function defaultCatch(error, show) {
 
