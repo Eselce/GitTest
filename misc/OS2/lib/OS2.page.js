@@ -4,7 +4,7 @@
 // _version      0.10
 // _copyright    2017+
 // _author       Sven Loges (SLC)
-// _description  JS-lib mit OS2-spezifische Funktionen zur Ermittlung von Daten auf den Seiten
+// _description  JS-lib mit OS2-spezifischen Funktionen zur Ermittlung von Daten auf den Seiten
 // _require      https://eselce.github.io/OS2.scripts/lib/OS2.page.js
 // ==/UserScript==
 
