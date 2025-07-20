@@ -107,7 +107,7 @@ function clearObj(obj, keepFilter = null) {
     const __FILTER = (keepFilter || noItems);
 
     for (const __KEY of Object.getOwnPropertyNames(__OBJ)) {
-        if (! __FILTER(__OBJ[__KEY]) {
+        if (! __FILTER(__OBJ[__KEY])) {
             delete __OBJ[__KEY];
         }
     }
