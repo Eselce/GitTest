@@ -139,6 +139,22 @@ function clearObjFast(obj, keepFilter = null) {
     return __OBJ;
 }
 
+// Einfache Filterfunktion, die immer zutrifft (ausser fuer leere Items).
+// item: Das zu ueberpruefende Item
+// return true (sofern item vorhanden ist)
+function allItems(item) {
+    return getValue(item, false, true);  // false is default, but if item is given, return true!
+}
+
+// Einfache Filterfunktion, die nie zutrifft (auch nicht fuer leere Items).
+// item: Das zu ueberpruefende Item
+// return false
+function noItems(item) {
+    UNUSED(item);
+
+    return false;
+}
+
 // Gibt einen Wert zurueck. Ist dieser nicht definiert, wird ein Alternativwert geliefert
 // value: Ein Wert. Ist dieser definiet und in den Grenzen, wird er zurueckgeliefert
 // minValue: Untere Grenze fuer den Wert, falls angegeben

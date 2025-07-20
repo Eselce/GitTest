@@ -941,6 +941,8 @@
 //function pushArrValue(arr, index, value, defValue, returnOnly = false, scalarUnique = false) {
 //function clearObj(obj, keepFilter = null) {
 //function clearObjFast(obj, keepFilter = null) {
+//function allItems(item) {
+//function noItems(item) {
 //function getValueIn(value, minValue = undefined, maxValue = undefined, defValue = undefined) {
 //function getNextValue(arr, value) {
 //function getMulValue(valueA, valueB, digits = 0, defValue = Number.NaN) {
