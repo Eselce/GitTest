@@ -74,9 +74,9 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
     const __XMLREQUEST = XHRrequestClass;
 
     if ((typeof XHRopenFun) === 'function') {
-        __LOG[2]("Initializing", XHRname, '...');
+        __LOG._(2)("Initializing", XHRname, '...');
     } else {
-        __LOG[1]("Can't initialize", XHRname, "with", __LOG.info(XHRopenFun));
+        __LOG._(1)("Can't initialize", XHRname, "with", __LOG.info(XHRopenFun));
         //throw TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
         return { __XMLREQUEST };
     }
