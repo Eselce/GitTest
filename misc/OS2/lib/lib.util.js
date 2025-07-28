@@ -1269,7 +1269,7 @@ function getKeyString(obj, space = ' ') {
     const __OBJ = obj;
     const __SPACE = space;
     const __KEYS = Object.keys(__OBJ);
-    const __KEYSTR = arrStr(__KEYS, __SPACE);
+    const __KEYSTR = getArrString(__KEYS, __SPACE);
 
     return __KEYSTR;
 }
@@ -1282,7 +1282,7 @@ function getValueString(obj, space = ' ') {
     const __OBJ = obj;
     const __SPACE = space;
     const __VALUES = Object.values(__OBJ);
-    const __VALUESTR = arrStr(__VALUES, __SPACE);
+    const __VALUESTR = getArrString(__VALUES, __SPACE);
 
     return __VALUESTR;
 }
@@ -1297,7 +1297,7 @@ function getEntryString(obj, space = ' ', mapFun = undefined) {
     const __MAPFUN = (mapFun || (([key, value]) => ("'" + key + "':" + __SPACE + value)));
     const __ENTRIES = Object.entries(__OBJ);
     const __MAPPEDENTRIES = __ENTRIES.map(__MAPFUN);
-    const __ENTRYSTR = arrStr(__MAPPEDENTRIES, __SPACE);
+    const __ENTRYSTR = getArrString(__MAPPEDENTRIES, __SPACE);
 
     return __ENTRYSTR;
 }
