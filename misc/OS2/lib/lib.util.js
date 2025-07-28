@@ -1246,6 +1246,62 @@ function getNumberString(numberString) {
     }
 }
 
+// Gibt ein Array als String zurueck.
+// arr: Das auszugebende Array
+// space: whitespace delimiter for array output (Default: ' ')
+// return String mit allen Werten des Arrays
+function getArrString(arr, space = ' ') {
+    const __ARR = arr;
+    const __SPACE = space;
+    const __PRE = '[' + __SPACE;
+    const __MID = ',' + __SPACE;
+    const __POST = __SPACE + ']';
+    const __ARRSTR = __ARR.join(__MID);
+
+    return (__PRE + __ARRSTR + __POST);
+}
+
+// Gibt die Keys eines Objects als String zurueck.
+// obj: Das auszugebende Object
+// space: whitespace delimiter for array output (Default: ' ')
+// return String mit allen Keys
+function getKeyString(obj, space = ' ') {
+    const __OBJ = obj;
+    const __SPACE = space;
+    const __KEYS = Object.keys(__OBJ);
+    const __KEYSTR = arrStr(__KEYS, __SPACE);
+
+    return __KEYSTR;
+}
+
+// Gibt die Werte eines Objects als String zurueck.
+// obj: Das auszugebende Object
+// space: whitespace delimiter for array output (Default: ' ')
+// return String mit allen Werten
+function getValueString(obj, space = ' ') {
+    const __OBJ = obj;
+    const __SPACE = space;
+    const __VALUES = Object.values(__OBJ);
+    const __VALUESTR = arrStr(__VALUES, __SPACE);
+
+    return __VALUESTR;
+}
+
+// Gibt die Entries eines Objects als String zurueck.
+// obj: Das auszugebende Object
+// space: whitespace delimiter for array output (Default: ' ')
+// return String mit allen Entries
+function getEntryString(obj, space = ' ', mapFun = undefined) {
+    const __OBJ = obj;
+    const __SPACE = space;
+    const __MAPFUN = (mapFun || (([key, value]) => ("'" + key + "':" + __SPACE + value)));
+    const __ENTRIES = Object.entries(__OBJ);
+    const __MAPPEDENTRIES = __ENTRIES.map(__MAPFUN);
+    const __ENTRYSTR = arrStr(__MAPPEDENTRIES, __SPACE);
+
+    return __ENTRYSTR;
+}
+
 // Liefert den ganzzeiligen Anteil einer Zahl zurueck, indem alles hinter einem Punkt abgeschnitten wird
 // value: Eine uebergebene Dezimalzahl
 // return Der ganzzeilige Anteil dieser Zahl
@@ -2033,41 +2089,80 @@ function substParam(text, par1) {
 // ==================== Abschnitt fuer Debugging und Error-Handling ====================
 
 // Gibt eine Meldung in der Console aus und oeffnet ggfa. ein Bestaetigungsfenster mit der Meldung
-// label: Eine Ueberschrift
-// message: Der Meldungs-Text
+// label: Eine Ueberschrift (Default: "ALERT")
+// message: Der Meldungs-Text (Default: "Are you sure (Y/N)?")
 // data: Ein Wert. Ist er angegeben, wird er in der Console ausgegeben
 // show: Angabe, ob neben Logs auch noch ein alert-Dialog aufpoppen soll (Default: true)
 // return Liefert die Parameter zurueck
 function showAlert(label, message, data = undefined, show = true) {
-    __LOG[1](label + ": " + message);
+    const __LABEL = (label || "ALERT");
+    const __MESSAGE = (message || "");
+    const __LOGMESSAGE = __LABEL + ": " + __MESSAGE;
+    const __FULLMESSAGE = __LABEL + "\n\n" + __MESSAGE;
+    const __DATA = data;
+    const __SHOW = (!! show);
 
-    if (data !== undefined) {
-        __LOG[2](data);
+    __LOG[1](__LOGMESSAGE);
+
+    if (__DATA) {
+        __LOG[2](__DATA);
     }
 
-    if (show) {
-        alert(label + "\n\n" + message);
+    if (__SHOW) {
+        window.alert(__FULLMESSAGE);
     }
 
     return arguments;
 }
 
+// Allgemeine Rueckmeldung and den User. Wie bei confirm().
+// label: Eine Ueberschrift (Default: "MESSAGE")
+// message: Parameter fuer confirm(): Meldungstext (Default: "Are you sure (Y/N)?")
+// show: Angabe, ob neben Logs auch noch ein confirm-Dialog aufpoppen soll (Default: true)
+// okValue: Rueckgabewert fuer OK (Default: "Y")
+// abortValue: Rueckgabewert fuer Abbruch (Default: 'N')
+// return Liefert die Antwort (Y/N) zurueck
+function showMessage(label, message, show = true, okValue = 'Y', abortValue = 'N') {
+    const __LABEL = (label || "MESSAGE");
+    const __MESSAGE = (message || "Are you sure (Y/N)?");
+    const __LOGMESSAGE = __LABEL + ": " + __MESSAGE;
+    const __FULLMESSAGE = __LABEL + "\n\n" + __MESSAGE;
+    const __SHOW = (!! show);
+    const __OK = okValue;
+    const __ABORT = abortValue;
+    let answer = true;
+
+    __LOG[1](__LOGMESSAGE);
+
+    if (__SHOW) {
+        answer = window.confirm(__FULLMESSAGE);
+    }
+
+    return (answer ? __OK : __ABORT);
+}
+
 // Allgemeine Rueckfrage beim User. Wie bei prompt(). Ggfs. wird Antwort ueberprueft.
 // Ist die Antwort nicht null (Abbruch), dflt (Default) oder lt. Filter erlaubt,
 // wird erneut gefragt. Die Box wird erst zugemacht, wenn die Antwort gueltig ist.
+// label: Eine Ueberschrift (1. Parameter fuer prompt()) (Default: "QUESTION")
 // message: 1. Parameter fuer prompt(): Meldung (Default: "Are you sure (Y/N)?")
 // dflt: 2. Parameter fuer prompt(): Default-Antwort (Default: 'Y')
 // acceptFun: Antwort-Filter, was ausser Default und Abbruch erlaubt ist (Default: alles)
 // - item: Zu ueberpruefende Antwort
 // return Liefert den anchor zurueck
-function askUser(message, dflt, acceptFun) {
+function askUser(label, message, dflt, acceptFun) {
+    const __LABEL = (label || "QUESTION");
     const __MESSAGE = (message || "Are you sure (Y/N)?");
+    const __LOGMESSAGE = __LABEL + ": " + __MESSAGE;
+    const __FULLMESSAGE = __LABEL + "\n\n" + __MESSAGE;
     const __DEFAULT = (dflt || 'Y');
     const __ACCEPTFUN = (acceptFun || (item => true));  // allItems() in util.value.js
     let answer;
 
+    __LOG[1](__LOGMESSAGE);
+
     do {
-        answer = prompt(__MESSAGE, __DEFAULT);
+        answer = window.prompt(__FULLMESSAGE, __DEFAULT);
     } while ((answer != null) && (answer != __DEFAULT) && ! __ACCEPTFUN(answer));
 
     return answer;
@@ -2749,9 +2844,9 @@ function XHRfactory(XHRname, XHRrequestClass, XHRopenFun) {
     const __XMLREQUEST = XHRrequestClass;
 
     if ((typeof XHRopenFun) === 'function') {
-        __LOG[2]("Initializing", XHRname, '...');
+        __LOG._(2)("Initializing", XHRname, '...');
     } else {
-        __LOG[1]("Can't initialize", XHRname, "with", __LOG.info(XHRopenFun));
+        __LOG._(1)("Can't initialize", XHRname, "with", __LOG.info(XHRopenFun));
         //throw TypeError("Can't initialize " + XHRname + " with " + __LOG.info(XHRopenFun) + '!');
         return { __XMLREQUEST };
     }

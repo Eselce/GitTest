@@ -2785,7 +2785,7 @@ Class.define(Main, Object, {
                                     return Promise.reject(`Kein Seiten-Handler f\u00FCr '${__MANAGER.name}' vorhanden!`);
                                 }
 
-                                __LOG[2](`${__DBMOD.Name}: Starte Seiten-Verarbeitung f\u00FCr '${__MANAGER.name}'...`);
+                                __LOG._(2)(`${__DBMOD.Name}: Starte Seiten-Verarbeitung f\u00FCr '${__MANAGER.name}'...`);
 
                                 // Klassifikation verknuepfen...
                                 __CLASSIFICATION.assign(this.optSet, __OPTPARAMS);
@@ -2828,16 +2828,16 @@ Class.define(Main, Object, {
                                                 const __RC = rc;
 
                                                 __LOG[2](String(this.optSet));
-                                                __LOG[1]('SCRIPT END', __DBMOD.Name, '(' + __RC + ')', '/', __DBMAN.Name);
+                                                __LOG._(1)('SCRIPT END', __DBMOD.Name, '(' + __RC + ')', '/', __DBMAN.Name);
 
                                                 return Promise.resolve(__RC);
                                             }, ex => {
                                                 const __ERRMSG = (ex && getValue(ex[0], ex.message,
                                                             ((typeof ex) === 'string') ? ex : (ex[0] + ": " + ex[1])));
 
-                                                __LOG[1]('SCRIPT ERROR', __DBMOD.Name, '(' + __ERRMSG + ')');
+                                                __LOG._(1)('SCRIPT ERROR', __DBMOD.Name, '(' + __ERRMSG + ')');
                                                 __LOG[2](String(this.optSet));
-                                                __LOG[1]('SCRIPT END', __DBMAN.Name);
+                                                __LOG._(1)('SCRIPT END', __DBMAN.Name);
 
                                                 return Promise.reject(__ERRMSG);
                                             });

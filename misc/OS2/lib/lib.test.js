@@ -6263,6 +6263,10 @@
 //function getOrdinal(value, defValue = '*') {
 //+function getNumber(numberString) {
 //function getNumberString(numberString) {
+//function getArrString(arr, space = ' ') {
+//function getKeyString(obj, space = ' ') {
+//function getValueString(obj, space = ' ') {
+//function getEntryString(obj, space = ' ', mapFun = undefined) {
 //function floorValue(value, dot = '.') {
 //function toArray(value) {
 //function flatArray(... args) {
