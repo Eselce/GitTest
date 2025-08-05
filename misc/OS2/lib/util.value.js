@@ -278,56 +278,109 @@ function getNumberString(numberString) {
 
 // Gibt ein Array als String zurueck.
 // arr: Das auszugebende Array
-// space: whitespace delimiter for array output (Default: ' ')
+// spaceOrFormat: Entweder ein Format-Object mit Angaben zur Ausgabe
+//                oder Trenner fuer Array-Ausgabe (Default: ' ')
+// - space: Trenner fuer Array-Ausgabe (Default: ' ')
+// - delim: Trenner zwischen Elementen (Default: ',')
+// - pre: Startklammer (Default: '[')
+// - post: Endklammer (Default: ']')
+// - mapFun: map()-Operation, die auf Elemente angewandt wird
+// - mark: Trenner fuer Markierungen (Default: '*')
+// - markEnd: Trenner fuer Ende der Markierung, falls anders (Default: mark)
+// - markIndex: Index des zu markierenden Elements
+// - markFun: Identifizierung von Elementen, die markiert werden (Default: markIndex)
 // return String mit allen Werten des Arrays
-function getArrString(arr, space = ' ') {
-    const __ARR = arr;
-    const __SPACE = space;
-    const __PRE = '[' + __SPACE;
-    const __MID = ',' + __SPACE;
-    const __POST = __SPACE + ']';
-    const __ARRSTR = __ARR.join(__MID);
+function getArrString(arr, spaceOrFormat = ' ') {
+    const __ARR = getValue(arr, []);
+    const __FORMAT = (((typeof spaceOrFormat) === 'string') ? { 'space': spaceOrFormat }
+                    : (((typeof spaceOrFormat) === 'number') ? { 'markIndex': spaceOrFormat }
+                    : getValue(spaceOrFormat, { })));
+    const __SPACE = getValue(__FORMAT.space, ' ');
+    const __PRE = getValue(__FORMAT.pre, '[') + __SPACE;
+    const __MID = getValue(__FORMAT.delim, ',') + __SPACE;
+    const __POST = __SPACE + getValue(__FORMAT.post, ']');
+    const __MAPFUN = (__FORMAT.mapFun, sameValue);
+    const __MARK = getValue(__FORMAT.mark, '*');
+    const __MARKEND = getValue(__FORMAT.markEnd, __MARK);
+    const __MARKINDEX = getValue(__FORMAT.markIndex, -1);
+    const __MARKFUN = (__FORMAT.markFun || ((elem, index) => (index == __MARKINDEX)));
+    const __DOMARKFUN = ((elem, index, arr) => (__MARKFUN(elem, index, arr) ? (__MARK + elem + __MARKEND) : elem));
+    const __MAPPEDARR = __ARR.map(__MAPFUN);
+    const __MARKEDARR = __MAPPEDARR.map(__DOMARKFUN);
+    const __ARRSTR = __MARKEDARR.join(__MID);
 
     return (__PRE + __ARRSTR + __POST);
 }
 
 // Gibt die Keys eines Objects als String zurueck.
 // obj: Das auszugebende Object
-// space: whitespace delimiter for array output (Default: ' ')
+// spaceOrFormat: Entweder ein Format-Object mit Angaben zur Ausgabe
+//                oder Trenner fuer Array-Ausgabe (Default: ' ')
+// - space: Trenner fuer Array-Ausgabe (Default: ' ')
+// - delim: Trenner zwischen Elementen (Default: ',')
+// - pre: Startklammer (Default: '[')
+// - post: Endklammer (Default: ']')
+// - mapFun: map()-Operation, die auf Elemente angewandt wird
+// - mark: Trenner fuer Markierungen (Default: '*')
+// - markEnd: Trenner fuer Ende der Markierung, falls anders (Default: mark)
+// - markIndex: Index des zu markierenden Elements
+// - markFun: Identifizierung von Elementen, die markiert werden (Default: markIndex)
 // return String mit allen Keys
-function getKeyString(obj, space = ' ') {
-    const __OBJ = obj;
-    const __SPACE = space;
+function getKeyString(obj, spaceOrFormat = ' ') {
+    const __OBJ = getValue(obj, { });
+    const __FORMAT = spaceOrFormat;
     const __KEYS = Object.keys(__OBJ);
-    const __KEYSTR = getArrString(__KEYS, __SPACE);
+    const __KEYSTR = getArrString(__KEYS, __FORMAT);
 
     return __KEYSTR;
 }
 
 // Gibt die Werte eines Objects als String zurueck.
 // obj: Das auszugebende Object
-// space: whitespace delimiter for array output (Default: ' ')
+// spaceOrFormat: Entweder ein Format-Object mit Angaben zur Ausgabe
+//                oder Trenner fuer Array-Ausgabe (Default: ' ')
+// - space: Trenner fuer Array-Ausgabe (Default: ' ')
+// - delim: Trenner zwischen Elementen (Default: ',')
+// - pre: Startklammer (Default: '[')
+// - post: Endklammer (Default: ']')
+// - mapFun: map()-Operation, die auf Elemente angewandt wird
+// - mark: Trenner fuer Markierungen (Default: '*')
+// - markEnd: Trenner fuer Ende der Markierung, falls anders (Default: mark)
+// - markIndex: Index des zu markierenden Elements
+// - markFun: Identifizierung von Elementen, die markiert werden (Default: markIndex)
 // return String mit allen Werten
-function getValueString(obj, space = ' ') {
-    const __OBJ = obj;
-    const __SPACE = space;
+function getValueString(obj, spaceOrFormat = ' ') {
+    const __OBJ = getValue(obj, { });
+    const __FORMAT = spaceOrFormat;
     const __VALUES = Object.values(__OBJ);
-    const __VALUESTR = getArrString(__VALUES, __SPACE);
+    const __VALUESTR = getArrString(__VALUES, __FORMAT);
 
     return __VALUESTR;
 }
 
 // Gibt die Entries eines Objects als String zurueck.
 // obj: Das auszugebende Object
-// space: whitespace delimiter for array output (Default: ' ')
+// spaceOrFormat: Entweder ein Format-Object mit Angaben zur Ausgabe
+//                oder Trenner fuer Array-Ausgabe (Default: ' ')
+// - space: Trenner fuer Array-Ausgabe (Default: ' ')
+// - delim: Trenner zwischen Elementen (Default: ',')
+// - pre: Startklammer (Default: '[')
+// - post: Endklammer (Default: ']')
+// - mapFun: map()-Operation, die auf Elemente angewandt wird
+// - mark: Trenner fuer Markierungen (Default: '*')
+// - markEnd: Trenner fuer Ende der Markierung, falls anders (Default: mark)
+// - markIndex: Index des zu markierenden Elements
+// - markFun: Identifizierung von Elementen, die markiert werden (Default: markIndex)
+// entryFun: ([key, value]) => Verarbeitung der Eintraege zu Elementen
 // return String mit allen Entries
-function getEntryString(obj, space = ' ', mapFun = undefined) {
-    const __OBJ = obj;
-    const __SPACE = space;
-    const __MAPFUN = (mapFun || (([key, value]) => ("'" + key + "':" + __SPACE + value)));
+function getEntryString(obj, spaceOrFormat = ' ', entryFun = undefined) {
+    const __OBJ = getValue(obj, { });
+    const __FORMAT = getValue(spaceOrFormat, { });
+    const __SPACE = getValue(__FORMAT.space, ' ');
+    const __ENTRYFUN = (entryFun || (([key, value]) => ("'" + key + "':" + __SPACE + value)));
     const __ENTRIES = Object.entries(__OBJ);
-    const __MAPPEDENTRIES = __ENTRIES.map(__MAPFUN);
-    const __ENTRYSTR = getArrString(__MAPPEDENTRIES, __SPACE);
+    const __MAPPEDENTRIES = __ENTRIES.map(__ENTRYFUN);
+    const __ENTRYSTR = getArrString(__MAPPEDENTRIES, __FORMAT);
 
     return __ENTRYSTR;
 }
