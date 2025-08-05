@@ -7398,10 +7398,10 @@ __TESTTEAMCLASS.optSelect = {
 //function getOrdinal(value, defValue = '*') {
 //+function getNumber(numberString) {
 //function getNumberString(numberString) {
-//function getArrString(arr, space = ' ') {
-//function getKeyString(obj, space = ' ') {
-//function getValueString(obj, space = ' ') {
-//function getEntryString(obj, space = ' ', mapFun = undefined) {
+//function getArrString(arr, spaceOrFormat = ' ') {
+//function getKeyString(obj, spaceOrFormat = ' ') {
+//function getValueString(obj, spaceOrFormat = ' ') {
+//function getEntryString(obj, spaceOrFormat = ' ', entryFun = undefined) {
 //function floorValue(value, dot = '.') {
 //function toArray(value) {
 //function flatArray(... args) {
