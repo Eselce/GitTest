@@ -291,10 +291,10 @@ function getNumberString(numberString) {
 // - markFun: Identifizierung von Elementen, die markiert werden (Default: markIndex)
 // return String mit allen Werten des Arrays
 function getArrString(arr, spaceOrFormat = ' ') {
-    const __ARR = arr;
+    const __ARR = getValue(arr, []);
     const __FORMAT = (((typeof spaceOrFormat) === 'string') ? { 'space': spaceOrFormat }
                     : (((typeof spaceOrFormat) === 'number') ? { 'markIndex': spaceOrFormat }
-                    : spaceOrFormat));
+                    : getValue(spaceOrFormat, { })));
     const __SPACE = getValue(__FORMAT.space, ' ');
     const __PRE = getValue(__FORMAT.pre, '[') + __SPACE;
     const __MID = getValue(__FORMAT.delim, ',') + __SPACE;
@@ -327,7 +327,7 @@ function getArrString(arr, spaceOrFormat = ' ') {
 // - markFun: Identifizierung von Elementen, die markiert werden (Default: markIndex)
 // return String mit allen Keys
 function getKeyString(obj, spaceOrFormat = ' ') {
-    const __OBJ = obj;
+    const __OBJ = getValue(obj, { });
     const __FORMAT = spaceOrFormat;
     const __KEYS = Object.keys(__OBJ);
     const __KEYSTR = getArrString(__KEYS, __FORMAT);
@@ -350,7 +350,7 @@ function getKeyString(obj, spaceOrFormat = ' ') {
 // - markFun: Identifizierung von Elementen, die markiert werden (Default: markIndex)
 // return String mit allen Werten
 function getValueString(obj, spaceOrFormat = ' ') {
-    const __OBJ = obj;
+    const __OBJ = getValue(obj, { });
     const __FORMAT = spaceOrFormat;
     const __VALUES = Object.values(__OBJ);
     const __VALUESTR = getArrString(__VALUES, __FORMAT);
@@ -371,15 +371,15 @@ function getValueString(obj, spaceOrFormat = ' ') {
 // - markEnd: Trenner fuer Ende der Markierung, falls anders (Default: mark)
 // - markIndex: Index des zu markierenden Elements
 // - markFun: Identifizierung von Elementen, die markiert werden (Default: markIndex)
-// mapFun: ([key, value]) => Verarbeitung der Eintraege zu Elementen
+// entryFun: ([key, value]) => Verarbeitung der Eintraege zu Elementen
 // return String mit allen Entries
-function getEntryString(obj, spaceOrFormat = ' ', mapFun = undefined) {
-    const __OBJ = obj;
-    const __FORMAT = spaceOrFormat;
+function getEntryString(obj, spaceOrFormat = ' ', entryFun = undefined) {
+    const __OBJ = getValue(obj, { });
+    const __FORMAT = getValue(spaceOrFormat, { });
     const __SPACE = getValue(__FORMAT.space, ' ');
-    const __MAPFUN = (mapFun || (([key, value]) => ("'" + key + "':" + __SPACE + value)));
+    const __ENTRYFUN = (entryFun || (([key, value]) => ("'" + key + "':" + __SPACE + value)));
     const __ENTRIES = Object.entries(__OBJ);
-    const __MAPPEDENTRIES = __ENTRIES.map(__MAPFUN);
+    const __MAPPEDENTRIES = __ENTRIES.map(__ENTRYFUN);
     const __ENTRYSTR = getArrString(__MAPPEDENTRIES, __FORMAT);
 
     return __ENTRYSTR;
