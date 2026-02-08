@@ -6,6 +6,7 @@
 // @author       Sven Loges (SLC)
 // @description  Aktiviert als Standard die Option "Ergebnisse anzeigen" fuer Online Soccer 2.0
 // @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(l[sp]|os(eq?|c(q|[hzf]r))|supercup|zer)\.php(\?\w+=?[+\w]+(&\w+=?[+\w]+)*)?(#\w+)?$/
+// @include      /^https?://(www\.)?(os\.ongapo\.com|online-soccer\.eu|os-zeitungen\.com)/(osneu/)?(os[ce]gp)$/
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue
@@ -137,13 +138,21 @@ __LOG.init(window, __LOGLEVEL);
 // Verarbeitet eine Ergebnis-Ansicht
 const procErgebnisse = new PageManager("Ergebnisse", null, () => {
         return {
-                'menuAnchor' : getElement('DIV'),
+                'menuAnchor' : getElement('FORM'),
                 'formWidth'  : 2
             };
     }, async optSet => {
-        // Aktiviere Checkbox "Ergebnisse anzeigen" je nach Einstellung der Option
-        getElementByName('erganzeigen').checked = optSet.getOptValue('showErgs');
-        // alternativ: getElement("INPUT[name='erganzeigen']")...
+        const __SHOW = optSet.getOptValue('showErgs');
+        const __TARGETCHECK = getElementByName('erganzeigen');  // alternativ: getElement("INPUT[name='erganzeigen']")...
+        const __TARGETCOMBO = getElementByName('ergebnisse');
+
+        // Aktiviere Checkbox/Combobox "Ergebnisse anzeigen" je nach Einstellung der Option
+        if (__TARGETCHECK) {
+            __TARGETCHECK.checked = __SHOW;
+        }
+        if (__TARGETCOMBO) {
+            __TARGETCOMBO.value = (__SHOW ? '1' : '0');
+        }
 
         return true;
     });
