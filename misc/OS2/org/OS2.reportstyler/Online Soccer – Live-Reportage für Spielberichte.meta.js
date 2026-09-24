@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Online Soccer – Live-Reportage für Spielberichte
 // @namespace    online-soccer.eu.reportstyler
-// @version      1.3
+// @version      1.6.1
 // @description  Verwandelt Spielberichte auf online-soccer.eu in eine moderierte Live-Übertragung: Einleitung mit Taktik & Schlüsselspielern, Ticker mit Tempo-Regelung, vier Analyse-Kommentare (nach 15 Min, Halbzeit, 15 Min vor Schluss, Schluss), abwechslungsreiche Kommentare für Tore, Freistöße, Elfmeter, Ecken und Abseits mit Spannungspausen, Stadion-Atmosphäre, Fangesänge und Momentum-Anzeige. Läuft komplett lokal im Browser.
 // @author       Daniel Gent
 // @license      MIT
